@@ -4,17 +4,14 @@ function Ball(pos, vel, r, k) {
 
   this.r = r;
 
+  this.rotation = 0;
+  this.ang = 0;
+
   if (k) this.k = k;
   else this.k = 0.8;
 
   if (vel) this.vel = vel.copy();
   else this.vel = createVector(0, 0);
-
-  this.show = function (color) {
-    fill(color);
-    noStroke();
-    ellipse(this.pos.x, this.pos.y, 2 * r, 2 * r);
-  }
 
   this.collided = function (ball) {
     if (this.pos.dist(ball.pos) < (this.r + ball.r)) return true;
@@ -54,7 +51,7 @@ function collide(ball1, ball2) {
       ball1.vel.add(d1);
 
       var d2 = p5.Vector.sub(pos2, pos1);
-      if (dist === 0) { d2 = p5.Vector.mult(d1, -1);}
+      if (dist === 0) { d2 = p5.Vector.mult(d1, -1); }
       d2.mult(rSum / dist);
       d2.mult(kk);
       d2.mult(m1 / (m2 + m1));

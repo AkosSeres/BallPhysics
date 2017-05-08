@@ -16,7 +16,7 @@ function setup() {
   gui.addGlobals("k");
 
   physics.setBounds(0, 0, width, height);
-  physics.addField(ConservativeField(createVector(0,10),100));
+  physics.addField(ConservativeField(createVector(0, 10), 100));
 }
 
 function windowResized() {
@@ -36,15 +36,13 @@ function draw() {
     line(mouseX, mouseY, lastX, lastY);
   }
 
-  for (var i = 0; i < physics.balls.length; i++) {
-    physics.balls[i].show("green");
-  }
+  physics.draw();
 
-  physics.update(elapsedTime/5);
-  physics.update(elapsedTime/5);
-  physics.update(elapsedTime/5);
-  physics.update(elapsedTime/5);
-  physics.update(elapsedTime/5);
+  physics.update(elapsedTime / 5);
+  physics.update(elapsedTime / 5);
+  physics.update(elapsedTime / 5);
+  physics.update(elapsedTime / 5);
+  physics.update(elapsedTime / 5);
 }
 
 function mousePressed() {
@@ -61,4 +59,18 @@ function mouseReleased() {
 
   lastX = 0;
   lastY = 0;
+}
+
+physics.draw = function () {
+  fill("green");
+  stroke("black");
+  for (var i = 0; i < physics.balls.length; i++) {
+    ellipse(physics.balls[i].pos.x, physics.balls[i].pos.y, physics.balls[i].r * 2);
+    push();
+    translate(physics.balls[i].pos.x, physics.balls[i].pos.y);
+    rotate(-PI / 2);
+    rotate(-physics.balls[i].rotation);
+    line(0, 0, 0, physics.balls[i].r);
+    pop();
+  }
 }

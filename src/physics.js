@@ -1,3 +1,5 @@
+const frictionCoefficient = 0.2;
+
 function Physics() {
   this.balls = [];
 
