@@ -1,36 +1,25 @@
 const frictionCoefficient = 0.2;
 
-function Physics() {
-  this.balls = [];
+class Physics {
+  constructor() {
+    this.balls = [];
 
-  this.bounds = 0;
+    this.bounds = 0;
 
-  this.fields = [];
+    this.fields = [];
 
-  this.update = function (t) {
+    this.gravity = null;
+  }
+
+  update(t) {
 
     for (var i = 0; i < this.balls.length; i++) {
       //move
       this.balls[i].lastPos = this.balls[i].pos.copy();
       this.balls[i].pos.add(this.balls[i].vel.copy().mult(t));
 
-      //apply fields's forces
-      for (var j = 0; j < this.fields.length; j++) {
-        if (this.fields[j].type == "conservative") {
-          this.balls[i].vel.add(this.fields[j].dir.copy().mult(t));
-        } else if (this.fields[j].type == "point") {
-          noStroke();
-          fill("blue");
-          ellipse(this.fields[j].pos.x, this.fields[j].pos.y, 10, 10);
-          var distVec = this.balls[i].pos.copy();
-          distVec.sub(this.fields[j].pos);
-          var dist = this.balls[i].pos.dist(this.fields[j].pos);
-          distVec.div(dist);
-          distVec.mult(this.fields[j].dir);
-          distVec.mult(t);
-          this.balls[i].vel.add(distVec);
-        }
-      }
+      //apply gravity
+      this.balls[i].vel.add(this.gravity.copy().mult(t));
 
       //bounce from the edges
       if (this.bounds != 0) {
@@ -60,25 +49,27 @@ function Physics() {
 
       //collision
       for (var j = i + 1; j < this.balls.length; j++) {
-        collide(this.balls[i], this.balls[j]);
+        Ball.collide(this.balls[i], this.balls[j]);
       }
       for (var j = i + 1; j < this.balls.length; j++) {
-        collide(this.balls[i], this.balls[j]);
+        Ball.collide(this.balls[i], this.balls[j]);
       }
     }
-
-
   }
 
-  this.addBall = function (ball) {
+  setGravity(dir) {
+    this.gravity = dir.copy();
+  }
+
+  addBall(ball) {
     this.balls.push(ball);
   }
 
-  this.setBounds = function (x, y, w, h) {
+  setBounds(x, y, w, h) {
     this.bounds = [x, y, w, h];
   }
 
-  this.addField = function (field) {
+  addField(field) {
     this.fields.push(field);
   }
 }

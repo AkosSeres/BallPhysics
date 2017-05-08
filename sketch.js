@@ -16,7 +16,7 @@ function setup() {
   gui.addGlobals("k");
 
   physics.setBounds(0, 0, width, height);
-  physics.addField(ConservativeField(createVector(0, 10), 100));
+  physics.setGravity(createVector(0, 1000));
 }
 
 function windowResized() {
