@@ -3,6 +3,7 @@ class Ball {
     this.pos = pos.copy();
     this.lastPos = this.pos.copy();
     this.r = r;
+    this.fc = 0.3;//coefficient of friction
 
     this.rotation = 0;
     this.ang = 0;
@@ -51,7 +52,7 @@ class Ball {
         ball1.vel.add(d1);
 
         var d2 = p5.Vector.sub(pos2, pos1);
-        if (dist === 0) { d2 = p5.Vector.mult(d1, -1); }
+        if (dist === 0) {d2 = p5.Vector.mult(d1, -1);}
         d2.mult(rSum / dist);
         d2.mult(kk);
         d2.mult(m1 / (m2 + m1));
@@ -70,30 +71,39 @@ class Ball {
         return;
       }
 
-      //calculate the point of the collision in time (lastPos in time = 0, current is 1)
-      var deltaT = map(rSum, lastDist, dist, 0, 1);
-      var cp1 = p5.Vector.lerp(lPos1, pos1, deltaT);
-      var cp2 = p5.Vector.lerp(lPos2, pos2, deltaT);
-
-      var remain1 = p5.Vector.mag(p5.Vector.mult(s1, 1 - deltaT));
-      var remain2 = p5.Vector.mag(p5.Vector.mult(s2, 1 - deltaT));
+      var cp1 = pos1.copy();
+      var cp2 = pos2.copy();
+      let too = r1 + r2 - dist;
+      var d = p5.Vector.sub(pos1, pos2);
+      d.normalize();
+      d.mult(too * m2 / (m1 + m2));
+      cp1.add(d.x, d.y, d.z);
+      d.normalize();
+      d.mult(-too * m1 / (m1 + m2));
+      cp2.add(d.x, d.y, d.z);
 
       ball1.pos = cp1;
       ball2.pos = cp2;
+      let np1 = cp1.copy();
+      let np2 = cp2.copy();
 
       var v1n = v1.copy();
-      v1n.mult(Math.cos(p5.Vector.angleBetween(v1, p5.Vector.sub(pos2, pos1))));
-      v1n.rotate(p5.Vector.angleBetween(v1, p5.Vector.sub(pos2, pos1)));
+      let angle = Vec2.angleACW(new Vec2(v1.x, v1.y), new Vec2(np2.x - np1.x, np2.y - np1.y));
+      v1n.rotate(angle);
+      v1n.mult(Math.cos(angle));
       var v2n = v2.copy();
-      v2n.mult(Math.cos(p5.Vector.angleBetween(v2, p5.Vector.sub(pos1, pos2))));
-      v2n.rotate(p5.Vector.angleBetween(v2, p5.Vector.sub(pos1, pos2)));
+      angle = Vec2.angleACW(new Vec2(v2.x, v2.y), new Vec2(np1.x - np2.x, np1.y - np2.y));
+      v2n.rotate(angle);
+      v2n.mult(Math.cos(angle));
 
       var v1p = v1.copy();
-      v1p.mult(Math.sin(p5.Vector.angleBetween(v1, p5.Vector.sub(pos2, pos1))));
-      v1p.rotate(-HALF_PI + p5.Vector.angleBetween(v1, p5.Vector.sub(pos2, pos1)));
+      angle = Vec2.angleACW(new Vec2(v1.x, v1.y), new Vec2(np2.x - np1.x, np2.y - np1.y));
+      v1p.rotate(-HALF_PI + angle);
+      v1p.mult(Math.sin(angle));
       var v2p = v2.copy();
-      v2p.mult(Math.sin(p5.Vector.angleBetween(v2, p5.Vector.sub(pos1, pos2))));
-      v2p.rotate(-HALF_PI + p5.Vector.angleBetween(v2, p5.Vector.sub(pos1, pos2)));
+      angle = Vec2.angleACW(new Vec2(v2.x, v2.y), new Vec2(np1.x - np2.x, np1.y - np2.y));
+      v2p.rotate(-HALF_PI + angle);
+      v2p.mult(Math.sin(angle));
 
       var u1n = p5.Vector.mult(v1n, m1);
       u1n.add(p5.Vector.mult(v2n, m2));
@@ -112,15 +122,6 @@ class Ball {
 
       ball1.vel = p5.Vector.add(v1n, v1p);
       ball2.vel = p5.Vector.add(v2n, v2p);
-
-      var v1unit = ball1.vel.copy();
-      v1unit.normalize();
-      v1unit.mult(remain1 * kk);
-      ball1.pos.add(v1unit);
-      var v2unit = ball2.vel.copy();
-      v2unit.normalize();
-      v2unit.mult(remain2 * kk);
-      ball2.pos.add(v2unit);
 
       ball1.lastPos = cp1;
       ball2.lastPos = cp2;
