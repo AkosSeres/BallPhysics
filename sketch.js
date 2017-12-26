@@ -1,4 +1,4 @@
-var physics = new Physics();
+var physics;
 var defaultSize = 10;
 var k = 0.5;
 var gui;
@@ -15,6 +15,7 @@ function setup() {
   sliderRange(0.01, 1, 0.01);
   gui.addGlobals("k");
 
+  physics = new Physics();
   physics.setBounds(0, 0, width, height);
   physics.setGravity(createVector(0, 1000));
 }
@@ -61,7 +62,7 @@ function mouseReleased() {
   lastY = 0;
 }
 
-physics.draw = function () {
+Physics.prototype.draw = function() {
   fill("green");
   stroke("black");
   for (var i = 0; i < physics.balls.length; i++) {
