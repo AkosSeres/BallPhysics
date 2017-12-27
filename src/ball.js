@@ -130,10 +130,7 @@ class Ball {
 
       p1.rotate(-rot + Math.PI / 2);
       p2.rotate(-rot + Math.PI / 2);
-      let vk = (m1 * p1.x + m2 * p2.x) / (m1 + m2);
-      //let vk = (m1 * (p1.x + ball1.ang * r1) + m2 * (p2.x - ball2.ang * r2)) / (m1 + m2);
-      //vk += (m1 * ball1.ang * r1 - m2 * ball2.ang * r2) / (m1 + m2);
-      vk += (ball1.am * m1 * r1 * r1 * ball1.ang - ball2.am * m2 * r2 * r2 * ball2.ang) / (ball1.am * m1 * r1 + ball2.am * m2 * r2);
+      let vk = (m1 * (p1.x + ball1.ang * r1) + m2 * (p2.x - ball2.ang * r2)) / (m1 + m2);
 
       let dv1p = -dv1n * fc * Math.sign(p1.x - ball1.ang * r1 - vk);
       if (Math.abs(dv1p) > Math.abs(p1.x - ball1.ang * r1 - vk)) {dv1p = -p1.x + ball1.ang * r1 + vk;}
