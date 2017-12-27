@@ -1,15 +1,17 @@
 class Ball {
-  constructor(pos, vel, r, k, ang) {
+  constructor(pos, vel, r, k, ang, fc) {
     this.pos = pos.copy();
     this.lastPos = this.pos.copy();
     this.r = r;
     this.fc = 0.4;//coefficient of friction
-    this.am = 1;//angular mass (am*m*r*r)
+    this.am = 2 / 5;//angular mass (am*m*r*r)
 
     this.rotation = 0;
 
     if (ang) this.ang = ang;
     else this.ang = 0;
+
+    if (fc || fc === 0) this.fc = fc;
 
     if (k) this.k = k;
     else this.k = 0.8;

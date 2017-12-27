@@ -1,6 +1,7 @@
 class Physics {
   constructor() {
     this.balls = [];
+    this.fixedBalls = [];
 
     this.walls = [];
 
@@ -33,6 +34,41 @@ class Physics {
 
       //collision with walls
       this.walls.forEach((item) => {item.collideWithBall(this.balls[i])});
+
+      //collision with fixed balls
+      this.fixedBalls.forEach(b => {
+        let ball = this.balls[i];
+
+        let heading, rel;
+        let p = new Vec2(b.x, b.y);
+        p.x -= ball.pos.x; p.y -= ball.pos.y;
+        p.mult(-1);
+        if (p.length <= ball.r+b.r) {
+          heading = p.heading;
+          rel = p.length;
+        }
+
+        if (heading === 0 || heading) {
+          let pos = new Vec2(ball.pos.x, ball.pos.y);
+          let vel = new Vec2(ball.vel.x, ball.vel.y);
+          pos.rotate(-heading + Math.PI / 2);
+          vel.rotate(-heading + Math.PI / 2);
+
+          vel.y *= -ball.k;
+          pos.y += ball.r+b.r - rel;
+          let dvy = vel.y * (1 + (1 / ball.k));
+          let dvx = Math.abs(dvy) * ball.fc * Math.sign(vel.x - ball.ang * ball.r) * -1;
+          if (Math.abs(dvx) > Math.abs(vel.x - ball.ang * ball.r)) {
+            dvx = -vel.x + ball.ang * ball.r;
+          }
+          vel.x += dvx - dvx / (ball.am + 1);
+          ball.ang -= dvx / ((ball.am + 1) * ball.r);
+          pos.rotate(heading - Math.PI / 2);
+          vel.rotate(heading - Math.PI / 2);
+          ball.pos.x = pos.x; ball.pos.y = pos.y;
+          ball.vel.x = vel.x; ball.vel.y = vel.y;
+        }
+      });
 
       //bounce from the edges
       if (this.bounds) {
@@ -101,8 +137,15 @@ class Physics {
     points.push({x: x + w / 2, y: y - h / 2});
     points.push({x: x + w / 2, y: y + h / 2});
     points.push({x: x - w / 2, y: y + h / 2});
-    console.log(points);
     this.walls.push(new Wall(points));
+  }
+
+  addWall(wall) {
+    this.walls.push(wall);
+  }
+
+  addFixedBall(x, y, r) {
+    this.fixedBalls.push({x: x, y: y, r: r});
   }
 
   setBounds(x, y, w, h) {

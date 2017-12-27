@@ -1,10 +1,17 @@
 var physics;
 var defaultSize = 10;
 var k = 0.5;
+var fc = 0.35;
 var gui;
 var mode = 0;
 var lastX = 0;
 var lastY = 0;
+var drawThickness = 30;
+var modes = [
+  "ball creator",
+  "recrangle",
+  "wall drawer"
+];
 
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
@@ -14,6 +21,8 @@ function setup() {
   gui.addGlobals("defaultSize");
   sliderRange(0.01, 1, 0.01);
   gui.addGlobals("k");
+  sliderRange(0, 30, 0.05);
+  gui.addGlobals("fc");
 
   physics = new Physics();
   physics.setBounds(0, 0, width, height);
@@ -26,7 +35,7 @@ function windowResized() {
 }
 
 function draw() {
-  background(235);
+  background(51);
   var elapsedTime = 1 / frameRate();
 
   stroke(0);
@@ -38,7 +47,14 @@ function draw() {
   if (lastX != 0 && lastY != 0) {
     if (mode === 1) {
       rect(mouseX, mouseY, lastX - mouseX, lastY - mouseY);
-    } else line(mouseX, mouseY, lastX, lastY);
+    } else if (mode === 0) line(mouseX, mouseY, lastX, lastY);
+  }
+
+  if (mode == 2) {
+    ellipse(mouseX, mouseY, drawThickness * 2, drawThickness * 2);
+    if (mouseIsPressed) {
+      physics.addFixedBall(mouseX, mouseY, drawThickness);
+    }
   }
 
   physics.draw();
@@ -60,7 +76,7 @@ function mousePressed() {
 }
 
 function mouseReleased() {
-  if (lastX != 0 && lastY != 0 && mode === 0) physics.addBall(new Ball(createVector(lastX, lastY), createVector((lastX - mouseX), (lastY - mouseY)), defaultSize, k));
+  if (lastX != 0 && lastY != 0 && mode === 0) physics.addBall(new Ball(createVector(lastX, lastY), createVector((lastX - mouseX), (lastY - mouseY)), defaultSize, k, 0, fc));
   if (mode === 1) {
     physics.addRectWall(lastX / 2 + mouseX / 2, lastY / 2 + mouseY / 2, 2 * Math.abs(lastX / 2 - mouseX / 2), 2 * Math.abs(lastY / 2 - mouseY / 2));
   }
@@ -88,6 +104,7 @@ Physics.prototype.draw = function() {
     pop();
   }
 
+  noStroke();
   fill("#ff000055");
   physics.walls.forEach(element => {
     rect(element.x - element.w / 2, element.y - element.h / 2, element.w, element.h);
@@ -98,5 +115,9 @@ Physics.prototype.draw = function() {
     endShape(CLOSE);
   });
 
-  text("mode: " + mode, 10, 10);
+  physics.fixedBalls.forEach(b => {
+    ellipse(b.x, b.y, b.r * 2);
+  });
+
+  text("Mode: " + modes[mode], 10, 10);
 }

@@ -45,8 +45,6 @@ class Wall {
             let bp = new Vec2(ball.pos.x, ball.pos.y);
             let side = new Vec2(np.x - p.x, np.y - p.y);
             let h = side.heading;
-            stroke("red");
-            line(p.x, p.y, np.x, np.y);
             p.rotate(-h + Math.PI);
             np.rotate(-h + Math.PI);
             bp.rotate(-h + Math.PI);
