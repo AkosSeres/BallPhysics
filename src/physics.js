@@ -2,6 +2,8 @@ class Physics {
   constructor() {
     this.balls = [];
 
+    this.walls = [];
+
     this.bounds = 0;
 
     this.fields = [];
@@ -28,6 +30,9 @@ class Physics {
       for (var j = i + 1; j < this.balls.length; j++) {
         Ball.collide(this.balls[i], this.balls[j]);
       }
+
+      //collision with walls
+      this.walls.forEach((item) => {item.collideWithBall(this.balls[i])});
 
       //bounce from the edges
       if (this.bounds) {
@@ -90,6 +95,10 @@ class Physics {
     this.balls.push(ball);
   }
 
+  addWall(wall) {
+    this.walls.push(wall);
+  }
+
   setBounds(x, y, w, h) {
     this.bounds = [x, y, w, h];
   }
@@ -103,7 +112,7 @@ class Physics {
       let x = a.pos.x - this.bounds[0] - this.bounds[2];
       let y = a.pos.y - this.bounds[1] - this.bounds[3];
       return -x * this.bounds[2] - y * this.bounds[3];
-    }  ;
+    };
     var partition = function(array, pivot, left, right) {
       var pivotValue = val(array[pivot]),
         partitionIndex = left;

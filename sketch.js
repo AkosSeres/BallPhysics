@@ -18,6 +18,7 @@ function setup() {
   physics = new Physics();
   physics.setBounds(0, 0, width, height);
   physics.setGravity(createVector(0, 1000));
+  physics.addWall(new Wall(400, 400, 50, 50));
 }
 
 function windowResized() {
@@ -74,4 +75,8 @@ Physics.prototype.draw = function() {
     line(0, 0, 0, physics.balls[i].r);
     pop();
   }
+
+  physics.walls.forEach(element => {
+    rect(element.x - element.w / 2, element.y - element.h / 2, element.w, element.h);
+  });
 }
