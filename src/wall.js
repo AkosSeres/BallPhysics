@@ -1,87 +1,63 @@
 class Wall {
-    constructor(x, y, w, h) {
-        // The wall is immovable and it is a rectangle
-        // Coordinates of the center
-        this.x = x;
-        this.y = y;
-        // Width and height
-        this.w = w;
-        this.h = h;
+    constructor(points) {
+        // The wall is immovable
+        this.points = points;
+
+        let pol = this.points;
+        let sum1 = 0;
+        let sum2 = 0;
+        let angle = Vec2.angleACW(Vec2.sub(pol[1], pol[0]),
+            Vec2.sub(pol[pol.length - 1], pol[0]));
+        sum1 += angle;
+        sum2 += Math.PI * 2 - angle;
+        for (let i = 1; i < pol.length - 1; i++) {
+            angle = Vec2.angleACW(Vec2.sub(pol[(i + 1) % pol.length],
+                pol[i]), Vec2.sub(pol[i - 1], pol[i]));
+            sum1 += angle;
+            sum2 += Math.PI * 2 - angle;
+        }
+        angle = Vec2.angleACW(Vec2.sub(pol[0], pol[pol.length - 1]),
+            Vec2.sub(pol[pol.length - 2], pol[pol.length - 1]));
+        sum1 += angle;
+        sum2 += Math.PI * 2 - angle;
+        if (sum2 > sum1) return;
+        else {
+            let temp = [];
+            for (let i = pol.length - 1; i >= 0; i--)temp.push(pol[i]);
+            this.points = temp;
+        }
     }
 
     collideWithBall(ball) {
-        if (ball.pos.x > this.x - this.w / 2 && ball.pos.x < this.x + this.w / 2 && ball.pos.y < this.y + this.h / 2 && ball.pos.y > this.y - this.h / 2) {
-            let dp = new Vec2(0, 0);
-            console.log("bene");
-            if (Math.abs(ball.pos.x - this.x) > Math.abs(ball.pos.y - this.y)) ball.pos.x += this.x + Math.sign(ball.pos.x - this.x) * this.w / 2 - ball.pos.x + Math.sign(ball.pos.x - this.x) * ball.r;
-            else ball.pos.y += this.y + Math.sign(ball.pos.y - this.y) * this.h / 2 - ball.pos.y + Math.sign(ball.pos.y - this.y) * ball.r;
-            return;
-        }
-        if (ball.pos.x === this.x && ball.pos.y === this.y) {ball.pos.y += this.h / 2 + ball.r; return;}
         let heading = null;
         let rel = null;
-        if (ball.pos.x < this.x + this.w / 2 && ball.pos.x > this.x - this.w / 2 && ball.pos.y >= this.y + this.h / 2 && ball.pos.y - ball.r <= this.y + this.h / 2) {
-            ball.vel.y *= -ball.k;
-            ball.pos.y = this.y + this.h / 2 + ball.r;
-            let dvy = ball.vel.y * (1 + (1 / ball.k));
-            let dvx = Math.abs(dvy) * ball.fc * Math.sign(ball.vel.x - ball.ang * ball.r) * -1;
-            if (Math.abs(dvx) > Math.abs(ball.vel.x - ball.ang * ball.r)) {
-                dvx = -ball.vel.x + ball.ang * ball.r;
+
+        this.points.forEach((point, idx) => {
+            let p = new Vec2(point.x, point.y);
+            p.x -= ball.pos.x; p.y -= ball.pos.y;
+            p.mult(-1);
+            if (p.length <= ball.r) {
+                heading = p.heading;
+                rel = p.length;
             }
-            ball.vel.x += dvx + dvx / (ball.am + 1);
-            ball.ang -= dvx / ((ball.am + 1) * ball.r);
-            return;
-        } else if (ball.pos.x < this.x + this.w / 2 && ball.pos.x > this.x - this.w / 2 && ball.pos.y <= this.y - this.h / 2 && ball.pos.y + ball.r >= this.y - this.h / 2) {
-            ball.vel.y *= -ball.k;
-            ball.pos.y = this.y - this.h / 2 - ball.r;
-            let dvy = ball.vel.y * (1 + (1 / ball.k));
-            let dvx = Math.abs(dvy) * ball.fc * Math.sign(ball.vel.x + ball.ang * ball.r) * -1;
-            if (Math.abs(dvx) > Math.abs(ball.vel.x + ball.ang * ball.r)) {
-                dvx = -ball.vel.x - ball.ang * ball.r;
+            p = new Vec2(point.x, point.y);
+            let np = new Vec2(this.points[(idx + 1) % this.points.length].x, this.points[(idx + 1) % this.points.length].y);
+            let bp = new Vec2(ball.pos.x, ball.pos.y);
+            let side = new Vec2(np.x - p.x, np.y - p.y);
+            let h = side.heading;
+            stroke("red");
+            line(p.x, p.y, np.x, np.y);
+            p.rotate(-h + Math.PI);
+            np.rotate(-h + Math.PI);
+            bp.rotate(-h + Math.PI);
+            let d = bp.y - ((p.y + np.y) / 2);
+            if (d >= -ball.r && d <= ball.r && bp.x >= np.x && bp.x <= p.x) {
+                heading = h - Math.PI / 2;
+                rel = d;
             }
-            ball.vel.x += dvx - dvx / (ball.am + 1);
-            ball.ang += dvx / ((ball.am + 1) * ball.r);
-            return;
-        } else if (ball.pos.y < this.y + this.h / 2 && ball.pos.y > this.y - this.h / 2 && ball.pos.x >= this.x + this.w / 2 && ball.pos.x - ball.r <= this.x + this.w / 2) {
-            ball.vel.x *= -ball.k;
-            ball.pos.x = this.x + this.w / 2 + ball.r;
-            let dvx = ball.vel.x * (1 + (1 / ball.k));
-            let dvy = Math.abs(dvx) * ball.fc * Math.sign(ball.vel.y - ball.ang * ball.r) * -1;
-            if (Math.abs(dvy) > Math.abs(ball.vel.y - ball.ang * ball.r)) {
-                dvy = -ball.vel.y + ball.ang * ball.r;
-            }
-            ball.vel.y += dvy + dvy / (ball.am + 1);
-            ball.ang -= dvy / ((ball.am + 1) * ball.r);
-            return;
-        } else if (ball.pos.y < this.y + this.h / 2 && ball.pos.y > this.y - this.h / 2 && ball.pos.x <= this.x - this.w / 2 && ball.pos.x + ball.r >= this.x - this.w / 2) {
-            ball.vel.x *= -ball.k;
-            ball.pos.x = this.x - this.w / 2 - ball.r;
-            let dvx = ball.vel.x * (1 + (1 / ball.k));
-            let dvy = Math.abs(dvx) * ball.fc * Math.sign(ball.vel.y - ball.ang * ball.r) * -1;
-            if (Math.abs(dvy) > Math.abs(ball.vel.y - ball.ang * ball.r)) {
-                dvy = -ball.vel.y + ball.ang * ball.r;
-            }
-            ball.vel.y += dvy + dvy / (ball.am + 1);
-            ball.ang -= dvy / ((ball.am + 1) * ball.r);
-            return;
-        } else if (new Vec2(ball.pos.x - this.x - this.w / 2, ball.pos.y - this.y - this.h / 2).length <= ball.r) {
-            let d = new Vec2(ball.pos.x - this.x - this.w / 2, ball.pos.y - this.y - this.h / 2);
-            heading = d.heading;
-            rel = d.length;
-        } else if (new Vec2(ball.pos.x - this.x + this.w / 2, ball.pos.y - this.y + this.h / 2).length <= ball.r) {
-            let d = new Vec2(ball.pos.x - this.x + this.w / 2, ball.pos.y - this.y + this.h / 2);
-            heading = d.heading;
-            rel = d.length;
-        } else if (new Vec2(ball.pos.x - this.x + this.w / 2, ball.pos.y - this.y - this.h / 2).length <= ball.r) {
-            let d = new Vec2(ball.pos.x - this.x + this.w / 2, ball.pos.y - this.y - this.h / 2);
-            heading = d.heading;
-            rel = d.length;
-        } else if (new Vec2(ball.pos.x - this.x - this.w / 2, ball.pos.y - this.y + this.h / 2).length <= ball.r) {
-            let d = new Vec2(ball.pos.x - this.x - this.w / 2, ball.pos.y - this.y + this.h / 2);
-            heading = d.heading;
-            rel = d.length;
-        }
-        if (heading) {
+        });
+
+        if (heading === 0 || heading) {
             let pos = new Vec2(ball.pos.x, ball.pos.y);
             let vel = new Vec2(ball.vel.x, ball.vel.y);
             pos.rotate(-heading + Math.PI / 2);

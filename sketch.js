@@ -2,7 +2,7 @@ var physics;
 var defaultSize = 10;
 var k = 0.5;
 var gui;
-
+var mode = 0;
 var lastX = 0;
 var lastY = 0;
 
@@ -18,7 +18,6 @@ function setup() {
   physics = new Physics();
   physics.setBounds(0, 0, width, height);
   physics.setGravity(createVector(0, 1000));
-  physics.addWall(new Wall(400, 400, 50, 50));
 }
 
 function windowResized() {
@@ -32,10 +31,14 @@ function draw() {
 
   stroke(0);
   noFill();
-  ellipse(mouseX, mouseY, defaultSize * 2, defaultSize * 2);
+  if (mode === 0) {
+    ellipse(mouseX, mouseY, defaultSize * 2, defaultSize * 2);
+  }
 
   if (lastX != 0 && lastY != 0) {
-    line(mouseX, mouseY, lastX, lastY);
+    if (mode === 1) {
+      rect(mouseX, mouseY, lastX - mouseX, lastY - mouseY);
+    } else line(mouseX, mouseY, lastX, lastY);
   }
 
   physics.draw();
@@ -57,10 +60,19 @@ function mousePressed() {
 }
 
 function mouseReleased() {
-  if (lastX != 0 && lastY != 0) physics.addBall(new Ball(createVector(lastX, lastY), createVector((lastX - mouseX), (lastY - mouseY)), defaultSize, k));
+  if (lastX != 0 && lastY != 0 && mode === 0) physics.addBall(new Ball(createVector(lastX, lastY), createVector((lastX - mouseX), (lastY - mouseY)), defaultSize, k));
+  if (mode === 1) {
+    physics.addRectWall(lastX / 2 + mouseX / 2, lastY / 2 + mouseY / 2, 2 * Math.abs(lastX / 2 - mouseX / 2), 2 * Math.abs(lastY / 2 - mouseY / 2));
+  }
 
   lastX = 0;
   lastY = 0;
+}
+
+function keyPressed() {
+  if (keyCode === 32) {
+    mode += 1; mode %= 3;
+  }
 }
 
 Physics.prototype.draw = function() {
@@ -76,7 +88,15 @@ Physics.prototype.draw = function() {
     pop();
   }
 
+  fill("#ff000055");
   physics.walls.forEach(element => {
     rect(element.x - element.w / 2, element.y - element.h / 2, element.w, element.h);
+    beginShape();
+    element.points.forEach((p) => {
+      vertex(p.x, p.y);
+    });
+    endShape(CLOSE);
   });
+
+  text("mode: " + mode, 10, 10);
 }

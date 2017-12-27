@@ -95,8 +95,14 @@ class Physics {
     this.balls.push(ball);
   }
 
-  addWall(wall) {
-    this.walls.push(wall);
+  addRectWall(x, y, w, h) {
+    let points = [];
+    points.push({x: x - w / 2, y: y - h / 2});
+    points.push({x: x + w / 2, y: y - h / 2});
+    points.push({x: x + w / 2, y: y + h / 2});
+    points.push({x: x - w / 2, y: y + h / 2});
+    console.log(points);
+    this.walls.push(new Wall(points));
   }
 
   setBounds(x, y, w, h) {
