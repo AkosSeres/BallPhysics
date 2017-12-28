@@ -8,7 +8,7 @@ var lastX = 0;
 var lastY = 0;
 var drawThickness = 30;
 var timeMultiplier = 1;
-var springConstant = 100;
+var time = true;
 var modes = [
   "ball creator",
   "recrangle",
@@ -18,15 +18,14 @@ var modes = [
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
 
-  gui = createGui("Ball properties");
+  gui = createGui("Properties");
   sliderRange(3, 100, 1);
   gui.addGlobals("defaultSize");
   sliderRange(0.01, 1, 0.01);
   gui.addGlobals("k");
   sliderRange(0, 30, 0.05);
   gui.addGlobals("fc");
-  sliderRange(0, 1000, 5);
-  gui.addGlobals("springConstant");
+  gui.addGlobals("time");
 
   physics = new Physics();
   physics.setBounds(0, 0, width, height);
@@ -58,15 +57,18 @@ function draw() {
     } else if (mode === 0) line(mouseX, mouseY, lastX, lastY);
   }
 
-  if (mode == 2) {
+  mode2: if (mode == 2) {
     ellipse(mouseX, mouseY, drawThickness * 2, drawThickness * 2);
     if (mouseIsPressed) {
+      var guiBound = gui.prototype._panel.getBoundingClientRect();
+      if ((mouseX > guiBound.left && mouseX < guiBound.right) && (mouseY > guiBound.top && mouseY < guiBound.bottom)) break mode2;
       physics.addFixedBall(mouseX, mouseY, drawThickness);
     }
   }
 
   physics.draw();
 
+  if (!time) return;
   elapsedTime *= timeMultiplier;
   physics.update(elapsedTime / 5);
   physics.update(elapsedTime / 5);
@@ -77,14 +79,21 @@ function draw() {
 
 function mousePressed() {
   var guiBound = gui.prototype._panel.getBoundingClientRect();
-
-  if (mouseX < guiBound.left || mouseX > guiBound.right || mouseY < guiBound.top || mouseY > guiBound.bottom) {
-    lastX = mouseX;
-    lastY = mouseY;
+  if ((mouseX > guiBound.left && mouseX < guiBound.right) && (mouseY > guiBound.top && mouseY < guiBound.bottom)) {
+    return;
   }
+  lastX = mouseX;
+  lastY = mouseY;
 }
 
 function mouseReleased() {
+  var guiBound = gui.prototype._panel.getBoundingClientRect();
+  if ((mouseX > guiBound.left && mouseX < guiBound.right) && (mouseY > guiBound.top && mouseY < guiBound.bottom)) {
+    lastX = 0;
+    lastY = 0;
+    return;
+  }
+
   if (lastX != 0 && lastY != 0 && mode === 0) {
     let newBall = new Ball(new Vec2(lastX, lastY), new Vec2((lastX - mouseX), (lastY - mouseY)), defaultSize, k, 0, fc);
     physics.addBall(newBall);
@@ -98,11 +107,12 @@ function mouseReleased() {
 }
 
 function keyPressed() {
-  if (keyCode === 32) {
+  if (keyCode === UP_ARROW) {
     mode += 1; mode %= modes.length;
   }
-  if (keyCode === 66)//B
-    timeMultiplier *= -1;
+  if (keyCode === DOWN_ARROW) {
+    mode -= 1; mode = mode === -1 ? modes.length - 1 : mode;
+  }
 }
 
 Physics.prototype.draw = function() {
