@@ -143,6 +143,9 @@ function keyPressed() {
   if (keyCode === DOWN_ARROW) {
     mode -= 1; mode = mode === -1 ? modes.length - 1 : mode;
   }
+  if (keyCode === 83) {
+    spawnNewtonsCradle(width / 2, height / 2, 0.5, physics);
+  }
 }
 
 Physics.prototype.draw = function() {
@@ -179,4 +182,27 @@ Physics.prototype.draw = function() {
   });
 
   text("Mode: " + modes[mode], 10, 10);
+}
+
+function spawnNewtonsCradle(x, y, scale, phy) {
+  let balls = [];
+  let sticks = [];
+  let defaultR = 25;
+  let defaultStick = 250;
+  let ballNumber = 8;
+  balls.push(new Ball(new Vec2(x, y), new Vec2(0, 0), scale * defaultR, 1, 0, 0));
+  let count = 1;
+  for (let i = 0; i < ballNumber - 1; i++) {
+    balls.push(new Ball(new Vec2(x + count * scale * defaultR * 1.01 * 2, y), new Vec2(0, 0), scale * 25, 1, 0, 0));
+    count *= -1;
+    if (count > 0) count += 1;
+    if (i === ballNumber - 2) balls[balls.length - 1].vel.x = -Math.sign(count) * scale * defaultR * 8;
+  }
+  balls.forEach(ball => {
+    phy.addBall(ball);
+    let stick = new Stick(defaultStick);
+    stick.attachObject(ball);
+    stick.pinHere(ball.pos.x, ball.pos.y - defaultStick);
+    phy.addSpring(stick);
+  });
 }
