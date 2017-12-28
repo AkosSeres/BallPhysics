@@ -114,6 +114,7 @@ class Vec2 {
      * @param {number} l - The new length value.
      */
     setMag(l) {
+        if (this.length === 0) return;
         this.mult(l / this.length);
     }
 

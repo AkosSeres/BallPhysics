@@ -7,6 +7,8 @@ var mode = 0;
 var lastX = 0;
 var lastY = 0;
 var drawThickness = 30;
+var timeMultiplier = 1;
+var springConstant = 100;
 var modes = [
   "ball creator",
   "recrangle",
@@ -23,10 +25,12 @@ function setup() {
   gui.addGlobals("k");
   sliderRange(0, 30, 0.05);
   gui.addGlobals("fc");
+  sliderRange(0, 1000, 5);
+  gui.addGlobals("springConstant");
 
   physics = new Physics();
   physics.setBounds(0, 0, width, height);
-  physics.setGravity(createVector(0, 1000));
+  physics.setGravity(new Vec2(0, 1000));
 }
 
 function windowResized() {
@@ -36,7 +40,11 @@ function windowResized() {
 
 function draw() {
   background(51);
+
   var elapsedTime = 1 / frameRate();
+  if (elapsedTime == NaN) {
+    elapsedTime = 0;
+  }
 
   stroke(0);
   noFill();
@@ -59,6 +67,7 @@ function draw() {
 
   physics.draw();
 
+  elapsedTime *= timeMultiplier;
   physics.update(elapsedTime / 5);
   physics.update(elapsedTime / 5);
   physics.update(elapsedTime / 5);
@@ -76,7 +85,10 @@ function mousePressed() {
 }
 
 function mouseReleased() {
-  if (lastX != 0 && lastY != 0 && mode === 0) physics.addBall(new Ball(createVector(lastX, lastY), createVector((lastX - mouseX), (lastY - mouseY)), defaultSize, k, 0, fc));
+  if (lastX != 0 && lastY != 0 && mode === 0) {
+    let newBall = new Ball(new Vec2(lastX, lastY), new Vec2((lastX - mouseX), (lastY - mouseY)), defaultSize, k, 0, fc);
+    physics.addBall(newBall);
+  }
   if (mode === 1) {
     physics.addRectWall(lastX / 2 + mouseX / 2, lastY / 2 + mouseY / 2, 2 * Math.abs(lastX / 2 - mouseX / 2), 2 * Math.abs(lastY / 2 - mouseY / 2));
   }
@@ -87,8 +99,10 @@ function mouseReleased() {
 
 function keyPressed() {
   if (keyCode === 32) {
-    mode += 1; mode %= 3;
+    mode += 1; mode %= modes.length;
   }
+  if (keyCode === 66)//B
+    timeMultiplier *= -1;
 }
 
 Physics.prototype.draw = function() {
@@ -117,6 +131,11 @@ Physics.prototype.draw = function() {
 
   physics.fixedBalls.forEach(b => {
     ellipse(b.x, b.y, b.r * 2);
+  });
+
+  stroke("black");
+  physics.springs.forEach(element => {
+    line(element.objects[0].pos.x, element.objects[0].pos.y, element.pinned ? element.pinned.x : element.objects[1].pos.x, element.pinned ? element.pinned.y : element.objects[1].pos.y);
   });
 
   text("Mode: " + modes[mode], 10, 10);

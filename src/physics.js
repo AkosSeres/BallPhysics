@@ -7,6 +7,8 @@ class Physics {
 
     this.bounds = 0;
 
+    this.springs = [];
+
     this.fields = [];
 
     this.gravity = null;
@@ -17,15 +19,20 @@ class Physics {
 
     for (var i = 0; i < this.balls.length; i++) {
       //move
-      this.balls[i].lastPos = this.balls[i].pos.copy();
-      this.balls[i].pos.add(this.balls[i].vel.copy().mult(t));
+      this.balls[i].lastPos = this.balls[i].pos.copy;
+      this.balls[i].pos.add(Vec2.mult(this.balls[i].vel, t));
 
       //angular vel
       this.balls[i].rotation += this.balls[i].ang * t;
       this.balls[i].rotation %= (Math.PI * 2);
 
       //apply gravity
-      if (this.gravity) this.balls[i].vel.add(this.gravity.copy().mult(t));
+      if (this.gravity) this.balls[i].vel.add(Vec2.mult(this.gravity, t));
+
+      //update springs
+      this.springs.forEach(element => {
+        element.update(t);
+      });
 
       //collision
       for (var j = i + 1; j < this.balls.length; j++) {
@@ -43,7 +50,7 @@ class Physics {
         let p = new Vec2(b.x, b.y);
         p.x -= ball.pos.x; p.y -= ball.pos.y;
         p.mult(-1);
-        if (p.length <= ball.r+b.r) {
+        if (p.length <= ball.r + b.r) {
           heading = p.heading;
           rel = p.length;
         }
@@ -55,7 +62,7 @@ class Physics {
           vel.rotate(-heading + Math.PI / 2);
 
           vel.y *= -ball.k;
-          pos.y += ball.r+b.r - rel;
+          pos.y += ball.r + b.r - rel;
           let dvy = vel.y * (1 + (1 / ball.k));
           let dvx = Math.abs(dvy) * ball.fc * Math.sign(vel.x - ball.ang * ball.r) * -1;
           if (Math.abs(dvx) > Math.abs(vel.x - ball.ang * ball.r)) {
@@ -124,7 +131,7 @@ class Physics {
   }
 
   setGravity(dir) {
-    this.gravity = dir.copy();
+    this.gravity = dir.copy;
   }
 
   addBall(ball) {
@@ -146,6 +153,10 @@ class Physics {
 
   addFixedBall(x, y, r) {
     this.fixedBalls.push({x: x, y: y, r: r});
+  }
+
+  addSpring(spring) {
+    this.springs.push(spring);
   }
 
   setBounds(x, y, w, h) {
