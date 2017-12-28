@@ -15,8 +15,6 @@ class Physics {
   }
 
   update(t) {
-    this.sort(this.balls, 1, this.balls.length - 1);
-
     for (var i = 0; i < this.balls.length; i++) {
       //move
       this.balls[i].lastPos = this.balls[i].pos.copy;
@@ -165,43 +163,5 @@ class Physics {
 
   addField(field) {
     this.fields.push(field);
-  }
-
-  sort(arr, left, right) {
-    var val = (a) => {
-      let x = a.pos.x - this.bounds[0] - this.bounds[2];
-      let y = a.pos.y - this.bounds[1] - this.bounds[3];
-      return -x * this.bounds[2] - y * this.bounds[3];
-    };
-    var partition = function(array, pivot, left, right) {
-      var pivotValue = val(array[pivot]),
-        partitionIndex = left;
-
-      for (var i = left; i < right; i++) {
-        if (val(array[i]) < pivotValue) {
-          swap(array, i, partitionIndex);
-          partitionIndex++;
-        }
-      }
-      swap(array, right, partitionIndex);
-      return partitionIndex;
-    };
-    var swap = function(array, i, j) {
-      var temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-    };
-    var len = this.balls.length,
-      pivot,
-      partitionIndex;
-
-
-    if (left < right) {
-      pivot = right;
-      partitionIndex = partition(arr, pivot, left, right);
-
-      sort(arr, left, partitionIndex - 1);
-      sort(arr, partitionIndex + 1, right);
-    }
   }
 }
