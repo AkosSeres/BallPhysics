@@ -164,4 +164,13 @@ class Physics {
   addField(field) {
     this.fields.push(field);
   }
+
+  getObjectAtCoordinates(x, y) {
+    let ret = false;
+    var v = new Vec2(x, y);
+    this.balls.forEach(ball => {
+      if (ball.pos.dist(v) < ball.r) ret = ball;
+    });
+    return ret;
+  }
 }

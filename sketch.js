@@ -1,5 +1,5 @@
 var physics;
-var defaultSize = 10;
+var defaultSize = 25;
 var k = 0.5;
 var fc = 0.35;
 var gui;
@@ -9,10 +9,12 @@ var lastY = 0;
 var drawThickness = 30;
 var timeMultiplier = 1;
 var time = true;
+var choosed = false;
 var modes = [
   "ball creator",
   "recrangle",
-  "wall drawer"
+  "wall drawer",
+  "stick creator"
 ];
 
 function setup() {
@@ -23,7 +25,7 @@ function setup() {
   gui.addGlobals("defaultSize");
   sliderRange(0.01, 1, 0.01);
   gui.addGlobals("k");
-  sliderRange(0, 30, 0.05);
+  sliderRange(0, 3.5, 0.05);
   gui.addGlobals("fc");
   gui.addGlobals("time");
 
@@ -54,7 +56,7 @@ function draw() {
   if (lastX != 0 && lastY != 0) {
     if (mode === 1) {
       rect(mouseX, mouseY, lastX - mouseX, lastY - mouseY);
-    } else if (mode === 0) line(mouseX, mouseY, lastX, lastY);
+    } else if (mode === 0 || mode === 3) line(mouseX, mouseY, lastX, lastY);
   }
 
   mode2: if (mode == 2) {
@@ -82,6 +84,10 @@ function mousePressed() {
   if ((mouseX > guiBound.left && mouseX < guiBound.right) && (mouseY > guiBound.top && mouseY < guiBound.bottom)) {
     return;
   }
+  if (mode === 3) {
+    choosed = physics.getObjectAtCoordinates(mouseX, mouseY);
+    if (choosed == false) choosed = {x: mouseX, y: mouseY, pinPoint: true};
+  }
   lastX = mouseX;
   lastY = mouseY;
 }
@@ -100,6 +106,30 @@ function mouseReleased() {
   }
   if (mode === 1) {
     physics.addRectWall(lastX / 2 + mouseX / 2, lastY / 2 + mouseY / 2, 2 * Math.abs(lastX / 2 - mouseX / 2), 2 * Math.abs(lastY / 2 - mouseY / 2));
+  }
+
+  mode3: if (mode === 3) {
+    let newChoosed = physics.getObjectAtCoordinates(mouseX, mouseY);
+    let stick;
+    if (newChoosed == false) newChoosed = {x: mouseX, y: mouseY, pinPoint: true};
+    console.log(choosed, newChoosed);
+
+    if (choosed == newChoosed) break mode3;
+    else if (choosed.pinPoint && newChoosed.pinPoint) break mode3;
+    else if (choosed.pinPoint) {
+      stick = new Stick(Math.sqrt(Math.pow(choosed.x - newChoosed.pos.x, 2) + Math.pow(choosed.y - newChoosed.pos.y, 2)));
+      stick.attachObject(newChoosed);
+      stick.pinHere(choosed.x, choosed.y);
+    } else if (newChoosed.pinPoint) {
+      stick = new Stick(Math.sqrt(Math.pow(choosed.pos.x - newChoosed.x, 2) + Math.pow(choosed.pos.y - newChoosed.y, 2)));
+      stick.attachObject(choosed);
+      stick.pinHere(newChoosed.x, newChoosed.y);
+    } else {
+      stick = new Stick(Math.sqrt(Math.pow(choosed.pos.x - newChoosed.pos.x, 2) + Math.pow(choosed.pos.y - newChoosed.pos.y, 2)));
+      stick.attachObject(choosed);
+      stick.attachObject(newChoosed);
+    }
+    physics.addSpring(stick);
   }
 
   lastX = 0;
