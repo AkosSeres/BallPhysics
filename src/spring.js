@@ -44,3 +44,45 @@ class Spring {
         }
     }
 }
+
+class Stick extends Spring {
+    constructor(length) {
+        super(length);
+        this.springConstant = 0;
+    }
+
+    update(t) {
+        let p1, p2;
+        if (this.pinned && this.objects[0]) {
+            p2 = this.pinned;
+            p1 = this.objects[0];
+            let dist = new Vec2(p2.x - p1.pos.x, p2.y - p1.pos.y);
+            let dl = dist.length - this.length;
+            dist.setMag(1);
+            dist.mult(-this.length);
+            p1.pos.x = p2.x + dist.x;
+            p1.pos.y = p2.y + dist.y;
+
+            let v = p1.vel;
+            v.rotate(-dist.heading);
+            v.x = 0;
+            v.rotate(dist.heading);
+        } else if (this.objects[0] && this.objects[1]) {
+            p1 = this.objects[0];
+            p2 = this.objects[1];
+            let dist = Vec2.sub(p1.pos, p2.pos);
+            let dl = this.length - dist.length;
+            dist.setMag(1);
+            p1.pos.add(Vec2.mult(dist, dl * (p2.r * p2.r) / ((p1.r * p1.r) + (p2.r * p2.r))));
+            p2.pos.add(Vec2.mult(dist, -dl * (p1.r * p1.r) / ((p1.r * p1.r) + (p2.r * p2.r))));
+
+            let v1 = p1.vel;
+            let v2 = p2.vel;
+            v1.rotate(-dist.heading);
+            v2.rotate(-dist.heading);
+            v1.x = v2.x = (p1.r * p1.r * v1.x + p2.r * p2.r * v2.x) / ((p1.r * p1.r) + (p2.r * p2.r));
+            v1.rotate(dist.heading);
+            v2.rotate(dist.heading);
+        }
+    }
+}
