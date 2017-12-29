@@ -65,7 +65,7 @@ class LineSegment {
                     segment1.a.x >= segment2.b.x)) {
                 let h = a2 * segment1.a.x + c2;
                 if ((h > segment1.a.y && h < segment1.b.y) ||
-                    (h < segment1.a.y && h > segment1.b.y)) return true;
+                    (h < segment1.a.y && h > segment1.b.y)) return new Vec2(segment1.a.x, h);
             }
             return false;
         }
@@ -76,27 +76,26 @@ class LineSegment {
                     segment2.a.x >= segment1.b.x)) {
                 let h = a1 * segment2.a.x + c1;
                 if ((h > segment2.a.y && h < segment2.b.y) ||
-                    (h < segment2.a.y && h > segment2.b.y)) return true;
+                    (h < segment2.a.y && h > segment2.b.y)) return new Vec2(segment2.a.x, h);
             }
             return false;
         }
         if (v1.x === 0 && v2.x === 0) {
             if (segment1.a.x === segment2.a.x) {
-                if (segment1.a.y >= segment2.a.y &&
-                    segment1.a.y <= segment2.b.y) return true;
-                if (segment1.b.y >= segment2.a.y &&
-                    segment1.b.y <= segment2.b.y) return true;
-                if (segment1.a.y <= segment2.a.y &&
-                    segment1.a.y >= segment2.b.y) return true;
-                if (segment1.b.y <= segment2.a.y &&
-                    segment1.b.y >= segment2.b.y) return true;
+                let interval1 = (segment1.a.y < segment1.b.y) ?
+                    [segment1.a.y, segment1.b.y] : [segment1.b.y, segment1.a.y];
+                let interval2 = (segment2.a.y < segment2.b.y) ?
+                    [segment2.a.y, segment2.b.y] : [segment2.b.y, segment2.a.y];
+                let interval = [(interval1[0] > interval2[0]) ?
+                    interval1[0] : interval2[0],
+                (interval1[1] < interval2[1]) ?
+                    interval1[1] : interval2[1]];
+                if (interval[0] <= interval[1]) return new Vec2(segment1.a.x, (interval[0] + interval[1]) / 2);
+
             }
             return false;
         }
 
-        // If they are parralel the only time they intersect is when c1 == c2.
-        if ((a1 - a2) == 0) return c1 == c2;
-        let x = (c2 - c1) / (a1 - a2);
         let interval1 = (segment1.a.x < segment1.b.x) ?
             [segment1.a.x, segment1.b.x] : [segment1.b.x, segment1.a.x];
         let interval2 = (segment2.a.x < segment2.b.x) ?
@@ -105,7 +104,11 @@ class LineSegment {
             interval1[0] : interval2[0],
         (interval1[1] < interval2[1]) ?
             interval1[1] : interval2[1]];
-        if (x >= interval[0] && x <= interval[1]) return true;
+        // If they are parralel the only time they intersect is when c1 == c2.
+        if ((a1 === a2) && c1 === c2 && interval[0] <= interval[1])
+            return new Vec2((interval[0] + interval[1]) / 2, ((interval[0] + interval[1]) / 2) * a1 + c1);
+        let x = (c2 - c1) / (a1 - a2);
+        if (x >= interval[0] && x <= interval[1]) return new Vec2(x, x * a1 + c1);
         else return false;
     }
 };
