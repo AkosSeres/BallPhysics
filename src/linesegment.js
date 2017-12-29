@@ -15,7 +15,7 @@ class LineSegment {
      * @return {number} The length.
      */
     get length() {
-        return Vec.dist(this.a, this.b);
+        return Vec2.dist(this.a, this.b);
     }
 
     /**
@@ -24,15 +24,15 @@ class LineSegment {
      * @return {number} The distance.
      */
     distFromPoint(p) {
-        let e = Vec.sub(this.a, this.b);
-        let A = Vec.sub(p, this.b);
-        let B = Vec.sub(p, this.a);
+        let e = Vec2.sub(this.a, this.b);
+        let A = Vec2.sub(p, this.b);
+        let B = Vec2.sub(p, this.a);
         let a = A.length;
         let b = B.length;
         let c = e.length;
         if (c === 0) return a;
-        let gamma = Vec.angle(A, B);
-        let betha = Vec.angle(A, e);
+        let gamma = Vec2.angle(A, B);
+        let betha = Vec2.angle(A, e);
         let alpha = Math.PI - gamma - betha;
         let area = Math.sin(alpha) * b * c / 2;
         let m = 2 * area / c;
@@ -50,11 +50,11 @@ class LineSegment {
      * @return {Boolean} If they intersect or not.
      */
     static intersect(segment1, segment2) {
-        let v1 = Vec.sub(segment1.b, segment1.a);
+        let v1 = Vec2.sub(segment1.b, segment1.a);
         let a1 = v1.y / v1.x;
         let c1 = segment1.b.y - (segment1.b.x * a1);
 
-        let v2 = Vec.sub(segment2.b, segment2.a);
+        let v2 = Vec2.sub(segment2.b, segment2.a);
         let a2 = v2.y / v2.x;
         let c2 = segment2.b.y - (segment2.b.x * a2);
 
