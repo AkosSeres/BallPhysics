@@ -1,6 +1,7 @@
 class Physics {
   constructor() {
     this.balls = [];
+    this.bodies = [];
     this.fixedBalls = [];
 
     this.walls = [];
@@ -15,7 +16,7 @@ class Physics {
   }
 
   update(t) {
-    for (var i = 0; i < this.balls.length; i++) {
+    for (let i = 0; i < this.balls.length; i++) {
       //move
       this.balls[i].lastPos = this.balls[i].pos.copy;
       this.balls[i].pos.add(Vec2.mult(this.balls[i].vel, t));
@@ -25,15 +26,10 @@ class Physics {
       this.balls[i].rotation %= (Math.PI * 2);
 
       //apply gravity
-      if (this.gravity) this.balls[i].vel.add(Vec2.mult(this.gravity, t));
-
-      //update springs
-      this.springs.forEach(element => {
-        element.update(t);
-      });
+      if (this.gravity) this.balls[i].vel.add(new Vec2(this.gravity.x * t, this.gravity.y * t));
 
       //collision
-      for (var j = i + 1; j < this.balls.length; j++) {
+      for (let j = i + 1; j < this.balls.length; j++) {
         Ball.collide(this.balls[i], this.balls[j]);
       }
 
@@ -66,8 +62,8 @@ class Physics {
           if (Math.abs(dvx) > Math.abs(vel.x - ball.ang * ball.r)) {
             dvx = -vel.x + ball.ang * ball.r;
           }
-          vel.x += dvx - dvx / (ball.am + 1);
-          ball.ang -= dvx / ((ball.am + 1) * ball.r);
+          vel.x += dvx - ball.r * ball.r * ball.m * dvx / (ball.am + ball.r * ball.r * ball.m);
+          ball.ang -= ball.r * ball.r * ball.m * dvx / ((ball.am + ball.r * ball.r * ball.m) * ball.r);
           pos.rotate(heading - Math.PI / 2);
           vel.rotate(heading - Math.PI / 2);
           ball.pos.x = pos.x; ball.pos.y = pos.y;
@@ -86,8 +82,8 @@ class Physics {
           if (Math.abs(dvy) > Math.abs(ball.vel.y + ball.ang * ball.r)) {
             dvy = -ball.vel.y - ball.ang * ball.r;
           }
-          ball.vel.y += dvy - dvy / (ball.am + 1);
-          ball.ang += dvy / ((ball.am + 1) * ball.r);
+          ball.vel.y += dvy - ball.r * ball.r * ball.m * dvy / (ball.am + ball.r * ball.r * ball.m);
+          ball.ang += ball.r * ball.r * ball.m * dvy / ((ball.am + ball.r * ball.r * ball.m) * ball.r);
 
         } else if (this.balls[i].pos.x + this.balls[i].r > (this.bounds[0] + this.bounds[2])) {
           let ball = this.balls[i];
@@ -98,8 +94,8 @@ class Physics {
           if (Math.abs(dvy) > Math.abs(ball.vel.y - ball.ang * ball.r)) {
             dvy = -ball.vel.y + ball.ang * ball.r;
           }
-          ball.vel.y += dvy + dvy / (ball.am + 1);
-          ball.ang -= dvy / ((ball.am + 1) * ball.r);
+          ball.vel.y += dvy + ball.r * ball.r * ball.m * dvy / (ball.am + ball.r * ball.r * ball.m);
+          ball.ang -= ball.r * ball.r * ball.m * dvy / ((ball.am + ball.r * ball.r * ball.m) * ball.r);
         }
         if (this.balls[i].pos.y + this.balls[i].r > (this.bounds[1] + this.bounds[3])) {
           let ball = this.balls[i];
@@ -110,8 +106,8 @@ class Physics {
           if (Math.abs(dvx) > Math.abs(ball.vel.x + ball.ang * ball.r)) {
             dvx = -ball.vel.x - ball.ang * ball.r;
           }
-          ball.vel.x += dvx - dvx / (ball.am + 1);
-          ball.ang += dvx / ((ball.am + 1) * ball.r);
+          ball.vel.x += dvx - ball.r * ball.r * ball.m * dvx / (ball.am + ball.r * ball.r * ball.m);
+          ball.ang += ball.r * ball.r * ball.m * dvx / ((ball.am + ball.r * ball.r * ball.m) * ball.r);
         } else if (this.balls[i].pos.y - this.balls[i].r < this.bounds[1]) {
           let ball = this.balls[i];
           ball.vel.y *= -ball.k;
@@ -121,10 +117,36 @@ class Physics {
           if (Math.abs(dvx) > Math.abs(ball.vel.x - ball.ang * ball.r)) {
             dvx = -ball.vel.x + ball.ang * ball.r;
           }
-          ball.vel.x += dvx + dvx / (ball.am + 1);
-          ball.ang -= dvx / ((ball.am + 1) * ball.r);
+          ball.vel.x += dvx + ball.r * ball.r * ball.m * dvx / (ball.am + ball.r * ball.r * ball.m);
+          ball.ang -= ball.r * ball.r * ball.m * dvx / ((ball.am + ball.r * ball.r * ball.m) * ball.r);
         }
       }
+    }
+
+    for (let i = 0; i < this.bodies.length; i++) {
+      this.balls.forEach(ball => {
+        this.bodies[i].collideWithBall(ball);
+      });
+
+      for (let j = i + 1; j < this.bodies.length; j++) {
+        Body.collide(this.bodies[i], this.bodies[j]);
+      }
+
+      this.bodies[i].lastPos = this.bodies[i].pos.copy;
+      this.bodies[i].move(this.bodies[i].vel.x * t, this.bodies[i].vel.y * t);
+      this.bodies[i].rotate(this.bodies[i].ang * t);
+
+      //apply gravity
+      if (this.gravity) {
+        this.bodies[i].vel.add(new Vec2(this.gravity.x * t, this.gravity.y * t));
+      }
+    }
+
+    //update springs
+    for (let i = 0; i < this.springs.length; i++) {
+      this.springs.forEach(element => {
+        element.update(t);
+      });
     }
   }
 
@@ -136,6 +158,10 @@ class Physics {
     this.balls.push(ball);
   }
 
+  addBody(body) {
+    this.bodies.push(body);
+  }
+
   addRectWall(x, y, w, h) {
     let points = [];
     points.push({x: x - w / 2, y: y - h / 2});
@@ -143,6 +169,7 @@ class Physics {
     points.push({x: x + w / 2, y: y + h / 2});
     points.push({x: x - w / 2, y: y + h / 2});
     this.walls.push(new Wall(points));
+    //this.bodies.push(new Body(points, new Vec2(0, 0), 0.5, 0, 0.3));
   }
 
   addWall(wall) {

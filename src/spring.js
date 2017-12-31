@@ -29,7 +29,7 @@ class Spring {
             let dist = new Vec2(p2.x - p1.pos.x, p2.y - p1.pos.y);
             let dl = dist.length - this.length;
             dist.setMag(1);
-            dist.mult(dl * this.springConstant * t / (p1.r * p1.r));
+            dist.mult(dl * this.springConstant * t / (p1.m));
             p1.vel.x += dist.x;
             p1.vel.y += dist.y;
         } else if (this.objects[0] && this.objects[1]) {
@@ -39,8 +39,8 @@ class Spring {
             let dl = dist.length - this.length;
             dist.setMag(1);
             dist.mult(dl * this.springConstant * t);
-            p2.vel.add(Vec2.div(dist, p2.r * p2.r));
-            p1.vel.add(Vec2.div(dist, -p1.r * p1.r));
+            p2.vel.add(Vec2.div(dist, p2.m));
+            p1.vel.add(Vec2.div(dist, -p1.m));
         }
     }
 }
@@ -73,14 +73,14 @@ class Stick extends Spring {
             let dist = Vec2.sub(p1.pos, p2.pos);
             let dl = this.length - dist.length;
             dist.setMag(1);
-            p1.pos.add(Vec2.mult(dist, dl * (p2.r * p2.r) / ((p1.r * p1.r) + (p2.r * p2.r))));
-            p2.pos.add(Vec2.mult(dist, -dl * (p1.r * p1.r) / ((p1.r * p1.r) + (p2.r * p2.r))));
+            p1.pos.add(Vec2.mult(dist, dl * (p2.m) / ((p1.m) + (p2.m))));
+            p2.pos.add(Vec2.mult(dist, -dl * (p1.m) / ((p1.m) + (p2.m))));
 
             let v1 = p1.vel;
             let v2 = p2.vel;
             v1.rotate(-dist.heading);
             v2.rotate(-dist.heading);
-            v1.x = v2.x = (p1.r * p1.r * v1.x + p2.r * p2.r * v2.x) / ((p1.r * p1.r) + (p2.r * p2.r));
+            v1.x = v2.x = (p1.m * v1.x + p2.m * v2.x) / ((p1.m) + (p2.m));
             v1.rotate(dist.heading);
             v2.rotate(dist.heading);
         }

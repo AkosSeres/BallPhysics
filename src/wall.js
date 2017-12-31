@@ -68,8 +68,8 @@ class Wall {
             if (Math.abs(dvx) > Math.abs(vel.x - ball.ang * ball.r)) {
                 dvx = -vel.x + ball.ang * ball.r;
             }
-            vel.x += dvx - dvx / (ball.am + 1);
-            ball.ang -= dvx / ((ball.am + 1) * ball.r);
+            vel.x += dvx - ball.r * ball.r * ball.m * dvx / (ball.am + ball.r * ball.r * ball.m);
+            ball.ang -= ball.r * ball.r * ball.m * dvx / ((ball.am + ball.r * ball.r * ball.m) * ball.r);
             pos.rotate(heading - Math.PI / 2);
             vel.rotate(heading - Math.PI / 2);
             ball.pos.x = pos.x; ball.pos.y = pos.y;
