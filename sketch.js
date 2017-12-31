@@ -16,6 +16,7 @@ var modes = [
   "wall drawer",
   "stick creator"
 ];
+var left = false, right = false;
 
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
@@ -71,6 +72,12 @@ function draw() {
   physics.draw();
 
   if (!time) return;
+
+  if (physics.balls[0]) {
+    if (right) physics.balls[0].ang -= Math.PI * 100 * elapsedTime;
+    if (left) physics.balls[0].ang += Math.PI * 100 * elapsedTime;
+  }
+
   elapsedTime *= timeMultiplier;
   physics.update(elapsedTime / 5);
   physics.update(elapsedTime / 5);
@@ -112,7 +119,6 @@ function mouseReleased() {
     let newChoosed = physics.getObjectAtCoordinates(mouseX, mouseY);
     let stick;
     if (newChoosed == false) newChoosed = {x: mouseX, y: mouseY, pinPoint: true};
-    console.log(choosed, newChoosed);
 
     if (choosed == newChoosed) break mode3;
     else if (choosed.pinPoint && newChoosed.pinPoint) break mode3;
@@ -146,6 +152,25 @@ function keyPressed() {
   if (keyCode === 83) {
     spawnNewtonsCradle(width / 2, height / 2, 0.5, physics);
   }
+  // Right arrow
+  if (keyCode === 39) {
+    right = true;
+  }
+  // Left arrow
+  if (keyCode === 37) {
+    left = true;
+  }
+}
+
+function keyReleased() {
+  // Right arrow
+  if (keyCode === 39) {
+    right = false;
+  }
+  // Left arrow
+  if (keyCode === 37) {
+    left = false;
+  }
 }
 
 Physics.prototype.draw = function() {
@@ -161,10 +186,17 @@ Physics.prototype.draw = function() {
     pop();
   }
 
+  physics.bodies.forEach(element => {
+    beginShape();
+    element.points.forEach((p) => {
+      vertex(p.x, p.y);
+    });
+    endShape(CLOSE);
+  });
+
   noStroke();
   fill("#ff000055");
   physics.walls.forEach(element => {
-    rect(element.x - element.w / 2, element.y - element.h / 2, element.w, element.h);
     beginShape();
     element.points.forEach((p) => {
       vertex(p.x, p.y);
