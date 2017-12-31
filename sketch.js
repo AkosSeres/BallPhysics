@@ -8,6 +8,7 @@ var lastX = 0;
 var lastY = 0;
 var drawThickness = 30;
 var timeMultiplier = 1;
+var lockRotation = false;
 var time = true;
 var choosed = false;
 var modes = [
@@ -29,6 +30,7 @@ function setup() {
   sliderRange(0, 3.5, 0.05);
   gui.addGlobals("fc");
   gui.addGlobals("time");
+  gui.addGlobals("lockRotation");
 
   physics = new Physics();
   physics.setBounds(0, 0, width, height);
@@ -136,6 +138,8 @@ function mouseReleased() {
       stick.attachObject(newChoosed);
     }
     physics.addSpring(stick);
+    if (lockRotation)
+      stick.lockRotation();
   }
 
   lastX = 0;
@@ -236,5 +240,6 @@ function spawnNewtonsCradle(x, y, scale, phy) {
     stick.attachObject(ball);
     stick.pinHere(ball.pos.x, ball.pos.y - defaultStick);
     phy.addSpring(stick);
+    stick.lockRotation();
   });
 }
