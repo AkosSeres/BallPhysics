@@ -371,6 +371,7 @@ class Body {
         let matches = 0;
         let heading = 0;
         let cp = new Vec2(0, 0);
+        let cps = [];
         let intersect = false;
         b1.points.forEach((p, idx) => {
             let side1 = new LineSegment(new Vec2(p.x, p.y), new Vec2(b1.points[(idx + 1) % b1.points.length].x, b1.points[(idx + 1) % b1.points.length].y));
@@ -380,23 +381,30 @@ class Body {
                 if (sect) {
                     matches++;
                     cp.add(sect);
+                    cps.push(sect);
                     intersect = true;
 
                     let v1 = Vec2.sub(side1.b, side1.a);
                     let v2 = Vec2.sub(side2.b, side2.a);
-                    heading += v1.heading + v2.heading;
                 }
             });
         });
 
         if (!intersect) return;
         cp.div(matches);
-        heading /= matches * 2;
+
+        for (let i = 0; i < matches / 2; i++) {
+            heading += Vec2.sub(cps[2 * i + 1], cps[2 * i]).heading;
+        }
+        heading /= matches / 2;
+        heading += Math.PI / 2;
 
         let a = Vec2.fromAngle(heading);
         a.mult(-30);
         stroke("red");
         line(cp.x, cp.y, cp.x + a.x, cp.y + a.y);
+
+        return;
 
         let v1 = b1.vel.copy;
         let v2 = b2.vel.copy;
@@ -485,8 +493,5 @@ class Body {
 
         b1.ang = ang1;
         b2.ang = ang2;
-
-        b1.pos = b1.lastPos.copy;
-        b2.pos = b2.lastPos.copy;
     }
 }
