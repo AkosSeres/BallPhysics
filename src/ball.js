@@ -4,7 +4,7 @@ class Ball {
     this.lastPos = this.pos.copy;
     this.r = r;
     this.fc = 0.4;//coefficient of friction
-    this.am = 2 / 5;//angular mass (am*m*r*r)
+    this.amc = 2 / 5;//angular mass coefficient
 
     this.rotation = 0;
 
@@ -18,6 +18,19 @@ class Ball {
 
     if (vel != undefined) this.vel = vel.copy;
     else this.vel = new Vec2(0, 0);
+  }
+
+  get m() {
+    return this.r * this.r * Math.PI;
+  }
+
+  get am() {
+    return this.amc * this.m * this.r * this.r;
+  }
+
+  move(x, y) {
+    this.pos.x += x;
+    this.pos.y += y;
   }
 
   collided(ball) {
@@ -139,8 +152,8 @@ class Ball {
       if (Math.abs(dv1p) > Math.abs(p1.x - ball1.ang * r1 - vk)) {dv1p = -p1.x + ball1.ang * r1 + vk;}
       let dv2p = -dv2n * fc * Math.sign(p2.x + ball2.ang * r2 - vk);
       if (Math.abs(dv2p) > Math.abs(p2.x + ball2.ang * r2 - vk)) {dv2p = -p2.x - ball2.ang * r2 + vk;}
-      let dv1 = new Vec2(dv1p + dv1p / (ball1.am + 1), 0);
-      let dv2 = new Vec2(dv2p - dv2p / (ball2.am + 1), 0);
+      let dv1 = new Vec2(dv1p + ball1.r * ball1.r * ball1.m * dv1p / (ball1.am + ball1.r * ball1.r * ball1.m), 0);
+      let dv2 = new Vec2(dv2p - ball2.r * ball2.r * ball2.m * dv2p / (ball2.am + ball2.r * ball2.r * ball2.m), 0);
       dv1.rotate(rot - Math.PI / 2);
       dv2.rotate(rot - Math.PI / 2);
 
@@ -150,8 +163,8 @@ class Ball {
       ball1.vel = Vec2.add(v1n, v1p);
       ball2.vel = Vec2.add(v2n, v2p);
 
-      ball1.ang -= dv1p / ((ball1.am + 1) * r1);
-      ball2.ang += dv2p / ((ball2.am + 1) * r2);
+      ball1.ang -= ball1.r * ball1.r * ball1.m * dv1p / ((ball1.am + ball1.r * ball1.r * ball1.m) * r1);
+      ball2.ang += ball1.r * ball1.r * ball1.m * dv2p / ((ball2.am + ball2.r * ball2.r * ball2.m) * r2);
       ball1.vel.x += dv1.x;
       ball1.vel.y += dv1.y;
       ball2.vel.x += dv2.x;
