@@ -16,6 +16,13 @@ class Physics {
   }
 
   update(t) {
+    //update springs
+    for (let i = 0; i < this.springs.length; i++) {
+      this.springs.forEach(element => {
+        element.update(t);
+      });
+    }
+
     for (let i = 0; i < this.balls.length; i++) {
       //move
       this.balls[i].lastPos = this.balls[i].pos.copy;
@@ -30,7 +37,8 @@ class Physics {
 
       //collision
       for (let j = i + 1; j < this.balls.length; j++) {
-        Ball.collide(this.balls[i], this.balls[j]);
+        if (this.balls[i].group != this.balls[j].group || !this.balls[i].group && !this.balls[j].group)
+          Ball.collide(this.balls[i], this.balls[j]);
       }
 
       //collision with walls
@@ -125,11 +133,13 @@ class Physics {
 
     for (let i = 0; i < this.bodies.length; i++) {
       this.balls.forEach(ball => {
-        this.bodies[i].collideWithBall(ball);
+        if (ball.group != this.bodies[i].group || (!ball.group && !this.bodies[i].group))
+          this.bodies[i].collideWithBall(ball);
       });
 
       for (let j = i + 1; j < this.bodies.length; j++) {
-        Body.collide(this.bodies[i], this.bodies[j]);
+        if (this.bodies[i].group != this.bodies[j].group || (!this.bodies[j].group && !this.bodies[i].group))
+          Body.collide(this.bodies[i], this.bodies[j]);
       }
 
       this.bodies[i].lastPos = this.bodies[i].pos.copy;
