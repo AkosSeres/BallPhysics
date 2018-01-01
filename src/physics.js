@@ -10,8 +10,6 @@ class Physics {
 
     this.springs = [];
 
-    this.fields = [];
-
     this.gravity = null;
   }
 
