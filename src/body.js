@@ -404,8 +404,6 @@ class Body {
         stroke("red");
         line(cp.x, cp.y, cp.x + a.x, cp.y + a.y);
 
-        return;
-
         let v1 = b1.vel.copy;
         let v2 = b2.vel.copy;
         let ang1 = b1.ang;
@@ -437,13 +435,16 @@ class Body {
         vk1.rotate(-heading);
         vk2.rotate(-heading);
 
-        let pk1 = am1 / r1.length;
-        let pk2 = am2 / r2.length;
+        let pk1 = am1 / r1.length / r1.length;
+        let pk2 = am2 / r2.length / r2.length;
 
         let dvk1vx = (1 + k) * (pk1 * vk1.x + pk2 * vk2.x) / (pk1 + pk2) - (k + 1) * vk1.x;
         let dvk2vx = (1 + k) * (pk1 * vk1.x + pk2 * vk2.x) / (pk1 + pk2) - (k + 1) * vk2.x;
 
         let vkk = (am1 * vk1.y / r1.length + am2 * vk2.y / r2.length) / (am1 / r1.length + am2 / r2.length);
+        let vk = (v1.y * m1 + v2.y * m2) / (m1 + m2);
+        vkk += vk;
+        vk = vkk;
 
         let dvk1vy = -Math.sign(vk1.y) * fc * dvk1vx;
         let dvk2vy = -Math.sign(vk2.y) * fc * dvk2vx;
@@ -453,8 +454,6 @@ class Body {
 
         let dv1vx = (1 + k) * (m1 * v1.x + m2 * v2.x) / (m1 + m2) - (k + 1) * v1.x;
         let dv2vx = (1 + k) * (m1 * v1.x + m2 * v2.x) / (m1 + m2) - (k + 1) * v2.x;
-
-        let vk = (v1.y * m1 + v2.y * m2) / (m1 + m2);
 
         let dv1vy = -Math.sign(v1.y) * fc * dv1vx;
         let dv2vy = -Math.sign(v2.y) * fc * dv2vx;
