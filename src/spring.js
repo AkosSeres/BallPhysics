@@ -52,9 +52,9 @@ class Spring {
                 let am = r2.length * r2.length * p1.m + p1.am;
                 let ang = (p1.am * p1.ang - r2.length * p1.m * (v.y)) / (am);
 
-                v.y = ang * r2.length;
+                v.y = -ang * r2.length;
 
-                p1.ang = -ang;
+                p1.ang = ang;
             }
             v.rotate(dist.heading);
         } else if (this.objects[0] && this.objects[1]) {
@@ -123,9 +123,9 @@ class Stick extends Spring {
                 let am = r2.length * r2.length * p1.m + p1.am;
                 let ang = (p1.am * p1.ang - r2.length * p1.m * (v.y)) / (am);
 
-                v.y = ang * r2.length;
+                v.y = -ang * r2.length;
 
-                p1.ang = -ang;
+                p1.ang = ang;
             }
 
             v.rotate(dist.heading);
