@@ -63,7 +63,7 @@ function draw() {
   if (lastX != 0 && lastY != 0) {
     if (mode === 1) {
       rect(mouseX, mouseY, lastX - mouseX, lastY - mouseY);
-    } else if (mode === 0 || mode === 3) line(mouseX, mouseY, lastX, lastY);
+    } else if (mode === 0 || mode === 3 || mode === 4) line(mouseX, mouseY, lastX, lastY);
   }
 
   mode2: if (mode == 2) {
