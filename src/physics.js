@@ -14,10 +14,10 @@ class Physics {
   }
 
   update(t) {
-    //update springs
+    //update springs multiple times
     for (let i = 0; i < this.springs.length; i++) {
       this.springs.forEach(element => {
-        element.update(t);
+        element.update(t / this.springs.length / 2);
       });
     }
 
@@ -150,10 +150,10 @@ class Physics {
       }
     }
 
-    //update springs
+    //update springs again multiple times
     for (let i = 0; i < this.springs.length; i++) {
       this.springs.forEach(element => {
-        element.update(t);
+        element.update(t / this.springs.length / 2);
       });
     }
   }
