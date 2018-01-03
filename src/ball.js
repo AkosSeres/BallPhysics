@@ -57,8 +57,19 @@ class Ball {
       var dist = Vec2.dist(pos1, pos2);
       var lastDist = Vec2.dist(lPos1, lPos2);
       var fc = (ball1.fc + ball2.fc) / 2;
+      
+      var cp1 = pos1.copy;
+      var cp2 = pos2.copy;
+      let too = r1 + r2 - dist;
+      var d = Vec2.sub(pos1, pos2);
+      d.setMag(1);
+      d.mult(too * m2 / (m1 + m2));
+      cp1.add(d);
+      d.setMag(1);
+      d.mult(-too * m1 / (m1 + m2));
+      cp2.add(d);
 
-      while (lastDist < rSum) {
+      while (lastDist < rSum && false) {
         var d1 = Vec2.sub(pos1, pos2);
         var randVec = new Vec2(0, 1);
         randVec.rotate(Math.random() * Math.PI * 2);
@@ -90,17 +101,6 @@ class Ball {
 
         return;
       }
-
-      var cp1 = pos1.copy;
-      var cp2 = pos2.copy;
-      let too = r1 + r2 - dist;
-      var d = Vec2.sub(pos1, pos2);
-      d.setMag(1);
-      d.mult(too * m2 / (m1 + m2));
-      cp1.add(d);
-      d.setMag(1);
-      d.mult(-too * m1 / (m1 + m2));
-      cp2.add(d);
 
       ball1.pos = cp1;
       ball2.pos = cp2;
