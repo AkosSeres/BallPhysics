@@ -2,6 +2,7 @@ var physics;
 var defaultSize = 25;
 var k = 0.5;
 var fc = 0.35;
+var springConstant = 2000;
 var gui;
 var mode = 0;
 var lastX = 0;
@@ -15,7 +16,8 @@ var modes = [
   "ball creator",
   "recrangle",
   "wall drawer",
-  "stick creator"
+  "stick creator",
+  "spring creator"
 ];
 var left = false, right = false;
 
@@ -29,6 +31,8 @@ function setup() {
   gui.addGlobals("k");
   sliderRange(0, 3.5, 0.05);
   gui.addGlobals("fc");
+  sliderRange(0, 1000000, 1000);
+  gui.addGlobals("springConstant");
   gui.addGlobals("time");
   gui.addGlobals("lockRotation");
 
@@ -93,7 +97,7 @@ function mousePressed() {
   if ((mouseX > guiBound.left && mouseX < guiBound.right) && (mouseY > guiBound.top && mouseY < guiBound.bottom)) {
     return;
   }
-  if (mode === 3) {
+  if (mode === 3 || mode === 4) {
     choosed = physics.getObjectAtCoordinates(mouseX, mouseY);
     if (choosed == false) choosed = {x: mouseX, y: mouseY, pinPoint: true};
   }
@@ -117,23 +121,24 @@ function mouseReleased() {
     physics.addRectWall(lastX / 2 + mouseX / 2, lastY / 2 + mouseY / 2, 2 * Math.abs(lastX / 2 - mouseX / 2), 2 * Math.abs(lastY / 2 - mouseY / 2));
   }
 
-  mode3: if (mode === 3) {
+  mode3: if (mode === 3 || mode === 4) {
     let newChoosed = physics.getObjectAtCoordinates(mouseX, mouseY);
     let stick;
+    const newThing = mode === 3 ? Stick : Spring;
     if (newChoosed == false) newChoosed = {x: mouseX, y: mouseY, pinPoint: true};
 
     if (choosed == newChoosed) break mode3;
     else if (choosed.pinPoint && newChoosed.pinPoint) break mode3;
     else if (choosed.pinPoint) {
-      stick = new Stick(Math.sqrt(Math.pow(choosed.x - newChoosed.pos.x, 2) + Math.pow(choosed.y - newChoosed.pos.y, 2)));
+      stick = new newThing(Math.sqrt(Math.pow(choosed.x - newChoosed.pos.x, 2) + Math.pow(choosed.y - newChoosed.pos.y, 2)), springConstant);
       stick.attachObject(newChoosed);
       stick.pinHere(choosed.x, choosed.y);
     } else if (newChoosed.pinPoint) {
-      stick = new Stick(Math.sqrt(Math.pow(choosed.pos.x - newChoosed.x, 2) + Math.pow(choosed.pos.y - newChoosed.y, 2)));
+      stick = new newThing(Math.sqrt(Math.pow(choosed.pos.x - newChoosed.x, 2) + Math.pow(choosed.pos.y - newChoosed.y, 2)), springConstant);
       stick.attachObject(choosed);
       stick.pinHere(newChoosed.x, newChoosed.y);
     } else {
-      stick = new Stick(Math.sqrt(Math.pow(choosed.pos.x - newChoosed.pos.x, 2) + Math.pow(choosed.pos.y - newChoosed.pos.y, 2)));
+      stick = new newThing(Math.sqrt(Math.pow(choosed.pos.x - newChoosed.pos.x, 2) + Math.pow(choosed.pos.y - newChoosed.pos.y, 2)), springConstant);
       stick.attachObject(choosed);
       stick.attachObject(newChoosed);
     }
@@ -211,12 +216,46 @@ Physics.prototype.draw = function() {
   physics.fixedBalls.forEach(b => {
     ellipse(b.x, b.y, b.r * 2);
   });
+  push();
+  strokeWeight(2);
+  stroke("#ADD8E6");
+  fill("#ADD8E6");
+  physics.springs.forEach(element => {
+    if (element instanceof Spring && !(element instanceof Stick)) {
+      let x1, y1;
+      let x2, y2;
+      if (element.pinned) {
+        x1 = element.pinned.x; y1 = element.pinned.y;
+        x2 = element.objects[0].pos.x; y2 = element.objects[0].pos.y;
+      }
+      else {
+        x1 = element.objects[0].pos.x; y1 = element.objects[0].pos.y;
+        x2 = element.objects[1].pos.x; y2 = element.objects[1].pos.y;
+      }
+      let v = new Vec2(x2 - x1, y2 - y1);
+      let c = v.copy;
+      v.rotate(Math.PI / 2);
+      v.setMag(5);
+      let last = new Vec2(x1, y1);
+      let num = Math.floor(element.length / 10);
+      for (let i = 1; i <= num; i++) {
+        if (i === num) v = new Vec2(0, 0);
+        line(last.x, last.y, x1 + i / num * c.x + v.x, y1 + i / num * c.y + v.y);
+        last = new Vec2(x1 + i / num * c.x + v.x, y1 + i / num * c.y + v.y);
+        v.mult(-1);
+      }
+    } else {
+      line(element.objects[0].pos.x, element.objects[0].pos.y, element.pinned ? element.pinned.x : element.objects[1].pos.x, element.pinned ? element.pinned.y : element.objects[1].pos.y);
+    }
+    element.objects.forEach(o => {
+      ellipse(o.pos.x, o.pos.y, 5);
+    });
+    if (element.pinned) ellipse(element.pinned.x, element.pinned.y, 6);
+  });
+  pop();
 
   stroke("black");
-  physics.springs.forEach(element => {
-    line(element.objects[0].pos.x, element.objects[0].pos.y, element.pinned ? element.pinned.x : element.objects[1].pos.x, element.pinned ? element.pinned.y : element.objects[1].pos.y);
-  });
-
+  fill("white");
   text("Mode: " + modes[mode], 10, 10);
 }
 
