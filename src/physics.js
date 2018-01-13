@@ -14,13 +14,7 @@ class Physics {
   }
 
   update(t) {
-    //update springs multiple times
-    for (let i = 0; i < this.springs.length; i++) {
-      this.springs.forEach(element => {
-        element.update(t / this.springs.length / 2);
-      });
-    }
-
+    // at first move objets
     for (let i = 0; i < this.balls.length; i++) {
       //move
       this.balls[i].lastPos = this.balls[i].pos.copy;
@@ -29,7 +23,21 @@ class Physics {
       //angular vel
       this.balls[i].rotation += this.balls[i].ang * t;
       this.balls[i].rotation %= (Math.PI * 2);
+    }
+    for (let i = 0; i < this.bodies.length; i++) {
+      this.bodies[i].lastPos = this.bodies[i].pos.copy;
+      this.bodies[i].move(this.bodies[i].vel.x * t, this.bodies[i].vel.y * t);
+      this.bodies[i].rotate(this.bodies[i].ang * t);
+    }
 
+    //update springs multiple times
+    for (let i = 0; i < this.springs.length; i++) {
+      this.springs.forEach(element => {
+        element.update(t / this.springs.length / 2);
+      });
+    }
+
+    for (let i = 0; i < this.balls.length; i++) {
       //apply gravity
       if (this.gravity) this.balls[i].vel.add(new Vec2(this.gravity.x * t, this.gravity.y * t));
 
@@ -139,10 +147,6 @@ class Physics {
         if (this.bodies[i].group != this.bodies[j].group || (!this.bodies[j].group && !this.bodies[i].group))
           Body.collide(this.bodies[i], this.bodies[j]);
       }
-
-      this.bodies[i].lastPos = this.bodies[i].pos.copy;
-      this.bodies[i].move(this.bodies[i].vel.x * t, this.bodies[i].vel.y * t);
-      this.bodies[i].rotate(this.bodies[i].ang * t);
 
       //apply gravity
       if (this.gravity) {
