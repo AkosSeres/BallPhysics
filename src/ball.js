@@ -28,6 +28,13 @@ class Ball {
     return this.amc * this.m * this.r * this.r;
   }
 
+  get copy() {
+    var ret = new Ball(this.pos.copy, this.vel.copy, this.r, this.k, this.ang, this.fc);
+    ret.lastPos = this.lastPos.copy;
+    ret.rotation = this.rotation;
+    return ret;
+  }
+
   move(x, y) {
     this.pos.x += x;
     this.pos.y += y;
@@ -57,7 +64,7 @@ class Ball {
       var dist = Vec2.dist(pos1, pos2);
       var lastDist = Vec2.dist(lPos1, lPos2);
       var fc = (ball1.fc + ball2.fc) / 2;
-      
+
       var cp1 = pos1.copy;
       var cp2 = pos2.copy;
       let too = r1 + r2 - dist;
