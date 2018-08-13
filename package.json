@@ -1,0 +1,28 @@
+{
+  "name": "ballphysics",
+  "version": "1.0.0",
+  "description": "2D rigid body physics engine to-be",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AkosSeres/BallPhysics.git"
+  },
+  "keywords": [
+    "physics",
+    "2d",
+    "rigid",
+    "balls"
+  ],
+  "author": "Akos Seres",
+  "license": "LGPL-2.1",
+  "bugs": {
+    "url": "https://github.com/AkosSeres/BallPhysics/issues"
+  },
+  "homepage": "https://github.com/AkosSeres/BallPhysics#readme",
+  "devDependencies": {
+    "electron": "^2.0.7"
+  }
+}
