@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "2D rigid body physics engine to-be",
   "main": "main.js",
-  "scripts": {
-    "start": "electron ."
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AkosSeres/BallPhysics.git"
@@ -21,8 +19,5 @@
   "bugs": {
     "url": "https://github.com/AkosSeres/BallPhysics/issues"
   },
-  "homepage": "https://github.com/AkosSeres/BallPhysics#readme",
-  "devDependencies": {
-    "electron": "^2.0.7"
-  }
+  "homepage": "https://github.com/AkosSeres/BallPhysics#readme"
 }
