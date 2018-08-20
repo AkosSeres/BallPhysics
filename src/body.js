@@ -21,13 +21,13 @@ class Body {
         sum2 += Math.PI * 2 - angle;
         if (sum2 < sum1) {
             let temp = [];
-            for (let i = pol.length - 1; i >= 0; i--)temp.push(pol[i]);
+            for (let i = pol.length - 1; i >= 0; i--) temp.push(pol[i]);
             this.points = temp;
         }
 
         this.calculatePosAndMass();
         this.lastPos = this.pos.copy;
-        this.fc = 0.4;//coefficient of friction
+        this.fc = 0.4; //coefficient of friction
 
         this.rotation = 0;
 
@@ -48,7 +48,10 @@ class Body {
     move(x, y) {
         this.pos.x += x;
         this.pos.y += y;
-        this.points.forEach(p => {p.x += x; p.y += y;});
+        this.points.forEach(p => {
+            p.x += x;
+            p.y += y;
+        });
     }
 
     collideWithBall(ball) {
@@ -58,7 +61,8 @@ class Body {
 
         this.points.forEach((point, idx) => {
             let p = new Vec2(point.x, point.y);
-            p.x -= ball.pos.x; p.y -= ball.pos.y;
+            p.x -= ball.pos.x;
+            p.y -= ball.pos.y;
             if (p.length <= ball.r) {
                 heading = p.heading + Math.PI;
                 rel = p.length;
@@ -174,7 +178,12 @@ class Body {
     calculatePosAndMass() {
         let poligons = [];
         poligons.push([]);
-        this.points.forEach(p => {poligons[0].push({x: p.x, y: p.y})});
+        this.points.forEach(p => {
+            poligons[0].push({
+                x: p.x,
+                y: p.y
+            });
+        });
 
         if (this.isConcave) {
             const includes = (arr, item) => {
@@ -213,22 +222,22 @@ class Body {
                             (new Vec2(newSide.b.x - newSide.a.x,
                                 newSide.b.y - newSide.a.y)).heading;
                         while (!(a.heading > b.heading ?
-                            ((newSideHeading > a.heading &&
-                                newSideHeading < 2 * Math.PI) ||
-                                (newSideHeading > 0 &&
-                                    newSideHeading < b.heading)) :
-                            (newSideHeading > a.heading &&
-                                newSideHeading < b.heading))
-                            || intersectWithPoligon(
+                                ((newSideHeading > a.heading &&
+                                        newSideHeading < 2 * Math.PI) ||
+                                    (newSideHeading > 0 &&
+                                        newSideHeading < b.heading)) :
+                                (newSideHeading > a.heading &&
+                                    newSideHeading < b.heading)) ||
+                            intersectWithPoligon(
                                 new LineSegment(new Vec2(pol[j % pol.length].x,
-                                    pol[j % pol.length].y),
+                                        pol[j % pol.length].y),
                                     new Vec2(pol[k % pol.length].x,
                                         pol[k % pol.length].y)),
-                                pol,
-                                [(pol.length - 1) % pol.length,
-                                j % pol.length,
-                                (k - 1) % pol.length,
-                                k % pol.length])) {
+                                pol, [(pol.length - 1) % pol.length,
+                                    j % pol.length,
+                                    (k - 1) % pol.length,
+                                    k % pol.length
+                                ])) {
                             k++;
                             newSide = new LineSegment(
                                 new Vec2(pol[j].x,
@@ -236,9 +245,9 @@ class Body {
                                 new Vec2(pol[k % pol.length].x,
                                     pol[k % pol.length].y));
                             newSideHeading = (
-                                new Vec2(
-                                    newSide.b.x - newSide.a.x,
-                                    newSide.b.y - newSide.a.y))
+                                    new Vec2(
+                                        newSide.b.x - newSide.a.x,
+                                        newSide.b.y - newSide.a.y))
                                 .heading;
                         }
                         let pol1 = [];
@@ -266,23 +275,23 @@ class Body {
                                 new Vec2(pol[k % pol.length].x,
                                     pol[k % pol.length].y));
                             let newSideHeading = (
-                                new Vec2(newSide.b.x - newSide.a.x,
-                                    newSide.b.y - newSide.a.y))
+                                    new Vec2(newSide.b.x - newSide.a.x,
+                                        newSide.b.y - newSide.a.y))
                                 .heading;
                             while (!(a.heading > b.heading ?
-                                ((newSideHeading > a.heading &&
-                                    newSideHeading < 2 * Math.PI) ||
-                                    (newSideHeading > 0 &&
-                                        newSideHeading < b.heading)) :
-                                (newSideHeading > a.heading &&
-                                    newSideHeading < b.heading)) ||
+                                    ((newSideHeading > a.heading &&
+                                            newSideHeading < 2 * Math.PI) ||
+                                        (newSideHeading > 0 &&
+                                            newSideHeading < b.heading)) :
+                                    (newSideHeading > a.heading &&
+                                        newSideHeading < b.heading)) ||
                                 intersectWithPoligon(
                                     newSide,
-                                    pol,
-                                    [(j - 1) % pol.length,
-                                    j % pol.length,
-                                    (k - 1) % pol.length,
-                                    k % pol.length])) {
+                                    pol, [(j - 1) % pol.length,
+                                        j % pol.length,
+                                        (k - 1) % pol.length,
+                                        k % pol.length
+                                    ])) {
                                 k++;
                                 newSide = new LineSegment(
                                     new Vec2(pol[j].x,
@@ -290,9 +299,9 @@ class Body {
                                     new Vec2(pol[k % pol.length].x,
                                         pol[k % pol.length].y));
                                 newSideHeading = (
-                                    new Vec2(
-                                        newSide.b.x - newSide.a.x,
-                                        newSide.b.y - newSide.a.y))
+                                        new Vec2(
+                                            newSide.b.x - newSide.a.x,
+                                            newSide.b.y - newSide.a.y))
                                     .heading;
                             }
                             let pol1 = [];

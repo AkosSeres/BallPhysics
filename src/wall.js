@@ -23,7 +23,7 @@ class Wall {
         if (sum2 > sum1) return;
         else {
             let temp = [];
-            for (let i = pol.length - 1; i >= 0; i--)temp.push(pol[i]);
+            for (let i = pol.length - 1; i >= 0; i--) temp.push(pol[i]);
             this.points = temp;
         }
     }
@@ -34,7 +34,8 @@ class Wall {
 
         this.points.forEach((point, idx) => {
             let p = new Vec2(point.x, point.y);
-            p.x -= ball.pos.x; p.y -= ball.pos.y;
+            p.x -= ball.pos.x;
+            p.y -= ball.pos.y;
             p.mult(-1);
             if (p.length <= ball.r) {
                 heading = p.heading;
@@ -72,8 +73,10 @@ class Wall {
             ball.ang -= ball.r * ball.r * ball.m * dvx / ((ball.am + ball.r * ball.r * ball.m) * ball.r);
             pos.rotate(heading - Math.PI / 2);
             vel.rotate(heading - Math.PI / 2);
-            ball.pos.x = pos.x; ball.pos.y = pos.y;
-            ball.vel.x = vel.x; ball.vel.y = vel.y;
+            ball.pos.x = pos.x;
+            ball.pos.y = pos.y;
+            ball.vel.x = vel.x;
+            ball.vel.y = vel.y;
         }
     }
 }

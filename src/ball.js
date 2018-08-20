@@ -3,8 +3,8 @@ class Ball {
     this.pos = pos.copy;
     this.lastPos = this.pos.copy;
     this.r = r;
-    this.fc = 0.4;//coefficient of friction
-    this.amc = 2 / 5;//angular mass coefficient
+    this.fc = 0.4; //coefficient of friction
+    this.amc = 2 / 5; //angular mass coefficient
 
     this.rotation = 0;
 
@@ -90,7 +90,9 @@ class Ball {
         ball1.vel.add(d1);
 
         var d2 = Vec2.sub(pos2, pos1);
-        if (dist === 0) {d2 = Vec2.mult(d1, -1);}
+        if (dist === 0) {
+          d2 = Vec2.mult(d1, -1);
+        }
         d2.mult(rSum / dist);
         d2.mult(kk);
         d2.mult(m1 / (m2 + m1));
@@ -156,9 +158,13 @@ class Ball {
       let vk = (m1 * (p1.x + ball1.ang * r1) + m2 * (p2.x - ball2.ang * r2)) / (m1 + m2);
 
       let dv1p = -dv1n * fc * Math.sign(p1.x - ball1.ang * r1 - vk);
-      if (Math.abs(dv1p) > Math.abs(p1.x - ball1.ang * r1 - vk)) {dv1p = -p1.x + ball1.ang * r1 + vk;}
+      if (Math.abs(dv1p) > Math.abs(p1.x - ball1.ang * r1 - vk)) {
+        dv1p = -p1.x + ball1.ang * r1 + vk;
+      }
       let dv2p = -dv2n * fc * Math.sign(p2.x + ball2.ang * r2 - vk);
-      if (Math.abs(dv2p) > Math.abs(p2.x + ball2.ang * r2 - vk)) {dv2p = -p2.x - ball2.ang * r2 + vk;}
+      if (Math.abs(dv2p) > Math.abs(p2.x + ball2.ang * r2 - vk)) {
+        dv2p = -p2.x - ball2.ang * r2 + vk;
+      }
       let dv1 = new Vec2(dv1p + ball1.r * ball1.r * ball1.m * dv1p / (ball1.am + ball1.r * ball1.r * ball1.m), 0);
       let dv2 = new Vec2(dv2p - ball2.r * ball2.r * ball2.m * dv2p / (ball2.am + ball2.r * ball2.r * ball2.m), 0);
       dv1.rotate(rot - Math.PI / 2);

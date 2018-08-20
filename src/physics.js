@@ -32,9 +32,9 @@ class Physics {
 
     //update springs multiple times
     for (let i = 0; i < this.springs.length; i++) {
-      this.springs.forEach(element => {
+      for (let element of this.springs) {
         element.update(t / this.springs.length / 2);
-      });
+      }
     }
 
     for (let i = 0; i < this.balls.length; i++) {
@@ -48,15 +48,18 @@ class Physics {
       }
 
       //collision with walls
-      this.walls.forEach((item) => {item.collideWithBall(this.balls[i])});
+      for (let wall of this.walls) {
+        wall.collideWithBall(this.balls[i]);
+      }
 
       //collision with fixed balls
-      this.fixedBalls.forEach(b => {
+      for (let b of this.fixedBalls) {
         let ball = this.balls[i];
 
         let heading, rel;
         let p = new Vec2(b.x, b.y);
-        p.x -= ball.pos.x; p.y -= ball.pos.y;
+        p.x -= ball.pos.x;
+        p.y -= ball.pos.y;
         p.mult(-1);
         if (p.length <= ball.r + b.r) {
           heading = p.heading;
@@ -80,10 +83,12 @@ class Physics {
           ball.ang -= ball.r * ball.r * ball.m * dvx / ((ball.am + ball.r * ball.r * ball.m) * ball.r);
           pos.rotate(heading - Math.PI / 2);
           vel.rotate(heading - Math.PI / 2);
-          ball.pos.x = pos.x; ball.pos.y = pos.y;
-          ball.vel.x = vel.x; ball.vel.y = vel.y;
+          ball.pos.x = pos.x;
+          ball.pos.y = pos.y;
+          ball.vel.x = vel.x;
+          ball.vel.y = vel.y;
         }
-      });
+      }
 
       //bounce from the edges
       if (this.bounds) {
@@ -138,10 +143,10 @@ class Physics {
     }
 
     for (let i = 0; i < this.bodies.length; i++) {
-      this.balls.forEach(ball => {
+      for (let ball of this.balls) {
         if (ball.group != this.bodies[i].group || (!ball.group && !this.bodies[i].group))
           this.bodies[i].collideWithBall(ball);
-      });
+      }
 
       for (let j = i + 1; j < this.bodies.length; j++) {
         if (this.bodies[i].group != this.bodies[j].group || (!this.bodies[j].group && !this.bodies[i].group))
@@ -156,9 +161,9 @@ class Physics {
 
     //update springs again multiple times
     for (let i = 0; i < this.springs.length; i++) {
-      this.springs.forEach(element => {
+      for (let element of this.springs) {
         element.update(t / this.springs.length / 2);
-      });
+      }
     }
   }
 
@@ -176,10 +181,22 @@ class Physics {
 
   addRectWall(x, y, w, h) {
     let points = [];
-    points.push({x: x - w / 2, y: y - h / 2});
-    points.push({x: x + w / 2, y: y - h / 2});
-    points.push({x: x + w / 2, y: y + h / 2});
-    points.push({x: x - w / 2, y: y + h / 2});
+    points.push({
+      x: x - w / 2,
+      y: y - h / 2
+    });
+    points.push({
+      x: x + w / 2,
+      y: y - h / 2
+    });
+    points.push({
+      x: x + w / 2,
+      y: y + h / 2
+    });
+    points.push({
+      x: x - w / 2,
+      y: y + h / 2
+    });
     this.walls.push(new Wall(points));
     //this.bodies.push(new Body(points, new Vec2(0, 0), 0.5, 0, 0.3));
   }
@@ -189,7 +206,11 @@ class Physics {
   }
 
   addFixedBall(x, y, r) {
-    this.fixedBalls.push({x: x, y: y, r: r});
+    this.fixedBalls.push({
+      x: x,
+      y: y,
+      r: r
+    });
   }
 
   addSpring(spring) {

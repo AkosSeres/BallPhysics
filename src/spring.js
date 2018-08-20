@@ -7,7 +7,10 @@ class Spring {
         this.rotationLocked = false;
     }
     pinHere(x, y) {
-        this.pinned = {x, y};
+        this.pinned = {
+            x,
+            y
+        };
     }
 
     unpin() {
@@ -20,7 +23,7 @@ class Spring {
             this.pinned = false;
         }
         if (this.objects.length >= 3) {
-            this.objects = [this.objects[this.objects.length - 2], this.objects[this.objects.length - 1]]
+            this.objects = [this.objects[this.objects.length - 2], this.objects[this.objects.length - 1]];
         }
     }
 

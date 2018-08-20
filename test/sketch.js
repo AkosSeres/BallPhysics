@@ -19,7 +19,8 @@ var modes = [
   "stick creator",
   "spring creator"
 ];
-var left = false, right = false;
+var left = false,
+  right = false;
 
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
@@ -50,7 +51,7 @@ function draw() {
   background(51);
 
   var elapsedTime = 1 / frameRate();
-  if (elapsedTime == NaN) {
+  if (isNaN(elapsedTime)) {
     elapsedTime = 0;
   }
 
@@ -66,11 +67,10 @@ function draw() {
     } else if (mode === 0 || mode === 3 || mode === 4) line(mouseX, mouseY, lastX, lastY);
   }
 
-  mode2: if (mode == 2) {
+  var guiBound = gui.prototype._panel.getBoundingClientRect();
+  if (mode == 2 && !((mouseX > guiBound.left && mouseX < guiBound.right) && (mouseY > guiBound.top && mouseY < guiBound.bottom))) {
     ellipse(mouseX, mouseY, drawThickness * 2, drawThickness * 2);
     if (mouseIsPressed) {
-      var guiBound = gui.prototype._panel.getBoundingClientRect();
-      if ((mouseX > guiBound.left && mouseX < guiBound.right) && (mouseY > guiBound.top && mouseY < guiBound.bottom)) break mode2;
       physics.addFixedBall(mouseX, mouseY, drawThickness);
     }
   }
@@ -99,7 +99,11 @@ function mousePressed() {
   }
   if (mode === 3 || mode === 4) {
     choosed = physics.getObjectAtCoordinates(mouseX, mouseY);
-    if (choosed == false) choosed = {x: mouseX, y: mouseY, pinPoint: true};
+    if (choosed == false) choosed = {
+      x: mouseX,
+      y: mouseY,
+      pinPoint: true
+    };
   }
   lastX = mouseX;
   lastY = mouseY;
@@ -121,11 +125,15 @@ function mouseReleased() {
     physics.addRectWall(lastX / 2 + mouseX / 2, lastY / 2 + mouseY / 2, 2 * Math.abs(lastX / 2 - mouseX / 2), 2 * Math.abs(lastY / 2 - mouseY / 2));
   }
 
-  mode3: if (mode === 3 || mode === 4) {
+  if (mode === 3 || mode === 4) mode3: {
     let newChoosed = physics.getObjectAtCoordinates(mouseX, mouseY);
     let stick;
     const newThing = mode === 3 ? Stick : Spring;
-    if (newChoosed == false) newChoosed = {x: mouseX, y: mouseY, pinPoint: true};
+    if (newChoosed == false) newChoosed = {
+      x: mouseX,
+      y: mouseY,
+      pinPoint: true
+    };
 
     if (choosed == newChoosed) break mode3;
     else if (choosed.pinPoint && newChoosed.pinPoint) break mode3;
@@ -153,10 +161,12 @@ function mouseReleased() {
 
 function keyPressed() {
   if (keyCode === UP_ARROW) {
-    mode += 1; mode %= modes.length;
+    mode += 1;
+    mode %= modes.length;
   }
   if (keyCode === DOWN_ARROW) {
-    mode -= 1; mode = mode === -1 ? modes.length - 1 : mode;
+    mode -= 1;
+    mode = mode === -1 ? modes.length - 1 : mode;
   }
   if (keyCode === 83) {
     spawnNewtonsCradle(width / 2, height / 2, 0.5, physics);
@@ -226,12 +236,15 @@ Physics.prototype.draw = function() {
       let x1, y1;
       let x2, y2;
       if (element.pinned) {
-        x1 = element.pinned.x; y1 = element.pinned.y;
-        x2 = element.objects[0].pos.x; y2 = element.objects[0].pos.y;
-      }
-      else {
-        x1 = element.objects[0].pos.x; y1 = element.objects[0].pos.y;
-        x2 = element.objects[1].pos.x; y2 = element.objects[1].pos.y;
+        x1 = element.pinned.x;
+        y1 = element.pinned.y;
+        x2 = element.objects[0].pos.x;
+        y2 = element.objects[0].pos.y;
+      } else {
+        x1 = element.objects[0].pos.x;
+        y1 = element.objects[0].pos.y;
+        x2 = element.objects[1].pos.x;
+        y2 = element.objects[1].pos.y;
       }
       let v = new Vec2(x2 - x1, y2 - y1);
       let c = v.copy;
@@ -258,7 +271,7 @@ Physics.prototype.draw = function() {
   stroke("black");
   fill("white");
   text("Mode: " + modes[mode], 10, 10);
-}
+};
 
 function spawnNewtonsCradle(x, y, scale, phy) {
   let balls = [];
