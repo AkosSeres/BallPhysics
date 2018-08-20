@@ -201,6 +201,7 @@ Physics.prototype.draw = function() {
       vertex(p.x, p.y);
     });
     endShape(CLOSE);
+    ellipse(element.pos.x, element.pos.y, 3, 3);
   });
 
   noStroke();
