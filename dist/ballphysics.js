@@ -640,7 +640,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         if (!intersect) return;
                         cp.div(matches);
 
-                        for (var i = 0; i < matches / 2; i++) {
+                        for (var i = 0; i < Math.floor(matches / 2); i++) {
                             heading += Vec2.sub(cps[2 * i + 1], cps[2 * i]).heading;
                         }
                         heading /= matches / 2;
@@ -650,6 +650,73 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         a.mult(-30);
                         stroke("red");
                         line(cp.x, cp.y, cp.x + a.x, cp.y + a.y);
+
+                        var rotatedBy90 = Vec2.fromAngle(heading - Math.PI / 2);
+                        a.div(-30);
+
+                        var move1Min = 0;
+                        var move1Max = 0;
+                        var move2Min = 0;
+                        var move2Max = 0;
+                        var _iteratorNormalCompletion2 = true;
+                        var _didIteratorError2 = false;
+                        var _iteratorError2 = undefined;
+
+                        try {
+                            for (var _iterator2 = b1.points[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                                point = _step2.value;
+
+                                move1Min = Math.min(Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)), move1Min);
+                                move1Max = Math.max(Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)), move1Max);
+                            }
+                        } catch (err) {
+                            _didIteratorError2 = true;
+                            _iteratorError2 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                    _iterator2.return();
+                                }
+                            } finally {
+                                if (_didIteratorError2) {
+                                    throw _iteratorError2;
+                                }
+                            }
+                        }
+
+                        var _iteratorNormalCompletion3 = true;
+                        var _didIteratorError3 = false;
+                        var _iteratorError3 = undefined;
+
+                        try {
+                            for (var _iterator3 = b2.points[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                                point = _step3.value;
+
+                                move2Min = Math.min(Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)), move2Min);
+                                move2Max = Math.max(Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)), move2Max);
+                            }
+                        } catch (err) {
+                            _didIteratorError3 = true;
+                            _iteratorError3 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                                    _iterator3.return();
+                                }
+                            } finally {
+                                if (_didIteratorError3) {
+                                    throw _iteratorError3;
+                                }
+                            }
+                        }
+
+                        if (Math.abs(move1Min - move2Max) < Math.abs(move2Min - move1Max)) {
+                            b1.move(-a.x * move1Min, -a.y * move1Min);
+                            b2.move(-a.x * move2Max, -a.y * move2Max);
+                        } else {
+                            b1.move(-a.x * move1Max, -a.y * move1Max);
+                            b2.move(-a.x * move2Min, -a.y * move2Min);
+                        }
 
                         var v1 = b1.vel.copy;
                         var v2 = b2.vel.copy;
@@ -906,27 +973,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                         //update springs multiple times
                         for (var _i4 = 0; _i4 < this.springs.length; _i4++) {
-                            var _iteratorNormalCompletion2 = true;
-                            var _didIteratorError2 = false;
-                            var _iteratorError2 = undefined;
+                            var _iteratorNormalCompletion4 = true;
+                            var _didIteratorError4 = false;
+                            var _iteratorError4 = undefined;
 
                             try {
-                                for (var _iterator2 = this.springs[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                                    var element = _step2.value;
+                                for (var _iterator4 = this.springs[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                                    var element = _step4.value;
 
                                     element.update(t / this.springs.length / 2);
                                 }
                             } catch (err) {
-                                _didIteratorError2 = true;
-                                _iteratorError2 = err;
+                                _didIteratorError4 = true;
+                                _iteratorError4 = err;
                             } finally {
                                 try {
-                                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                                        _iterator2.return();
+                                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                                        _iterator4.return();
                                     }
                                 } finally {
-                                    if (_didIteratorError2) {
-                                        throw _iteratorError2;
+                                    if (_didIteratorError4) {
+                                        throw _iteratorError4;
                                     }
                                 }
                             }
@@ -942,40 +1009,40 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             }
 
                             //collision with walls
-                            var _iteratorNormalCompletion3 = true;
-                            var _didIteratorError3 = false;
-                            var _iteratorError3 = undefined;
+                            var _iteratorNormalCompletion5 = true;
+                            var _didIteratorError5 = false;
+                            var _iteratorError5 = undefined;
 
                             try {
-                                for (var _iterator3 = this.walls[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                                    var wall = _step3.value;
+                                for (var _iterator5 = this.walls[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                                    var wall = _step5.value;
 
                                     wall.collideWithBall(this.balls[_i5]);
                                 }
 
                                 //collision with fixed balls
                             } catch (err) {
-                                _didIteratorError3 = true;
-                                _iteratorError3 = err;
+                                _didIteratorError5 = true;
+                                _iteratorError5 = err;
                             } finally {
                                 try {
-                                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                                        _iterator3.return();
+                                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                                        _iterator5.return();
                                     }
                                 } finally {
-                                    if (_didIteratorError3) {
-                                        throw _iteratorError3;
+                                    if (_didIteratorError5) {
+                                        throw _iteratorError5;
                                     }
                                 }
                             }
 
-                            var _iteratorNormalCompletion4 = true;
-                            var _didIteratorError4 = false;
-                            var _iteratorError4 = undefined;
+                            var _iteratorNormalCompletion6 = true;
+                            var _didIteratorError6 = false;
+                            var _iteratorError6 = undefined;
 
                             try {
-                                for (var _iterator4 = this.fixedBalls[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                                    var b = _step4.value;
+                                for (var _iterator6 = this.fixedBalls[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                                    var b = _step6.value;
 
                                     var ball = this.balls[_i5];
 
@@ -1016,16 +1083,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                                 //bounce from the edges
                             } catch (err) {
-                                _didIteratorError4 = true;
-                                _iteratorError4 = err;
+                                _didIteratorError6 = true;
+                                _iteratorError6 = err;
                             } finally {
                                 try {
-                                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                                        _iterator4.return();
+                                    if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                                        _iterator6.return();
                                     }
                                 } finally {
-                                    if (_didIteratorError4) {
-                                        throw _iteratorError4;
+                                    if (_didIteratorError6) {
+                                        throw _iteratorError6;
                                     }
                                 }
                             }
@@ -1081,27 +1148,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         }
 
                         for (var _i6 = 0; _i6 < this.bodies.length; _i6++) {
-                            var _iteratorNormalCompletion5 = true;
-                            var _didIteratorError5 = false;
-                            var _iteratorError5 = undefined;
+                            var _iteratorNormalCompletion7 = true;
+                            var _didIteratorError7 = false;
+                            var _iteratorError7 = undefined;
 
                             try {
-                                for (var _iterator5 = this.balls[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                                    var _ball4 = _step5.value;
+                                for (var _iterator7 = this.balls[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                                    var _ball4 = _step7.value;
 
                                     if (_ball4.group != this.bodies[_i6].group || !_ball4.group && !this.bodies[_i6].group) this.bodies[_i6].collideWithBall(_ball4);
                                 }
                             } catch (err) {
-                                _didIteratorError5 = true;
-                                _iteratorError5 = err;
+                                _didIteratorError7 = true;
+                                _iteratorError7 = err;
                             } finally {
                                 try {
-                                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                                        _iterator5.return();
+                                    if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                                        _iterator7.return();
                                     }
                                 } finally {
-                                    if (_didIteratorError5) {
-                                        throw _iteratorError5;
+                                    if (_didIteratorError7) {
+                                        throw _iteratorError7;
                                     }
                                 }
                             }
@@ -1118,27 +1185,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                         //update springs again multiple times
                         for (var _i7 = 0; _i7 < this.springs.length; _i7++) {
-                            var _iteratorNormalCompletion6 = true;
-                            var _didIteratorError6 = false;
-                            var _iteratorError6 = undefined;
+                            var _iteratorNormalCompletion8 = true;
+                            var _didIteratorError8 = false;
+                            var _iteratorError8 = undefined;
 
                             try {
-                                for (var _iterator6 = this.springs[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-                                    var _element = _step6.value;
+                                for (var _iterator8 = this.springs[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                                    var _element = _step8.value;
 
                                     _element.update(t / this.springs.length / 2);
                                 }
                             } catch (err) {
-                                _didIteratorError6 = true;
-                                _iteratorError6 = err;
+                                _didIteratorError8 = true;
+                                _iteratorError8 = err;
                             } finally {
                                 try {
-                                    if (!_iteratorNormalCompletion6 && _iterator6.return) {
-                                        _iterator6.return();
+                                    if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                                        _iterator8.return();
                                     }
                                 } finally {
-                                    if (_didIteratorError6) {
-                                        throw _iteratorError6;
+                                    if (_didIteratorError8) {
+                                        throw _iteratorError8;
                                     }
                                 }
                             }
@@ -1179,8 +1246,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             x: x - w / 2,
                             y: y + h / 2
                         });
-                        this.walls.push(new Wall(points));
-                        //this.bodies.push(new Body(points, new Vec2(0, 0), 0.5, 0, 0.3));
+                        //this.walls.push(new Wall(points));
+                        this.bodies.push(new Body(points, new Vec2(0, 0), 0.5, 0, 0.3));
                     }
                 }, {
                     key: "addWall",

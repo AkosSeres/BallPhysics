@@ -423,7 +423,7 @@ class Body {
         if (!intersect) return;
         cp.div(matches);
 
-        for (let i = 0; i < matches / 2; i++) {
+        for (let i = 0; i < Math.floor(matches / 2); i++) {
             heading += Vec2.sub(cps[2 * i + 1], cps[2 * i]).heading;
         }
         heading /= matches / 2;
@@ -433,6 +433,29 @@ class Body {
         a.mult(-30);
         stroke("red");
         line(cp.x, cp.y, cp.x + a.x, cp.y + a.y);
+
+        let rotatedBy90 = Vec2.fromAngle(heading - Math.PI / 2);
+        a.div(-30);
+
+        let move1Min = 0;
+        let move1Max = 0;
+        let move2Min = 0;
+        let move2Max = 0;
+        for (point of b1.points) {
+            move1Min = Math.min(Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)), move1Min);
+            move1Max = Math.max(Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)), move1Max);
+        }
+        for (point of b2.points) {
+            move2Min = Math.min(Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)), move2Min);
+            move2Max = Math.max(Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)), move2Max);
+        }
+        if (Math.abs(move1Min - move2Max) < Math.abs(move2Min - move1Max)) {
+            b1.move(-a.x * move1Min, -a.y * move1Min);
+            b2.move(-a.x * move2Max, -a.y * move2Max);
+        } else {
+            b1.move(-a.x * move1Max, -a.y * move1Max);
+            b2.move(-a.x * move2Min, -a.y * move2Min);
+        }
 
         let v1 = b1.vel.copy;
         let v2 = b2.vel.copy;

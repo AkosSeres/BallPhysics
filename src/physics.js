@@ -205,8 +205,8 @@ class Physics {
       x: x - w / 2,
       y: y + h / 2
     });
-    this.walls.push(new Wall(points));
-    //this.bodies.push(new Body(points, new Vec2(0, 0), 0.5, 0, 0.3));
+    //this.walls.push(new Wall(points));
+    this.bodies.push(new Body(points, new Vec2(0, 0), 0.5, 0, 0.3));
   }
 
   addWall(wall) {
