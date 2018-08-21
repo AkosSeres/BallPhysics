@@ -334,6 +334,7 @@ class Body {
         }
 
         let mSum = 0;
+        let amSum = 0;
         let pSum = new Vec2(0, 0);
         poligons.forEach(pol => {
             let a = Math.sqrt(Math.pow(pol[0].x - pol[1].x, 2) + Math.pow(pol[0].y - pol[1].y, 2));
@@ -348,7 +349,24 @@ class Body {
         pSum.div(mSum);
         this.pos = pSum;
         this.m = mSum;
-        this.am = this.m * this.m * 0.4;
+
+        // calculating the moment of inertia finally
+        for (let pol of poligons) {
+            let a = Math.sqrt(Math.pow(pol[0].x - pol[1].x, 2) + Math.pow(pol[0].y - pol[1].y, 2));
+            let b = Math.sqrt(Math.pow(pol[1].x - pol[2].x, 2) + Math.pow(pol[1].y - pol[2].y, 2));
+            let c = Math.sqrt(Math.pow(pol[2].x - pol[0].x, 2) + Math.pow(pol[2].y - pol[0].y, 2));
+            let w = Math.max(a, b, c);
+            let s = (a + b + c) / 2;
+            let m = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+            let h = 2 * m / w;
+            let wpartial = Math.sqrt(Math.min(a, c, b) ** 2 - h * h);
+            let am = h * w * (h * h + w * w) / 24;
+            let d = Math.sqrt(h * h / 36 + (Math.abs(wpartial - w / 2) / 3) ** 2);
+            am -= d * d * m;
+            am += new Vec2((pol[0].x + pol[1].x + pol[2].x) / 3, (pol[0].y + pol[1].y + pol[2].y) / 3).dist(this.pos) ** 2 * m;
+            amSum += am;
+        }
+        this.am = amSum;
     }
 
     rotate(angle) {
