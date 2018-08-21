@@ -72,5 +72,4 @@ typings/
 # Serverless directories
 .serverless
 
-dist
 package-lock.json
