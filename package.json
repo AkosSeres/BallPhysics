@@ -20,8 +20,12 @@
     "url": "https://github.com/AkosSeres/BallPhysics/issues"
   },
   "homepage": "https://github.com/AkosSeres/BallPhysics#readme",
-  "jshintConfig": {
-    "esversion": 6
+  "eslintConfig": {
+    "extends": "google",
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "script"
+    }
   },
   "babel": {
     "presets": [
@@ -31,11 +35,12 @@
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
+    "eslint-config-google": "^0.9.1",
     "grunt": "^1.0.3",
     "grunt-babel": "^7.0.0",
     "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-jshint": "^1.1.0",
     "grunt-contrib-uglify": "^3.4.0",
-    "grunt-contrib-watch": "^1.1.0"
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-eslint": "^21.0.0"
   }
 }
