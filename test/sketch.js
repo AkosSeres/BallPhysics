@@ -1,3 +1,11 @@
+const Ball = Physics.Ball;
+const Body = Physics.Body;
+const Vec2 = Physics.Vec2;
+const Wall = Physics.Wall;
+const LineSegment = Physics.LineSegment;
+const Spring = Physics.Spring;
+const Stick = Physics.Stick;
+
 var physics;
 var defaultSize = 25;
 var k = 0.5;

@@ -1,3 +1,5 @@
+const Vec2 = require('./vec2');
+
 class Ball {
   constructor(pos, vel, r, k, ang, fc) {
     this.pos = pos.copy;
@@ -189,3 +191,5 @@ class Ball {
   }
 
 }
+
+module.exports = Ball;

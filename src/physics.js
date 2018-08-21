@@ -1,3 +1,11 @@
+const Ball = exports.Ball = require('./ball');
+const Body = exports.Body = require('./body');
+const Vec2 = exports.Vec2 = require('./vec2');
+const Wall = exports.Wall = require('./wall');
+const LineSegment = exports.LineSegment = require('./linesegment');
+const Spring = exports.Spring = require('./spring');
+const Stick = exports.Stick = require('./stick');
+
 class Physics {
   constructor() {
     this.balls = [];
@@ -234,3 +242,13 @@ class Physics {
     return ret;
   }
 }
+
+module.exports = Physics;
+
+Physics.Ball = Ball;
+Physics.Body = Body;
+Physics.Vec2 = Vec2;
+Physics.Wall = Wall;
+Physics.LineSegment = LineSegment;
+Physics.Spring = Spring;
+Physics.Stick = Stick;

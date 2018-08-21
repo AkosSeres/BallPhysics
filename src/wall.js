@@ -1,3 +1,5 @@
+const Vec2 = require('./vec2');
+
 class Wall {
     constructor(points) {
         // The wall is immovable
@@ -80,3 +82,5 @@ class Wall {
         }
     }
 }
+
+module.exports = Wall;

@@ -1,3 +1,6 @@
+const Vec2 = require('./vec2');
+const LineSegment = require('./linesegment');
+
 class Body {
     constructor(points, vel, k, ang, fc) {
         this.points = points;
@@ -503,3 +506,5 @@ class Body {
         b2.ang = ang2;
     }
 }
+
+module.exports = Body;

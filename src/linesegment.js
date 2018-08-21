@@ -1,3 +1,5 @@
+const Vec2 = require('./vec2');
+
 /** Class representing a segment of a line */
 class LineSegment {
     /**
@@ -110,3 +112,5 @@ class LineSegment {
         else return false;
     }
 }
+
+module.exports = LineSegment;

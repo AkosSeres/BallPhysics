@@ -2,10 +2,15 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        concat: {
+        browserify: {
             dist: {
                 files: {
-                    'dist/<%= pkg.name %>.js': 'src/**/*.js'
+                    'dist/<%= pkg.name %>.js': 'src/physics.js'
+                }
+            },
+            options: {
+                browserifyOptions: {
+                    standalone: 'Physics'
                 }
             }
         },
@@ -24,8 +29,7 @@ module.exports = function(grunt) {
             },
             dist: {
                 files: {
-                    'dist/<%= pkg.name %>.min.js': './dist/ballphysics.js'
-                    //['<%= concat.dist.dest %>']
+                    'dist/<%= pkg.name %>.min.js': 'dist/<%= pkg.name %>.js'
                 }
             }
         },
@@ -37,18 +41,18 @@ module.exports = function(grunt) {
         },
         watch: {
             files: ['<%= eslint.target %>'],
-            tasks: ['eslint', 'concat', 'babel']
+            tasks: ['eslint', 'browserify', 'babel']
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-babel');
+    grunt.loadNpmTasks('grunt-browserify');
 
     grunt.registerTask('test', ['eslint']);
 
-    grunt.registerTask('default', ['eslint', 'concat', 'babel', 'uglify']);
+    grunt.registerTask('default', ['eslint','browserify','babel', 'uglify']);
 
 };
