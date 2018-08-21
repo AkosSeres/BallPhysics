@@ -1,6 +1,6 @@
 # Balls-Physics
 Physics simulation on balls
-[Play now!](https://akosseres.github.io/BallPhysics/)
+[Play now!](https://akosseres.github.io/BallPhysics/test/)
 
 # Licensing
 `Balls-Physics` is licensed under the LGPL 2.1 License.
