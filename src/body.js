@@ -1,7 +1,20 @@
 const Vec2 = require('./vec2');
 const LineSegment = require('./linesegment');
 
+/**
+ * Class representing a body
+ * Bodies are movable objects
+ * and they collide with other objects (balls)
+ */
 class Body {
+    /**
+     * Creates a body and calculates it's centre of mass (position)
+     * @param {Array} points The points that make up the body
+     * @param {Vec2} vel The velocity of the body
+     * @param {number} k Coefficient of restitution
+     * @param {number} ang Angular velocity
+     * @param {number} fc Friction coefficient
+     */
     constructor(points, vel, k, ang, fc) {
         this.points = points;
 
@@ -30,7 +43,7 @@ class Body {
 
         this.calculatePosAndMass();
         this.lastPos = this.pos.copy;
-        this.fc = 0.4; //coefficient of friction
+        this.fc = 0.4;
 
         this.rotation = 0;
 
@@ -48,15 +61,27 @@ class Body {
         console.log(this);
     }
 
+    /**
+     * Moves the body by the given coordinates
+     * It has to move all the points of the body and
+     * also the centre of mass (pos) of the body
+     * @param {number} x x coordinate
+     * @param {number} y y coordinate
+     */
     move(x, y) {
         this.pos.x += x;
         this.pos.y += y;
-        this.points.forEach(p => {
+        this.points.forEach((p) => {
             p.x += x;
             p.y += y;
         });
     }
 
+    /**
+     * Function that does the collision detection and
+     * collision behavior between the body and ball
+     * @param {Ball} ball The ball to collide with the body
+     */
     collideWithBall(ball) {
         let heading = null;
         let rel = null;
@@ -72,18 +97,21 @@ class Body {
 
                 let move = Vec2.fromAngle(heading);
                 move.mult(ball.r - rel);
-                this.move(move.x * -1 * ball.m / (this.m + ball.m), move.y * -1 * ball.m / (this.m + ball.m));
-                ball.move(move.x * 1 * this.m / (this.m + ball.m), move.y * 1 * this.m / (this.m + ball.m));
+                this.move(move.x * -1 * ball.m / (this.m + ball.m),
+                    move.y * -1 * ball.m / (this.m + ball.m));
+                ball.move(move.x * 1 * this.m / (this.m + ball.m),
+                    move.y * 1 * this.m / (this.m + ball.m));
 
                 cp = new Vec2(point.x, point.y);
 
                 let a = Vec2.fromAngle(heading);
                 a.mult(-30);
-                stroke("red");
+                stroke('red');
                 line(cp.x, cp.y, cp.x + a.x, cp.y + a.y);
             }
             p = new Vec2(point.x, point.y);
-            let np = new Vec2(this.points[(idx + 1) % this.points.length].x, this.points[(idx + 1) % this.points.length].y);
+            let np = new Vec2(this.points[(idx + 1) % this.points.length].x,
+                this.points[(idx + 1) % this.points.length].y);
             let bp = new Vec2(ball.pos.x, ball.pos.y);
             let side = new Vec2(np.x - p.x, np.y - p.y);
             let h = side.heading;
@@ -97,15 +125,17 @@ class Body {
 
                 let move = Vec2.fromAngle(heading);
                 move.mult(ball.r - rel);
-                this.move(move.x * -1 * ball.m / (this.m + ball.m), move.y * -1 * ball.m / (this.m + ball.m));
-                ball.move(move.x * 1 * this.m / (this.m + ball.m), move.y * 1 * this.m / (this.m + ball.m));
+                this.move(move.x * -1 * ball.m / (this.m + ball.m),
+                    move.y * -1 * ball.m / (this.m + ball.m));
+                ball.move(move.x * 1 * this.m / (this.m + ball.m),
+                    move.y * 1 * this.m / (this.m + ball.m));
 
                 cp = ball.pos.copy;
                 cp.add(Vec2.mult(Vec2.fromAngle(heading + Math.PI), d));
 
                 let a = Vec2.fromAngle(heading);
                 a.mult(-30);
-                stroke("red");
+                stroke('red');
                 line(cp.x, cp.y, cp.x + a.x, cp.y + a.y);
             }
         });
@@ -136,8 +166,10 @@ class Body {
             v1v.rotate(-heading);
             v2v.rotate(-heading);
 
-            let dv1vx = (1 + k) * (m1 * v1v.x + m2 * v2v.x) / (m1 + m2) - (k + 1) * v1v.x;
-            let dv2vx = (1 + k) * (m1 * v1v.x + m2 * v2v.x) / (m1 + m2) - (k + 1) * v2v.x;
+            let dv1vx = (1 + k) * (m1 * v1v.x + m2 * v2v.x) /
+                (m1 + m2) - (k + 1) * v1v.x;
+            let dv2vx = (1 + k) * (m1 * v1v.x + m2 * v2v.x) /
+                (m1 + m2) - (k + 1) * v2v.x;
 
             let vk = (v1v.y * m1 + v2v.y * m2) / (m1 + m2);
 
@@ -157,8 +189,10 @@ class Body {
             dv1v.rotate(-r1.heading);
             dv2v.rotate(-r2.heading);
 
-            let dang1 = (dv1v.y * m1 * r1.length) / (am1 + r1.length * r1.length * m1);
-            let dang2 = -(dv2v.y * m2 * r2.length) / (am2 + r2.length * r2.length * m2);
+            let dang1 = (dv1v.y * m1 * r1.length) /
+                (am1 + r1.length * r1.length * m1);
+            let dang2 = -(dv2v.y * m2 * r2.length) /
+                (am2 + r2.length * r2.length * m2);
 
             ang1 += dang1;
             ang2 += dang2;
@@ -178,13 +212,17 @@ class Body {
         }
     }
 
+    /**
+     * Calculates the mass, moment od intertia and
+     * the centre of mass of the body
+     */
     calculatePosAndMass() {
         let poligons = [];
         poligons.push([]);
-        this.points.forEach(p => {
+        this.points.forEach((p) => {
             poligons[0].push({
                 x: p.x,
-                y: p.y
+                y: p.y,
             });
         });
 
@@ -219,8 +257,10 @@ class Body {
                         found = true;
                         let j = 0;
                         let k = j + 2;
-                        let newSide = new LineSegment(new Vec2(pol[j].x, pol[j].y),
-                            new Vec2(pol[k % pol.length].x, pol[k % pol.length].y));
+                        let newSide =
+                            new LineSegment(new Vec2(pol[j].x, pol[j].y),
+                                new Vec2(pol[k % pol.length].x,
+                                    pol[k % pol.length].y));
                         let newSideHeading =
                             (new Vec2(newSide.b.x - newSide.a.x,
                                 newSide.b.y - newSide.a.y)).heading;
@@ -239,7 +279,7 @@ class Body {
                                 pol, [(pol.length - 1) % pol.length,
                                     j % pol.length,
                                     (k - 1) % pol.length,
-                                    k % pol.length
+                                    k % pol.length,
                                 ])) {
                             k++;
                             newSide = new LineSegment(
@@ -293,7 +333,7 @@ class Body {
                                     pol, [(j - 1) % pol.length,
                                         j % pol.length,
                                         (k - 1) % pol.length,
-                                        k % pol.length
+                                        k % pol.length,
                                     ])) {
                                 k++;
                                 newSide = new LineSegment(
@@ -336,10 +376,13 @@ class Body {
         let mSum = 0;
         let amSum = 0;
         let pSum = new Vec2(0, 0);
-        poligons.forEach(pol => {
-            let a = Math.sqrt(Math.pow(pol[0].x - pol[1].x, 2) + Math.pow(pol[0].y - pol[1].y, 2));
-            let b = Math.sqrt(Math.pow(pol[1].x - pol[2].x, 2) + Math.pow(pol[1].y - pol[2].y, 2));
-            let c = Math.sqrt(Math.pow(pol[2].x - pol[0].x, 2) + Math.pow(pol[2].y - pol[0].y, 2));
+        poligons.forEach((pol) => {
+            let a = Math.sqrt(Math.pow(pol[0].x - pol[1].x, 2) +
+                Math.pow(pol[0].y - pol[1].y, 2));
+            let b = Math.sqrt(Math.pow(pol[1].x - pol[2].x, 2) +
+                Math.pow(pol[1].y - pol[2].y, 2));
+            let c = Math.sqrt(Math.pow(pol[2].x - pol[0].x, 2) +
+                Math.pow(pol[2].y - pol[0].y, 2));
             let s = (a + b + c) / 2;
             let m = Math.sqrt(s * (s - a) * (s - b) * (s - c));
             mSum += m;
@@ -352,25 +395,35 @@ class Body {
 
         // calculating the moment of inertia finally
         for (let pol of poligons) {
-            let a = Math.sqrt(Math.pow(pol[0].x - pol[1].x, 2) + Math.pow(pol[0].y - pol[1].y, 2));
-            let b = Math.sqrt(Math.pow(pol[1].x - pol[2].x, 2) + Math.pow(pol[1].y - pol[2].y, 2));
-            let c = Math.sqrt(Math.pow(pol[2].x - pol[0].x, 2) + Math.pow(pol[2].y - pol[0].y, 2));
+            let a = Math.sqrt(Math.pow(pol[0].x - pol[1].x, 2) +
+                Math.pow(pol[0].y - pol[1].y, 2));
+            let b = Math.sqrt(Math.pow(pol[1].x - pol[2].x, 2) +
+                Math.pow(pol[1].y - pol[2].y, 2));
+            let c = Math.sqrt(Math.pow(pol[2].x - pol[0].x, 2) +
+                Math.pow(pol[2].y - pol[0].y, 2));
             let w = Math.max(a, b, c);
             let s = (a + b + c) / 2;
             let m = Math.sqrt(s * (s - a) * (s - b) * (s - c));
             let h = 2 * m / w;
             let wpartial = Math.sqrt(Math.min(a, c, b) ** 2 - h * h);
             let am = h * w * (h * h + w * w) / 24;
-            let d = Math.sqrt(h * h / 36 + (Math.abs(wpartial - w / 2) / 3) ** 2);
+            let d = Math.sqrt(h * h / 36 +
+                (Math.abs(wpartial - w / 2) / 3) ** 2);
             am -= d * d * m;
-            am += new Vec2((pol[0].x + pol[1].x + pol[2].x) / 3, (pol[0].y + pol[1].y + pol[2].y) / 3).dist(this.pos) ** 2 * m;
+            am += new Vec2((pol[0].x + pol[1].x + pol[2].x) / 3,
+                (pol[0].y + pol[1].y + pol[2].y) / 3).dist(this.pos) ** 2 * m;
             amSum += am;
         }
         this.am = amSum;
     }
 
+    /**
+     * Rotates the body around it's centre of mass by a given ange
+     * Has to do the transformation for all the points
+     * @param {number} angle Rotation angle
+     */
     rotate(angle) {
-        this.points.forEach(p => {
+        this.points.forEach((p) => {
             let point = new Vec2(p.x, p.y);
             point.sub(this.pos);
             point.rotate(angle);
@@ -381,6 +434,10 @@ class Body {
         this.rotation += angle;
     }
 
+    /**
+     * Finds out if the body is concave or not
+     * @return {Boolean} True if the body is concave
+     */
     get isConcave() {
         let pol = this.points;
         let angle = Vec2.angleACW(Vec2.sub(pol[1], pol[0]),
@@ -397,6 +454,11 @@ class Body {
         return false;
     }
 
+    /**
+     * Does the collision algorithm between two bodies
+     * @param {Body} b1 First body
+     * @param {Body} b2 Second body
+     */
     static collide(b1, b2) {
         let matches = 0;
         let heading = 0;
@@ -404,18 +466,21 @@ class Body {
         let cps = [];
         let intersect = false;
         b1.points.forEach((p, idx) => {
-            let side1 = new LineSegment(new Vec2(p.x, p.y), new Vec2(b1.points[(idx + 1) % b1.points.length].x, b1.points[(idx + 1) % b1.points.length].y));
+            let side1 = new LineSegment(new Vec2(p.x, p.y),
+                new Vec2(
+                    b1.points[(idx + 1) % b1.points.length].x,
+                    b1.points[(idx + 1) % b1.points.length].y));
             b2.points.forEach((pp, idxx) => {
-                let side2 = new LineSegment(new Vec2(pp.x, pp.y), new Vec2(b2.points[(idxx + 1) % b2.points.length].x, b2.points[(idxx + 1) % b2.points.length].y));
+                let side2 = new LineSegment(new Vec2(pp.x, pp.y),
+                    new Vec2(
+                        b2.points[(idxx + 1) % b2.points.length].x,
+                        b2.points[(idxx + 1) % b2.points.length].y));
                 let sect = LineSegment.intersect(side1, side2);
                 if (sect) {
                     matches++;
                     cp.add(sect);
                     cps.push(sect);
                     intersect = true;
-
-                    let v1 = Vec2.sub(side1.b, side1.a);
-                    let v2 = Vec2.sub(side2.b, side2.a);
                 }
             });
         });
@@ -431,10 +496,8 @@ class Body {
 
         let a = Vec2.fromAngle(heading);
         a.mult(-30);
-        stroke("red");
+        stroke('red');
         line(cp.x, cp.y, cp.x + a.x, cp.y + a.y);
-
-        let rotatedBy90 = Vec2.fromAngle(heading - Math.PI / 2);
         a.div(-30);
 
         let move1Min = 0;
@@ -442,12 +505,16 @@ class Body {
         let move2Min = 0;
         let move2Max = 0;
         for (point of b1.points) {
-            move1Min = Math.min(Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)), move1Min);
-            move1Max = Math.max(Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)), move1Max);
+            move1Min = Math.min(Vec2.dot(a,
+                Vec2.sub(new Vec2(point.x, point.y), cp)), move1Min);
+            move1Max = Math.max(Vec2.dot(a,
+                Vec2.sub(new Vec2(point.x, point.y), cp)), move1Max);
         }
         for (point of b2.points) {
-            move2Min = Math.min(Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)), move2Min);
-            move2Max = Math.max(Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)), move2Max);
+            move2Min = Math.min(Vec2.dot(a,
+                Vec2.sub(new Vec2(point.x, point.y), cp)), move2Min);
+            move2Max = Math.max(Vec2.dot(a,
+                Vec2.sub(new Vec2(point.x, point.y), cp)), move2Max);
         }
         if (Math.abs(move1Min - move2Max) < Math.abs(move2Min - move1Max)) {
             b1.move(-a.x * move1Min, -a.y * move1Min);
@@ -491,10 +558,13 @@ class Body {
         let pk1 = am1 / r1.length / r1.length;
         let pk2 = am2 / r2.length / r2.length;
 
-        let dvk1vx = (1 + k) * (pk1 * vk1.x + pk2 * vk2.x) / (pk1 + pk2) - (k + 1) * vk1.x;
-        let dvk2vx = (1 + k) * (pk1 * vk1.x + pk2 * vk2.x) / (pk1 + pk2) - (k + 1) * vk2.x;
+        let dvk1vx = (1 + k) * (pk1 * vk1.x + pk2 * vk2.x) /
+            (pk1 + pk2) - (k + 1) * vk1.x;
+        let dvk2vx = (1 + k) * (pk1 * vk1.x + pk2 * vk2.x) /
+            (pk1 + pk2) - (k + 1) * vk2.x;
 
-        let vkk = (am1 * vk1.y / r1.length + am2 * vk2.y / r2.length) / (am1 / r1.length + am2 / r2.length);
+        let vkk = (am1 * vk1.y / r1.length + am2 * vk2.y / r2.length) /
+            (am1 / r1.length + am2 / r2.length);
         let vk = (v1.y * m1 + v2.y * m2) / (m1 + m2);
         vkk += vk;
         vk = vkk;
@@ -505,8 +575,10 @@ class Body {
         if (Math.abs(vkk - vk2.y) > Math.abs(dvk2vy)) dvk2vy = vkk - vk2.y;
 
 
-        let dv1vx = (1 + k) * (m1 * v1.x + m2 * v2.x) / (m1 + m2) - (k + 1) * v1.x;
-        let dv2vx = (1 + k) * (m1 * v1.x + m2 * v2.x) / (m1 + m2) - (k + 1) * v2.x;
+        let dv1vx = (1 + k) * (m1 * v1.x + m2 * v2.x) /
+            (m1 + m2) - (k + 1) * v1.x;
+        let dv2vx = (1 + k) * (m1 * v1.x + m2 * v2.x) /
+            (m1 + m2) - (k + 1) * v2.x;
 
         let dv1vy = -Math.sign(v1.y) * fc * dv1vx;
         let dv2vy = -Math.sign(v2.y) * fc * dv2vx;
@@ -527,8 +599,10 @@ class Body {
         dv1v.rotate(-r1.heading);
         dv2v.rotate(-r2.heading);
 
-        let dang1 = (dv1v.y * m1 * r1.length) / (am1 + r1.length * r1.length * m1);
-        let dang2 = (dv2v.y * m2 * r2.length) / (am2 + r2.length * r2.length * m2);
+        let dang1 = (dv1v.y * m1 * r1.length) /
+            (am1 + r1.length * r1.length * m1);
+        let dang2 = (dv2v.y * m2 * r2.length) /
+            (am2 + r2.length * r2.length * m2);
 
         ang1 += dang1;
         ang2 += dang2;

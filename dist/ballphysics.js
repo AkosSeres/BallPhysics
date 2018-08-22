@@ -301,7 +301,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var Vec2 = require('./vec2');
             var LineSegment = require('./linesegment');
 
+            /**
+             * Class representing a body
+             * Bodies are movable objects
+             * and they collide with other objects (balls)
+             */
+
             var Body = function () {
+                /**
+                 * Creates a body and calculates it's centre of mass (position)
+                 * @param {Array} points The points that make up the body
+                 * @param {Vec2} vel The velocity of the body
+                 * @param {number} k Coefficient of restitution
+                 * @param {number} ang Angular velocity
+                 * @param {number} fc Friction coefficient
+                 */
                 function Body(points, vel, k, ang, fc) {
                     _classCallCheck(this, Body);
 
@@ -330,7 +344,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                     this.calculatePosAndMass();
                     this.lastPos = this.pos.copy;
-                    this.fc = 0.4; //coefficient of friction
+                    this.fc = 0.4;
 
                     this.rotation = 0;
 
@@ -345,6 +359,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     console.log(this);
                 }
 
+                /**
+                 * Moves the body by the given coordinates
+                 * It has to move all the points of the body and
+                 * also the centre of mass (pos) of the body
+                 * @param {number} x x coordinate
+                 * @param {number} y y coordinate
+                 */
+
+
                 _createClass(Body, [{
                     key: "move",
                     value: function move(x, y) {
@@ -355,6 +378,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             p.y += y;
                         });
                     }
+
+                    /**
+                     * Function that does the collision detection and
+                     * collision behavior between the body and ball
+                     * @param {Ball} ball The ball to collide with the body
+                     */
+
                 }, {
                     key: "collideWithBall",
                     value: function collideWithBall(ball) {
@@ -381,7 +411,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                                 var a = Vec2.fromAngle(heading);
                                 a.mult(-30);
-                                stroke("red");
+                                stroke('red');
                                 line(cp.x, cp.y, cp.x + a.x, cp.y + a.y);
                             }
                             p = new Vec2(point.x, point.y);
@@ -407,7 +437,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                                 var _a = Vec2.fromAngle(heading);
                                 _a.mult(-30);
-                                stroke("red");
+                                stroke('red');
                                 line(cp.x, cp.y, cp.x + _a.x, cp.y + _a.y);
                             }
                         });
@@ -479,6 +509,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             ball.ang = ang2;
                         }
                     }
+
+                    /**
+                     * Calculates the mass, moment od intertia and
+                     * the centre of mass of the body
+                     */
+
                 }, {
                     key: "calculatePosAndMass",
                     value: function calculatePosAndMass() {
@@ -636,6 +672,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                         this.am = amSum;
                     }
+
+                    /**
+                     * Rotates the body around it's centre of mass by a given ange
+                     * Has to do the transformation for all the points
+                     * @param {number} angle Rotation angle
+                     */
+
                 }, {
                     key: "rotate",
                     value: function rotate(angle) {
@@ -651,6 +694,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         });
                         this.rotation += angle;
                     }
+
+                    /**
+                     * Finds out if the body is concave or not
+                     * @return {Boolean} True if the body is concave
+                     */
+
                 }, {
                     key: "isConcave",
                     get: function get() {
@@ -665,6 +714,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         if (angle > Math.PI) return true;
                         return false;
                     }
+
+                    /**
+                     * Does the collision algorithm between two bodies
+                     * @param {Body} b1 First body
+                     * @param {Body} b2 Second body
+                     */
+
                 }], [{
                     key: "collide",
                     value: function collide(b1, b2) {
@@ -683,9 +739,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                     cp.add(sect);
                                     cps.push(sect);
                                     intersect = true;
-
-                                    var _v = Vec2.sub(side1.b, side1.a);
-                                    var _v2 = Vec2.sub(side2.b, side2.a);
                                 }
                             });
                         });
@@ -701,10 +754,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                         var a = Vec2.fromAngle(heading);
                         a.mult(-30);
-                        stroke("red");
+                        stroke('red');
                         line(cp.x, cp.y, cp.x + a.x, cp.y + a.y);
-
-                        var rotatedBy90 = Vec2.fromAngle(heading - Math.PI / 2);
                         a.div(-30);
 
                         var move1Min = 0;
