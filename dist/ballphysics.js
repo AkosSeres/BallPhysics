@@ -44,15 +44,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }()({ 1: [function (require, module, exports) {
             var Vec2 = require('./vec2');
 
+            /**
+             * A class representing a ball
+             * A ball is an object in the physics engine that
+             * has a shape of a circle and it is affected by gravity
+             */
+
             var Ball = function () {
+                /**
+                 * Crete a ball
+                 * The mass of the ball is calculated from its radius
+                 * @param {Vec2} pos The position of the center of the circle
+                 * @param {Vec2} vel The velocity of the circle
+                 * @param {number} r The radius of the circe
+                 * @param {number} k Coefficient of restitution
+                 * @param {number} ang The angular velocity of the ball (optional)
+                 * @param {number} fc The friction coefficient (optional, defaults to 0.4)
+                 */
                 function Ball(pos, vel, r, k, ang, fc) {
                     _classCallCheck(this, Ball);
 
                     this.pos = pos.copy;
                     this.lastPos = this.pos.copy;
                     this.r = r;
-                    this.fc = 0.4; //coefficient of friction
-                    this.amc = 2 / 5; //angular mass coefficient
+                    this.fc = 0.4;
+                    this.amc = 2 / 5;
 
                     this.rotation = 0;
 
@@ -65,27 +81,66 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     if (vel != undefined) this.vel = vel.copy;else this.vel = new Vec2(0, 0);
                 }
 
+                /**
+                 * Get the mass of the ball
+                 * @return {number} The mass
+                 */
+
+
                 _createClass(Ball, [{
                     key: "move",
+
+
+                    /**
+                     * Moves the ball by the given coordinates
+                     * @param {number} x x coordinate
+                     * @param {number} y y coordinate
+                     */
                     value: function move(x, y) {
                         this.pos.x += x;
                         this.pos.y += y;
                     }
+
+                    /**
+                     * Checks if two balls are colliding or not
+                     * @param {Ball} ball the other ball
+                     * @return {Boolean} True if they colidre
+                     */
+
                 }, {
                     key: "collided",
                     value: function collided(ball) {
                         if (this.pos.dist(ball.pos) < this.r + ball.r) return true;else return false;
                     }
+
+                    /**
+                     * Static function for collision between two balls
+                     * @param {Ball} ball1 First ball
+                     * @param {Ball} ball2 Second ball
+                     */
+
                 }, {
                     key: "m",
                     get: function get() {
                         return this.r * this.r * Math.PI;
                     }
+
+                    /**
+                     * Get the moment of inertia of the ball
+                     * @return {number} The moment of inertia
+                     */
+
                 }, {
                     key: "am",
                     get: function get() {
                         return this.amc * this.m * this.r * this.r;
                     }
+
+                    /**
+                     * Get a copy of the ball that is not a reference to it
+                     * @return {Ball} The copy of the ball
+                     */
+
                 }, {
                     key: "copy",
                     get: function get() {
@@ -110,8 +165,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             var m2 = r2 * r2;
                             var v1 = ball1.vel;
                             var v2 = ball2.vel;
-                            var s1 = Vec2.sub(pos1, lPos1);
-                            var s2 = Vec2.sub(pos2, lPos2);
                             var dist = Vec2.dist(pos1, pos2);
                             var lastDist = Vec2.dist(lPos1, lPos2);
                             var fc = (ball1.fc + ball2.fc) / 2;
@@ -815,13 +868,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, { "./linesegment": 3, "./vec2": 7 }], 3: [function (require, module, exports) {
             var Vec2 = require('./vec2');
 
-            /** Class representing a segment of a line */
+            /**
+             * Class representing a segment of a line
+             */
 
             var LineSegment = function () {
                 /**
-                 * Create a segment.
-                 * @param {Vec2} a - Starting point.
-                 * @param {Vec2} b - Ending point.
+                 * Create a segment
+                 * @param {Vec2} a Starting point
+                 * @param {Vec2} b Ending point
                  */
                 function LineSegment(a, b) {
                     _classCallCheck(this, LineSegment);
@@ -831,8 +886,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
 
                 /**
-                 * Get the length of the segment.
-                 * @return {number} The length.
+                 * Get the length of the segment
+                 * @return {number} The length
                  */
 
 
@@ -841,9 +896,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 
                     /**
-                     * Get the distance between a point and the line segment.
-                     * @param {Vec2} p - The point as a vector.
-                     * @return {number} The distance.
+                     * Get the distance between a point and the line segment
+                     * @param {Vec2} p The point as a vector
+                     * @return {number} The distance
                      */
                     value: function distFromPoint(p) {
                         var e = Vec2.sub(this.a, this.b);
@@ -864,12 +919,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     }
 
                     /**
-                     * Get if they intersect or not.
-                     * If they intersect it returns true.
-                     * If they not it returns false.
-                     * @param {LineSegment} segment1 - A segment.
-                     * @param {LineSegment} segment2 - Other segment.
-                     * @return {Boolean} If they intersect or not.
+                     * Get if they intersect or not
+                     * If they intersect it returns true
+                     * If they not it returns false
+                     * @param {LineSegment} segment1 A segment
+                     * @param {LineSegment} segment2 Other segment
+                     * @return {Boolean} If they intersect or not
                      */
 
                 }, {
@@ -891,34 +946,64 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         if (v1.x === 0 && v2.x !== 0) {
                             if (segment1.a.x >= segment2.a.x && segment1.a.x <= segment2.b.x || segment1.a.x <= segment2.a.x && segment1.a.x >= segment2.b.x) {
                                 var h = a2 * segment1.a.x + c2;
-                                if (h > segment1.a.y && h < segment1.b.y || h < segment1.a.y && h > segment1.b.y) return new Vec2(segment1.a.x, h);
+                                if (h > segment1.a.y && h < segment1.b.y || h < segment1.a.y && h > segment1.b.y) {
+                                    return new Vec2(segment1.a.x, h);
+                                }
                             }
                             return false;
                         }
                         if (v2.x === 0 && v1.x !== 0) {
                             if (segment2.a.x >= segment1.a.x && segment2.a.x <= segment1.b.x || segment2.a.x <= segment1.a.x && segment2.a.x >= segment1.b.x) {
                                 var _h = a1 * segment2.a.x + c1;
-                                if (_h > segment2.a.y && _h < segment2.b.y || _h < segment2.a.y && _h > segment2.b.y) return new Vec2(segment2.a.x, _h);
+                                if (_h > segment2.a.y && _h < segment2.b.y || _h < segment2.a.y && _h > segment2.b.y) {
+                                    return new Vec2(segment2.a.x, _h);
+                                }
                             }
                             return false;
                         }
                         if (v1.x === 0 && v2.x === 0) {
                             if (segment1.a.x === segment2.a.x) {
-                                var _interval = segment1.a.y < segment1.b.y ? [segment1.a.y, segment1.b.y] : [segment1.b.y, segment1.a.y];
-                                var _interval2 = segment2.a.y < segment2.b.y ? [segment2.a.y, segment2.b.y] : [segment2.b.y, segment2.a.y];
+                                var _interval = void 0;
+                                if (segment1.a.y < segment1.b.y) {
+                                    _interval = [segment1.a.y, segment1.b.y];
+                                } else {
+                                    _interval = [segment1.b.y, segment1.a.y];
+                                }
+                                var _interval2 = void 0;
+                                if (segment2.a.y < segment2.b.y) {
+                                    _interval2 = [segment2.a.y, segment2.b.y];
+                                } else {
+                                    _interval2 = [segment2.b.y, segment2.a.y];
+                                }
                                 var _interval3 = [_interval[0] > _interval2[0] ? _interval[0] : _interval2[0], _interval[1] < _interval2[1] ? _interval[1] : _interval2[1]];
-                                if (_interval3[0] <= _interval3[1]) return new Vec2(segment1.a.x, (_interval3[0] + _interval3[1]) / 2);
+                                if (_interval3[0] <= _interval3[1]) {
+                                    return new Vec2(segment1.a.x, (_interval3[0] + _interval3[1]) / 2);
+                                }
                             }
                             return false;
                         }
 
-                        var interval1 = segment1.a.x < segment1.b.x ? [segment1.a.x, segment1.b.x] : [segment1.b.x, segment1.a.x];
-                        var interval2 = segment2.a.x < segment2.b.x ? [segment2.a.x, segment2.b.x] : [segment2.b.x, segment2.a.x];
+                        var interval1 = void 0;
+                        if (segment1.a.x < segment1.b.x) {
+                            interval1 = [segment1.a.x, segment1.b.x];
+                        } else {
+                            interval1 = [segment1.b.x, segment1.a.x];
+                        }
+                        var interval2 = void 0;
+                        if (segment2.a.x < segment2.b.x) {
+                            interval2 = [segment2.a.x, segment2.b.x];
+                        } else {
+                            interval2 = [segment2.b.x, segment2.a.x];
+                        }
                         var interval = [interval1[0] > interval2[0] ? interval1[0] : interval2[0], interval1[1] < interval2[1] ? interval1[1] : interval2[1]];
                         // If they are parralel the only time they intersect is when c1 == c2.
-                        if (a1 === a2 && c1 === c2 && interval[0] <= interval[1]) return new Vec2((interval[0] + interval[1]) / 2, (interval[0] + interval[1]) / 2 * a1 + c1);
+                        if (a1 === a2 && c1 === c2 && interval[0] <= interval[1]) {
+                            return new Vec2((interval[0] + interval[1]) / 2, (interval[0] + interval[1]) / 2 * a1 + c1);
+                        }
                         var x = (c2 - c1) / (a1 - a2);
-                        if (x >= interval[0] && x <= interval[1]) return new Vec2(x, x * a1 + c1);else return false;
+                        if (x >= interval[0] && x <= interval[1]) {
+                            return new Vec2(x, x * a1 + c1);
+                        } else return false;
                     }
                 }]);
 
@@ -1305,7 +1390,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, { "./ball": 1, "./body": 2, "./linesegment": 3, "./spring": 5, "./stick": 6, "./vec2": 7, "./wall": 8 }], 5: [function (require, module, exports) {
             var Vec2 = require('./vec2');
 
+            /**
+             * Class representing a string
+             * They act like springs in real life
+             * You can attach other objects to the ends of them
+             * They do not collide with other object neither with each other
+             */
+
             var Spring = function () {
+                /**
+                 * Creates a spring
+                 * @param {number} length The unstreched length of the spring
+                 * @param {number} springConstant Spring constant
+                 */
                 function Spring(length, springConstant) {
                     _classCallCheck(this, Spring);
 
@@ -1316,6 +1413,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     this.rotationLocked = false;
                 }
 
+                /**
+                 * Pins one side of the the spring to a given coordinate in space
+                 * @param {number} x x coordinate
+                 * @param {number} y y coordinate
+                 */
+
+
                 _createClass(Spring, [{
                     key: "pinHere",
                     value: function pinHere(x, y) {
@@ -1324,37 +1428,68 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             y: y
                         };
                     }
+
+                    /**
+                     * Removes the pinned tag from the spring
+                     * You can now attach it to another object
+                     */
+
                 }, {
                     key: "unpin",
                     value: function unpin() {
                         this.pinned = false;
                     }
+
+                    /**
+                     * Attaches one end of the spring to an object (eg. Ball)
+                     * @param {Ball} object The object that the spring is getting attached to
+                     */
+
                 }, {
                     key: "attachObject",
                     value: function attachObject(object) {
-                        this.objects.push(object);
-                        if (this.objects.length === 2) {
+                        var ob = this.objects;
+                        ob.push(object);
+                        if (ob.length === 2) {
                             this.pinned = false;
                         }
-                        if (this.objects.length >= 3) {
-                            this.objects = [this.objects[this.objects.length - 2], this.objects[this.objects.length - 1]];
+                        if (ob.length >= 3) {
+                            ob = [ob[ob.length - 2], ob[ob.length - 1]];
                         }
                     }
+
+                    /**
+                     * Locks the objects attached to the ends of the spring
+                     * to not rotate around the attach point
+                     */
+
                 }, {
                     key: "lockRotation",
                     value: function lockRotation() {
                         this.rotationLocked = true;
                     }
+
+                    /**
+                     * Releases the objects attached to the ends of the spring
+                     * to rotate around the attach point
+                     */
+
                 }, {
                     key: "unlockRotation",
                     value: function unlockRotation() {
                         this.rotationLocked = false;
                     }
+
+                    /**
+                     * Updates the spring bay the elapsed time
+                     * @param {number} t Elapsed time
+                     */
+
                 }, {
                     key: "update",
                     value: function update(t) {
-                        var p1 = void 0,
-                            p2 = void 0;
+                        var p1 = void 0;
+                        var p2 = void 0;
                         if (this.pinned && this.objects[0]) {
                             p2 = this.pinned;
                             p1 = this.objects[0];
@@ -1424,9 +1559,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var Spring = require('./spring');
             var Vec2 = require('./vec2');
 
+            /**
+             * Stick class for the physics engine
+             * Sticks are not strechable objects that do not collide
+             * with other objects but they can hold other objects on their ends
+             */
+
             var Stick = function (_Spring) {
                 _inherits(Stick, _Spring);
 
+                /**
+                 * Creates a stick
+                 * @param {nuber} length The length of the stick
+                 */
                 function Stick(length) {
                     _classCallCheck(this, Stick);
 
@@ -1436,16 +1581,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     return _this3;
                 }
 
+                /**
+                 * Updates the stick trough an elapsed time
+                 * @param {number} t Elapsed time
+                 */
+
+
                 _createClass(Stick, [{
                     key: "update",
                     value: function update(t) {
-                        var p1 = void 0,
-                            p2 = void 0;
+                        var p1 = void 0;
+                        var p2 = void 0;
                         if (this.pinned && this.objects[0]) {
                             p2 = this.pinned;
                             p1 = this.objects[0];
                             var dist = new Vec2(p2.x - p1.pos.x, p2.y - p1.pos.y);
-                            var dl = dist.length - this.length;
                             dist.setMag(1);
                             dist.mult(-this.length);
                             p1.pos.x = p2.x + dist.x;
@@ -1472,10 +1622,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             p2 = this.objects[1];
 
                             var _dist2 = Vec2.sub(p1.pos, p2.pos);
-                            var _dl2 = this.length - _dist2.length;
+                            var dl = this.length - _dist2.length;
                             _dist2.setMag(1);
-                            p1.pos.add(Vec2.mult(_dist2, _dl2 * p2.m / (p1.m + p2.m)));
-                            p2.pos.add(Vec2.mult(_dist2, -_dl2 * p1.m / (p1.m + p2.m)));
+                            p1.pos.add(Vec2.mult(_dist2, dl * p2.m / (p1.m + p2.m)));
+                            p2.pos.add(Vec2.mult(_dist2, -dl * p1.m / (p1.m + p2.m)));
 
                             var v1 = p1.vel;
                             var v2 = p2.vel;
@@ -1836,11 +1986,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {}], 8: [function (require, module, exports) {
             var Vec2 = require('./vec2');
 
+            /** Class representing a wall
+             * Walls are objects that are immovable  and they are rigid
+             * It can be convex or concave
+             */
+
             var Wall = function () {
+                /**
+                 * Create a wall
+                 * @param {Array} points Array of points that make up the wall
+                 */
                 function Wall(points) {
                     _classCallCheck(this, Wall);
 
-                    // The wall is immovable
                     this.points = points;
 
                     var pol = this.points;
@@ -1864,6 +2022,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         }this.points = temp;
                     }
                 }
+
+                /**
+                 * Function for collision detection and behavior between balls and walls
+                 * @param {Ball} ball The ball that is checked if it collides with the wall
+                 */
+
 
                 _createClass(Wall, [{
                     key: "collideWithBall",

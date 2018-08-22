@@ -1,6 +1,17 @@
 const Vec2 = require('./vec2');
 
+/**
+ * Class representing a string
+ * They act like springs in real life
+ * You can attach other objects to the ends of them
+ * They do not collide with other object neither with each other
+ */
 class Spring {
+    /**
+     * Creates a spring
+     * @param {number} length The unstreched length of the spring
+     * @param {number} springConstant Spring constant
+     */
     constructor(length, springConstant) {
         this.length = length;
         this.springConstant = springConstant;
@@ -8,37 +19,65 @@ class Spring {
         this.objects = [];
         this.rotationLocked = false;
     }
+
+    /**
+     * Pins one side of the the spring to a given coordinate in space
+     * @param {number} x x coordinate
+     * @param {number} y y coordinate
+     */
     pinHere(x, y) {
         this.pinned = {
-            x,
-            y
+            x: x,
+            y: y,
         };
     }
 
+    /**
+     * Removes the pinned tag from the spring
+     * You can now attach it to another object
+     */
     unpin() {
         this.pinned = false;
     }
 
+    /**
+     * Attaches one end of the spring to an object (eg. Ball)
+     * @param {Ball} object The object that the spring is getting attached to
+     */
     attachObject(object) {
-        this.objects.push(object);
-        if (this.objects.length === 2) {
+        let ob = this.objects;
+        ob.push(object);
+        if (ob.length === 2) {
             this.pinned = false;
         }
-        if (this.objects.length >= 3) {
-            this.objects = [this.objects[this.objects.length - 2], this.objects[this.objects.length - 1]];
+        if (ob.length >= 3) {
+            ob = [ob[ob.length - 2], ob[ob.length - 1]];
         }
     }
 
+    /**
+     * Locks the objects attached to the ends of the spring
+     * to not rotate around the attach point
+     */
     lockRotation() {
         this.rotationLocked = true;
     }
 
+    /**
+     * Releases the objects attached to the ends of the spring
+     * to rotate around the attach point
+     */
     unlockRotation() {
         this.rotationLocked = false;
     }
 
+    /**
+     * Updates the spring bay the elapsed time
+     * @param {number} t Elapsed time
+     */
     update(t) {
-        let p1, p2;
+        let p1;
+        let p2;
         if (this.pinned && this.objects[0]) {
             p2 = this.pinned;
             p1 = this.objects[0];
@@ -79,13 +118,18 @@ class Spring {
             v2.rotate(-dist.heading);
 
             if (this.rotationLocked) {
-                let s = new Vec2(p1.pos.x * p1.m + p2.pos.x * p2.m, p1.pos.y * p1.m + p2.pos.y * p2.m);
+                let s = new Vec2(p1.pos.x * p1.m + p2.pos.x * p2.m,
+                    p1.pos.y * p1.m + p2.pos.y * p2.m);
                 s.div(p1.m + p2.m);
                 let r1 = Vec2.sub(p1.pos, s);
                 let r2 = Vec2.sub(p2.pos, s);
-                let am = r1.length * r1.length * p1.m + p1.am + r2.length * r2.length * p2.m + p2.am;
-                let sv = (v1.y - v2.y) * r2.length / (r1.length + r2.length) + v2.y;
-                let ang = (p1.am * p1.ang + p2.am * p2.ang - r1.length * p1.m * (v1.y - sv) + r2.length * p2.m * (v2.y - sv)) / (am);
+                let am = r1.length * r1.length * p1.m + p1.am +
+                    r2.length * r2.length * p2.m + p2.am;
+                let sv = (v1.y - v2.y) * r2.length /
+                    (r1.length + r2.length) + v2.y;
+                let ang = (p1.am * p1.ang + p2.am * p2.ang -
+                    r1.length * p1.m * (v1.y - sv) +
+                    r2.length * p2.m * (v2.y - sv)) / (am);
 
                 v1.y = -ang * r1.length + sv;
                 v2.y = +ang * r2.length + sv;
