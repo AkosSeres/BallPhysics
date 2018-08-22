@@ -1,8 +1,15 @@
 const Vec2 = require('./vec2');
 
+/** Class representing a wall
+ * Walls are objects that are immovable  and they are rigid
+ * It can be convex or concave
+ */
 class Wall {
+    /**
+     * Create a wall
+     * @param {Array} points Array of points that make up the wall
+     */
     constructor(points) {
-        // The wall is immovable
         this.points = points;
 
         let pol = this.points;
@@ -30,6 +37,10 @@ class Wall {
         }
     }
 
+    /**
+     * Function for collision detection and behavior between balls and walls
+     * @param {Ball} ball The ball that is checked if it collides with the wall
+     */
     collideWithBall(ball) {
         let heading = null;
         let rel = null;
@@ -44,7 +55,9 @@ class Wall {
                 rel = p.length;
             }
             p = new Vec2(point.x, point.y);
-            let np = new Vec2(this.points[(idx + 1) % this.points.length].x, this.points[(idx + 1) % this.points.length].y);
+            let np = new Vec2(
+                this.points[(idx + 1) % this.points.length].x,
+                this.points[(idx + 1) % this.points.length].y);
             let bp = new Vec2(ball.pos.x, ball.pos.y);
             let side = new Vec2(np.x - p.x, np.y - p.y);
             let h = side.heading;
@@ -67,12 +80,18 @@ class Wall {
             vel.y *= -ball.k;
             pos.y += ball.r - rel;
             let dvy = vel.y * (1 + (1 / ball.k));
-            let dvx = Math.abs(dvy) * ball.fc * Math.sign(vel.x - ball.ang * ball.r) * -1;
+            let dvx =
+                Math.abs(dvy) * ball.fc *
+                Math.sign(vel.x - ball.ang * ball.r) * -1;
             if (Math.abs(dvx) > Math.abs(vel.x - ball.ang * ball.r)) {
                 dvx = -vel.x + ball.ang * ball.r;
             }
-            vel.x += dvx - ball.r * ball.r * ball.m * dvx / (ball.am + ball.r * ball.r * ball.m);
-            ball.ang -= ball.r * ball.r * ball.m * dvx / ((ball.am + ball.r * ball.r * ball.m) * ball.r);
+            vel.x +=
+                dvx - ball.r * ball.r * ball.m * dvx /
+                (ball.am + ball.r * ball.r * ball.m);
+            ball.ang -=
+                ball.r * ball.r * ball.m * dvx /
+                ((ball.am + ball.r * ball.r * ball.m) * ball.r);
             pos.rotate(heading - Math.PI / 2);
             vel.rotate(heading - Math.PI / 2);
             ball.pos.x = pos.x;
