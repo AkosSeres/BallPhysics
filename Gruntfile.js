@@ -1,48 +1,48 @@
 module.exports = function(grunt) {
-
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         browserify: {
             dist: {
                 files: {
-                    'dist/<%= pkg.name %>.js': 'src/physics.js'
-                }
+                    'dist/<%= pkg.name %>.js': 'src/physics.js',
+                },
             },
             options: {
                 browserifyOptions: {
-                    standalone: 'Physics'
-                }
-            }
+                    standalone: 'Physics',
+                },
+            },
         },
         babel: {
             dist: {
                 files: {
-                    'dist/<%= pkg.name %>.js': 'dist/<%= pkg.name %>.js'
-                }
-            }
+                    'dist/<%= pkg.name %>.js': 'dist/<%= pkg.name %>.js',
+                },
+            },
         },
         uglify: {
             options: {
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
+                banner: '/*! <%= pkg.name %>' +
+                    '<%= grunt.template.today("dd-mm-yyyy") %> */\n',
                 mangle: true,
-                beautify: false
+                beautify: false,
             },
             dist: {
                 files: {
-                    'dist/<%= pkg.name %>.min.js': 'dist/<%= pkg.name %>.js'
-                }
-            }
+                    'dist/<%= pkg.name %>.min.js': 'dist/<%= pkg.name %>.js',
+                },
+            },
         },
         eslint: {
             target: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
             options: {
-                useEslintrc: true
-            }
+                useEslintrc: true,
+            },
         },
         watch: {
             files: ['<%= eslint.target %>'],
-            tasks: ['eslint', 'browserify', 'babel']
-        }
+            tasks: ['eslint', 'browserify', 'babel'],
+        },
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -53,6 +53,5 @@ module.exports = function(grunt) {
 
     grunt.registerTask('test', ['eslint']);
 
-    grunt.registerTask('default', ['eslint','browserify','babel', 'uglify']);
-
+    grunt.registerTask('default', ['eslint', 'browserify', 'babel', 'uglify']);
 };
