@@ -1071,7 +1071,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var Spring = exports.Spring = require('./spring');
             var Stick = exports.Stick = require('./stick');
 
+            /**
+             * Class that creates a new world ba the physics engine
+             */
+
             var Physics = function () {
+                /**
+                 * Create and initalize a new world
+                 */
                 function Physics() {
                     _classCallCheck(this, Physics);
 
@@ -1088,16 +1095,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     this.gravity = null;
                 }
 
+                /**
+                 * Updates the world by a given amount of time
+                 * @param {number} t Elapsed time
+                 */
+
+
                 _createClass(Physics, [{
                     key: "update",
                     value: function update(t) {
-                        // at first move objets
+                        // At first move objets
                         for (var i = 0; i < this.balls.length; i++) {
-                            //move
+                            // Move
                             this.balls[i].lastPos = this.balls[i].pos.copy;
                             this.balls[i].pos.add(Vec2.mult(this.balls[i].vel, t));
 
-                            //angular vel
+                            // Angular velocity
                             this.balls[i].rotation += this.balls[i].ang * t;
                             this.balls[i].rotation %= Math.PI * 2;
                         }
@@ -1107,7 +1120,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             this.bodies[_i3].rotate(this.bodies[_i3].ang * t);
                         }
 
-                        //update springs multiple times
+                        // Update springs multiple times
                         for (var _i4 = 0; _i4 < this.springs.length; _i4++) {
                             var _iteratorNormalCompletion4 = true;
                             var _didIteratorError4 = false;
@@ -1136,15 +1149,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         }
 
                         for (var _i5 = 0; _i5 < this.balls.length; _i5++) {
-                            //apply gravity
-                            if (this.gravity) this.balls[_i5].vel.add(new Vec2(this.gravity.x * t, this.gravity.y * t));
-
-                            //collision
-                            for (var j = _i5 + 1; j < this.balls.length; j++) {
-                                if (this.balls[_i5].group != this.balls[j].group || !this.balls[_i5].group && !this.balls[j].group) Ball.collide(this.balls[_i5], this.balls[j]);
+                            // Apply gravity
+                            if (this.gravity) {
+                                this.balls[_i5].vel.add(new Vec2(this.gravity.x * t, this.gravity.y * t));
                             }
 
-                            //collision with walls
+                            // Collision
+                            for (var j = _i5 + 1; j < this.balls.length; j++) {
+                                if (this.balls[_i5].group != this.balls[j].group || !this.balls[_i5].group && !this.balls[j].group) {
+                                    Ball.collide(this.balls[_i5], this.balls[j]);
+                                }
+                            }
+
+                            // Collision with walls
                             var _iteratorNormalCompletion5 = true;
                             var _didIteratorError5 = false;
                             var _iteratorError5 = undefined;
@@ -1156,7 +1173,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                     wall.collideWithBall(this.balls[_i5]);
                                 }
 
-                                //collision with fixed balls
+                                // Collision with fixed balls
                             } catch (err) {
                                 _didIteratorError5 = true;
                                 _iteratorError5 = err;
@@ -1182,8 +1199,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                                     var ball = this.balls[_i5];
 
-                                    var heading = void 0,
-                                        rel = void 0;
+                                    var heading = void 0;
+                                    var rel = void 0;
                                     var p = new Vec2(b.x, b.y);
                                     p.x -= ball.pos.x;
                                     p.y -= ball.pos.y;
@@ -1217,7 +1234,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                     }
                                 }
 
-                                //bounce from the edges
+                                // Bounce off the edges
                             } catch (err) {
                                 _didIteratorError6 = true;
                                 _iteratorError6 = err;
@@ -1292,7 +1309,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                 for (var _iterator7 = this.balls[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
                                     var _ball4 = _step7.value;
 
-                                    if (_ball4.group != this.bodies[_i6].group || !_ball4.group && !this.bodies[_i6].group) this.bodies[_i6].collideWithBall(_ball4);
+                                    if (_ball4.group != this.bodies[_i6].group || !_ball4.group && !this.bodies[_i6].group) {
+                                        this.bodies[_i6].collideWithBall(_ball4);
+                                    }
                                 }
                             } catch (err) {
                                 _didIteratorError7 = true;
@@ -1310,16 +1329,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             }
 
                             for (var _j2 = _i6 + 1; _j2 < this.bodies.length; _j2++) {
-                                if (this.bodies[_i6].group != this.bodies[_j2].group || !this.bodies[_j2].group && !this.bodies[_i6].group) Body.collide(this.bodies[_i6], this.bodies[_j2]);
+                                if (this.bodies[_i6].group != this.bodies[_j2].group || !this.bodies[_j2].group && !this.bodies[_i6].group) {
+                                    Body.collide(this.bodies[_i6], this.bodies[_j2]);
+                                }
                             }
 
-                            //apply gravity
+                            // Apply gravity
                             if (this.gravity) {
                                 this.bodies[_i6].vel.add(new Vec2(this.gravity.x * t, this.gravity.y * t));
                             }
                         }
 
-                        //update springs again multiple times
+                        // Update springs again multiple times
                         for (var _i7 = 0; _i7 < this.springs.length; _i7++) {
                             var _iteratorNormalCompletion8 = true;
                             var _didIteratorError8 = false;
@@ -1347,21 +1368,48 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             }
                         }
                     }
+
+                    /**
+                     * Sets the gravity in the world
+                     * @param {Vec2} dir The acceleration vector of the gravity
+                     */
+
                 }, {
                     key: "setGravity",
                     value: function setGravity(dir) {
                         this.gravity = dir.copy;
                     }
+
+                    /**
+                     * Appends a new ball to the world
+                     * @param {Ball} ball Ball to add to the world
+                     */
+
                 }, {
                     key: "addBall",
                     value: function addBall(ball) {
                         this.balls.push(ball);
                     }
+
+                    /**
+                     * Appends a new body to the world
+                     * @param {Body} body Body to add to the world
+                     */
+
                 }, {
                     key: "addBody",
                     value: function addBody(body) {
                         this.bodies.push(body);
                     }
+
+                    /**
+                     * Appends a rectangular wall to the world
+                     * @param {number} x x coordinate of the rectangular wall
+                     * @param {number} y y coordinate of the rectangular wall
+                     * @param {number} w width of the rectangular wall
+                     * @param {number} h height of the rectangular wall
+                     */
+
                 }, {
                     key: "addRectWall",
                     value: function addRectWall(x, y, w, h) {
@@ -1382,14 +1430,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             x: x - w / 2,
                             y: y + h / 2
                         });
-                        //this.walls.push(new Wall(points));
+                        // this.walls.push(new Wall(points));
                         this.bodies.push(new Body(points, new Vec2(0, 0), 0.5, 0, 0.3));
                     }
+
+                    /**
+                     * Append a new wall to the world
+                     * @param {Wall} wall Wall to append to the world
+                     */
+
                 }, {
                     key: "addWall",
                     value: function addWall(wall) {
                         this.walls.push(wall);
                     }
+
+                    /**
+                     * Appends a fixed ball to the world
+                     * A fixed ball is immovable and other objects collide with it
+                     * @param {number} x x coordinate of the fixed ball
+                     * @param {number} y y coordinate of the fixed ball
+                     * @param {number} r radius of the fixed ball
+                     */
+
                 }, {
                     key: "addFixedBall",
                     value: function addFixedBall(x, y, r) {
@@ -1399,21 +1462,41 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             r: r
                         });
                     }
+
+                    /**
+                     * Appends a new spring to the world
+                     * @param {Spring} spring Spring to add to the world
+                     */
+
                 }, {
                     key: "addSpring",
                     value: function addSpring(spring) {
                         this.springs.push(spring);
                     }
+
+                    /**
+                     * Sets the size of the world (without this the world
+                     * does not have bounds)
+                     * @param {number} x x coordinate of the centre of the world
+                     * @param {number} y y coordinate of the centre of the world
+                     * @param {number} w Width of the world
+                     * @param {number} h Height of the world
+                     */
+
                 }, {
                     key: "setBounds",
                     value: function setBounds(x, y, w, h) {
                         this.bounds = [x, y, w, h];
                     }
-                }, {
-                    key: "addField",
-                    value: function addField(field) {
-                        this.fields.push(field);
-                    }
+
+                    /**
+                     * Search for any object at the given coordinate then returns it
+                     * Return false if nothing is found
+                     * @param {number} x x coordinate
+                     * @param {number} y y coordinate
+                     * @return {Object} The found object
+                     */
+
                 }, {
                     key: "getObjectAtCoordinates",
                     value: function getObjectAtCoordinates(x, y) {
