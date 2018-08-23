@@ -36,8 +36,8 @@ let right = false;
 function setup() {
   cnv = createCanvas(window.innerWidth, window.innerHeight).canvas;
 
-  cnv.ontouchstart = startTouch;
-  cnv.ontouchend = endTouch;
+  cnv.addEventListener('touchstart', startTouch);
+  cnv.addEventListener('touchendt', endTouch);
 
   gui = createGui('Properties');
   sliderRange(3, 100, 1);
