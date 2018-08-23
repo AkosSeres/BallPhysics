@@ -146,8 +146,8 @@ function draw() {
  * @param {Event} e It contains the event details
  */
 function startTouch(e) {
-  let touchX = e.touches[0].clientX;
-  let touchY = e.touches[0].clientY;
+  let touchX = e.touches[0].x;
+  let touchY = e.touches[0].y;
   text(e.touches[0], 300, 100);
   touchStarted(touchX, touchY);
 }
@@ -157,8 +157,8 @@ function startTouch(e) {
  * @param {Event} e It contains the event details
  */
 function endTouch(e) {
-  let touchX = e.touches[0].clientX;
-  let touchY = e.touches[0].clientY;
+  let touchX = e.touches[0].x;
+  let touchY = e.touches[0].y;
   text(e.touches[0], 300, 100);
   touchEnded(touchX, touchY);
 }
