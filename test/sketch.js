@@ -78,6 +78,12 @@ function draw() {
 
   stroke(0);
   noFill();
+  if (touches[0]) {
+    mouseX = touches[0].x;
+    mouseY = touches[0].y;
+    console.log('using touches');
+  }
+
   if (mode === 0) {
     ellipse(mouseX, mouseY, defaultSize * 2, defaultSize * 2);
   }
