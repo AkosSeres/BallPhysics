@@ -213,6 +213,16 @@ class Vec2 {
     }
 
     /**
+     * Get the cross product of two vectors.
+     * @param {Vec2} a - A vector.
+     * @param {Vec2} b - Other vector
+     * @return {number} The cross product of them.
+     */
+    static cross(a, b) {
+        return a.x * b.y - a.y * b.x;
+    }
+
+    /**
      * Get the angle between two vectors.
      * @param {Vec2} a - A vector.
      * @param {Vec2} b - Other vector
