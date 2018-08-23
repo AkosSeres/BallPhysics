@@ -90,7 +90,7 @@ function draw() {
     ellipse(mouseX, mouseY, defaultSize * 2, defaultSize * 2);
   }
 
-  text(physics.bodies.length, 200, 200);
+  text(physics.balls.length, 300, 200);
 
   if (lastX != 0 && lastY != 0) {
     if (mode === 1) {
