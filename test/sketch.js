@@ -18,6 +18,7 @@ let timeMultiplier = 1;
 window.lockRotation = false;
 window.time = true;
 let choosed = false;
+let wasTouchLastTime = false;
 let modes = [
   'ball creator',
   'recrangle',
@@ -81,8 +82,9 @@ function draw() {
   if (touches[0]) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
-    console.log('using touches');
   }
+  if (wasTouchLastTime && !touches[0]) touchEnded();
+  if (!wasTouchLastTime && touches[0]) touchStarted();
 
   if (mode === 0) {
     ellipse(mouseX, mouseY, defaultSize * 2, defaultSize * 2);
@@ -105,6 +107,8 @@ function draw() {
       physics.addFixedBall(mouseX, mouseY, drawThickness);
     }
   }
+
+  if (touches[0]) wasTouchLastTime = true;
 
   physics.draw();
 
