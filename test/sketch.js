@@ -79,11 +79,15 @@ function draw() {
 
   stroke(0);
   noFill();
+  if (wasTouchLastTime && !touches[0]) {
+    mouseX = wasTouchLastTime.x;
+    mouseY = wasTouchLastTime.y;
+    touchEnded();
+  }
   if (touches[0]) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
   }
-  if (wasTouchLastTime && !touches[0]) touchEnded();
   if (!wasTouchLastTime && touches[0]) touchStarted();
 
   if (mode === 0) {
@@ -110,7 +114,7 @@ function draw() {
     }
   }
 
-  if (touches[0]) wasTouchLastTime = true;
+  if (touches[0]) wasTouchLastTime = thouches[0];
   else wasTouchLastTime = false;
 
   physics.draw();
