@@ -495,10 +495,8 @@ class Body {
         heading += Math.PI / 2;
 
         let a = Vec2.fromAngle(heading);
-        a.mult(-30);
         stroke('red');
-        line(cp.x, cp.y, cp.x + a.x, cp.y + a.y);
-        a.div(-30);
+        line(cp.x, cp.y, cp.x + a.x * -30, cp.y + a.y * -30);
 
         let move1Min = 0;
         let move1Max = 0;
@@ -524,101 +522,21 @@ class Body {
             b2.move(-a.x * move2Min, -a.y * move2Min);
         }
 
-        let v1 = b1.vel.copy;
-        let v2 = b2.vel.copy;
-        let ang1 = b1.ang;
-        let ang2 = b2.ang;
-        let r1 = Vec2.sub(cp, b1.pos);
-        let r2 = Vec2.sub(cp, b2.pos);
-        let am1 = b1.am;
-        let am2 = b2.am;
-        let m1 = b1.m;
-        let m2 = b2.m;
         let k = (b1.k + b2.k) / 2;
-        let fc = (b1.fc + b2.fc) / 2;
+        // let vel1parralel = Vec2.cross(b1.vel, a);
+        let vel1perpendicular = Vec2.dot(b1.vel, a);
+        // let vel2parralel = Vec2.cross(b2.vel, a);
+        let vel2perpendicular = Vec2.dot(b2.vel, a);
 
-        let v1v = r1.copy;
-        let v2v = r2.copy;
-        v1v.rotate(Math.PI / 2);
-        v2v.rotate(Math.PI / 2);
-        v1v.mult(ang1);
-        v2v.mult(ang2);
-        let vk1 = v1v.copy;
-        let vk2 = v2v.copy;
-        v1v.add(v1);
-        v2v.add(v2);
+        let newVel1Perpendicular = (1 + k) * ((b1.m * vel1perpendicular) +
+                (b2.m * vel2perpendicular)) / (b1.m + b2.m) -
+            (k * vel1perpendicular);
+        let newVel2Perpendicular = (1 + k) * ((b1.m * vel1perpendicular) +
+                (b2.m * vel2perpendicular)) / (b1.m + b2.m) -
+            (k * vel2perpendicular);
 
-        v1v.rotate(-heading);
-        v2v.rotate(-heading);
-        v1.rotate(-heading);
-        v2.rotate(-heading);
-        vk1.rotate(-heading);
-        vk2.rotate(-heading);
-
-        let pk1 = am1 / r1.length / r1.length;
-        let pk2 = am2 / r2.length / r2.length;
-
-        let dvk1vx = (1 + k) * (pk1 * vk1.x + pk2 * vk2.x) /
-            (pk1 + pk2) - (k + 1) * vk1.x;
-        let dvk2vx = (1 + k) * (pk1 * vk1.x + pk2 * vk2.x) /
-            (pk1 + pk2) - (k + 1) * vk2.x;
-
-        let vkk = (am1 * vk1.y / r1.length + am2 * vk2.y / r2.length) /
-            (am1 / r1.length + am2 / r2.length);
-        let vk = (v1.y * m1 + v2.y * m2) / (m1 + m2);
-        vkk += vk;
-        vk = vkk;
-
-        let dvk1vy = -Math.sign(vk1.y) * fc * dvk1vx;
-        let dvk2vy = -Math.sign(vk2.y) * fc * dvk2vx;
-        if (Math.abs(vkk - vk1.y) > Math.abs(dvk1vy)) dvk1vy = vkk - vk1.y;
-        if (Math.abs(vkk - vk2.y) > Math.abs(dvk2vy)) dvk2vy = vkk - vk2.y;
-
-
-        let dv1vx = (1 + k) * (m1 * v1.x + m2 * v2.x) /
-            (m1 + m2) - (k + 1) * v1.x;
-        let dv2vx = (1 + k) * (m1 * v1.x + m2 * v2.x) /
-            (m1 + m2) - (k + 1) * v2.x;
-
-        let dv1vy = -Math.sign(v1.y) * fc * dv1vx;
-        let dv2vy = -Math.sign(v2.y) * fc * dv2vx;
-        if (Math.abs(vk - v1.y) > Math.abs(dv1vy)) dv1vy = vk - v1.y;
-        if (Math.abs(vk - v2.y) > Math.abs(dv2vy)) dv2vy = vk - v2.y;
-
-        let dv1v = new Vec2(dv1vx + dvk1vx, dv1vy + dvk1vy);
-        let dv2v = new Vec2(dv2vx + dvk2vx, dv2vy + dvk2vy);
-        dv1v.rotate(heading);
-        dv2v.rotate(heading);
-
-        v1.rotate(heading);
-        v2.rotate(heading);
-
-        v1.add(dv1v);
-        v2.add(dv2v);
-
-        dv1v.rotate(-r1.heading);
-        dv2v.rotate(-r2.heading);
-
-        let dang1 = (dv1v.y * m1 * r1.length) /
-            (am1 + r1.length * r1.length * m1);
-        let dang2 = (dv2v.y * m2 * r2.length) /
-            (am2 + r2.length * r2.length * m2);
-
-        ang1 += dang1;
-        ang2 += dang2;
-
-        let vp1 = Vec2.fromAngle(r1.heading - Math.PI / 2);
-        vp1.mult(r1.length * dang1);
-        let vp2 = Vec2.fromAngle(r2.heading - Math.PI / 2);
-        vp2.mult(r2.length * dang2);
-        v2.sub(vp2);
-        v1.add(vp1);
-
-        b1.vel = v1;
-        b2.vel = v2;
-
-        b1.ang = ang1;
-        b2.ang = ang2;
+        b1.vel.add(Vec2.mult(a.copy, newVel1Perpendicular - vel1perpendicular));
+        b2.vel.add(Vec2.mult(a.copy, newVel2Perpendicular - vel2perpendicular));
     }
 }
 

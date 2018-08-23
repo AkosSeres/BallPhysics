@@ -753,10 +753,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         heading += Math.PI / 2;
 
                         var a = Vec2.fromAngle(heading);
-                        a.mult(-30);
                         stroke('red');
-                        line(cp.x, cp.y, cp.x + a.x, cp.y + a.y);
-                        a.div(-30);
+                        line(cp.x, cp.y, cp.x + a.x * -30, cp.y + a.y * -30);
 
                         var move1Min = 0;
                         var move1Max = 0;
@@ -822,93 +820,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             b2.move(-a.x * move2Min, -a.y * move2Min);
                         }
 
-                        var v1 = b1.vel.copy;
-                        var v2 = b2.vel.copy;
-                        var ang1 = b1.ang;
-                        var ang2 = b2.ang;
-                        var r1 = Vec2.sub(cp, b1.pos);
-                        var r2 = Vec2.sub(cp, b2.pos);
-                        var am1 = b1.am;
-                        var am2 = b2.am;
-                        var m1 = b1.m;
-                        var m2 = b2.m;
                         var k = (b1.k + b2.k) / 2;
-                        var fc = (b1.fc + b2.fc) / 2;
+                        // let vel1parralel = Vec2.cross(b1.vel, a);
+                        var vel1perpendicular = Vec2.dot(b1.vel, a);
+                        // let vel2parralel = Vec2.cross(b2.vel, a);
+                        var vel2perpendicular = Vec2.dot(b2.vel, a);
 
-                        var v1v = r1.copy;
-                        var v2v = r2.copy;
-                        v1v.rotate(Math.PI / 2);
-                        v2v.rotate(Math.PI / 2);
-                        v1v.mult(ang1);
-                        v2v.mult(ang2);
-                        var vk1 = v1v.copy;
-                        var vk2 = v2v.copy;
-                        v1v.add(v1);
-                        v2v.add(v2);
+                        var newVel1Perpendicular = (1 + k) * (b1.m * vel1perpendicular + b2.m * vel2perpendicular) / (b1.m + b2.m) - k * vel1perpendicular;
+                        var newVel2Perpendicular = (1 + k) * (b1.m * vel1perpendicular + b2.m * vel2perpendicular) / (b1.m + b2.m) - k * vel2perpendicular;
 
-                        v1v.rotate(-heading);
-                        v2v.rotate(-heading);
-                        v1.rotate(-heading);
-                        v2.rotate(-heading);
-                        vk1.rotate(-heading);
-                        vk2.rotate(-heading);
-
-                        var pk1 = am1 / r1.length / r1.length;
-                        var pk2 = am2 / r2.length / r2.length;
-
-                        var dvk1vx = (1 + k) * (pk1 * vk1.x + pk2 * vk2.x) / (pk1 + pk2) - (k + 1) * vk1.x;
-                        var dvk2vx = (1 + k) * (pk1 * vk1.x + pk2 * vk2.x) / (pk1 + pk2) - (k + 1) * vk2.x;
-
-                        var vkk = (am1 * vk1.y / r1.length + am2 * vk2.y / r2.length) / (am1 / r1.length + am2 / r2.length);
-                        var vk = (v1.y * m1 + v2.y * m2) / (m1 + m2);
-                        vkk += vk;
-                        vk = vkk;
-
-                        var dvk1vy = -Math.sign(vk1.y) * fc * dvk1vx;
-                        var dvk2vy = -Math.sign(vk2.y) * fc * dvk2vx;
-                        if (Math.abs(vkk - vk1.y) > Math.abs(dvk1vy)) dvk1vy = vkk - vk1.y;
-                        if (Math.abs(vkk - vk2.y) > Math.abs(dvk2vy)) dvk2vy = vkk - vk2.y;
-
-                        var dv1vx = (1 + k) * (m1 * v1.x + m2 * v2.x) / (m1 + m2) - (k + 1) * v1.x;
-                        var dv2vx = (1 + k) * (m1 * v1.x + m2 * v2.x) / (m1 + m2) - (k + 1) * v2.x;
-
-                        var dv1vy = -Math.sign(v1.y) * fc * dv1vx;
-                        var dv2vy = -Math.sign(v2.y) * fc * dv2vx;
-                        if (Math.abs(vk - v1.y) > Math.abs(dv1vy)) dv1vy = vk - v1.y;
-                        if (Math.abs(vk - v2.y) > Math.abs(dv2vy)) dv2vy = vk - v2.y;
-
-                        var dv1v = new Vec2(dv1vx + dvk1vx, dv1vy + dvk1vy);
-                        var dv2v = new Vec2(dv2vx + dvk2vx, dv2vy + dvk2vy);
-                        dv1v.rotate(heading);
-                        dv2v.rotate(heading);
-
-                        v1.rotate(heading);
-                        v2.rotate(heading);
-
-                        v1.add(dv1v);
-                        v2.add(dv2v);
-
-                        dv1v.rotate(-r1.heading);
-                        dv2v.rotate(-r2.heading);
-
-                        var dang1 = dv1v.y * m1 * r1.length / (am1 + r1.length * r1.length * m1);
-                        var dang2 = dv2v.y * m2 * r2.length / (am2 + r2.length * r2.length * m2);
-
-                        ang1 += dang1;
-                        ang2 += dang2;
-
-                        var vp1 = Vec2.fromAngle(r1.heading - Math.PI / 2);
-                        vp1.mult(r1.length * dang1);
-                        var vp2 = Vec2.fromAngle(r2.heading - Math.PI / 2);
-                        vp2.mult(r2.length * dang2);
-                        v2.sub(vp2);
-                        v1.add(vp1);
-
-                        b1.vel = v1;
-                        b2.vel = v2;
-
-                        b1.ang = ang1;
-                        b2.ang = ang2;
+                        b1.vel.add(Vec2.mult(a.copy, newVel1Perpendicular - vel1perpendicular));
+                        b2.vel.add(Vec2.mult(a.copy, newVel2Perpendicular - vel2perpendicular));
                     }
                 }]);
 
@@ -1732,8 +1654,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             var dist = new Vec2(p2.x - p1.pos.x, p2.y - p1.pos.y);
                             dist.setMag(1);
                             dist.mult(-this.length);
-                            p1.pos.x = p2.x + dist.x;
-                            p1.pos.y = p2.y + dist.y;
+                            p1.move(-p1.pos.x + p2.x + dist.x, -p1.pos.y + p2.y + dist.y);
 
                             var v = p1.vel;
                             v.rotate(-dist.heading);
@@ -1758,8 +1679,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             var _dist2 = Vec2.sub(p1.pos, p2.pos);
                             var dl = this.length - _dist2.length;
                             _dist2.setMag(1);
-                            p1.pos.add(Vec2.mult(_dist2, dl * p2.m / (p1.m + p2.m)));
-                            p2.pos.add(Vec2.mult(_dist2, -dl * p1.m / (p1.m + p2.m)));
+                            var move1 = Vec2.mult(_dist2, dl * p2.m / (p1.m + p2.m));
+                            var move2 = Vec2.mult(_dist2, -dl * p1.m / (p1.m + p2.m));
+                            p1.move(move1.x, move1.y);
+                            p2.move(move2.x, move2.y);
 
                             var v1 = p1.vel;
                             var v2 = p2.vel;
@@ -2067,6 +1990,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     key: "dot",
                     value: function dot(a, b) {
                         return a.x * b.x + a.y * b.y;
+                    }
+
+                    /**
+                     * Get the cross product of two vectors.
+                     * @param {Vec2} a - A vector.
+                     * @param {Vec2} b - Other vector
+                     * @return {number} The cross product of them.
+                     */
+
+                }, {
+                    key: "cross",
+                    value: function cross(a, b) {
+                        return a.x * b.y - a.y * b.x;
                     }
 
                     /**
