@@ -4,6 +4,7 @@ const Spring = Physics.Spring;
 const Stick = Physics.Stick;
 
 let physics;
+let cnv;
 window.defaultSize = 25;
 window.k = 0.5;
 window.fc = 0.2;
@@ -32,7 +33,7 @@ let right = false;
  * Function used by p5.js and is runned before start drawing
  */
 function setup() {
-  createCanvas(window.innerWidth, window.innerHeight);
+  cnv = createCanvas(window.innerWidth, window.innerHeight).canvas;
 
   gui = createGui('Properties');
   sliderRange(3, 100, 1);
@@ -45,6 +46,8 @@ function setup() {
   gui.addGlobals('springConstant');
   gui.addGlobals('time');
   gui.addGlobals('lockRotation');
+  document.getElementsByClassName('qs_main')[0].style.top = '30px';
+  document.getElementsByClassName('qs_main')[0].style.left = '10px';
 
   physics = new Physics();
   physics.setBounds(0, 0, width, height);
@@ -64,6 +67,9 @@ function windowResized() {
  */
 function draw() {
   background(51);
+  // TODO: ditch p5.js
+  let ctx = cnv.getContext('2d');
+  ctx.fillText('BallPhysics', 10, 10);
 
   let elapsedTime = 1 / frameRate();
   if (isNaN(elapsedTime)) {
@@ -114,7 +120,7 @@ function draw() {
 /**
  * p5.js function and it's called when the user pressed a mouse button
  */
-function mousePressed() {
+function touchStarted() {
   let guiBound = gui.prototype._panel.getBoundingClientRect();
   if ((mouseX > guiBound.left && mouseX < guiBound.right) &&
     (mouseY > guiBound.top && mouseY < guiBound.bottom)) {
@@ -137,7 +143,7 @@ function mousePressed() {
 /**
  * p5.js function and it's called when the user releases a mouse button
  */
-function mouseReleased() {
+function touchEnded() {
   let guiBound = gui.prototype._panel.getBoundingClientRect();
   if ((mouseX > guiBound.left && mouseX < guiBound.right) &&
     (mouseY > guiBound.top && mouseY < guiBound.bottom)) {
@@ -328,7 +334,7 @@ Physics.prototype.draw = function() {
 
   stroke('black');
   fill('white');
-  text('Mode: ' + modes[mode], 10, 10);
+  text('Mode: ' + modes[mode], 10, 25);
 };
 
 /**
@@ -370,8 +376,8 @@ const arrayOfUsedp5Functions = [
   setup,
   windowResized,
   draw,
-  mousePressed,
-  mouseReleased,
+  touchStarted,
+  touchEnded,
   keyPressed,
   keyReleased,
 ];
