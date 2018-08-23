@@ -148,6 +148,7 @@ function draw() {
 function startTouch(e) {
   let touchX = e.touches[0].clientX;
   let touchY = e.touches[0].clientY;
+  text(touchX + ' ' + touchY);
   touchStarted(touchX, touchY);
 }
 
@@ -158,6 +159,7 @@ function startTouch(e) {
 function endTouch(e) {
   let touchX = e.touches[0].clientX;
   let touchY = e.touches[0].clientY;
+  text(touchX + ' ' + touchY);
   touchEnded(touchX, touchY);
 }
 
