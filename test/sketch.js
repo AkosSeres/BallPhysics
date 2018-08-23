@@ -82,7 +82,7 @@ function draw() {
   if (wasTouchLastTime && !touches[0]) {
     mouseX = wasTouchLastTime.x;
     mouseY = wasTouchLastTime.y;
-    touchEnded();
+    touchEnded(wasTouchLastTime.x, wasTouchLastTime.y);
   }
   if (touches[0]) {
     mouseX = touches[0].x;
@@ -164,8 +164,10 @@ function touchStarted() {
 /**
  * p5.js function and it's called when the user releases a mouse button
  */
-function touchEnded() {
+function touchEnded(coordX, coordY) {
   let guiBound = gui.prototype._panel.getBoundingClientRect();
+  if (!mouseX) mouseX = coordX;
+  if (!mouseY) mouseY = coordY;
   if ((mouseX > guiBound.left && mouseX < guiBound.right) &&
     (mouseY > guiBound.top && mouseY < guiBound.bottom)) {
     lastX = 0;
