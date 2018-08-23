@@ -36,6 +36,9 @@ let right = false;
 function setup() {
   cnv = createCanvas(window.innerWidth, window.innerHeight).canvas;
 
+  cnv.ontouchstart = startTouch;
+  cnv.ontouchend = endTouch;
+
   gui = createGui('Properties');
   sliderRange(3, 100, 1);
   gui.addGlobals('defaultSize');
@@ -82,13 +85,13 @@ function draw() {
   if (wasTouchLastTime && !touches[0]) {
     mouseX = wasTouchLastTime.x;
     mouseY = wasTouchLastTime.y;
-    touchEnded(wasTouchLastTime.x, wasTouchLastTime.y);
+    // touchEnded(wasTouchLastTime.x, wasTouchLastTime.y);
   }
   if (touches[0]) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
   }
-  if (!wasTouchLastTime && touches[0]) touchStarted();
+  if (!wasTouchLastTime && touches[0]); // touchStarted();
 
   if (mode === 0) {
     ellipse(mouseX, mouseY, defaultSize * 2, defaultSize * 2);
@@ -139,10 +142,34 @@ function draw() {
 }
 
 /**
- * p5.js function and it's called when the user pressed a mouse button
+ * Function for touch events
+ * @param {Event} e It contains the event details
  */
-function touchStarted() {
+function startTouch(e) {
+  let touchX = e.touches[0].clientX;
+  let touchY = e.touches[0].clientY;
+  touchStarted(touchX, touchY);
+}
+
+/**
+ * Function for touch events
+ * @param {Event} e It contains the event details
+ */
+function endTouch(e) {
+  let touchX = e.touches[0].clientX;
+  let touchY = e.touches[0].clientY;
+  touchEnded(touchX, touchY);
+}
+
+/**
+ * p5.js function and it's called when the user pressed a mouse button
+ * @param {number} coordX Optional x coordinate if mouseX is not present
+ * @param {number} coordY Optional y coordinate if mouseY is not present
+ */
+function touchStarted(coordX, coordY) {
   let guiBound = gui.prototype._panel.getBoundingClientRect();
+  if (!mouseX) mouseX = coordX;
+  if (!mouseY) mouseY = coordY;
   if ((mouseX > guiBound.left && mouseX < guiBound.right) &&
     (mouseY > guiBound.top && mouseY < guiBound.bottom)) {
     return;
@@ -163,6 +190,8 @@ function touchStarted() {
 
 /**
  * p5.js function and it's called when the user releases a mouse button
+ * @param {number} coordX Optional x coordinate if mouseX is not present
+ * @param {number} coordY Optional y coordinate if mouseY is not present
  */
 function touchEnded(coordX, coordY) {
   let guiBound = gui.prototype._panel.getBoundingClientRect();
