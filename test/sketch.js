@@ -114,8 +114,12 @@ function draw() {
     }
   }
 
-  if (touches[0]) wasTouchLastTime = thouches[0];
-  else wasTouchLastTime = false;
+  if (touches[0]) {
+    wasTouchLastTime = {
+      x: touches[0].x,
+      y: touches[0].y,
+    };
+  } else wasTouchLastTime = false;
 
   physics.draw();
 
