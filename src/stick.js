@@ -29,8 +29,7 @@ class Stick extends Spring {
             let dist = new Vec2(p2.x - p1.pos.x, p2.y - p1.pos.y);
             dist.setMag(1);
             dist.mult(-this.length);
-            p1.pos.x = p2.x + dist.x;
-            p1.pos.y = p2.y + dist.y;
+            p1.move(-p1.pos.x + p2.x + dist.x, -p1.pos.y + p2.y + dist.y);
 
             let v = p1.vel;
             v.rotate(-dist.heading);
@@ -55,8 +54,10 @@ class Stick extends Spring {
             let dist = Vec2.sub(p1.pos, p2.pos);
             let dl = this.length - dist.length;
             dist.setMag(1);
-            p1.pos.add(Vec2.mult(dist, dl * (p2.m) / ((p1.m) + (p2.m))));
-            p2.pos.add(Vec2.mult(dist, -dl * (p1.m) / ((p1.m) + (p2.m))));
+            let move1 = Vec2.mult(dist, dl * (p2.m) / ((p1.m) + (p2.m)));
+            let move2 = Vec2.mult(dist, -dl * (p1.m) / ((p1.m) + (p2.m)));
+            p1.move(move1.x, move1.y);
+            p2.move(move2.x, move2.y);
 
             let v1 = p1.vel;
             let v2 = p2.vel;
