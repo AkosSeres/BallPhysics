@@ -209,7 +209,9 @@ function touchEnded(coordX, coordY) {
   if (lastX != 0 && lastY != 0 && mode === 0) {
     let newBall = new Ball(new Vec2(lastX, lastY),
       new Vec2((lastX - mouseX), (lastY - mouseY)), defaultSize, k, 0, fc);
-    physics.addBall(newBall);
+    if (newBall.pos.x && newBall.pos.y && newBall.vel.x && newBall.vel.y) {
+      physics.addBall(newBall);
+    }
   }
   if (mode === 1) {
     physics.addRectWall(
