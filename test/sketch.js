@@ -439,3 +439,8 @@ const arrayOfUsedp5Functions = [
   keyReleased,
 ];
 delete arrayOfUsedp5Functions;
+
+// prevents scrolling
+document.body.addEventListener('touchmove', function(event) {
+  event.preventDefault();
+}, false); 
