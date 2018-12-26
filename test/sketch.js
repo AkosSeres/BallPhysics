@@ -37,7 +37,7 @@ function setup() {
   cnv = createCanvas(window.innerWidth, window.innerHeight).canvas;
 
   cnv.addEventListener('touchstart', startTouch);
-  cnv.addEventListener('touchendt', endTouch);
+  cnv.addEventListener('touchend', endTouch);
 
   gui = createGui('Properties');
   sliderRange(3, 100, 1);
@@ -209,7 +209,10 @@ function touchEnded(coordX, coordY) {
   if (lastX != 0 && lastY != 0 && mode === 0) {
     let newBall = new Ball(new Vec2(lastX, lastY),
       new Vec2((lastX - mouseX), (lastY - mouseY)), defaultSize, k, 0, fc);
-    physics.addBall(newBall);
+    if (isFinite(newBall.pos.x) && isFinite(newBall.pos.y) &&
+        isFinite(newBall.vel.x) && isFinite(newBall.vel.y)) {
+      physics.addBall(newBall);
+    }
   }
   if (mode === 1) {
     physics.addRectWall(
@@ -436,3 +439,8 @@ const arrayOfUsedp5Functions = [
   keyReleased,
 ];
 delete arrayOfUsedp5Functions;
+
+// prevents scrolling
+document.body.addEventListener('touchmove', function(event) {
+  event.preventDefault();
+}, false); 
