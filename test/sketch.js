@@ -18,7 +18,7 @@ let timeMultiplier = 1;
 window.lockRotation = false;
 window.time = true;
 let choosed = false;
-let wasTouchLastTime = false;
+let mx = 0; my = 0;
 let modes = [
   'ball creator',
   'recrangle',
@@ -50,7 +50,7 @@ function setup() {
   gui.addGlobals('springConstant');
   gui.addGlobals('time');
   gui.addGlobals('lockRotation');
-  document.getElementsByClassName('qs_main')[0].style.top = '30px';
+  document.getElementsByClassName('qs_main')[0].style.top = '45px';
   document.getElementsByClassName('qs_main')[0].style.left = '10px';
 
   physics = new Physics();
@@ -70,6 +70,11 @@ function windowResized() {
  * p5.js draw function
  */
 function draw() {
+  mouseX = touches[0] ? touches[0].x : (isFinite(mouseX) ? mouseX : mx);
+  mouseY = touches[0] ? touches[0].y : (isFinite(mouseY) ? mouseY : my);
+  if (mouseX && isFinite(mouseX)) mx = mouseX;
+  if (mouseY && isFinite(mouseY)) my = mouseY;
+
   background(51);
   // TODO: ditch p5.js
   let ctx = cnv.getContext('2d');
@@ -82,16 +87,6 @@ function draw() {
 
   stroke(0);
   noFill();
-  if (wasTouchLastTime && !touches[0]) {
-    mouseX = wasTouchLastTime.x;
-    mouseY = wasTouchLastTime.y;
-    touchEnded(wasTouchLastTime.x, wasTouchLastTime.y);
-  }
-  if (touches[0]) {
-    mouseX = touches[0].x;
-    mouseY = touches[0].y;
-  }
-  if (!wasTouchLastTime && touches[0]) touchStarted();
 
   if (mode === 0) {
     ellipse(mouseX, mouseY, defaultSize * 2, defaultSize * 2);
@@ -116,13 +111,6 @@ function draw() {
       physics.addFixedBall(mouseX, mouseY, drawThickness);
     }
   }
-
-  if (touches[0]) {
-    wasTouchLastTime = {
-      x: touches[0].x,
-      y: touches[0].y,
-    };
-  } else wasTouchLastTime = false;
 
   physics.draw();
 
@@ -165,14 +153,15 @@ function endTouch(e) {
 
 /**
  * p5.js function and it's called when the user pressed a mouse button
- * @param {number} coordX Optional x coordinate if mouseX is not present
- * @param {number} coordY Optional y coordinate if mouseY is not present
+ * @param {Touch} event Touch event containing data
  */
-function touchStarted(coordX, coordY) {
+function touchStarted(event) {
+  mouseX = touches[0] ? touches[0].x : (isFinite(mouseX) ? mouseX : mx);
+  mouseY = touches[0] ? touches[0].y : (isFinite(mouseY) ? mouseY : my);
   let guiBound = gui.prototype._panel.getBoundingClientRect();
-  if (!mouseX) mouseX = coordX;
-  if (!mouseY) mouseY = coordY;
-  if ((mouseX > guiBound.left && mouseX < guiBound.right) &&
+  // if (!mouseX) mouseX = mouseX;
+  // if (!mouseY) mouseY = mouseY;
+  if (false || (mouseX > guiBound.left && mouseX < guiBound.right) &&
     (mouseY > guiBound.top && mouseY < guiBound.bottom)) {
     return;
   }
@@ -191,26 +180,30 @@ function touchStarted(coordX, coordY) {
 }
 
 /**
- * p5.js function and it's called when the user releases a mouse button
- * @param {number} coordX Optional x coordinate if mouseX is not present
- * @param {number} coordY Optional y coordinate if mouseY is not present
+ * p5.js function and it's called when the user released a mouse button
+ * @param {Touch} event Touch event containing data
+ * @return {bool} Prevents default behavior for browsers
  */
-function touchEnded(coordX, coordY) {
+function touchEnded(event) {
+  mouseX = touches[0] ? touches[0].x : (isFinite(mouseX) ? mouseX : mx);
+  mouseY = touches[0] ? touches[0].y : (isFinite(mouseY) ? mouseY : my);
   let guiBound = gui.prototype._panel.getBoundingClientRect();
-  if (!mouseX) mouseX = coordX;
-  if (!mouseY) mouseY = coordY;
   if ((mouseX > guiBound.left && mouseX < guiBound.right) &&
     (mouseY > guiBound.top && mouseY < guiBound.bottom)) {
     lastX = 0;
     lastY = 0;
-    return;
+    return false;
   }
 
   if (lastX != 0 && lastY != 0 && mode === 0) {
     let newBall = new Ball(new Vec2(lastX, lastY),
       new Vec2((lastX - mouseX), (lastY - mouseY)), defaultSize, k, 0, fc);
     if (isFinite(newBall.pos.x) && isFinite(newBall.pos.y) &&
-        isFinite(newBall.vel.x) && isFinite(newBall.vel.y)) {
+      isFinite(newBall.vel.x) && isFinite(newBall.vel.y)) {
+      physics.addBall(newBall);
+    } else {
+      newBall.vel.x = 0;
+      newBall.vel.y = 0;
       physics.addBall(newBall);
     }
   }
@@ -263,6 +256,7 @@ function touchEnded(coordX, coordY) {
 
   lastX = 0;
   lastY = 0;
+  return false;
 }
 
 /**
@@ -392,6 +386,8 @@ Physics.prototype.draw = function() {
   stroke('black');
   fill('white');
   text('Mode: ' + modes[mode], 10, 25);
+  text(Math.round(mouseX).toString() + ' '
+    + Math.round(mouseY).toString(), 10, 40);
 };
 
 /**
@@ -439,8 +435,3 @@ const arrayOfUsedp5Functions = [
   keyReleased,
 ];
 delete arrayOfUsedp5Functions;
-
-// prevents scrolling
-document.body.addEventListener('touchmove', function(event) {
-  event.preventDefault();
-}, false); 
