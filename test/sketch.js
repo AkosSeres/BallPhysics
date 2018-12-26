@@ -48,8 +48,21 @@ function setup() {
   gui.addGlobals('springConstant');
   gui.addGlobals('time');
   gui.addGlobals('lockRotation');
-  document.getElementsByClassName('qs_main')[0].style.top = '45px';
-  document.getElementsByClassName('qs_main')[0].style.left = '10px';
+
+  gui.prototype.addButton('Next mode', function() {
+    mode++; mode %= modes.length - 1;
+  });
+  gui.prototype.addButton('Close', function() {
+    document.getElementsByClassName('qs_main')[0].style.visibility = 'hidden';
+  });
+  gui.prototype.setDraggable(false);
+
+  document.getElementsByClassName('qs_main')[0].style.width = width + 'px';
+  document.getElementsByClassName('qs_main')[0].style.height = height + 'px';
+  document.getElementsByClassName('qs_main')[0].style.top = '0px';
+  document.getElementsByClassName('qs_main')[0].style.left = '0px';
+  document.getElementsByClassName('qs_main')[0].style.visibility = 'hidden';
+  document.getElementsByClassName('qs_main')[0].style.overflow = 'auto';
 
   physics = new Physics();
   physics.setBounds(0, 0, width, height);
@@ -62,6 +75,8 @@ function setup() {
 function windowResized() {
   resizeCanvas(window.innerWidth, window.innerHeight);
   physics.setBounds(0, 0, width, height);
+  document.getElementsByClassName('qs_main')[0].style.width = width + 'px';
+  document.getElementsByClassName('qs_main')[0].style.height = height + 'px';
 }
 
 /**
@@ -100,10 +115,9 @@ function draw() {
     }
   }
 
-  let guiBound = gui.prototype._panel.getBoundingClientRect();
   if (mode == 2 &&
-    !((mouseX > guiBound.left && mouseX < guiBound.right) &&
-      (mouseY > guiBound.top && mouseY < guiBound.bottom))) {
+    document.getElementsByClassName('qs_main')[0].
+      style.visibility == 'hidden' && (mouseX >= 30 || mouseY >= 30)) {
     ellipse(mouseX, mouseY, defaultSize * 2, defaultSize * 2);
     if (mouseIsPressed || touches[0]) {
       physics.addFixedBall(mouseX, mouseY, defaultSize);
@@ -134,13 +148,8 @@ function draw() {
 function touchStarted(event) {
   mouseX = touches[0] ? touches[0].x : (isFinite(mouseX) ? mouseX : mx);
   mouseY = touches[0] ? touches[0].y : (isFinite(mouseY) ? mouseY : my);
-  let guiBound = gui.prototype._panel.getBoundingClientRect();
-  // if (!mouseX) mouseX = mouseX;
-  // if (!mouseY) mouseY = mouseY;
-  if (false || (mouseX > guiBound.left && mouseX < guiBound.right) &&
-    (mouseY > guiBound.top && mouseY < guiBound.bottom)) {
-    return;
-  }
+  if (document.getElementsByClassName('qs_main')[0].
+    style.visibility != 'hidden' || (mouseX <= 30 && mouseY <= 30)) return;
   if (mode === 3 || mode === 4) {
     choosed = physics.getObjectAtCoordinates(mouseX, mouseY);
     if (choosed == false) {
@@ -163,9 +172,23 @@ function touchStarted(event) {
 function touchEnded(event) {
   mouseX = touches[0] ? touches[0].x : (isFinite(mouseX) ? mouseX : mx);
   mouseY = touches[0] ? touches[0].y : (isFinite(mouseY) ? mouseY : my);
-  let guiBound = gui.prototype._panel.getBoundingClientRect();
-  if ((mouseX > guiBound.left && mouseX < guiBound.right) &&
-    (mouseY > guiBound.top && mouseY < guiBound.bottom)) {
+
+  if (mouseX <= 30 && mouseY <= 30) {
+    if (document.getElementsByClassName('qs_main')[0].
+      style.visibility != 'visible') {
+      document.getElementsByClassName('qs_main')[0].
+        style.visibility = 'visible';
+    } else {
+      document.getElementsByClassName('qs_main')[0].
+        style.visibility = 'hidden';
+    }
+    lastX = 0;
+    lastY = 0;
+    return false;
+  }
+
+  if (document.getElementsByClassName('qs_main')[0].
+    style.visibility != 'hidden' || (mouseX <= 30 && mouseY <= 30)) {
     lastX = 0;
     lastY = 0;
     return false;
@@ -401,6 +424,7 @@ function spawnNewtonsCradle(x, y, scale, phy) {
   });
 }
 
+// this is here only to prevent eslint errors
 const arrayOfUsedp5Functions = [
   setup,
   windowResized,
