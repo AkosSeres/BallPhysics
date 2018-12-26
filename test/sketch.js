@@ -85,13 +85,13 @@ function draw() {
   if (wasTouchLastTime && !touches[0]) {
     mouseX = wasTouchLastTime.x;
     mouseY = wasTouchLastTime.y;
-    // touchEnded(wasTouchLastTime.x, wasTouchLastTime.y);
+    touchEnded(wasTouchLastTime.x, wasTouchLastTime.y);
   }
   if (touches[0]) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
   }
-  if (!wasTouchLastTime && touches[0]); // touchStarted();
+  if (!wasTouchLastTime && touches[0]) touchStarted();
 
   if (mode === 0) {
     ellipse(mouseX, mouseY, defaultSize * 2, defaultSize * 2);
@@ -146,10 +146,10 @@ function draw() {
  * @param {Event} e It contains the event details
  */
 function startTouch(e) {
-  let touchX = e.touches[0].x;
-  let touchY = e.touches[0].y;
+  // let touchX = e.touches[0].x;
+  // let touchY = e.touches[0].y;
   text(e.touches[0], 300, 100);
-  touchStarted(touchX, touchY);
+  // touchStarted(touchX, touchY);
 }
 
 /**
@@ -157,10 +157,10 @@ function startTouch(e) {
  * @param {Event} e It contains the event details
  */
 function endTouch(e) {
-  let touchX = e.touches[0].x;
-  let touchY = e.touches[0].y;
+  // let touchX = e.touches[0].x;
+  // let touchY = e.touches[0].y;
   text(e.touches[0], 300, 100);
-  touchEnded(touchX, touchY);
+  // touchEnded(touchX, touchY);
 }
 
 /**
