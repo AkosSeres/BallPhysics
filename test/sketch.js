@@ -5,7 +5,7 @@ const Stick = Physics.Stick;
 
 let physics;
 let cnv;
-window.defaultSize = 25;
+window.defaultSize;
 window.k = 0.5;
 window.fc = 0.2;
 window.springConstant = 2000;
@@ -13,7 +13,6 @@ let gui;
 let mode = 0;
 let lastX = 0;
 let lastY = 0;
-let drawThickness = 30;
 let timeMultiplier = 1;
 window.lockRotation = false;
 window.time = true;
@@ -36,11 +35,10 @@ let right = false;
 function setup() {
   cnv = createCanvas(window.innerWidth, window.innerHeight).canvas;
 
-  cnv.addEventListener('touchstart', startTouch);
-  cnv.addEventListener('touchend', endTouch);
+  window.defaultSize = (width + height) / 80;
 
   gui = createGui('Properties');
-  sliderRange(3, 100, 1);
+  sliderRange(0.0015 * (width + height), (width + height) / 15, 1);
   gui.addGlobals('defaultSize');
   sliderRange(0.01, 1, 0.01);
   gui.addGlobals('k');
@@ -106,9 +104,9 @@ function draw() {
   if (mode == 2 &&
     !((mouseX > guiBound.left && mouseX < guiBound.right) &&
       (mouseY > guiBound.top && mouseY < guiBound.bottom))) {
-    ellipse(mouseX, mouseY, drawThickness * 2, drawThickness * 2);
-    if (mouseIsPressed) {
-      physics.addFixedBall(mouseX, mouseY, drawThickness);
+    ellipse(mouseX, mouseY, defaultSize * 2, defaultSize * 2);
+    if (mouseIsPressed || touches[0]) {
+      physics.addFixedBall(mouseX, mouseY, defaultSize);
     }
   }
 
@@ -127,28 +125,6 @@ function draw() {
   physics.update(elapsedTime / 5);
   physics.update(elapsedTime / 5);
   physics.update(elapsedTime / 5);
-}
-
-/**
- * Function for touch events
- * @param {Event} e It contains the event details
- */
-function startTouch(e) {
-  // let touchX = e.touches[0].x;
-  // let touchY = e.touches[0].y;
-  text(e.touches[0], 300, 100);
-  // touchStarted(touchX, touchY);
-}
-
-/**
- * Function for touch events
- * @param {Event} e It contains the event details
- */
-function endTouch(e) {
-  // let touchX = e.touches[0].x;
-  // let touchY = e.touches[0].y;
-  text(e.touches[0], 300, 100);
-  // touchEnded(touchX, touchY);
 }
 
 /**
