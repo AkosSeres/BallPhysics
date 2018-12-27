@@ -213,6 +213,41 @@ class Physics {
   }
 
   /**
+   * Returns a copy of this system
+   * @return {Physics} The copy of this system
+   */
+  get copy() {
+    let ret = new Physics();
+    ret.balls = this.getCopyOfBalls();
+    ret.bodies = this.getCopyOfBodies();
+    ret.fixedBalls = this.fixedBalls;
+    ret.walls = this.walls;
+    ret.bounds = this.bounds;
+    ret.gravity = this.gravity;
+
+    this.springs.forEach((spring) => {
+      let TypeOfSpring = spring.constructor == Spring ? Spring : Stick;
+      let copiedSpring = new TypeOfSpring(spring.length,
+        spring.springConstant);
+      copiedSpring.rotationLocked = spring.rotationLocked;
+      copiedSpring.pinned = spring.pinned;
+
+      spring.objects.forEach((obj) => {
+        let idx = this.balls.indexOf(obj);
+        if (idx != -1) copiedSpring.attachObject(ret.balls[idx]);
+        else {
+          idx = this.bodies.indexOf(obj);
+          if (idx != -1) copiedSpring.attachObject(ret.bodies[idx]);
+        }
+      });
+
+      ret.springs.push(copiedSpring);
+    });
+
+    return ret;
+  }
+
+  /**
    * Sets the gravity in the world
    * @param {Vec2} dir The acceleration vector of the gravity
    */
@@ -320,6 +355,30 @@ class Physics {
     let v = new Vec2(x, y);
     this.balls.forEach((ball) => {
       if (ball.pos.dist(v) < ball.r) ret = ball;
+    });
+    return ret;
+  }
+
+  /**
+   * Returns an array of copies of all balls in the system
+   * @return {Array} The array of the copied balls
+   */
+  getCopyOfBalls() {
+    let ret = [];
+    this.balls.forEach((item) => {
+      ret.push(item.copy);
+    });
+    return ret;
+  }
+
+  /**
+   * Returns an array of copies of all bodies in the system
+   * @return {Array} The array of the copied bodies
+   */
+  getCopyOfBodies() {
+    let ret = [];
+    this.bodies.forEach((item) => {
+      ret.push(item.copy);
     });
     return ret;
   }
