@@ -25,6 +25,7 @@ let modes = [
   'wall drawer',
   'stick creator',
   'spring creator',
+  'move',
 ];
 
 let left = false;
@@ -116,6 +117,13 @@ function draw() {
     }
   }
 
+  if (mode === 5 && choosed && !choosed.pinPoint) {
+    choosed.move(mouseX - choosed.pos.x, mouseY - choosed.pos.y);
+    choosed.vel.x = (mouseX - pmouseX) / (elapsedTime * timeMultiplier);
+    choosed.vel.y = (mouseY - pmouseY) / (elapsedTime * timeMultiplier);
+    choosed.ang = 0;
+  }
+
   if (mode == 2 &&
     document.getElementsByClassName('qs_main')[0].
       style.visibility == 'hidden' && (mouseX >= 30 || mouseY >= 30)) {
@@ -151,7 +159,7 @@ function touchStarted(event) {
   mouseY = touches[0] ? touches[0].y : (isFinite(mouseY) ? mouseY : my);
   if (document.getElementsByClassName('qs_main')[0].
     style.visibility != 'hidden' || (mouseX <= 30 && mouseY <= 30)) return;
-  if (mode === 3 || mode === 4) {
+  if (mode === 3 || mode === 4 || mode === 5) {
     choosed = physics.getObjectAtCoordinates(mouseX, mouseY);
     if (choosed == false) {
       choosed = {
@@ -185,6 +193,7 @@ function touchEnded(event) {
     }
     lastX = 0;
     lastY = 0;
+    choosed = false;
     return false;
   }
 
@@ -192,6 +201,7 @@ function touchEnded(event) {
     style.visibility != 'hidden' || (mouseX <= 30 && mouseY <= 30)) {
     lastX = 0;
     lastY = 0;
+    choosed = false;
     return false;
   }
 
@@ -256,6 +266,7 @@ function touchEnded(event) {
 
   lastX = 0;
   lastY = 0;
+  choosed = false;
   return false;
 }
 
