@@ -355,21 +355,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     if (k) this.k = k;else this.k = 0.8;
 
                     if (vel != undefined) this.vel = vel.copy;else this.vel = new Vec2(0, 0);
-
-                    console.log(this);
                 }
 
                 /**
-                 * Moves the body by the given coordinates
-                 * It has to move all the points of the body and
-                 * also the centre of mass (pos) of the body
-                 * @param {number} x x coordinate
-                 * @param {number} y y coordinate
+                 * Get a copy of the body that is not a reference to it
+                 * @return {Body} The copy of the body
                  */
 
 
                 _createClass(Body, [{
                     key: "move",
+
+
+                    /**
+                     * Moves the body by the given coordinates
+                     * It has to move all the points of the body and
+                     * also the centre of mass (pos) of the body
+                     * @param {number} x x coordinate
+                     * @param {number} y y coordinate
+                     */
                     value: function move(x, y) {
                         this.pos.x += x;
                         this.pos.y += y;
@@ -608,7 +612,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                         for (var _i2 = poligons.length - 1; _i2 >= 0; _i2--) {
                             var _pol4 = poligons[_i2];
-                            console.log(_pol4);
                             while (_pol4.length > 3) {
                                 poligons.push([_pol4[0], _pol4[1], _pol4[2]]);
                                 _pol4.splice(1, 1);
@@ -700,6 +703,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                      * @return {Boolean} True if the body is concave
                      */
 
+                }, {
+                    key: "copy",
+                    get: function get() {
+                        var pointsCopy = [];
+                        for (var i = 0; i < this.points.length; i++) {
+                            pointsCopy.push({ x: this.points[i].x, y: this.points[i].y });
+                        }
+                        var ret = new Body(pointsCopy, this.vel.copy, this.k, this.ang, this.fc);
+                        ret.rotation = this.rotation;
+                        ret.lastPos = this.lastPos.copy;
+                        ret.pos = this.pos.copy;
+
+                        return ret;
+                    }
                 }, {
                     key: "isConcave",
                     get: function get() {
@@ -1292,12 +1309,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     }
 
                     /**
-                     * Sets the gravity in the world
-                     * @param {Vec2} dir The acceleration vector of the gravity
+                     * Returns a copy of this system
+                     * @return {Physics} The copy of this system
                      */
 
                 }, {
                     key: "setGravity",
+
+
+                    /**
+                     * Sets the gravity in the world
+                     * @param {Vec2} dir The acceleration vector of the gravity
+                     */
                     value: function setGravity(dir) {
                         this.gravity = dir.copy;
                     }
@@ -1427,6 +1450,68 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         this.balls.forEach(function (ball) {
                             if (ball.pos.dist(v) < ball.r) ret = ball;
                         });
+                        return ret;
+                    }
+
+                    /**
+                     * Returns an array of copies of all balls in the system
+                     * @return {Array} The array of the copied balls
+                     */
+
+                }, {
+                    key: "getCopyOfBalls",
+                    value: function getCopyOfBalls() {
+                        var ret = [];
+                        this.balls.forEach(function (item) {
+                            ret.push(item.copy);
+                        });
+                        return ret;
+                    }
+
+                    /**
+                     * Returns an array of copies of all bodies in the system
+                     * @return {Array} The array of the copied bodies
+                     */
+
+                }, {
+                    key: "getCopyOfBodies",
+                    value: function getCopyOfBodies() {
+                        var ret = [];
+                        this.bodies.forEach(function (item) {
+                            ret.push(item.copy);
+                        });
+                        return ret;
+                    }
+                }, {
+                    key: "copy",
+                    get: function get() {
+                        var _this3 = this;
+
+                        var ret = new Physics();
+                        ret.balls = this.getCopyOfBalls();
+                        ret.bodies = this.getCopyOfBodies();
+                        ret.fixedBalls = this.fixedBalls;
+                        ret.walls = this.walls;
+                        ret.bounds = this.bounds;
+                        ret.gravity = this.gravity;
+
+                        this.springs.forEach(function (spring) {
+                            var TypeOfSpring = spring.constructor == Spring ? Spring : Stick;
+                            var copiedSpring = new TypeOfSpring(spring.length, spring.springConstant);
+                            copiedSpring.rotationLocked = spring.rotationLocked;
+                            copiedSpring.pinned = spring.pinned;
+
+                            spring.objects.forEach(function (obj) {
+                                var idx = _this3.balls.indexOf(obj);
+                                if (idx != -1) copiedSpring.attachObject(ret.balls[idx]);else {
+                                    idx = _this3.bodies.indexOf(obj);
+                                    if (idx != -1) copiedSpring.attachObject(ret.bodies[idx]);
+                                }
+                            });
+
+                            ret.springs.push(copiedSpring);
+                        });
+
                         return ret;
                     }
                 }]);
@@ -1631,10 +1716,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 function Stick(length) {
                     _classCallCheck(this, Stick);
 
-                    var _this3 = _possibleConstructorReturn(this, (Stick.__proto__ || Object.getPrototypeOf(Stick)).call(this, length));
+                    var _this4 = _possibleConstructorReturn(this, (Stick.__proto__ || Object.getPrototypeOf(Stick)).call(this, length));
 
-                    _this3.springConstant = 0;
-                    return _this3;
+                    _this4.springConstant = 0;
+                    return _this4;
                 }
 
                 /**
@@ -2102,7 +2187,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 _createClass(Wall, [{
                     key: "collideWithBall",
                     value: function collideWithBall(ball) {
-                        var _this4 = this;
+                        var _this5 = this;
 
                         var heading = null;
                         var rel = null;
@@ -2117,7 +2202,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                 rel = p.length;
                             }
                             p = new Vec2(point.x, point.y);
-                            var np = new Vec2(_this4.points[(idx + 1) % _this4.points.length].x, _this4.points[(idx + 1) % _this4.points.length].y);
+                            var np = new Vec2(_this5.points[(idx + 1) % _this5.points.length].x, _this5.points[(idx + 1) % _this5.points.length].y);
                             var bp = new Vec2(ball.pos.x, ball.pos.y);
                             var side = new Vec2(np.x - p.x, np.y - p.y);
                             var h = side.heading;
