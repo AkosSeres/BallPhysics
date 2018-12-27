@@ -18,6 +18,7 @@ window.lockRotation = false;
 window.time = true;
 let choosed = false;
 let mx = 0; my = 0;
+let preciseMode = true;
 let modes = [
   'ball creator',
   'recrangle',
@@ -134,11 +135,11 @@ function draw() {
   }
 
   elapsedTime *= timeMultiplier;
-  physics.update(elapsedTime / 5);
-  physics.update(elapsedTime / 5);
-  physics.update(elapsedTime / 5);
-  physics.update(elapsedTime / 5);
-  physics.update(elapsedTime / 5);
+  physics.update(elapsedTime / 5, preciseMode);
+  physics.update(elapsedTime / 5, preciseMode);
+  physics.update(elapsedTime / 5, preciseMode);
+  physics.update(elapsedTime / 5, preciseMode);
+  physics.update(elapsedTime / 5, preciseMode);
 }
 
 /**
