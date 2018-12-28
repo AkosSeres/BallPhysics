@@ -26,6 +26,11 @@ class Physics {
 
     this.springs = [];
 
+    // Air friction has to be between 0 and 1
+    // 0 - no movement
+    // 1 - no friction
+    this.airFriction = 1;
+
     this.gravity = null;
   }
 
@@ -230,6 +235,16 @@ class Physics {
       }
     }
 
+    // Apply air friction
+    this.balls.forEach((b) => {
+      b.vel.mult(Math.pow(this.airFriction, t));
+      b.ang *= (Math.pow(this.airFriction, t));
+    });
+    this.bodies.forEach((b) => {
+      b.vel.mult(Math.pow(this.airFriction, t));
+      b.ang *= (Math.pow(this.airFriction, t));
+    });
+
     // Then take the average of this system and the other system
     // if in precise mode
     if (precise) {
@@ -292,6 +307,19 @@ class Physics {
     });
 
     return ret;
+  }
+
+  /**
+   * Air friction. has to be between 0 and 1
+   * 0 - no movement
+   * 1 - no friction
+   * @param {number} airFriction Has to be between 0 and 1
+   */
+  setAirFriction(airFriction) {
+    if (!isFinite(airFriction)) return;
+    this.airFriction = airFriction;
+    if (this.airFriction < 0) this.airFriction = 0;
+    if (this.airFriction > 1) this.airFriction = 1;
   }
 
   /**

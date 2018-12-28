@@ -71,6 +71,7 @@ function setup() {
   physics = new Physics();
   physics.setBounds(0, 0, width, height);
   physics.setGravity(new Vec2(0, 1000));
+  physics.setAirFriction(0.9);
 }
 
 /**

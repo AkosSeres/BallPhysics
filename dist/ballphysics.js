@@ -996,6 +996,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                     this.springs = [];
 
+                    // Air friction has to be between 0 and 1
+                    // 0 - no movement
+                    // 1 - no friction
+                    this.airFriction = 1;
+
                     this.gravity = null;
                 }
 
@@ -1010,6 +1015,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 _createClass(Physics, [{
                     key: "update",
                     value: function update(t, precise) {
+                        var _this3 = this;
+
                         // Do the simulation on the reversed system
                         // if the simulation is in precise mode
                         var clonedSystem = void 0;
@@ -1289,6 +1296,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             }
                         }
 
+                        // Apply air friction
+                        this.balls.forEach(function (b) {
+                            b.vel.mult(Math.pow(_this3.airFriction, t));
+                            b.ang *= Math.pow(_this3.airFriction, t);
+                        });
+                        this.bodies.forEach(function (b) {
+                            b.vel.mult(Math.pow(_this3.airFriction, t));
+                            b.ang *= Math.pow(_this3.airFriction, t);
+                        });
+
                         // Then take the average of this system and the other system
                         // if in precise mode
                         if (precise) {
@@ -1320,13 +1337,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                      */
 
                 }, {
-                    key: "setGravity",
+                    key: "setAirFriction",
 
+
+                    /**
+                     * Air friction. has to be between 0 and 1
+                     * 0 - no movement
+                     * 1 - no friction
+                     * @param {number} airFriction Has to be between 0 and 1
+                     */
+                    value: function setAirFriction(airFriction) {
+                        if (!isFinite(airFriction)) return;
+                        this.airFriction = airFriction;
+                        if (this.airFriction < 0) this.airFriction = 0;
+                        if (this.airFriction > 1) this.airFriction = 1;
+                    }
 
                     /**
                      * Sets the gravity in the world
                      * @param {Vec2} dir The acceleration vector of the gravity
                      */
+
+                }, {
+                    key: "setGravity",
                     value: function setGravity(dir) {
                         this.gravity = dir.copy;
                     }
@@ -1507,7 +1540,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }, {
                     key: "copy",
                     get: function get() {
-                        var _this3 = this;
+                        var _this4 = this;
 
                         var ret = new Physics();
                         ret.balls = this.getCopyOfBalls();
@@ -1524,9 +1557,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             copiedSpring.pinned = spring.pinned;
 
                             spring.objects.forEach(function (obj) {
-                                var idx = _this3.balls.indexOf(obj);
+                                var idx = _this4.balls.indexOf(obj);
                                 if (idx != -1) copiedSpring.attachObject(ret.balls[idx]);else {
-                                    idx = _this3.bodies.indexOf(obj);
+                                    idx = _this4.bodies.indexOf(obj);
                                     if (idx != -1) copiedSpring.attachObject(ret.bodies[idx]);
                                 }
                             });
@@ -1931,10 +1964,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 function Stick(length) {
                     _classCallCheck(this, Stick);
 
-                    var _this4 = _possibleConstructorReturn(this, (Stick.__proto__ || Object.getPrototypeOf(Stick)).call(this, length));
+                    var _this5 = _possibleConstructorReturn(this, (Stick.__proto__ || Object.getPrototypeOf(Stick)).call(this, length));
 
-                    _this4.springConstant = 0;
-                    return _this4;
+                    _this5.springConstant = 0;
+                    return _this5;
                 }
 
                 /**
@@ -2402,7 +2435,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 _createClass(Wall, [{
                     key: "collideWithBall",
                     value: function collideWithBall(ball) {
-                        var _this5 = this;
+                        var _this6 = this;
 
                         var heading = null;
                         var rel = null;
@@ -2417,7 +2450,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                 rel = p.length;
                             }
                             p = new Vec2(point.x, point.y);
-                            var np = new Vec2(_this5.points[(idx + 1) % _this5.points.length].x, _this5.points[(idx + 1) % _this5.points.length].y);
+                            var np = new Vec2(_this6.points[(idx + 1) % _this6.points.length].x, _this6.points[(idx + 1) % _this6.points.length].y);
                             var bp = new Vec2(ball.pos.x, ball.pos.y);
                             var side = new Vec2(np.x - p.x, np.y - p.y);
                             var h = side.heading;
