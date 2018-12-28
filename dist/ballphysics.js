@@ -157,18 +157,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         if (ball1.collided(ball2)) {
                             var pos1 = ball1.pos;
                             var pos2 = ball2.pos;
-                            var lPos1 = ball1.lastPos;
-                            var lPos2 = ball2.lastPos;
                             var r1 = ball1.r;
                             var r2 = ball2.r;
-                            var rSum = r1 + r2;
                             var kk = (ball1.k + ball2.k) / 2;
                             var m1 = r1 * r1;
                             var m2 = r2 * r2;
                             var v1 = ball1.vel;
                             var v2 = ball2.vel;
                             var dist = Vec2.dist(pos1, pos2);
-                            var lastDist = Vec2.dist(lPos1, lPos2);
                             var fc = (ball1.fc + ball2.fc) / 2;
 
                             var cp1 = pos1.copy;
@@ -181,41 +177,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             d.setMag(1);
                             d.mult(-too * m1 / (m1 + m2));
                             cp2.add(d);
-
-                            while (lastDist < rSum && false) {
-                                var d1 = Vec2.sub(pos1, pos2);
-                                var randVec = new Vec2(0, 1);
-                                randVec.rotate(Math.random() * Math.PI * 2);
-                                if (dist === 0) {
-                                    ball1.pos.add(Vec2.mult(randVec, rSum / 2));
-                                    ball2.pos.add(Vec2.mult(randVec, -rSum / 2));
-                                }
-                                d1.mult(rSum / dist);
-                                d1.mult(kk);
-                                d1.mult(m2 / (m1 + m2));
-                                ball1.vel.add(d1);
-
-                                var d2 = Vec2.sub(pos2, pos1);
-                                if (dist === 0) {
-                                    d2 = Vec2.mult(d1, -1);
-                                }
-                                d2.mult(rSum / dist);
-                                d2.mult(kk);
-                                d2.mult(m1 / (m2 + m1));
-                                ball2.vel.add(d2);
-
-                                d1.setMag(1);
-                                d1.mult(rSum / dist);
-                                d1.mult(m2 / (m1 + m2));
-                                ball1.pos.add(d1);
-
-                                d2.setMag(1);
-                                d2.mult(rSum / dist);
-                                d2.mult(m1 / (m2 + m1));
-                                ball2.pos.add(d2);
-
-                                return;
-                            }
 
                             ball1.pos = cp1;
                             ball2.pos = cp2;
