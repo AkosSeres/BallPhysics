@@ -8,6 +8,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 (function (f) {
@@ -297,7 +299,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }();
 
             module.exports = Ball;
-        }, { "./vec2": 7 }], 2: [function (require, module, exports) {
+        }, { "./vec2": 8 }], 2: [function (require, module, exports) {
             var Vec2 = require('./vec2');
             var LineSegment = require('./linesegment');
 
@@ -855,7 +857,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }();
 
             module.exports = Body;
-        }, { "./linesegment": 3, "./vec2": 7 }], 3: [function (require, module, exports) {
+        }, { "./linesegment": 3, "./vec2": 8 }], 3: [function (require, module, exports) {
             var Vec2 = require('./vec2');
 
             /**
@@ -1001,8 +1003,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }();
 
             module.exports = LineSegment;
-        }, { "./vec2": 7 }], 4: [function (require, module, exports) {
+        }, { "./vec2": 8 }], 4: [function (require, module, exports) {
             var Ball = exports.Ball = require('./ball');
+            var SoftBall = exports.SoftBall = require('./softball');
             var Body = exports.Body = require('./body');
             var Vec2 = exports.Vec2 = require('./vec2');
             var Wall = exports.Wall = require('./wall');
@@ -1024,6 +1027,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     this.balls = [];
                     this.bodies = [];
                     this.fixedBalls = [];
+                    this.softBalls = [];
 
                     this.walls = [];
 
@@ -1291,6 +1295,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             }
                         }
 
+                        // Update soft balls
+                        this.softBalls.forEach(function (sb) {
+                            SoftBall.updatePressureBasedForces(sb, t);
+                        });
+
                         // Update springs again multiple times
                         for (var _i7 = 0; _i7 < this.springs.length; _i7++) {
                             var _iteratorNormalCompletion8 = true;
@@ -1381,6 +1390,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     key: "addBody",
                     value: function addBody(body) {
                         this.bodies.push(body);
+                    }
+
+                    /**
+                     * Appends a new soft ball to the world
+                     * @param {SoftBall} softBall SoftBall to be added to the world
+                     */
+
+                }, {
+                    key: "addSoftBall",
+                    value: function addSoftBall(softBall) {
+                        var _balls, _springs;
+
+                        (_balls = this.balls).push.apply(_balls, _toConsumableArray(softBall.points));
+                        (_springs = this.springs).push.apply(_springs, _toConsumableArray(softBall.sides));
+
+                        this.softBalls.push(softBall);
                     }
 
                     /**
@@ -1558,13 +1583,206 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             module.exports = Physics;
 
             Physics.Ball = Ball;
+            Physics.SoftBall = SoftBall;
             Physics.Body = Body;
             Physics.Vec2 = Vec2;
             Physics.Wall = Wall;
             Physics.LineSegment = LineSegment;
             Physics.Spring = Spring;
             Physics.Stick = Stick;
-        }, { "./ball": 1, "./body": 2, "./linesegment": 3, "./spring": 5, "./stick": 6, "./vec2": 7, "./wall": 8 }], 5: [function (require, module, exports) {
+        }, { "./ball": 1, "./body": 2, "./linesegment": 3, "./softball": 5, "./spring": 6, "./stick": 7, "./vec2": 8, "./wall": 9 }], 5: [function (require, module, exports) {
+            var Vec2 = require('./vec2');
+            var Ball = require('./ball');
+            var Stick = require('./stick');
+            var LineSegment = require('./linesegment');
+
+            /**
+             * Class representing a softbody object
+             * They work like a ball, with pressure inside
+             */
+
+            var SoftBall = function () {
+                /**
+                 * Creates a SoftBall
+                 * @param {Vec2} pos The starting position of the soft ball
+                 * @param {number} r The radius of the soft ball
+                 * @param {number} pressure The "hardness" of the soft ball
+                 * @param {number} fc Friction coefficient
+                 * @param {number} resolution The number of points that make up the ball
+                 */
+                function SoftBall(pos, r, pressure, fc, resolution) {
+                    _classCallCheck(this, SoftBall);
+
+                    this.points = [];
+
+                    if (fc || fc === 0) this.fc = fc;else this.fc = 0.4;
+
+                    this.pressure = pressure;
+
+                    if (!resolution) this.resolution = 30;else this.resolution = resolution;
+
+                    r = Math.abs(r);
+                    this.r = r;
+
+                    for (var i = 0; i < this.resolution; i++) {
+                        var newPos = new Vec2(pos.x, pos.y);
+                        newPos.add(Vec2.mult(Vec2.fromAngle(i / this.resolution * Math.PI * 2), r));
+                        this.points.push(new Ball(newPos, new Vec2(0, 0), r * Math.sin(Math.PI / this.resolution), 0, 0, this.fc));
+                    }
+
+                    this.sides = [];
+                    for (var _i8 = 0; _i8 < this.resolution; _i8++) {
+                        var side = new Stick(2 * r * Math.sin(Math.PI / this.resolution));
+                        side.attachObject(this.points[_i8]);
+                        side.attachObject(this.points[(_i8 + 1) % this.resolution]);
+                        // if (i % 2 === 0) side.lockRotation();
+                        this.sides.push(side);
+                    }
+                }
+
+                /**
+                 * Updates the pressure-based forces in the soft ball
+                 * @param {SoftBall} softBall The soft ball to update
+                 * @param {number} t Elapsed time
+                 */
+
+
+                _createClass(SoftBall, null, [{
+                    key: "updatePressureBasedForces",
+                    value: function updatePressureBasedForces(softBall, t) {
+                        var poligons = [];
+                        poligons.push([]);
+                        softBall.points.forEach(function (p) {
+                            poligons[0].push({
+                                x: p.pos.x,
+                                y: p.pos.y
+                            });
+                        });
+
+                        if (function (pol) {
+                            var angle = Vec2.angleACW(Vec2.sub(pol[1], pol[0]), Vec2.sub(pol[pol.length - 1], pol[0]));
+                            if (angle > Math.PI) return true;
+                            for (var i = 1; i < pol.length - 1; i++) {
+                                angle = Vec2.angleACW(Vec2.sub(pol[(i + 1) % pol.length], pol[i]), Vec2.sub(pol[i - 1], pol[i]));
+                                if (angle > Math.PI) return true;
+                            }
+                            angle = Vec2.angleACW(Vec2.sub(pol[0], pol[pol.length - 1]), Vec2.sub(pol[pol.length - 2], pol[pol.length - 1]));
+                            if (angle > Math.PI) return true;
+                            return false;
+                        }(poligons[0])) {
+                            var includes = function includes(arr, item) {
+                                for (var i = 0; i < arr.length; i++) {
+                                    if (arr[i] === item) return true;
+                                }
+                                return false;
+                            };
+                            var intersectWithPoligon = function intersectWithPoligon(segment, pol, exceptions) {
+                                for (var i = 0; i < pol.length; i++) {
+                                    if (!includes(exceptions, i)) {
+                                        var side = new LineSegment(new Vec2(pol[i].x, pol[i].y), new Vec2(pol[(i + 1) % pol.length].x, pol[(i + 1) % pol.length].y));
+                                        if (LineSegment.intersect(segment, side)) return true;
+                                    }
+                                }
+                                return false;
+                            };
+                            var found = true;
+
+                            checkAllPoligons: while (found) {
+                                found = false;
+                                for (var i = 0; i < poligons.length; i++) {
+                                    var _pol6 = poligons[i];
+                                    var a = Vec2.sub(_pol6[1], _pol6[0]);
+                                    var b = Vec2.sub(_pol6[_pol6.length - 1], _pol6[0]);
+                                    var _angle3 = Vec2.angleACW(a, b);
+                                    if (_angle3 > Math.PI) {
+                                        found = true;
+                                        var j = 0;
+                                        var k = j + 2;
+                                        var newSide = new LineSegment(new Vec2(_pol6[j].x, _pol6[j].y), new Vec2(_pol6[k % _pol6.length].x, _pol6[k % _pol6.length].y));
+                                        var newSideHeading = new Vec2(newSide.b.x - newSide.a.x, newSide.b.y - newSide.a.y).heading;
+                                        while (!(a.heading > b.heading ? newSideHeading > a.heading && newSideHeading < 2 * Math.PI || newSideHeading > 0 && newSideHeading < b.heading : newSideHeading > a.heading && newSideHeading < b.heading) || intersectWithPoligon(new LineSegment(new Vec2(_pol6[j % _pol6.length].x, _pol6[j % _pol6.length].y), new Vec2(_pol6[k % _pol6.length].x, _pol6[k % _pol6.length].y)), _pol6, [(_pol6.length - 1) % _pol6.length, j % _pol6.length, (k - 1) % _pol6.length, k % _pol6.length])) {
+                                            k++;
+                                            newSide = new LineSegment(new Vec2(_pol6[j].x, _pol6[j].y), new Vec2(_pol6[k % _pol6.length].x, _pol6[k % _pol6.length].y));
+                                            newSideHeading = new Vec2(newSide.b.x - newSide.a.x, newSide.b.y - newSide.a.y).heading;
+                                        }
+                                        var pol1 = [];
+                                        var pol2 = [];
+                                        for (var l = j; l <= k; l++) {
+                                            pol1.push(_pol6[l % _pol6.length]);
+                                        }
+                                        for (var _l4 = k; _l4 <= j + _pol6.length; _l4++) {
+                                            pol2.push(_pol6[_l4 % _pol6.length]);
+                                        }
+                                        poligons[i] = pol1;
+                                        poligons.push(pol2);
+                                        continue checkAllPoligons;
+                                    }
+                                    for (var _j3 = 1; _j3 < _pol6.length; _j3++) {
+                                        var _a4 = Vec2.sub(_pol6[(_j3 + 1) % _pol6.length], _pol6[_j3]);
+                                        var _b3 = Vec2.sub(_pol6[_j3 - 1], _pol6[_j3]);
+                                        var _angle4 = Vec2.angleACW(_a4, _b3);
+                                        if (_angle4 > Math.PI) {
+                                            found = true;
+                                            var _k2 = _j3 + 2;
+                                            var _newSide2 = new LineSegment(new Vec2(_pol6[_j3].x, _pol6[_j3].y), new Vec2(_pol6[_k2 % _pol6.length].x, _pol6[_k2 % _pol6.length].y));
+                                            var _newSideHeading2 = new Vec2(_newSide2.b.x - _newSide2.a.x, _newSide2.b.y - _newSide2.a.y).heading;
+                                            while (!(_a4.heading > _b3.heading ? _newSideHeading2 > _a4.heading && _newSideHeading2 < 2 * Math.PI || _newSideHeading2 > 0 && _newSideHeading2 < _b3.heading : _newSideHeading2 > _a4.heading && _newSideHeading2 < _b3.heading) || intersectWithPoligon(_newSide2, _pol6, [(_j3 - 1) % _pol6.length, _j3 % _pol6.length, (_k2 - 1) % _pol6.length, _k2 % _pol6.length])) {
+                                                _k2++;
+                                                _newSide2 = new LineSegment(new Vec2(_pol6[_j3].x, _pol6[_j3].y), new Vec2(_pol6[_k2 % _pol6.length].x, _pol6[_k2 % _pol6.length].y));
+                                                _newSideHeading2 = new Vec2(_newSide2.b.x - _newSide2.a.x, _newSide2.b.y - _newSide2.a.y).heading;
+                                            }
+                                            var _pol7 = [];
+                                            var _pol8 = [];
+                                            for (var _l5 = _j3; _l5 <= _k2; _l5++) {
+                                                _pol7.push(_pol6[_l5 % _pol6.length]);
+                                            }
+                                            for (var _l6 = _k2; _l6 <= _j3 + _pol6.length; _l6++) {
+                                                _pol8.push(_pol6[_l6 % _pol6.length]);
+                                            }
+                                            poligons[i] = _pol7;
+                                            poligons.push(_pol8);
+                                            continue checkAllPoligons;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        for (var _i9 = poligons.length - 1; _i9 >= 0; _i9--) {
+                            var _pol9 = poligons[_i9];
+                            while (_pol9.length > 3) {
+                                poligons.push([_pol9[0], _pol9[1], _pol9[2]]);
+                                _pol9.splice(1, 1);
+                            }
+                        }
+
+                        var mSum = 0;
+                        poligons.forEach(function (pol) {
+                            var a = Math.sqrt(Math.pow(pol[0].x - pol[1].x, 2) + Math.pow(pol[0].y - pol[1].y, 2));
+                            var b = Math.sqrt(Math.pow(pol[1].x - pol[2].x, 2) + Math.pow(pol[1].y - pol[2].y, 2));
+                            var c = Math.sqrt(Math.pow(pol[2].x - pol[0].x, 2) + Math.pow(pol[2].y - pol[0].y, 2));
+                            var s = (a + b + c) / 2;
+                            var m = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+                            mSum += m;
+                        });
+
+                        var overPressure = softBall.pressure * (softBall.r * softBall.r * Math.PI / mSum) - softBall.pressure;
+                        softBall.sides.forEach(function (side) {
+                            var force = Vec2.sub(side.objects[0].pos, side.objects[1].pos);
+                            force.mult(overPressure);
+                            force.rotate(Math.PI / 2);
+                            force.mult(t);
+                            side.objects[0].vel.add(Vec2.div(force, side.objects[0].m));
+                            side.objects[1].vel.add(Vec2.div(force, side.objects[1].m));
+                        });
+                    }
+                }]);
+
+                return SoftBall;
+            }();
+
+            module.exports = SoftBall;
+        }, { "./ball": 1, "./linesegment": 3, "./stick": 7, "./vec2": 8 }], 6: [function (require, module, exports) {
             var Vec2 = require('./vec2');
 
             /**
@@ -1732,7 +1950,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }();
 
             module.exports = Spring;
-        }, { "./vec2": 7 }], 6: [function (require, module, exports) {
+        }, { "./vec2": 8 }], 7: [function (require, module, exports) {
             var Spring = require('./spring');
             var Vec2 = require('./vec2');
 
@@ -1837,7 +2055,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }(Spring);
 
             module.exports = Stick;
-        }, { "./spring": 5, "./vec2": 7 }], 7: [function (require, module, exports) {
+        }, { "./spring": 6, "./vec2": 8 }], 8: [function (require, module, exports) {
             // every angle is counterclockwise (anticlockwise)
             /** Class representing a 2d vector. */
             var Vec2 = function () {
@@ -2174,7 +2392,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }();
 
             module.exports = Vec2;
-        }, {}], 8: [function (require, module, exports) {
+        }, {}], 9: [function (require, module, exports) {
             var Vec2 = require('./vec2');
 
             /** Class representing a wall
@@ -2208,8 +2426,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     sum2 += Math.PI * 2 - angle;
                     if (sum2 > sum1) return;else {
                         var temp = [];
-                        for (var _i8 = pol.length - 1; _i8 >= 0; _i8--) {
-                            temp.push(pol[_i8]);
+                        for (var _i10 = pol.length - 1; _i10 >= 0; _i10--) {
+                            temp.push(pol[_i10]);
                         }this.points = temp;
                     }
                 }
@@ -2281,5 +2499,5 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }();
 
             module.exports = Wall;
-        }, { "./vec2": 7 }] }, {}, [4])(4);
+        }, { "./vec2": 8 }] }, {}, [4])(4);
 });

@@ -2,6 +2,7 @@ const Ball = Physics.Ball;
 const Vec2 = Physics.Vec2;
 const Spring = Physics.Spring;
 const Stick = Physics.Stick;
+const SoftBall = Physics.SoftBall;
 
 let physics;
 let cnv;
@@ -26,6 +27,7 @@ let modes = [
   'stick creator',
   'spring creator',
   'move',
+  'elastic ball creator (very laggy)',
 ];
 
 let left = false;
@@ -103,7 +105,7 @@ function draw() {
   stroke(0);
   noFill();
 
-  if (mode === 0) {
+  if (mode === 0 || mode === 6) {
     ellipse(mouseX, mouseY, defaultSize * 2, defaultSize * 2);
   }
 
@@ -112,7 +114,7 @@ function draw() {
   if (lastX != 0 && lastY != 0) {
     if (mode === 1) {
       rect(mouseX, mouseY, lastX - mouseX, lastY - mouseY);
-    } else if (mode === 0 || mode === 3 || mode === 4) {
+    } else if (mode === 0 || mode === 3 || mode === 4 || mode === 6) {
       line(mouseX, mouseY, lastX, lastY);
     }
   }
@@ -205,12 +207,16 @@ function touchEnded(event) {
     return false;
   }
 
-  if (lastX != 0 && lastY != 0 && mode === 0) {
+  if (lastX != 0 && lastY != 0 && (mode === 0 || mode === 6)) {
     let newBall = new Ball(new Vec2(lastX, lastY),
       new Vec2((lastX - mouseX), (lastY - mouseY)), defaultSize, k, 0, fc);
     if (isFinite(newBall.pos.x) && isFinite(newBall.pos.y) &&
       isFinite(newBall.vel.x) && isFinite(newBall.vel.y)) {
-      physics.addBall(newBall);
+      if (mode === 0) physics.addBall(newBall);
+      else if (mode === 6) {
+        let sb = new SoftBall(newBall.pos, defaultSize, 1000000, fc, 20);
+        physics.addSoftBall(sb);
+      }
     } else {
       newBall.vel.x = 0;
       newBall.vel.y = 0;

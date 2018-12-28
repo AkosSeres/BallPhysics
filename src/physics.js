@@ -1,4 +1,5 @@
 const Ball = exports.Ball = require('./ball');
+const SoftBall = exports.SoftBall = require('./softball');
 const Body = exports.Body = require('./body');
 const Vec2 = exports.Vec2 = require('./vec2');
 const Wall = exports.Wall = require('./wall');
@@ -17,6 +18,7 @@ class Physics {
     this.balls = [];
     this.bodies = [];
     this.fixedBalls = [];
+    this.softBalls = [];
 
     this.walls = [];
 
@@ -216,6 +218,11 @@ class Physics {
       }
     }
 
+    // Update soft balls
+    this.softBalls.forEach((sb) => {
+      SoftBall.updatePressureBasedForces(sb, t);
+    });
+
     // Update springs again multiple times
     for (let i = 0; i < this.springs.length; i++) {
       for (let element of this.springs) {
@@ -309,6 +316,17 @@ class Physics {
    */
   addBody(body) {
     this.bodies.push(body);
+  }
+
+  /**
+   * Appends a new soft ball to the world
+   * @param {SoftBall} softBall SoftBall to be added to the world
+   */
+  addSoftBall(softBall) {
+    this.balls.push(...softBall.points);
+    this.springs.push(...softBall.sides);
+
+    this.softBalls.push(softBall);
   }
 
   /**
@@ -427,6 +445,7 @@ class Physics {
 module.exports = Physics;
 
 Physics.Ball = Ball;
+Physics.SoftBall = SoftBall;
 Physics.Body = Body;
 Physics.Vec2 = Vec2;
 Physics.Wall = Wall;
