@@ -94,7 +94,7 @@ class Physics {
       // Collision
       for (let j = i + 1; j < this.balls.length; j++) {
         if (this.balls[i].layer != this.balls[j].layer ||
-          !this.balls[i].layer && !this.balls[j].layer) {
+          (!this.balls[i].layer && !this.balls[j].layer)) {
           Ball.collide(this.balls[i], this.balls[j]);
         }
       }
