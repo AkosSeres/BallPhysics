@@ -4,12 +4,13 @@ module.exports = function(grunt) {
         browserify: {
             dist: {
                 files: {
-                    'dist/<%= pkg.name %>.js': 'src/physics.js',
+                    'dist/<%= pkg.name %>.js': 'src/physics.ts',
                 },
             },
             options: {
                 browserifyOptions: {
-                    standalone: 'Physics',
+                    standalone: 'BallPhysics',
+                    debug: true,
                 },
                 plugin: [
                     'tsify',
@@ -19,7 +20,7 @@ module.exports = function(grunt) {
         babel: {
             dist: {
                 files: {
-                    'dist/<%= pkg.name %>.js': 'dist/<%= pkg.name %>.js',
+                    'dist/<%= pkg.name %>.min.js': 'dist/<%= pkg.name %>.js',
                 },
             },
         },
@@ -32,7 +33,8 @@ module.exports = function(grunt) {
             },
             dist: {
                 files: {
-                    'dist/<%= pkg.name %>.min.js': 'dist/<%= pkg.name %>.js',
+                    'dist/<%= pkg.name %>.min.js':
+                        'dist/<%= pkg.name %>.min.js',
                 },
             },
         },
