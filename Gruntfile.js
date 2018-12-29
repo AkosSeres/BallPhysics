@@ -11,6 +11,9 @@ module.exports = function(grunt) {
                 browserifyOptions: {
                     standalone: 'Physics',
                 },
+                plugin: [
+                    'tsify',
+                ],
             },
         },
         babel: {
@@ -34,7 +37,8 @@ module.exports = function(grunt) {
             },
         },
         eslint: {
-            target: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
+            target: ['Gruntfile.js', 'src/**/*.js',
+                'test/**/*.js', 'src/**/*.ts', 'test/**/*.ts'],
             options: {
                 useEslintrc: true,
             },
