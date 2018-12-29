@@ -156,6 +156,7 @@ function draw() {
 /**
  * p5.js function and it's called when the user pressed a mouse button
  * @param {Touch} event Touch event containing data
+ * @return {bool} Prevents default behavior for browsers
  */
 function touchStarted(event) {
   mouseX = touches[0] ? touches[0].x : (isFinite(mouseX) ? mouseX : mx);
@@ -174,6 +175,7 @@ function touchStarted(event) {
   }
   lastX = mouseX;
   lastY = mouseY;
+  return false;
 }
 
 /**
