@@ -1,8 +1,10 @@
 # Balls-Physics
 Physics simulation on balls
 [Try out the editor!](https://akosseres.github.io/BallPhysics/test/)
-Controls: up and down arrows - switching between modes
-and use the mouse to interact
+
+Controls:
+* up and down arrows to switch between modes
+* use the mouse to interact
 
 # Licensing
 `Balls-Physics` is licensed under the LGPL 2.1 License.
