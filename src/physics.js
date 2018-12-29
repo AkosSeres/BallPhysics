@@ -68,9 +68,9 @@ class Physics {
     }
 
     // Update springs multiple times
-    for (let i = 0; i < this.springs.length; i++) {
+    for (let i = 0; i < 3; i++) {
       for (let element of this.springs) {
-        element.update(t / this.springs.length / 2);
+        element.update(t / 3 / 2);
       }
     }
 
@@ -229,9 +229,9 @@ class Physics {
     });
 
     // Update springs again multiple times
-    for (let i = 0; i < this.springs.length; i++) {
+    for (let i = 0; i < 3; i++) {
       for (let element of this.springs) {
-        element.update(t / this.springs.length / 2);
+        element.update(t / 3 / 2);
       }
     }
 
