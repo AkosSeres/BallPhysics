@@ -1,17 +1,16 @@
-const Vec2 = require('./vec2');
+import Vec2 from './vec2';
+import Ball from './ball';
 
 /** Class representing a wall
  * Walls are objects that are immovable  and they are rigid
  * It can be convex or concave
  */
-class Wall {
+export default class Wall {
     /**
      * Create a wall
-     * @param {Array} points Array of points that make up the wall
+     * @param {Array<Vec2>} points Array of points that make up the wall
      */
-    constructor(points) {
-        this.points = points;
-
+    constructor(public points: Array<Vec2>) {
         let pol = this.points;
         let sum1 = 0;
         let sum2 = 0;
@@ -41,9 +40,9 @@ class Wall {
      * Function for collision detection and behavior between balls and walls
      * @param {Ball} ball The ball that is checked if it collides with the wall
      */
-    collideWithBall(ball) {
-        let heading = null;
-        let rel = null;
+    collideWithBall(ball: Ball) {
+        let heading: number;
+        let rel: number;
 
         this.points.forEach((point, idx) => {
             let p = new Vec2(point.x, point.y);
@@ -101,5 +100,3 @@ class Wall {
         }
     }
 }
-
-module.exports = Wall;

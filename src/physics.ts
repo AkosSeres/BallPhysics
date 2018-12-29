@@ -1,16 +1,26 @@
-const Ball = exports.Ball = require('./ball');
-const SoftBall = exports.SoftBall = require('./softball');
-const Body = exports.Body = require('./body');
-const Vec2 = exports.Vec2 = require('./vec2');
-const Wall = exports.Wall = require('./wall');
-const LineSegment = exports.LineSegment = require('./linesegment');
-const Spring = exports.Spring = require('./spring');
-const Stick = exports.Stick = require('./stick');
+import Vec2 from './vec2';
+import Ball from './ball';
+import Wall from './wall';
+import LineSegment from './linesegment';
+import Stick from './stick';
+import Spring from './spring';
+import SoftBall from './softball';
+import Body from './body';
 
 /**
  * Class that creates a new world ba the physics engine
  */
 class Physics {
+  balls: Array<Ball>;
+  bodies: Array<Body>;
+  fixedBalls: Array<{x: number, y: number, r: number, }>
+  softBalls: Array<SoftBall>;
+  walls: Array<Wall>;
+  bounds: Array<number>;
+  springs: Array<Spring>;
+  airFriction: number;
+  gravity: Vec2;
+
   /**
    * Create and initalize a new world
    */
@@ -22,7 +32,7 @@ class Physics {
 
     this.walls = [];
 
-    this.bounds = 0;
+    this.bounds = [];
 
     this.springs = [];
 
@@ -31,19 +41,19 @@ class Physics {
     // 1 - no friction
     this.airFriction = 1;
 
-    this.gravity = null;
+    this.gravity = new Vec2(0, 0);
   }
 
   /**
    * Updates the world by a given amount of time
    * @param {number} t Elapsed time
-   * @param {bool} precise If this is true,
+   * @param {boolean} precise If this is true,
    * then the simulation is going to be more precise
    */
-  update(t, precise) {
+  update(t: number, precise: boolean) {
     // Do the simulation on the reversed system
     // if the simulation is in precise mode
-    let clonedSystem;
+    let clonedSystem: Physics;
     if (precise) {
       clonedSystem = this.copy;
       clonedSystem.bodies.reverse();
@@ -83,8 +93,8 @@ class Physics {
 
       // Collision
       for (let j = i + 1; j < this.balls.length; j++) {
-        if (this.balls[i].group != this.balls[j].group ||
-          !this.balls[i].group && !this.balls[j].group) {
+        if (this.balls[i].layer != this.balls[j].layer ||
+          !this.balls[i].layer && !this.balls[j].layer) {
           Ball.collide(this.balls[i], this.balls[j]);
         }
       }
@@ -137,7 +147,7 @@ class Physics {
       }
 
       // Bounce off the edges
-      if (this.bounds) {
+      if (this.bounds.length > 0) {
         if (this.balls[i].pos.x - this.balls[i].r < this.bounds[0]) {
           let ball = this.balls[i];
           ball.vel.x *= -ball.k;
@@ -203,15 +213,15 @@ class Physics {
 
     for (let i = 0; i < this.bodies.length; i++) {
       for (let ball of this.balls) {
-        if (ball.group != this.bodies[i].group ||
-          (!ball.group && !this.bodies[i].group)) {
+        if (ball.layer != this.bodies[i].layer ||
+          (!ball.layer && !this.bodies[i].layer)) {
           this.bodies[i].collideWithBall(ball);
         }
       }
 
       for (let j = i + 1; j < this.bodies.length; j++) {
-        if (this.bodies[i].group != this.bodies[j].group ||
-          (!this.bodies[j].group && !this.bodies[i].group)) {
+        if (this.bodies[i].layer != this.bodies[j].layer ||
+          (!this.bodies[j].layer && !this.bodies[i].layer)) {
           Body.collide(this.bodies[i], this.bodies[j]);
         }
       }
@@ -278,7 +288,7 @@ class Physics {
    * Returns a copy of this system
    * @return {Physics} The copy of this system
    */
-  get copy() {
+  get copy(): Physics {
     let ret = new Physics();
     ret.balls = this.getCopyOfBalls();
     ret.bodies = this.getCopyOfBodies();
@@ -315,7 +325,7 @@ class Physics {
    * 1 - no friction
    * @param {number} airFriction Has to be between 0 and 1
    */
-  setAirFriction(airFriction) {
+  setAirFriction(airFriction: number) {
     if (!isFinite(airFriction)) return;
     this.airFriction = airFriction;
     if (this.airFriction < 0) this.airFriction = 0;
@@ -326,7 +336,7 @@ class Physics {
    * Sets the gravity in the world
    * @param {Vec2} dir The acceleration vector of the gravity
    */
-  setGravity(dir) {
+  setGravity(dir: Vec2) {
     this.gravity = dir.copy;
   }
 
@@ -334,7 +344,7 @@ class Physics {
    * Appends a new ball to the world
    * @param {Ball} ball Ball to add to the world
    */
-  addBall(ball) {
+  addBall(ball: Ball) {
     this.balls.push(ball);
   }
 
@@ -342,7 +352,7 @@ class Physics {
    * Appends a new body to the world
    * @param {Body} body Body to add to the world
    */
-  addBody(body) {
+  addBody(body: Body) {
     this.bodies.push(body);
   }
 
@@ -350,7 +360,7 @@ class Physics {
    * Appends a new soft ball to the world
    * @param {SoftBall} softBall SoftBall to be added to the world
    */
-  addSoftBall(softBall) {
+  addSoftBall(softBall: SoftBall) {
     this.balls.push(...softBall.points);
     this.springs.push(...softBall.sides);
 
@@ -364,33 +374,33 @@ class Physics {
    * @param {number} w width of the rectangular wall
    * @param {number} h height of the rectangular wall
    */
-  addRectWall(x, y, w, h) {
+  addRectWall(x: number, y: number, w: number, h: number) {
     let points = [];
-    points.push({
-      x: x - w / 2,
-      y: y - h / 2,
-    });
-    points.push({
-      x: x + w / 2,
-      y: y - h / 2,
-    });
-    points.push({
-      x: x + w / 2,
-      y: y + h / 2,
-    });
-    points.push({
-      x: x - w / 2,
-      y: y + h / 2,
-    });
-    // this.walls.push(new Wall(points));
-    this.bodies.push(new Body(points, new Vec2(0, 0), 0.5, 0, 0.3));
+    points.push(new Vec2(
+      x - w / 2,
+      y - h / 2
+    ));
+    points.push(new Vec2(
+      x + w / 2,
+      y - h / 2
+    ));
+    points.push(new Vec2(
+      x + w / 2,
+      y + h / 2
+    ));
+    points.push(new Vec2(
+      x - w / 2,
+      y + h / 2
+    ));
+    this.walls.push(new Wall(points));
+    // this.bodies.push(new Body(points, new Vec2(0, 0), 0.5, 0, 0.3));
   }
 
   /**
    * Append a new wall to the world
    * @param {Wall} wall Wall to append to the world
    */
-  addWall(wall) {
+  addWall(wall: Wall) {
     this.walls.push(wall);
   }
 
@@ -401,11 +411,9 @@ class Physics {
    * @param {number} y y coordinate of the fixed ball
    * @param {number} r radius of the fixed ball
    */
-  addFixedBall(x, y, r) {
+  addFixedBall(x: number, y: number, r: number) {
     this.fixedBalls.push({
-      x: x,
-      y: y,
-      r: r,
+      x: x, y: y, r: r,
     });
   }
 
@@ -413,7 +421,7 @@ class Physics {
    * Appends a new spring to the world
    * @param {Spring} spring Spring to add to the world
    */
-  addSpring(spring) {
+  addSpring(spring: Spring) {
     this.springs.push(spring);
   }
 
@@ -425,7 +433,7 @@ class Physics {
    * @param {number} w Width of the world
    * @param {number} h Height of the world
    */
-  setBounds(x, y, w, h) {
+  setBounds(x: number, y: number, w: number, h: number) {
     this.bounds = [x, y, w, h];
   }
 
@@ -434,10 +442,10 @@ class Physics {
    * Return false if nothing is found
    * @param {number} x x coordinate
    * @param {number} y y coordinate
-   * @return {Object} The found object
+   * @return {Ball} The found object
    */
-  getObjectAtCoordinates(x, y) {
-    let ret = false;
+  getObjectAtCoordinates(x: number, y: number): Ball {
+    let ret = undefined;
     let v = new Vec2(x, y);
     this.balls.forEach((ball) => {
       if (ball.pos.dist(v) < ball.r) ret = ball;
@@ -447,10 +455,10 @@ class Physics {
 
   /**
    * Returns an array of copies of all balls in the system
-   * @return {Array} The array of the copied balls
+   * @return {Array<Ball>} The array of the copied balls
    */
-  getCopyOfBalls() {
-    let ret = [];
+  getCopyOfBalls(): Array<Ball> {
+    let ret: Array<Ball> = [];
     this.balls.forEach((item) => {
       ret.push(item.copy);
     });
@@ -459,10 +467,10 @@ class Physics {
 
   /**
    * Returns an array of copies of all bodies in the system
-   * @return {Array} The array of the copied bodies
+   * @return {Array<Body>} The array of the copied bodies
    */
-  getCopyOfBodies() {
-    let ret = [];
+  getCopyOfBodies(): Array<Body> {
+    let ret: Array<Body> = [];
     this.bodies.forEach((item) => {
       ret.push(item.copy);
     });
@@ -470,13 +478,12 @@ class Physics {
   }
 }
 
-module.exports = Physics;
-
-Physics.Ball = Ball;
-Physics.SoftBall = SoftBall;
-Physics.Body = Body;
-Physics.Vec2 = Vec2;
-Physics.Wall = Wall;
-Physics.LineSegment = LineSegment;
-Physics.Spring = Spring;
-Physics.Stick = Stick;
+export {Ball};
+export {Body};
+export {Vec2};
+export {Wall};
+export {LineSegment};
+export {Spring};
+export {Stick};
+export {SoftBall};
+export {Physics};

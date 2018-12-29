@@ -1,12 +1,25 @@
-const Vec2 = require('./vec2');
-const LineSegment = require('./linesegment');
+import Vec2 from './vec2';
+import Ball from './ball';
+import LineSegment from './linesegment';
 
 /**
  * Class representing a body
  * Bodies are movable objects
  * and they collide with other objects (balls)
  */
-class Body {
+export default class Body {
+    points: Array<Vec2>;
+    lastPos: Vec2;
+    pos: Vec2;
+    fc: number;
+    rotation: number;
+    ang: number;
+    k: number;
+    vel: Vec2;
+    m: number;
+    am: number;
+    layer: any;
+
     /**
      * Creates a body and calculates it's centre of mass (position)
      * @param {Array} points The points that make up the body
@@ -15,7 +28,8 @@ class Body {
      * @param {number} ang Angular velocity
      * @param {number} fc Friction coefficient
      */
-    constructor(points, vel, k, ang, fc) {
+    constructor(points: Array<Vec2>, vel: Vec2,
+        k: number, ang: number, fc: number) {
         this.points = points;
 
         let pol = this.points;
@@ -63,10 +77,10 @@ class Body {
      * Get a copy of the body that is not a reference to it
      * @return {Body} The copy of the body
      */
-    get copy() {
+    get copy(): Body {
         let pointsCopy = [];
         for (let i = 0; i < this.points.length; i++) {
-            pointsCopy.push({x: this.points[i].x, y: this.points[i].y});
+            pointsCopy.push(new Vec2(this.points[i].x, this.points[i].y));
         }
         let ret = new Body(pointsCopy, this.vel.copy,
             this.k, this.ang, this.fc);
@@ -84,7 +98,7 @@ class Body {
      * @param {number} x x coordinate
      * @param {number} y y coordinate
      */
-    move(x, y) {
+    move(x: number, y: number) {
         this.pos.x += x;
         this.pos.y += y;
         this.points.forEach((p) => {
@@ -98,9 +112,9 @@ class Body {
      * collision behavior between the body and ball
      * @param {Ball} ball The ball to collide with the body
      */
-    collideWithBall(ball) {
-        let heading = null;
-        let rel = null;
+    collideWithBall(ball: Ball) {
+        let heading: number;
+        let rel: number;
         let cp;
 
         this.points.forEach((point, idx) => {
@@ -122,8 +136,6 @@ class Body {
 
                 let a = Vec2.fromAngle(heading);
                 a.mult(-30);
-                stroke('red');
-                line(cp.x, cp.y, cp.x + a.x, cp.y + a.y);
             }
             p = new Vec2(point.x, point.y);
             let np = new Vec2(this.points[(idx + 1) % this.points.length].x,
@@ -151,8 +163,6 @@ class Body {
 
                 let a = Vec2.fromAngle(heading);
                 a.mult(-30);
-                stroke('red');
-                line(cp.x, cp.y, cp.x + a.x, cp.y + a.y);
             }
         });
 
@@ -233,23 +243,21 @@ class Body {
      * the centre of mass of the body
      */
     calculatePosAndMass() {
-        let poligons = [];
+        let poligons: Array<Array<Vec2>> = [];
         poligons.push([]);
         this.points.forEach((p) => {
-            poligons[0].push({
-                x: p.x,
-                y: p.y,
-            });
+            poligons[0].push(new Vec2(p.x, p.y));
         });
 
         if (this.isConcave) {
-            const includes = (arr, item) => {
+            const includes = (arr: Array<number>, item: number) => {
                 for (let i = 0; i < arr.length; i++) {
                     if (arr[i] === item) return true;
                 }
                 return false;
             };
-            const intersectWithPoligon = function(segment, pol, exceptions) {
+            const intersectWithPoligon = function(segment: LineSegment,
+                pol: Array<Vec2>, exceptions: Array<number>) {
                 for (let i = 0; i < pol.length; i++) {
                     if (!includes(exceptions, i)) {
                         let side = new LineSegment(new Vec2(pol[i].x, pol[i].y),
@@ -437,7 +445,7 @@ class Body {
      * Has to do the transformation for all the points
      * @param {number} angle Rotation angle
      */
-    rotate(angle) {
+    rotate(angle: number) {
         this.points.forEach((p) => {
             let point = new Vec2(p.x, p.y);
             point.sub(this.pos);
@@ -474,11 +482,11 @@ class Body {
      * @param {Body} b1 First body
      * @param {Body} b2 Second body
      */
-    static collide(b1, b2) {
+    static collide(b1: Body, b2: Body) {
         let matches = 0;
         let heading = 0;
         let cp = new Vec2(0, 0);
-        let cps = [];
+        let cps: Array<Vec2> = [];
         let intersect = false;
         b1.points.forEach((p, idx) => {
             let side1 = new LineSegment(new Vec2(p.x, p.y),
@@ -510,20 +518,18 @@ class Body {
         heading += Math.PI / 2;
 
         let a = Vec2.fromAngle(heading);
-        stroke('red');
-        line(cp.x, cp.y, cp.x + a.x * -30, cp.y + a.y * -30);
 
         let move1Min = 0;
         let move1Max = 0;
         let move2Min = 0;
         let move2Max = 0;
-        for (point of b1.points) {
+        for (let point of b1.points) {
             move1Min = Math.min(Vec2.dot(a,
                 Vec2.sub(new Vec2(point.x, point.y), cp)), move1Min);
             move1Max = Math.max(Vec2.dot(a,
                 Vec2.sub(new Vec2(point.x, point.y), cp)), move1Max);
         }
-        for (point of b2.points) {
+        for (let point of b2.points) {
             move2Min = Math.min(Vec2.dot(a,
                 Vec2.sub(new Vec2(point.x, point.y), cp)), move2Min);
             move2Max = Math.max(Vec2.dot(a,

@@ -1,12 +1,15 @@
 // every angle is counterclockwise (anticlockwise)
 /** Class representing a 2d vector. */
-class Vec2 {
+export default class Vec2 {
+    x: number;
+    y: number;
+
     /**
      * Create a vector.
      * @param {number} x - The x value.
      * @param {number} y - The y value.
      */
-    constructor(x, y) {
+    constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
     }
@@ -16,7 +19,7 @@ class Vec2 {
      * Get a copy of the vector.
      * @return {Vec2} The copy.
      */
-    get copy() {
+    get copy(): Vec2 {
         return new Vec2(this.x, this.y);
     }
 
@@ -24,7 +27,7 @@ class Vec2 {
      * Get the length of the vector.
      * @return {number} The length.
      */
-    get length() {
+    get length(): number {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }
 
@@ -32,7 +35,7 @@ class Vec2 {
      * Get the length of the vector squared.
      * @return {number} The length squared.
      */
-    get sqlength() {
+    get sqlength(): number {
         return this.x * this.x + this.y * this.y;
     }
 
@@ -41,7 +44,7 @@ class Vec2 {
      * @return {number} The angle between (1, 0)
      * and the vector in anticlockwise direction.
      */
-    get heading() {
+    get heading(): number {
         if (this.x === 0 && this.y === 0) return 0;
         if (this.x === 0) return this.y > 0 ? Math.PI / 2 : 1.5 * Math.PI;
         if (this.y === 0) return this.x > 0 ? 0 : Math.PI;
@@ -57,7 +60,7 @@ class Vec2 {
      * Adds another vector to the vector.
      * @param {Vec2} a - The other vector.
      */
-    add(a) {
+    add(a: Vec2) {
         this.x += a.x;
         this.y += a.y;
     }
@@ -66,7 +69,7 @@ class Vec2 {
      * Subtracts another vector from the vector.
      * @param {Vec2} a - The other vector.
      */
-    sub(a) {
+    sub(a: Vec2) {
         this.x -= a.x;
         this.y -= a.y;
     }
@@ -75,7 +78,7 @@ class Vec2 {
      * Multiplies the vector by a scalar.
      * @param {number} x - The scalar.
      */
-    mult(x) {
+    mult(x: number) {
         this.x *= x;
         this.y *= x;
     }
@@ -84,7 +87,7 @@ class Vec2 {
      * Divides the vector by a scalar.
      * @param {number} x - The scalar.
      */
-    div(x) {
+    div(x: number) {
         this.x /= x;
         this.y /= x;
     }
@@ -94,7 +97,7 @@ class Vec2 {
      * @param {Vec2} other - The other vector.
      * @param {number} x - The scalar.
      */
-    lerp(other, x) {
+    lerp(other: Vec2, x: number) {
         this.x += (other.x - this.x) * x;
         this.y += (other.y - this.y) * x;
     }
@@ -105,7 +108,7 @@ class Vec2 {
      * @param {Vec2} other - The other vector.
      * @return {number} The distance between them.
      */
-    dist(other) {
+    dist(other: Vec2): number {
         return (new Vec2(this.x - other.x, this.y - other.y)).length;
     }
 
@@ -113,7 +116,7 @@ class Vec2 {
      * Set the length of the vector.
      * @param {number} l - The new length value.
      */
-    setMag(l) {
+    setMag(l: number) {
         if (this.length === 0) return;
         this.mult(l / this.length);
     }
@@ -122,7 +125,7 @@ class Vec2 {
      * Rotate the vector anticlockwise.
      * @param {number} angle - Rotation angle.
      */
-    rotate(angle) {
+    rotate(angle: number) {
         let h = this.heading;
         let v = Vec2.fromAngle(angle + h);
         v.mult(this.length);
@@ -138,7 +141,7 @@ class Vec2 {
      * @param {Vec2} b - Other vector.
      * @return {Vec2} The sum of the vectors.
      */
-    static add(a, b) {
+    static add(a: Vec2, b: Vec2): Vec2 {
         return new Vec2(a.x + b.x, a.y + b.y);
     }
 
@@ -148,7 +151,7 @@ class Vec2 {
      * @param {Vec2} b - Other vector.
      * @return {Vec2} The subtraction of the vectors.
      */
-    static sub(a, b) {
+    static sub(a: Vec2, b: Vec2): Vec2 {
         return new Vec2(a.x - b.x, a.y - b.y);
     }
 
@@ -158,7 +161,7 @@ class Vec2 {
      * @param {number} x - Scalar.
      * @return {Vec2} The multiplied vector.
      */
-    static mult(v, x) {
+    static mult(v: Vec2, x: number): Vec2 {
         return new Vec2(v.x * x, v.y * x);
     }
 
@@ -168,7 +171,7 @@ class Vec2 {
      * @param {number} x - Scalar.
      * @return {Vec2} The divided vector.
      */
-    static div(v, x) {
+    static div(v: Vec2, x: number): Vec2 {
         return new Vec2(v.x / x, v.y / x);
     }
 
@@ -177,7 +180,7 @@ class Vec2 {
      * @param {number} a - The angle.
      * @return {Vec2} The created vector.
      */
-    static fromAngle(a) {
+    static fromAngle(a: number): Vec2 {
         return new Vec2(Math.cos(a), Math.sin(a));
     }
 
@@ -188,7 +191,7 @@ class Vec2 {
      * @param {number} x - The scalar.
      * @return {Vec2} The created vector.
      */
-    static lerp(a, b, x) {
+    static lerp(a: Vec2, b: Vec2, x: number): Vec2 {
         return Vec2.add(a, Vec2.mult(Vec2.sub(b, a), x));
     }
 
@@ -198,7 +201,7 @@ class Vec2 {
      * @param {Vec2} b - Other vector
      * @return {number} The distance between them.
      */
-    static dist(a, b) {
+    static dist(a: Vec2, b: Vec2): number {
         return Vec2.sub(a, b).length;
     }
 
@@ -208,7 +211,7 @@ class Vec2 {
      * @param {Vec2} b - Other vector
      * @return {number} The dot product of them.
      */
-    static dot(a, b) {
+    static dot(a: Vec2, b: Vec2): number {
         return a.x * b.x + a.y * b.y;
     }
 
@@ -218,7 +221,7 @@ class Vec2 {
      * @param {Vec2} b - Other vector
      * @return {number} The cross product of them.
      */
-    static cross(a, b) {
+    static cross(a: Vec2, b: Vec2): number {
         return a.x * b.y - a.y * b.x;
     }
 
@@ -228,7 +231,7 @@ class Vec2 {
      * @param {Vec2} b - Other vector
      * @return {number} Angle between them.
      */
-    static angle(a, b) {
+    static angle(a: Vec2, b: Vec2): number {
         return Math.acos(Vec2.dot(a, b) / Math.sqrt(a.sqlength * b.sqlength));
     }
 
@@ -238,7 +241,7 @@ class Vec2 {
      * @param {Vec2} b - Other vector
      * @return {number} Angle between them.
      */
-    static angleACW(a, b) {
+    static angleACW(a: Vec2, b: Vec2): number {
         let ah = a.heading;
         let bh = b.heading;
         let angle = bh - ah;
@@ -251,10 +254,8 @@ class Vec2 {
      * @param {Vec2} v - A vector.
      * @return {Vec2} Vector with length = 0.
      */
-    static normalized(v) {
+    static normalized(v: Vec2): Vec2 {
         let l = v.length;
         return l === 0 ? v : new Vec2(v.x / l, v.y / l);
     }
 }
-
-module.exports = Vec2;

@@ -1,8 +1,9 @@
-const Ball = Physics.Ball;
-const Vec2 = Physics.Vec2;
-const Spring = Physics.Spring;
-const Stick = Physics.Stick;
-const SoftBall = Physics.SoftBall;
+const Physics = BallPhysics.Physics;
+const Ball = BallPhysics.Ball;
+const Vec2 = BallPhysics.Vec2;
+const Spring = BallPhysics.Spring;
+const Stick = BallPhysics.Stick;
+const SoftBall = BallPhysics.SoftBall;
 
 let physics;
 let cnv;
@@ -239,7 +240,7 @@ function touchEnded(event) {
       let newChoosed = physics.getObjectAtCoordinates(mouseX, mouseY);
       let stick;
       const Thing = mode === 3 ? Stick : Spring;
-      if (newChoosed == false) {
+      if (newChoosed == undefined) {
         newChoosed = {
           x: mouseX,
           y: mouseY,

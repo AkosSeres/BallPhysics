@@ -4,19 +4,23 @@ module.exports = function(grunt) {
         browserify: {
             dist: {
                 files: {
-                    'dist/<%= pkg.name %>.js': 'src/physics.js',
+                    'dist/<%= pkg.name %>.js': 'src/physics.ts',
                 },
             },
             options: {
                 browserifyOptions: {
-                    standalone: 'Physics',
+                    standalone: 'BallPhysics',
+                    debug: true,
                 },
+                plugin: [
+                    'tsify',
+                ],
             },
         },
         babel: {
             dist: {
                 files: {
-                    'dist/<%= pkg.name %>.js': 'dist/<%= pkg.name %>.js',
+                    'dist/<%= pkg.name %>.min.js': 'dist/<%= pkg.name %>.js',
                 },
             },
         },
@@ -29,12 +33,14 @@ module.exports = function(grunt) {
             },
             dist: {
                 files: {
-                    'dist/<%= pkg.name %>.min.js': 'dist/<%= pkg.name %>.js',
+                    'dist/<%= pkg.name %>.min.js':
+                        'dist/<%= pkg.name %>.min.js',
                 },
             },
         },
         eslint: {
-            target: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
+            target: ['Gruntfile.js', 'src/**/*.js',
+                'test/**/*.js', 'src/**/*.ts', 'test/**/*.ts'],
             options: {
                 useEslintrc: true,
             },

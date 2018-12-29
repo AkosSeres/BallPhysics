@@ -1,24 +1,22 @@
-const Vec2 = require('./vec2');
+import Vec2 from './vec2';
 
 /**
  * Class representing a segment of a line
  */
-class LineSegment {
+export default class LineSegment {
     /**
      * Create a segment
      * @param {Vec2} a Starting point
      * @param {Vec2} b Ending point
      */
-    constructor(a, b) {
-        this.a = a;
-        this.b = b;
+    constructor(public a: Vec2, public b: Vec2) {
     }
 
     /**
      * Get the length of the segment
      * @return {number} The length
      */
-    get length() {
+    get length(): number {
         return Vec2.dist(this.a, this.b);
     }
 
@@ -27,7 +25,7 @@ class LineSegment {
      * @param {Vec2} p The point as a vector
      * @return {number} The distance
      */
-    distFromPoint(p) {
+    distFromPoint(p: Vec2): number {
         let e = Vec2.sub(this.a, this.b);
         let A = Vec2.sub(p, this.b);
         let B = Vec2.sub(p, this.a);
@@ -47,13 +45,13 @@ class LineSegment {
 
     /**
      * Get if they intersect or not
-     * If they intersect it returns true
-     * If they not it returns false
+     * If they intersect it returns the intersection point
+     * If they not it returns undefined
      * @param {LineSegment} segment1 A segment
      * @param {LineSegment} segment2 Other segment
-     * @return {Boolean} If they intersect or not
+     * @return {Vec2} Intersetion point
      */
-    static intersect(segment1, segment2) {
+    static intersect(segment1: LineSegment, segment2: LineSegment): Vec2 {
         let v1 = Vec2.sub(segment1.b, segment1.a);
         let a1 = v1.y / v1.x;
         let c1 = segment1.b.y - (segment1.b.x * a1);
@@ -64,7 +62,7 @@ class LineSegment {
 
         if (v1.x === 0 && v2.x !== 0) {
             if ((segment1.a.x >= segment2.a.x &&
-                    segment1.a.x <= segment2.b.x) ||
+                segment1.a.x <= segment2.b.x) ||
                 (segment1.a.x <= segment2.a.x &&
                     segment1.a.x >= segment2.b.x)) {
                 let h = a2 * segment1.a.x + c2;
@@ -73,11 +71,11 @@ class LineSegment {
                     return new Vec2(segment1.a.x, h);
                 }
             }
-            return false;
+            return undefined;
         }
         if (v2.x === 0 && v1.x !== 0) {
             if ((segment2.a.x >= segment1.a.x &&
-                    segment2.a.x <= segment1.b.x) ||
+                segment2.a.x <= segment1.b.x) ||
                 (segment2.a.x <= segment1.a.x &&
                     segment2.a.x >= segment1.b.x)) {
                 let h = a1 * segment2.a.x + c1;
@@ -86,7 +84,7 @@ class LineSegment {
                     return new Vec2(segment2.a.x, h);
                 }
             }
-            return false;
+            return undefined;
         }
         if (v1.x === 0 && v2.x === 0) {
             if (segment1.a.x === segment2.a.x) {
@@ -104,7 +102,7 @@ class LineSegment {
                 }
                 let interval = [(interval1[0] > interval2[0]) ?
                     interval1[0] : interval2[0],
-                    (interval1[1] < interval2[1]) ?
+                (interval1[1] < interval2[1]) ?
                     interval1[1] : interval2[1],
                 ];
                 if (interval[0] <= interval[1]) {
@@ -112,7 +110,7 @@ class LineSegment {
                         (interval[0] + interval[1]) / 2);
                 }
             }
-            return false;
+            return undefined;
         }
 
         let interval1;
@@ -129,7 +127,7 @@ class LineSegment {
         }
         let interval = [(interval1[0] > interval2[0]) ?
             interval1[0] : interval2[0],
-            (interval1[1] < interval2[1]) ?
+        (interval1[1] < interval2[1]) ?
             interval1[1] : interval2[1],
         ];
         // If they are parralel the only time they intersect is when c1 == c2.
@@ -140,8 +138,6 @@ class LineSegment {
         let x = (c2 - c1) / (a1 - a2);
         if (x >= interval[0] && x <= interval[1]) {
             return new Vec2(x, x * a1 + c1);
-        } else return false;
+        } else return undefined;
     }
 }
-
-module.exports = LineSegment;
