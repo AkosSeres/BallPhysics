@@ -1,13 +1,21 @@
-const Vec2 = require('./vec2');
-const Ball = require('./ball');
-const Stick = require('./stick');
-const LineSegment = require('./linesegment');
+import Vec2 from './vec2';
+import Ball from './ball';
+import Stick from './stick';
+import LineSegment from './linesegment';
+import Spring from './spring';
 
 /**
  * Class representing a softbody object
  * They work like a ball, with pressure inside
  */
-class SoftBall {
+export default class SoftBall {
+    points: Array<Ball>;
+    pressure: number;
+    fc: number;
+    resolution: number;
+    r: number;
+    sides: Array<Spring>;
+
     /**
      * Creates a SoftBall
      * @param {Vec2} pos The starting position of the soft ball
@@ -16,7 +24,8 @@ class SoftBall {
      * @param {number} fc Friction coefficient
      * @param {number} resolution The number of points that make up the ball
      */
-    constructor(pos, r, pressure, fc, resolution) {
+    constructor(pos: Vec2, r: number, pressure: number,
+        fc: number, resolution: number) {
         this.points = [];
 
         if (fc || fc === 0) this.fc = fc;
@@ -53,14 +62,11 @@ class SoftBall {
      * @param {SoftBall} softBall The soft ball to update
      * @param {number} t Elapsed time
      */
-    static updatePressureBasedForces(softBall, t) {
-        let poligons = [];
+    static updatePressureBasedForces(softBall: SoftBall, t: number) {
+        let poligons: Array<Array<Vec2>> = [];
         poligons.push([]);
         softBall.points.forEach((p) => {
-            poligons[0].push({
-                x: p.pos.x,
-                y: p.pos.y,
-            });
+            poligons[0].push(new Vec2(p.pos.x, p.pos.y));
         });
 
         if ((function(pol) {
@@ -77,13 +83,14 @@ class SoftBall {
             if (angle > Math.PI) return true;
             return false;
         })(poligons[0])) {
-            const includes = (arr, item) => {
+            const includes = (arr: Array<number>, item: number) => {
                 for (let i = 0; i < arr.length; i++) {
                     if (arr[i] === item) return true;
                 }
                 return false;
             };
-            const intersectWithPoligon = function(segment, pol, exceptions) {
+            const intersectWithPoligon = function(segment: LineSegment,
+                pol: Array<Vec2>, exceptions: Array<number>) {
                 for (let i = 0; i < pol.length; i++) {
                     if (!includes(exceptions, i)) {
                         let side = new LineSegment(new Vec2(pol[i].x, pol[i].y),
@@ -248,5 +255,3 @@ class SoftBall {
         });
     }
 }
-
-module.exports = SoftBall;

@@ -1,10 +1,9 @@
-export {};
-const Vec2 = require('./vec2');
+import Vec2 from './vec2';
 
 /**
  * Class representing a segment of a line
  */
-class LineSegment {
+export default class LineSegment {
     /**
      * Create a segment
      * @param {Vec2} a Starting point
@@ -142,5 +141,3 @@ class LineSegment {
         } else return undefined;
     }
 }
-
-module.exports = LineSegment;

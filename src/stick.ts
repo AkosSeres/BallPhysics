@@ -1,18 +1,18 @@
-const Spring = require('./spring');
-const Vec2 = require('./vec2');
+import Vec2 from './vec2';
+import Spring from './spring';
 
 /**
  * Stick class for the physics engine
  * Sticks are not strechable objects that do not collide
  * with other objects but they can hold other objects on their ends
  */
-class Stick extends Spring {
+export default class Stick extends Spring {
     /**
      * Creates a stick
      * @param {nuber} length The length of the stick
      */
-    constructor(length) {
-        super(length);
+    constructor(length: number) {
+        super(length, 0);
         this.springConstant = 0;
     }
 
@@ -20,7 +20,7 @@ class Stick extends Spring {
      * Updates the stick trough an elapsed time
      * @param {number} t Elapsed time
      */
-    update(t) {
+    update(t: number) {
         let p1;
         let p2;
         if (this.pinned && this.objects[0]) {
@@ -91,5 +91,3 @@ class Stick extends Spring {
         }
     }
 }
-
-module.exports = Stick;

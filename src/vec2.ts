@@ -1,6 +1,6 @@
 // every angle is counterclockwise (anticlockwise)
 /** Class representing a 2d vector. */
-class Vec2 {
+export default class Vec2 {
     x: number;
     y: number;
 
@@ -259,5 +259,3 @@ class Vec2 {
         return l === 0 ? v : new Vec2(v.x / l, v.y / l);
     }
 }
-
-module.exports = Vec2;
