@@ -1,6 +1,8 @@
 # Balls-Physics
 Physics simulation on balls
-[Play now!](https://akosseres.github.io/BallPhysics/test/)
+[Try out the editor!](https://akosseres.github.io/BallPhysics/test/)
+Controls: up and down arrows - switching between modes
+and use the mouse to interact
 
 # Licensing
 `Balls-Physics` is licensed under the LGPL 2.1 License.
