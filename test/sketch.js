@@ -20,7 +20,7 @@ window.lockRotation = false;
 window.time = true;
 let choosed = false;
 let mx = 0; my = 0;
-let preciseMode = true;
+let preciseMode = false;
 let modes = [
   'ball creator',
   'rectangle',
