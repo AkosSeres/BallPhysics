@@ -7,15 +7,21 @@ const SoftBall = BallPhysics.SoftBall;
 
 let physics;
 let cnv;
+let mouseX = 0;
+let mouseY = 0;
+let pmouseX = 0;
+let pmouseY = 0;
+// eslint-disable-next-line no-unused-vars
+let mouseDown = 0;
 window.defaultSize;
 window.k = 0.5;
 window.fc = 0.2;
 window.springConstant = 2000;
-let gui;
 let mode = 0;
 let lastX = 0;
 let lastY = 0;
 let timeMultiplier = 1;
+let lastFrameTime;
 window.lockRotation = false;
 window.time = true;
 let choosed = false;
@@ -37,87 +43,87 @@ let right = false;
 /**
  * Function used by p5.js and is runned before start drawing
  */
-function setup() {
-  cnv = createCanvas(window.innerWidth, window.innerHeight).canvas;
-
-  window.defaultSize = (width + height) / 80;
-
-  gui = createGui('Properties');
-  sliderRange(0.0015 * (width + height), (width + height) / 15, 1);
-  gui.addGlobals('defaultSize');
-  sliderRange(0.01, 1, 0.01);
-  gui.addGlobals('k');
-  sliderRange(0, 3.5, 0.05);
-  gui.addGlobals('fc');
-  sliderRange(0, 1000000, 1000);
-  gui.addGlobals('springConstant');
-  gui.addGlobals('time');
-  gui.addGlobals('lockRotation');
-
-  gui.prototype.addButton('Next mode', function() {
-    mode++; mode %= modes.length - 1;
-  });
-  gui.prototype.addButton('Close', function() {
-    document.getElementsByClassName('qs_main')[0].style.visibility = 'hidden';
-  });
-  gui.prototype.setDraggable(false);
-
-  document.getElementsByClassName('qs_main')[0].style.width = width + 'px';
-  document.getElementsByClassName('qs_main')[0].style.height = height + 'px';
-  document.getElementsByClassName('qs_main')[0].style.top = '0px';
-  document.getElementsByClassName('qs_main')[0].style.left = '0px';
-  document.getElementsByClassName('qs_main')[0].style.visibility = 'hidden';
-  document.getElementsByClassName('qs_main')[0].style.overflow = 'auto';
+window.onload = function() {
+  cnv = document.getElementById('defaulCanvas0');
 
   physics = new Physics();
-  physics.setBounds(0, 0, width, height);
+  physics.setBounds(0, 0, cnv.width, cnv.height);
   physics.setGravity(new Vec2(0, 1000));
   physics.setAirFriction(0.9);
-}
+
+  cnv.ontouchstart = startTouch;
+  cnv.ontouchend = endTouch;
+  cnv.onmousedown = startMouse;
+  cnv.onmouseup = endMouse;
+  cnv.onmousemove = handleMouseMovement;
+  document.onkeydown = keyGotDown;
+  document.onkeyup = keyGotUp;
+  window.onresize = resizeCanvas;
+  document.body.onmousedown = function() {
+    mouseDown++;
+  };
+  document.body.onmouseup = function() {
+    mouseDown--;
+  };
+
+  resizeCanvas();
+  window.defaultSize = (cnv.width + cnv.height) / 80;
+
+  requestAnimationFrame(drawFunction);
+};
 
 /**
- * p5.js built in function and is called when the window gest resized
+ * Function that is called when the window gest resized
  */
-function windowResized() {
-  resizeCanvas(window.innerWidth, window.innerHeight);
-  physics.setBounds(0, 0, width, height);
-  document.getElementsByClassName('qs_main')[0].style.width = width + 'px';
-  document.getElementsByClassName('qs_main')[0].style.height = height + 'px';
-}
+function resizeCanvas() {
+  cnv.width = window.innerWidth;
+  cnv.height = window.innerHeight;
+  physics.setBounds(0, 0, cnv.width, cnv.height);
+};
 
 /**
- * p5.js draw function
+ * My draw function
  */
-function draw() {
-  mouseX = touches[0] ? touches[0].x : (isFinite(mouseX) ? mouseX : mx);
-  mouseY = touches[0] ? touches[0].y : (isFinite(mouseY) ? mouseY : my);
+function drawFunction() {
+  if (!isFinite(lastFrameTime)) lastFrameTime = performance.now();
+  let elapsedTime = performance.now() - lastFrameTime;
+  if (!isFinite(elapsedTime)) {
+    elapsedTime = 0;
+  }
+  elapsedTime /= 1000;
+
+  mouseX = (isFinite(mouseX) ? mouseX : mx);
+  mouseY = (isFinite(mouseY) ? mouseY : my);
   if (mouseX && isFinite(mouseX)) mx = mouseX;
   if (mouseY && isFinite(mouseY)) my = mouseY;
 
-  background(51);
   // TODO: ditch p5.js
   let ctx = cnv.getContext('2d');
+
+  // paint the background
+  ctx.fillStyle = 'rgb(51, 51, 51)';
+  ctx.fillRect(0, 0, cnv.width, cnv.height);
+
+  // draw the logo up there
+  ctx.fillStyle = 'white';
   ctx.fillText('BallPhysics', 10, 10);
 
-  let elapsedTime = 1 / frameRate();
-  if (isNaN(elapsedTime)) {
-    elapsedTime = 0;
-  }
-
-  stroke(0);
-  noFill();
-
+  // the size indicator for creating balls
+  ctx.strokeStyle = 'black';
   if (mode === 0 || mode === 6) {
-    ellipse(mouseX, mouseY, defaultSize * 2, defaultSize * 2);
+    ctx.beginPath();
+    ctx.arc(mouseX, mouseY, defaultSize, 0, 2 * Math.PI);
+    ctx.stroke();
   }
-
-  text(physics.balls.length, 300, 200);
 
   if (lastX != 0 && lastY != 0) {
     if (mode === 1) {
-      rect(mouseX, mouseY, lastX - mouseX, lastY - mouseY);
+      ctx.strokeRect(mouseX, mouseY, lastX - mouseX, lastY - mouseY);
     } else if (mode === 0 || mode === 3 || mode === 4 || mode === 6) {
-      line(mouseX, mouseY, lastX, lastY);
+      ctx.beginPath();
+      ctx.moveTo(mouseX, mouseY);
+      ctx.lineTo(lastX, lastY);
+      ctx.stroke();
     }
   }
 
@@ -128,16 +134,16 @@ function draw() {
     choosed.ang = 0;
   }
 
-  if (mode == 2 &&
-    document.getElementsByClassName('qs_main')[0].
-      style.visibility == 'hidden' && (mouseX >= 30 || mouseY >= 30)) {
-    ellipse(mouseX, mouseY, defaultSize * 2, defaultSize * 2);
-    if (mouseIsPressed || touches[0]) {
+  if (mode == 2) {
+    ctx.beginPath();
+    ctx.arc(mouseX, mouseY, defaultSize, 0, 2 * Math.PI);
+    ctx.stroke();
+    if (mouseDown) {
       physics.addFixedBall(mouseX, mouseY, defaultSize);
     }
   }
 
-  physics.draw();
+  physics.draw(cnv);
 
   if (!time) return;
 
@@ -152,21 +158,25 @@ function draw() {
   physics.update(elapsedTime / 5, preciseMode);
   physics.update(elapsedTime / 5, preciseMode);
   physics.update(elapsedTime / 5, preciseMode);
+
+  pmouseX = mouseX;
+  pmouseY = mouseY;
+
+  lastFrameTime = performance.now();
+  requestAnimationFrame(drawFunction);
 }
 
 /**
- * p5.js function and it's called when the user pressed a mouse button
- * @param {Touch} event Touch event containing data
- * @return {bool} Prevents default behavior for browsers
+ * Gets called on the start of an interaction with the canvas
+ * @param {number} x The x position of the mouse of the finger on the canvas
+ * @param {number} y The y position of the mouse of the finger on the canvas
  */
-function touchStarted(event) {
-  mouseX = touches[0] ? touches[0].x : (isFinite(mouseX) ? mouseX : mx);
-  mouseY = touches[0] ? touches[0].y : (isFinite(mouseY) ? mouseY : my);
-  if (document.getElementsByClassName('qs_main')[0].
-    style.visibility != 'hidden' || (mouseX <= 30 && mouseY <= 30)) return;
+function startInteraction(x, y) {
+  mouseX = x;
+  mouseY = y;
   if (mode === 3 || mode === 4 || mode === 5) {
     choosed = physics.getObjectAtCoordinates(mouseX, mouseY);
-    if (choosed == false) {
+    if (!choosed) {
       choosed = {
         x: mouseX,
         y: mouseY,
@@ -176,40 +186,16 @@ function touchStarted(event) {
   }
   lastX = mouseX;
   lastY = mouseY;
-  return false;
 }
 
 /**
- * p5.js function and it's called when the user released a mouse button
- * @param {Touch} event Touch event containing data
- * @return {bool} Prevents default behavior for browsers
+ * Gets called on the end of an interaction with the canvas
+ * @param {number} x The x position of the mouse of the finger on the canvas
+ * @param {number} y The y position of the mouse of the finger on the canvas
  */
-function touchEnded(event) {
-  mouseX = touches[0] ? touches[0].x : (isFinite(mouseX) ? mouseX : mx);
-  mouseY = touches[0] ? touches[0].y : (isFinite(mouseY) ? mouseY : my);
-
-  if (mouseX <= 30 && mouseY <= 30) {
-    if (document.getElementsByClassName('qs_main')[0].
-      style.visibility != 'visible') {
-      document.getElementsByClassName('qs_main')[0].
-        style.visibility = 'visible';
-    } else {
-      document.getElementsByClassName('qs_main')[0].
-        style.visibility = 'hidden';
-    }
-    lastX = 0;
-    lastY = 0;
-    choosed = false;
-    return false;
-  }
-
-  if (document.getElementsByClassName('qs_main')[0].
-    style.visibility != 'hidden' || (mouseX <= 30 && mouseY <= 30)) {
-    lastX = 0;
-    lastY = 0;
-    choosed = false;
-    return false;
-  }
+function endInteraction(x, y) {
+  mouseX = x;
+  mouseY = y;
 
   if (lastX != 0 && lastY != 0 && (mode === 0 || mode === 6)) {
     let newBall = new Ball(new Vec2(lastX, lastY),
@@ -243,7 +229,7 @@ function touchEnded(event) {
       let newChoosed = physics.getObjectAtCoordinates(mouseX, mouseY);
       let stick;
       const Thing = mode === 3 ? Stick : Spring;
-      if (newChoosed == undefined) {
+      if (!newChoosed) {
         newChoosed = {
           x: mouseX,
           y: mouseY,
@@ -251,7 +237,8 @@ function touchEnded(event) {
         };
       }
 
-      if (choosed == newChoosed) break mode3;
+      if (choosed == newChoosed ||
+        (choosed == undefined && newChoosed == undefined)) break mode3;
       else if (choosed.pinPoint && newChoosed.pinPoint) break mode3;
       else if (choosed.pinPoint) {
         stick = new Thing(Math.sqrt(Math.pow(choosed.x - newChoosed.pos.x, 2) +
@@ -280,90 +267,161 @@ function touchEnded(event) {
   lastX = 0;
   lastY = 0;
   choosed = false;
-  return false;
 }
 
 /**
- * p5.js keyboard event function
+ * My keyboard event function for pressing down a key
+ * @param {KeyboardEvent} event The event containing data
  */
-function keyPressed() {
-  if (keyCode === UP_ARROW) {
+function keyGotDown(event) {
+  keyCode = event.key;
+  if (keyCode === 'ArrowUp') {
     mode += 1;
     mode %= modes.length;
   }
-  if (keyCode === DOWN_ARROW) {
+  if (keyCode === 'ArrowDown') {
     mode -= 1;
     mode = mode === -1 ? modes.length - 1 : mode;
   }
-  if (keyCode === 83) {
+  if (keyCode === 's') {
     spawnNewtonsCradle(width / 2, height / 2, 0.5, physics);
   }
-  // Right arrow
-  if (keyCode === 39) {
+  if (keyCode === 'ArrowRight') {
     right = true;
   }
-  // Left arrow
-  if (keyCode === 37) {
+  if (keyCode === 'ArrowLeft') {
     left = true;
   }
 }
 
 /**
- * p5.js keyboard event function
+ * My keyboard event function for releasing a key
+ * @param {KeyboardEvent} event The event containing data
  */
-function keyReleased() {
+function keyGotUp(event) {
+  keyCode = event.key;
   // Right arrow
-  if (keyCode === 39) {
+  if (keyCode === 'ArrowRight') {
     right = false;
   }
   // Left arrow
-  if (keyCode === 37) {
+  if (keyCode === 'ArrowLeft') {
     left = false;
   }
 }
 
-Physics.prototype.draw = function() {
-  fill('green');
-  stroke('black');
+/**
+ * My touch event function
+ * @param {TouchEvent} event The event containing data
+ * @return {boolean} Returns false for preventing default browser behavior
+ */
+function startTouch(event) {
+  startInteraction(event.changedTouches[0].clientX,
+    event.changedTouches[0].clientY);
+  return false;
+}
+
+/**
+ * My touch event function
+ * @param {TouchEvent} event The event containing data
+ * @return {boolean} Returns false for preventing default browser behavior
+ */
+function endTouch(event) {
+  endInteraction(event.changedTouches[0].clientX,
+    event.changedTouches[0].clientY);
+  return false;
+}
+
+/**
+ * My mouse event function that handles pressing down a mouse key
+ * @param {TouchEvent} event The event containing data
+ * @return {boolean} Returns false for preventing default browser behavior
+ */
+function startMouse(event) {
+  startInteraction(event.clientX,
+    event.clientY);
+  return false;
+}
+
+/**
+ * My mouse event function that handles releasing a mouse key
+ * @param {TouchEvent} event The event containing data
+ * @return {boolean} Returns false for preventing default browser behavior
+ */
+function endMouse(event) {
+  endInteraction(event.clientX,
+    event.clientY);
+  return false;
+}
+
+/**
+ * My mouse event function that handles mouse movement
+ * @param {TouchEvent} event The event containing data
+ */
+function handleMouseMovement(event) {
+  mouseX = event.clientX;
+  mouseY = event.clientY;
+}
+
+Physics.prototype.draw = function(cnv) {
+  let ctx = cnv.getContext('2d');
+
+  ctx.fillStyle = 'green';
+  ctx.strokeStyle = 'black';
   for (let i = 0; i < physics.balls.length; i++) {
-    ellipse(
-      physics.balls[i].pos.x,
+    ctx.beginPath();
+    ctx.arc(physics.balls[i].pos.x,
       physics.balls[i].pos.y,
-      physics.balls[i].r * 2);
-    push();
-    translate(physics.balls[i].pos.x, physics.balls[i].pos.y);
-    rotate(-PI / 2);
-    rotate(-physics.balls[i].rotation);
-    line(0, 0, 0, physics.balls[i].r);
-    pop();
+      physics.balls[i].r,
+      0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(physics.balls[i].pos.x, physics.balls[i].pos.y);
+    ctx.rotate(-Math.PI / 2 - physics.balls[i].rotation);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, physics.balls[i].r);
+    ctx.stroke();
+    ctx.restore();
   }
 
   physics.bodies.forEach((element) => {
-    beginShape();
+    ctx.beginPath();
+    ctx.moveTo(element.points[element.points.length - 1].x,
+      element.points[element.points.length - 1].y);
     element.points.forEach((p) => {
-      vertex(p.x, p.y);
+      ctx.lineTo(p.x, p.y);
     });
-    endShape(CLOSE);
-    ellipse(element.pos.x, element.pos.y, 3, 3);
+    ctx.stroke();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(element.pos.x, element.pos.y, 1.5);
+    ctx.stroke();
   });
 
-  noStroke();
-  fill('#ff000055');
+  ctx.fillStyle = 'white';
   physics.walls.forEach((element) => {
-    beginShape();
+    ctx.beginPath();
+    ctx.moveTo(element.points[element.points.length - 1].x,
+      element.points[element.points.length - 1].y);
     element.points.forEach((p) => {
-      vertex(p.x, p.y);
+      ctx.lineTo(p.x, p.y);
     });
-    endShape(CLOSE);
+    ctx.fill();
   });
 
   physics.fixedBalls.forEach((b) => {
-    ellipse(b.x, b.y, b.r * 2);
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+    ctx.fill();
   });
-  push();
-  strokeWeight(2);
-  stroke('#ADD8E6');
-  fill('#ADD8E6');
+  ctx.save();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = '#ADD8E6';
+  ctx.fillStyle = '#ADD8E6';
   physics.springs.forEach((element) => {
     if (element instanceof Spring && !(element instanceof Stick)) {
       let x1;
@@ -389,29 +447,44 @@ Physics.prototype.draw = function() {
       let num = Math.floor(element.length / 10);
       for (let i = 1; i <= num; i++) {
         if (i === num) v = new Vec2(0, 0);
-        line(last.x, last.y, x1 + i / num * c.x + v.x,
+        ctx.beginPath();
+        ctx.moveTo(last.x, last.y);
+        ctx.lineTo(x1 + i / num * c.x + v.x,
           y1 + i / num * c.y + v.y);
+        ctx.stroke();
         last = new Vec2(x1 + i / num * c.x + v.x, y1 + i / num * c.y + v.y);
         v.mult(-1);
       }
     } else {
-      line(element.objects[0].pos.x,
-        element.objects[0].pos.y,
-        element.pinned ? element.pinned.x : element.objects[1].pos.x,
+      ctx.beginPath();
+      ctx.moveTo(element.objects[0].pos.x,
+        element.objects[0].pos.y);
+      ctx.lineTo(element.pinned ? element.pinned.x : element.objects[1].pos.x,
         element.pinned ? element.pinned.y : element.objects[1].pos.y);
+      ctx.stroke();
     }
     element.objects.forEach((o) => {
-      ellipse(o.pos.x, o.pos.y, 5);
+      ctx.beginPath();
+      ctx.arc(o.pos.x, o.pos.y, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
     });
-    if (element.pinned) ellipse(element.pinned.x, element.pinned.y, 6);
+    if (element.pinned) {
+      ctx.beginPath();
+      ctx.arc(element.pinned.x, element.pinned.y, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
   });
-  pop();
+  ctx.restore();
 
-  stroke('black');
-  fill('white');
-  text('Mode: ' + modes[mode], 10, 25);
-  text(Math.round(mouseX).toString() + ' '
+  ctx.strokeStyle = 'black';
+  ctx.fillStyle = 'white';
+  ctx.fillText('Mode: ' + modes[mode], 10, 25);
+  ctx.fillText(Math.round(mouseX).toString() + ' '
     + Math.round(mouseY).toString(), 10, 40);
+  ctx.fillText(Math.round(lastX).toString() + ' '
+    + Math.round(lastY).toString(), 10, 55);
 };
 
 /**
@@ -448,15 +521,3 @@ function spawnNewtonsCradle(x, y, scale, phy) {
     stick.lockRotation();
   });
 }
-
-// this is here only to prevent eslint errors
-const arrayOfUsedp5Functions = [
-  setup,
-  windowResized,
-  draw,
-  touchStarted,
-  touchEnded,
-  keyPressed,
-  keyReleased,
-];
-delete arrayOfUsedp5Functions;
