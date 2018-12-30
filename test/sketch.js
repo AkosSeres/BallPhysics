@@ -166,6 +166,11 @@ function drawFunction() {
   requestAnimationFrame(drawFunction);
 }
 
+/**
+ * Gets called on the start of an interaction with the canvas
+ * @param {number} x The x position of the mouse of the finger on the canvas
+ * @param {number} y The y position of the mouse of the finger on the canvas
+ */
 function startInteraction(x, y) {
   mouseX = x;
   mouseY = y;
@@ -181,9 +186,13 @@ function startInteraction(x, y) {
   }
   lastX = mouseX;
   lastY = mouseY;
-  return false;
 }
 
+/**
+ * Gets called on the end of an interaction with the canvas
+ * @param {number} x The x position of the mouse of the finger on the canvas
+ * @param {number} y The y position of the mouse of the finger on the canvas
+ */
 function endInteraction(x, y) {
   mouseX = x;
   mouseY = y;
@@ -258,9 +267,12 @@ function endInteraction(x, y) {
   lastX = 0;
   lastY = 0;
   choosed = false;
-  return false;
 }
 
+/**
+ * My keyboard event function for pressing down a key
+ * @param {KeyboardEvent} event The event containing data
+ */
 function keyGotDown(event) {
   keyCode = event.key;
   if (keyCode === 'ArrowUp') {
@@ -283,7 +295,7 @@ function keyGotDown(event) {
 }
 
 /**
- * My keyboard event function
+ * My keyboard event function for releasing a key
  * @param {KeyboardEvent} event The event containing data
  */
 function keyGotUp(event) {
@@ -298,30 +310,54 @@ function keyGotUp(event) {
   }
 }
 
+/**
+ * My touch event function
+ * @param {TouchEvent} event The event containing data
+ * @return {boolean} Returns false for preventing default browser behavior
+ */
 function startTouch(event) {
   startInteraction(event.changedTouches[0].clientX,
     event.changedTouches[0].clientY);
   return false;
 }
 
+/**
+ * My touch event function
+ * @param {TouchEvent} event The event containing data
+ * @return {boolean} Returns false for preventing default browser behavior
+ */
 function endTouch(event) {
   endInteraction(event.changedTouches[0].clientX,
     event.changedTouches[0].clientY);
   return false;
 }
 
+/**
+ * My mouse event function that handles pressing down a mouse key
+ * @param {TouchEvent} event The event containing data
+ * @return {boolean} Returns false for preventing default browser behavior
+ */
 function startMouse(event) {
   startInteraction(event.clientX,
     event.clientY);
   return false;
 }
 
+/**
+ * My mouse event function that handles releasing a mouse key
+ * @param {TouchEvent} event The event containing data
+ * @return {boolean} Returns false for preventing default browser behavior
+ */
 function endMouse(event) {
   endInteraction(event.clientX,
     event.clientY);
   return false;
 }
 
+/**
+ * My mouse event function that handles mouse movement
+ * @param {TouchEvent} event The event containing data
+ */
 function handleMouseMovement(event) {
   mouseX = event.clientX;
   mouseY = event.clientY;
