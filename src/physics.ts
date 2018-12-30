@@ -53,9 +53,8 @@ class Physics {
   update(t: number, precise: boolean) {
     // Do the simulation on the reversed system
     // if the simulation is in precise mode
-    let clonedSystem: Physics;
+    let clonedSystem: Physics = precise ? this.copy : new Physics();
     if (precise) {
-      clonedSystem = this.copy;
       clonedSystem.bodies.reverse();
       clonedSystem.balls.reverse();
       clonedSystem.update(t, false);
@@ -109,7 +108,7 @@ class Physics {
         let ball = this.balls[i];
 
         let heading;
-        let rel;
+        let rel = 0;
         let p = new Vec2(b.x, b.y);
         p.x -= ball.pos.x;
         p.y -= ball.pos.y;
