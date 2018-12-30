@@ -16,6 +16,7 @@ let mode = 0;
 let lastX = 0;
 let lastY = 0;
 let timeMultiplier = 1;
+let lastFrameTime;
 window.lockRotation = false;
 window.time = true;
 let choosed = false;
@@ -39,6 +40,7 @@ let right = false;
  */
 function setup() {
   cnv = createCanvas(window.innerWidth, window.innerHeight).canvas;
+  // cnv = document.getElementById('defaulCanvas0');
 
   window.defaultSize = (width + height) / 80;
 
@@ -73,36 +75,56 @@ function setup() {
   physics.setBounds(0, 0, width, height);
   physics.setGravity(new Vec2(0, 1000));
   physics.setAirFriction(0.9);
+
+  cnv.ontouchstart = startTouch;
+  cnv.ontouchend = endTouch;
+  cnv.onmousedown = startMouse;
+  cnv.onmouseup = endMouse;
+  document.onkeydown = keyGotDown;
+  document.onkeyup = keyGotUp;
+
+  noLoop();
+  requestAnimationFrame(drawFunction);
 }
 
 /**
- * p5.js built in function and is called when the window gest resized
+ * Function that is called when the window gest resized
  */
-function windowResized() {
+window.onresize = function() {
   resizeCanvas(window.innerWidth, window.innerHeight);
   physics.setBounds(0, 0, width, height);
   document.getElementsByClassName('qs_main')[0].style.width = width + 'px';
   document.getElementsByClassName('qs_main')[0].style.height = height + 'px';
-}
+};
 
 /**
  * p5.js draw function
  */
-function draw() {
+function draw() {}
+
+/**
+ * My draw function
+ */
+function drawFunction() {
+  if (!isFinite(lastFrameTime)) lastFrameTime = performance.now();
+  let elapsedTime = performance.now() - lastFrameTime;
+  if (!isFinite(elapsedTime)) {
+    elapsedTime = 0;
+  }
+  elapsedTime /= 1000;
+
   mouseX = touches[0] ? touches[0].x : (isFinite(mouseX) ? mouseX : mx);
   mouseY = touches[0] ? touches[0].y : (isFinite(mouseY) ? mouseY : my);
   if (mouseX && isFinite(mouseX)) mx = mouseX;
   if (mouseY && isFinite(mouseY)) my = mouseY;
 
-  background(51);
   // TODO: ditch p5.js
   let ctx = cnv.getContext('2d');
-  ctx.fillText('BallPhysics', 10, 10);
 
-  let elapsedTime = 1 / frameRate();
-  if (isNaN(elapsedTime)) {
-    elapsedTime = 0;
-  }
+  // paint the background
+  ctx.fillStyle = 'rgb(51, 51, 51)';
+  ctx.fillRect(0, 0, cnv.width, cnv.height);
+  ctx.fillText('BallPhysics', 10, 10);
 
   stroke(0);
   noFill();
@@ -112,6 +134,7 @@ function draw() {
   }
 
   text(physics.balls.length, 300, 200);
+  text((1 / elapsedTime).toFixed().toString(), 300, 210);
 
   if (lastX != 0 && lastY != 0) {
     if (mode === 1) {
@@ -152,16 +175,14 @@ function draw() {
   physics.update(elapsedTime / 5, preciseMode);
   physics.update(elapsedTime / 5, preciseMode);
   physics.update(elapsedTime / 5, preciseMode);
+
+  lastFrameTime = performance.now();
+  requestAnimationFrame(drawFunction);
 }
 
-/**
- * p5.js function and it's called when the user pressed a mouse button
- * @param {Touch} event Touch event containing data
- * @return {bool} Prevents default behavior for browsers
- */
-function touchStarted(event) {
-  mouseX = touches[0] ? touches[0].x : (isFinite(mouseX) ? mouseX : mx);
-  mouseY = touches[0] ? touches[0].y : (isFinite(mouseY) ? mouseY : my);
+function startInteraction(x, y) {
+  mouseX = x;
+  mouseY = y;
   if (document.getElementsByClassName('qs_main')[0].
     style.visibility != 'hidden' || (mouseX <= 30 && mouseY <= 30)) return;
   if (mode === 3 || mode === 4 || mode === 5) {
@@ -179,14 +200,9 @@ function touchStarted(event) {
   return false;
 }
 
-/**
- * p5.js function and it's called when the user released a mouse button
- * @param {Touch} event Touch event containing data
- * @return {bool} Prevents default behavior for browsers
- */
-function touchEnded(event) {
-  mouseX = touches[0] ? touches[0].x : (isFinite(mouseX) ? mouseX : mx);
-  mouseY = touches[0] ? touches[0].y : (isFinite(mouseY) ? mouseY : my);
+function endInteraction(x, y) {
+  mouseX = x;
+  mouseY = y;
 
   if (mouseX <= 30 && mouseY <= 30) {
     if (document.getElementsByClassName('qs_main')[0].
@@ -283,43 +299,66 @@ function touchEnded(event) {
   return false;
 }
 
-/**
- * p5.js keyboard event function
- */
-function keyPressed() {
-  if (keyCode === UP_ARROW) {
+function keyGotDown(event) {
+  keyCode = event.key;
+  console.log(keyCode);
+  if (keyCode === 'ArrowUp') {
     mode += 1;
     mode %= modes.length;
   }
-  if (keyCode === DOWN_ARROW) {
+  if (keyCode === 'ArrowDown') {
     mode -= 1;
     mode = mode === -1 ? modes.length - 1 : mode;
   }
-  if (keyCode === 83) {
+  if (keyCode === 's') {
     spawnNewtonsCradle(width / 2, height / 2, 0.5, physics);
   }
-  // Right arrow
-  if (keyCode === 39) {
+  if (keyCode === 'ArrowRight') {
     right = true;
   }
-  // Left arrow
-  if (keyCode === 37) {
+  if (keyCode === 'ArrowLeft') {
     left = true;
   }
 }
 
 /**
- * p5.js keyboard event function
+ * My keyboard event function
+ * @param {KeyboardEvent} event The event containing data
  */
-function keyReleased() {
+function keyGotUp(event) {
+  keyCode = event.key;
   // Right arrow
-  if (keyCode === 39) {
+  if (keyCode === 'ArrowRight') {
     right = false;
   }
   // Left arrow
-  if (keyCode === 37) {
+  if (keyCode === 'ArrowLeft') {
     left = false;
   }
+}
+
+function startTouch(event) {
+  startInteraction(event.changedTouches[0].clientX,
+    event.changedTouches[0].clientY);
+  return false;
+}
+
+function endTouch(event) {
+  endInteraction(event.changedTouches[0].clientX,
+    event.changedTouches[0].clientY);
+  return false;
+}
+
+function startMouse(event) {
+  startInteraction(event.clientX,
+    event.clientY);
+  return false;
+}
+
+function endMouse(event) {
+  endInteraction(event.clientX,
+    event.clientY);
+  return false;
 }
 
 Physics.prototype.draw = function() {
@@ -412,6 +451,8 @@ Physics.prototype.draw = function() {
   text('Mode: ' + modes[mode], 10, 25);
   text(Math.round(mouseX).toString() + ' '
     + Math.round(mouseY).toString(), 10, 40);
+  text(Math.round(lastX).toString() + ' '
+    + Math.round(lastY).toString(), 10, 55);
 };
 
 /**
@@ -448,15 +489,3 @@ function spawnNewtonsCradle(x, y, scale, phy) {
     stick.lockRotation();
   });
 }
-
-// this is here only to prevent eslint errors
-const arrayOfUsedp5Functions = [
-  setup,
-  windowResized,
-  draw,
-  touchStarted,
-  touchEnded,
-  keyPressed,
-  keyReleased,
-];
-delete arrayOfUsedp5Functions;
