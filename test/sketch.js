@@ -23,7 +23,7 @@ let mx = 0; my = 0;
 let preciseMode = true;
 let modes = [
   'ball creator',
-  'recrangle',
+  'rectangle',
   'wall drawer',
   'stick creator',
   'spring creator',
