@@ -219,6 +219,9 @@ function touchEnded(event) {
       if (mode === 0) physics.addBall(newBall);
       else if (mode === 6) {
         let sb = new SoftBall(newBall.pos, defaultSize, 1000000, fc, 20);
+        sb.points.forEach((p) => {
+          p.vel = newBall.vel.copy;
+        });
         physics.addSoftBall(sb);
       }
     } else {
