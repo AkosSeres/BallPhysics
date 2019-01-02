@@ -197,6 +197,8 @@ function endInteraction(x, y) {
   mouseX = x;
   mouseY = y;
 
+  if (lastX === 0 && lastY === 0) return;
+
   if (lastX != 0 && lastY != 0 && (mode === 0 || mode === 6)) {
     let newBall = new Ball(new Vec2(lastX, lastY),
       new Vec2((lastX - mouseX), (lastY - mouseY)), defaultSize, k, 0, fc);
@@ -316,6 +318,16 @@ function keyGotUp(event) {
  * @return {boolean} Returns false for preventing default browser behavior
  */
 function startTouch(event) {
+  if (cnv.width - event.changedTouches[0].clientX < cnv.width / 100) {
+    mode += 1;
+    mode %= modes.length;
+    return;
+  }
+  if (event.changedTouches[0].clientX < cnv.width / 100) {
+    mode -= 1;
+    mode = mode === -1 ? modes.length - 1 : mode;
+    return;
+  }
   startInteraction(event.changedTouches[0].clientX,
     event.changedTouches[0].clientY);
   return false;
