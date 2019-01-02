@@ -104,113 +104,81 @@ export default class Ball {
    * @param {Ball} ball2 Second ball
    */
   static collide(ball1: Ball, ball2: Ball) {
-    if (ball1.collided(ball2)) {
-      let pos1 = ball1.pos;
-      let pos2 = ball2.pos;
-      let r1 = ball1.r;
-      let r2 = ball2.r;
-      let kk = (ball1.k + ball2.k) / 2;
-      let m1 = r1 * r1;
-      let m2 = r2 * r2;
-      let v1 = ball1.vel;
-      let v2 = ball2.vel;
-      let dist = Vec2.dist(pos1, pos2);
-      let fc = (ball1.fc + ball2.fc) / 2;
+    if (!ball1.collided(ball2)) return;
 
-      let cp1 = pos1.copy;
-      let cp2 = pos2.copy;
-      let too = r1 + r2 - dist;
-      let d = Vec2.sub(pos1, pos2);
-      d.setMag(1);
-      d.mult(too * m2 / (m1 + m2));
-      cp1.add(d);
-      d.setMag(1);
-      d.mult(-too * m1 / (m1 + m2));
-      cp2.add(d);
+    let pos1 = ball1.pos;
+    let pos2 = ball2.pos;
+    let r1 = ball1.r;
+    let r2 = ball2.r;
+    let k = (ball1.k + ball2.k) / 2;
+    let m1 = ball1.m;
+    let m2 = ball2.m;
+    let dist = Vec2.dist(pos1, pos2);
+    let fc = (ball1.fc + ball2.fc) / 2;
 
-      ball1.pos = cp1;
-      ball2.pos = cp2;
-      let np1 = cp1.copy;
-      let np2 = cp2.copy;
+    let cp1 = pos1.copy;
+    let cp2 = pos2.copy;
+    let too = r1 + r2 - dist;
+    let d = Vec2.sub(pos1, pos2);
+    d.setMag(1);
+    d.mult(too * m2 / (m1 + m2));
+    cp1.add(d);
+    d.setMag(1);
+    d.mult(-too * m1 / (m1 + m2));
+    cp2.add(d);
+    ball1.pos = cp1;
+    ball2.pos = cp2;
 
-      let v1n = v1.copy;
-      let angle = Vec2.angleACW(new Vec2(v1.x, v1.y),
-        new Vec2(np2.x - np1.x, np2.y - np1.y));
-      v1n.rotate(angle);
-      v1n.mult(Math.cos(angle));
-      let v2n = v2.copy;
-      angle = Vec2.angleACW(new Vec2(v2.x, v2.y),
-        new Vec2(np1.x - np2.x, np1.y - np2.y));
-      v2n.rotate(angle);
-      v2n.mult(Math.cos(angle));
+    if (Vec2.dot(d, Vec2.sub(ball1.vel, ball2.vel)) < 0) return;
 
-      let v1p = v1.copy;
-      angle = Vec2.angleACW(new Vec2(v1.x, v1.y),
-        new Vec2(np2.x - np1.x, np2.y - np1.y));
-      v1p.rotate(-Math.PI / 2 + angle);
-      v1p.mult(Math.sin(angle));
-      let v2p = v2.copy;
-      angle = Vec2.angleACW(new Vec2(v2.x, v2.y),
-        new Vec2(np1.x - np2.x, np1.y - np2.y));
-      v2p.rotate(-Math.PI / 2 + angle);
-      v2p.mult(Math.sin(angle));
+    d.setMag(1);
+    let vel1Parralel = Vec2.cross(d, ball1.vel);
+    let vel2Parralel = Vec2.cross(d, ball2.vel);
+    let vel1Perpendicular = Vec2.dot(d, ball1.vel);
+    let vel2Perpendicular = Vec2.dot(d, ball2.vel);
 
-      let u1n = Vec2.mult(v1n, m1);
-      u1n.add(Vec2.mult(v2n, m2));
-      u1n.mult(1 + kk);
-      u1n.div(m1 + m2);
-      u1n.sub(Vec2.mult(v1n, kk));
+    let vk1 = r1 * ball1.ang;
+    let vk2 = r2 * ball2.ang;
 
-      let u2n = Vec2.mult(v1n, m1);
-      u2n.add(Vec2.mult(v2n, m2));
-      u2n.mult(1 + kk);
-      u2n.div(m1 + m2);
-      u2n.sub(Vec2.mult(v2n, kk));
+    let vel1InPos = vel1Parralel - vk1;
+    let vel2InPos = vel2Parralel + vk2;
+    let vCommon = ((vel1InPos * ball1.am) +
+      (vel2InPos * ball2.am)) / (ball1.am + ball2.am);
+    let tovCommon1 = vCommon - vel1InPos;
+    let tovCommon2 = vCommon - vel2InPos;
+    let maxDeltaAng1 = tovCommon1 / r1;
+    let maxDeltaAng2 = tovCommon2 / r2;
 
-      let dv1n = Vec2.dist(u1n, v1n);
-      let dv2n = Vec2.dist(u2n, v2n);
+    // Calculate the new perpendicular velocities
+    let u1Perpendicular = ((1 + k) *
+      ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2))) -
+      (k * vel1Perpendicular);
+    let u2Perpendicular = ((1 + k) *
+      ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2))) -
+      (k * vel2Perpendicular);
 
-      let p1 = new Vec2(v1.x, v1.y);
-      let p2 = new Vec2(v2.x, v2.y);
-      let rot = new Vec2(np1.x - np2.x, np1.y - np2.y).heading;
+    ball1.vel = Vec2.mult(d, u1Perpendicular);
+    ball2.vel = Vec2.mult(d, u2Perpendicular);
 
-      p1.rotate(-rot + Math.PI / 2);
-      p2.rotate(-rot + Math.PI / 2);
-      let vk = (m1 * (p1.x + ball1.ang * r1) +
-        m2 * (p2.x - ball2.ang * r2)) / (m1 + m2);
+    let deltav1Perpendicular = u1Perpendicular - vel1Perpendicular;
+    let deltav2Perpendicular = u2Perpendicular - vel2Perpendicular;
 
-      let dv1p = -dv1n * fc * Math.sign(p1.x - ball1.ang * r1 - vk);
-      if (Math.abs(dv1p) > Math.abs(p1.x - ball1.ang * r1 - vk)) {
-        dv1p = -p1.x + ball1.ang * r1 + vk;
-      }
-      let dv2p = -dv2n * fc * Math.sign(p2.x + ball2.ang * r2 - vk);
-      if (Math.abs(dv2p) > Math.abs(p2.x + ball2.ang * r2 - vk)) {
-        dv2p = -p2.x - ball2.ang * r2 + vk;
-      }
-      let dv1 = new Vec2(dv1p + ball1.r * ball1.r * ball1.m * dv1p /
-        (ball1.am + ball1.r * ball1.r * ball1.m), 0);
-      let dv2 = new Vec2(dv2p - ball2.r * ball2.r * ball2.m * dv2p /
-        (ball2.am + ball2.r * ball2.r * ball2.m), 0);
-      dv1.rotate(rot - Math.PI / 2);
-      dv2.rotate(rot - Math.PI / 2);
+    let deltaAng1 = -(Math.sign(tovCommon1)) *
+      (deltav1Perpendicular * fc) / (ball1.amc * r1);
+    let deltaAng2 = (Math.sign(tovCommon2)) *
+      (deltav2Perpendicular * fc) / (ball2.amc * r2);
 
-      v1n = u1n;
-      v2n = u2n;
+    if (deltaAng1 / maxDeltaAng1 > 1) deltaAng1 = maxDeltaAng1;
+    if (deltaAng2 / maxDeltaAng2 > 1) deltaAng2 = maxDeltaAng2;
 
-      ball1.vel = Vec2.add(v1n, v1p);
-      ball2.vel = Vec2.add(v2n, v2p);
+    ball1.ang -= deltaAng1;
+    ball2.ang += deltaAng2;
 
-      ball1.ang -= ball1.r * ball1.r * ball1.m * dv1p /
-        ((ball1.am + ball1.r * ball1.r * ball1.m) * r1);
-      ball2.ang += ball1.r * ball1.r * ball1.m * dv2p /
-        ((ball2.am + ball2.r * ball2.r * ball2.m) * r2);
-      ball1.vel.x += dv1.x;
-      ball1.vel.y += dv1.y;
-      ball2.vel.x += dv2.x;
-      ball2.vel.y += dv2.y;
+    let u1Parralel = vel1Parralel;
+    let u2Parralel = vel2Parralel;
 
-      ball1.lastPos = cp1;
-      ball2.lastPos = cp2;
-    }
+    d.rotate(Math.PI / 2);
+    ball1.vel.add(Vec2.mult(d, u1Parralel));
+    ball2.vel.add(Vec2.mult(d, u2Parralel));
   }
 }
