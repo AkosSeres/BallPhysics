@@ -15,7 +15,7 @@ let pmouseY = 0;
 let mouseDown = 0;
 window.defaultSize;
 window.k = 0.5;
-window.fc = 0.2;
+window.fc = 2;
 window.springConstant = 2000;
 let mode = 0;
 let lastX = 0;
