@@ -55,7 +55,7 @@ export default class SoftBall {
             let side = new Stick(2 * r * Math.sin(Math.PI / this.resolution));
             side.attachObject(this.points[i]);
             side.attachObject(this.points[(i + 1) % this.resolution]);
-            // if (i % 2 === 0) side.lockRotation();
+            if (i % 2 === 0) side.lockRotation();
             this.sides.push(side);
         }
     }
