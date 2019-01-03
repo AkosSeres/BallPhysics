@@ -35,6 +35,7 @@ let modes = [
   'spring creator',
   'move',
   'elastic ball creator (very laggy)',
+  //  'rectangle body',
 ];
 
 let left = false;
@@ -117,7 +118,7 @@ function drawFunction() {
   }
 
   if (lastX != 0 && lastY != 0) {
-    if (mode === 1) {
+    if (mode === 1 || mode === 7) {
       ctx.strokeRect(mouseX, mouseY, lastX - mouseX, lastY - mouseY);
     } else if (mode === 0 || mode === 3 || mode === 4 || mode === 6) {
       ctx.beginPath();
@@ -224,6 +225,14 @@ function endInteraction(x, y) {
       lastY / 2 + mouseY / 2,
       2 * Math.abs(lastX / 2 - mouseX / 2),
       2 * Math.abs(lastY / 2 - mouseY / 2));
+  }
+
+  if (mode === 7) {
+    physics.addRectBody(
+      lastX / 2 + mouseX / 2,
+      lastY / 2 + mouseY / 2,
+      2 * Math.abs(lastX / 2 - mouseX / 2),
+      2 * Math.abs(lastY / 2 - mouseY / 2), fc, k);
   }
 
   if (mode === 3 || mode === 4) {
@@ -410,7 +419,7 @@ Physics.prototype.draw = function(cnv) {
     ctx.fill();
 
     ctx.beginPath();
-    ctx.arc(element.pos.x, element.pos.y, 1.5);
+    ctx.arc(element.pos.x, element.pos.y, 1.5, 0, Math.PI * 2);
     ctx.stroke();
   });
 
