@@ -404,7 +404,8 @@ class Physics {
    * @param {number} fc friction coefficient of the body
    * @param {number} k coefficient of restitution of the body
    */
-  addRectBody(x: number, y: number, w: number, h: number, fc: number, k: number) {
+  addRectBody(x: number, y: number, w: number, h: number,
+    fc: number, k: number) {
     let points = [];
     points.push(new Vec2(
       x - w / 2,
