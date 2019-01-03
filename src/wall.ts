@@ -76,21 +76,23 @@ export default class Wall {
             pos.rotate(-heading + Math.PI / 2);
             vel.rotate(-heading + Math.PI / 2);
 
+            if (vel.y > 0) return;
             vel.y *= -ball.k;
             pos.y += ball.r - rel;
             let dvy = vel.y * (1 + (1 / ball.k));
-            let dvx =
-                Math.abs(dvy) * ball.fc *
-                Math.sign(vel.x - ball.ang * ball.r) * -1;
-            if (Math.abs(dvx) > Math.abs(vel.x - ball.ang * ball.r)) {
-                dvx = -vel.x + ball.ang * ball.r;
-            }
-            vel.x +=
-                dvx - ball.r * ball.r * ball.m * dvx /
-                (ball.am + ball.r * ball.r * ball.m);
-            ball.ang -=
-                ball.r * ball.r * ball.m * dvx /
-                ((ball.am + ball.r * ball.r * ball.m) * ball.r);
+
+            let deltaAng = Math.sign(vel.x - ball.ang * ball.r) *
+                (dvy * ball.fc) / (ball.amc * ball.r);
+            let maxDeltaAng = (vel.x - ball.ang * ball.r) / ball.r;
+
+            if (deltaAng / maxDeltaAng > 1) deltaAng = maxDeltaAng;
+            deltaAng *= (ball.amc) / (ball.amc + 1);
+            ball.ang += deltaAng;
+
+            let dvx = deltaAng * ball.r;
+
+            vel.x -= dvx;
+
             pos.rotate(heading - Math.PI / 2);
             vel.rotate(heading - Math.PI / 2);
             ball.pos.x = pos.x;
