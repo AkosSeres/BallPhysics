@@ -171,11 +171,14 @@ export default class Ball {
     if (deltaAng1 / maxDeltaAng1 > 1) deltaAng1 = maxDeltaAng1;
     if (deltaAng2 / maxDeltaAng2 > 1) deltaAng2 = maxDeltaAng2;
 
+    deltaAng1 *= (ball1.amc) / (ball1.amc + 1);
+    deltaAng2 *= (ball2.amc) / (ball2.amc + 1);
+
     ball1.ang -= deltaAng1;
     ball2.ang += deltaAng2;
 
-    let u1Parralel = vel1Parralel;
-    let u2Parralel = vel2Parralel;
+    let u1Parralel = vel1Parralel + (deltaAng1 * r1);
+    let u2Parralel = vel2Parralel + (deltaAng2 * r2);
 
     d.rotate(Math.PI / 2);
     ball1.vel.add(Vec2.mult(d, u1Parralel));
