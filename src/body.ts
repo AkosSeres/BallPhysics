@@ -560,5 +560,3 @@ export default class Body {
         b2.vel.add(Vec2.mult(a.copy, newVel2Perpendicular - vel2perpendicular));
     }
 }
-
-module.exports = Body;
