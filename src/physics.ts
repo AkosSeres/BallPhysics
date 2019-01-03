@@ -16,7 +16,7 @@ class Physics {
   fixedBalls: Array<{x: number, y: number, r: number, }>
   softBalls: Array<SoftBall>;
   walls: Array<Wall>;
-  bounds: Array<number>;
+  bounds: Array<Wall>;
   springs: Array<Spring>;
   airFriction: number;
   gravity: Vec2;
@@ -151,67 +151,8 @@ class Physics {
       }
 
       // Bounce off the edges
-      if (this.bounds.length > 0) {
-        if (this.balls[i].pos.x - this.balls[i].r < this.bounds[0]) {
-          let ball = this.balls[i];
-          ball.vel.x *= -ball.k;
-          ball.pos.x = this.bounds[1] + ball.r;
-          let dvx = ball.vel.x * (1 + (1 / ball.k));
-          let dvy = Math.abs(dvx) * ball.fc *
-            Math.sign(ball.vel.y + ball.ang * ball.r) * -1;
-          if (Math.abs(dvy) > Math.abs(ball.vel.y + ball.ang * ball.r)) {
-            dvy = -ball.vel.y - ball.ang * ball.r;
-          }
-          ball.vel.y += dvy - ball.r * ball.r * ball.m * dvy /
-            (ball.am + ball.r * ball.r * ball.m);
-          ball.ang += ball.r * ball.r * ball.m * dvy /
-            ((ball.am + ball.r * ball.r * ball.m) * ball.r);
-        } else if (this.balls[i].pos.x + this.balls[i].r >
-          (this.bounds[0] + this.bounds[2])) {
-          let ball = this.balls[i];
-          ball.vel.x *= -ball.k;
-          ball.pos.x = (this.bounds[0] + this.bounds[2]) - ball.r;
-          let dvx = ball.vel.x * (1 + (1 / ball.k));
-          let dvy = Math.abs(dvx) * ball.fc *
-            Math.sign(ball.vel.y - ball.ang * ball.r) * -1;
-          if (Math.abs(dvy) > Math.abs(ball.vel.y - ball.ang * ball.r)) {
-            dvy = -ball.vel.y + ball.ang * ball.r;
-          }
-          ball.vel.y += dvy + ball.r * ball.r * ball.m * dvy /
-            (ball.am + ball.r * ball.r * ball.m);
-          ball.ang -= ball.r * ball.r * ball.m * dvy /
-            ((ball.am + ball.r * ball.r * ball.m) * ball.r);
-        }
-        if (this.balls[i].pos.y + this.balls[i].r >
-          (this.bounds[1] + this.bounds[3])) {
-          let ball = this.balls[i];
-          ball.vel.y *= -ball.k;
-          ball.pos.y = (this.bounds[1] + this.bounds[3]) - ball.r;
-          let dvy = ball.vel.y * (1 + (1 / ball.k));
-          let dvx = Math.abs(dvy) * ball.fc *
-            Math.sign(ball.vel.x + ball.ang * ball.r) * -1;
-          if (Math.abs(dvx) > Math.abs(ball.vel.x + ball.ang * ball.r)) {
-            dvx = -ball.vel.x - ball.ang * ball.r;
-          }
-          ball.vel.x += dvx - ball.r * ball.r * ball.m * dvx /
-            (ball.am + ball.r * ball.r * ball.m);
-          ball.ang += ball.r * ball.r * ball.m * dvx /
-            ((ball.am + ball.r * ball.r * ball.m) * ball.r);
-        } else if (this.balls[i].pos.y - this.balls[i].r < this.bounds[1]) {
-          let ball = this.balls[i];
-          ball.vel.y *= -ball.k;
-          ball.pos.y = this.bounds[1] + ball.r;
-          let dvy = ball.vel.y * (1 + (1 / ball.k));
-          let dvx = Math.abs(dvy) * ball.fc *
-            Math.sign(ball.vel.x - ball.ang * ball.r) * -1;
-          if (Math.abs(dvx) > Math.abs(ball.vel.x - ball.ang * ball.r)) {
-            dvx = -ball.vel.x + ball.ang * ball.r;
-          }
-          ball.vel.x += dvx + ball.r * ball.r * ball.m * dvx /
-            (ball.am + ball.r * ball.r * ball.m);
-          ball.ang -= ball.r * ball.r * ball.m * dvx /
-            ((ball.am + ball.r * ball.r * ball.m) * ball.r);
-        }
+      for (let bound of this.bounds) {
+        bound.collideWithBall(this.balls[i]);
       }
     }
 
@@ -397,7 +338,6 @@ class Physics {
       y + h / 2
     ));
     this.walls.push(new Wall(points));
-    // this.bodies.push(new Body(points, new Vec2(0, 0), 0.5, 0, 0.3));
   }
 
   /**
@@ -469,7 +409,33 @@ class Physics {
    * @param {number} h Height of the world
    */
   setBounds(x: number, y: number, w: number, h: number) {
-    this.bounds = [x, y, w, h];
+    this.bounds = [];
+
+    const getRectBody = (x_: number, y_: number, w_: number, h_: number) => {
+      let points = [];
+      points.push(new Vec2(
+        x_ - w_ / 2,
+        y_ - h_ / 2
+      ));
+      points.push(new Vec2(
+        x_ + w_ / 2,
+        y_ - h_ / 2
+      ));
+      points.push(new Vec2(
+        x_ + w_ / 2,
+        y_ + h_ / 2
+      ));
+      points.push(new Vec2(
+        x_ - w_ / 2,
+        y_ + h_ / 2
+      ));
+      return new Wall(points);
+    };
+
+    this.bounds.push(getRectBody(x - w, y, 2 * w, 2 * h));
+    this.bounds.push(getRectBody(x + 2 * w, y, 2 * w, 2 * h));
+    this.bounds.push(getRectBody(x, y - h, 2 * w, h * 2));
+    this.bounds.push(getRectBody(x, y + 2 * h, 2 * w, 2 * h));
   }
 
   /**
