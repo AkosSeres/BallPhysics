@@ -396,6 +396,36 @@ class Physics {
   }
 
   /**
+   * Appends a rectangular body to the world
+   * @param {number} x x coordinate of the rectangular body
+   * @param {number} y y coordinate of the rectangular body
+   * @param {number} w width of the rectangular body
+   * @param {number} h height of the rectangular body
+   * @param {number} fc friction coefficient of the body
+   * @param {number} k coefficient of restitution of the body
+   */
+  addRectBody(x: number, y: number, w: number, h: number, fc: number, k: number) {
+    let points = [];
+    points.push(new Vec2(
+      x - w / 2,
+      y - h / 2
+    ));
+    points.push(new Vec2(
+      x + w / 2,
+      y - h / 2
+    ));
+    points.push(new Vec2(
+      x + w / 2,
+      y + h / 2
+    ));
+    points.push(new Vec2(
+      x - w / 2,
+      y + h / 2
+    ));
+    this.bodies.push(new Body(points, new Vec2(0, 0), 0.5, 0, 0.3));
+  }
+
+  /**
    * Append a new wall to the world
    * @param {Wall} wall Wall to append to the world
    */
