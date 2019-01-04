@@ -313,6 +313,53 @@ class Physics {
   }
 
   /**
+   * Appends a new soft square to the world
+   * @param {Vec2} pos The position of the soft square
+   * @param {number} sideSize The size of the square
+   * @param {number} fc Friction coefficient
+   * @param {Vec2} vel The initial velocity of the soft square
+   */
+  addSoftSquare(pos: Vec2, sideSize: number, fc: number, vel: Vec2) {
+    let softSquare = new SoftBall(pos,
+      Math.sqrt(sideSize * sideSize / Math.PI), 1, fc, 24);
+    softSquare.sides.forEach((side) => {
+      side.length = (0.96 * 4 * sideSize / softSquare.resolution);
+    });
+    softSquare.points.forEach((b) => {
+      b.vel = vel.copy;
+    });
+
+    this.balls.push(...softSquare.points);
+    this.springs.push(...softSquare.sides);
+
+    let springStrength = sideSize * sideSize * 200;
+
+    let bigStick = new Spring(
+      Math.sqrt(softSquare.r * softSquare.r * Math.PI), springStrength / 2);
+    bigStick.attachObject(softSquare.points[0]);
+    bigStick.attachObject(softSquare.points[softSquare.resolution / 2]);
+    this.springs.push(bigStick);
+
+    bigStick = new Spring(
+      Math.sqrt(softSquare.r * softSquare.r * Math.PI), springStrength / 2);
+    bigStick.attachObject(softSquare.points[softSquare.resolution / 4]);
+    bigStick.attachObject(softSquare.points[3 * softSquare.resolution / 4]);
+    this.springs.push(bigStick);
+
+    bigStick = new Spring(
+      Math.sqrt(2 * softSquare.r * softSquare.r * Math.PI), springStrength);
+    bigStick.attachObject(softSquare.points[softSquare.resolution / 8]);
+    bigStick.attachObject(softSquare.points[5 * softSquare.resolution / 8]);
+    this.springs.push(bigStick);
+
+    bigStick = new Spring(
+      Math.sqrt(2 * softSquare.r * softSquare.r * Math.PI), springStrength);
+    bigStick.attachObject(softSquare.points[3 * softSquare.resolution / 8]);
+    bigStick.attachObject(softSquare.points[7 * softSquare.resolution / 8]);
+    this.springs.push(bigStick);
+  }
+
+  /**
    * Appends a rectangular wall to the world
    * @param {number} x x coordinate of the rectangular wall
    * @param {number} y y coordinate of the rectangular wall
