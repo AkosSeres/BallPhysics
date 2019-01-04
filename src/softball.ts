@@ -39,7 +39,7 @@ export default class SoftBall {
         r = Math.abs(r);
         this.r = r;
 
-        let layerNuber: number = Math.random();
+        let layerNumber: number = (Math.random() * 1000000);
 
         for (let i = 0; i < this.resolution; i++) {
             let newPos = new Vec2(pos.x, pos.y);
@@ -47,7 +47,7 @@ export default class SoftBall {
                 Vec2.fromAngle((i / this.resolution) * Math.PI * 2), r));
             this.points.push(new Ball(newPos, new Vec2(0, 0),
                 r * Math.sin(Math.PI / this.resolution), 0, 0, this.fc));
-            this.points[this.points.length - 1].layer = layerNuber;
+            this.points[this.points.length - 1].layer = layerNumber;
         }
 
         this.sides = [];
