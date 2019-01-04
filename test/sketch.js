@@ -34,8 +34,9 @@ let modes = [
   'stick creator',
   'spring creator',
   'move',
-  'elastic ball creator (very laggy)',
-  //  'rectangle body',
+  'elastic ball creator',
+  'soft square creator',
+  // 'rectangle body',
 ];
 
 let left = false;
@@ -117,10 +118,21 @@ function drawFunction() {
     ctx.stroke();
   }
 
+  if (mode === 7) {
+    ctx.beginPath();
+    ctx.moveTo(mouseX - defaultSize, mouseY - defaultSize);
+    ctx.lineTo(mouseX + defaultSize, mouseY - defaultSize);
+    ctx.lineTo(mouseX + defaultSize, mouseY + defaultSize);
+    ctx.lineTo(mouseX - defaultSize, mouseY + defaultSize);
+    ctx.lineTo(mouseX - defaultSize, mouseY - defaultSize);
+    ctx.stroke();
+  }
+
   if (lastX != 0 && lastY != 0) {
-    if (mode === 1 || mode === 7) {
+    if (mode === 1 || mode === 8) {
       ctx.strokeRect(mouseX, mouseY, lastX - mouseX, lastY - mouseY);
-    } else if (mode === 0 || mode === 3 || mode === 4 || mode === 6) {
+    } else if (mode === 0 || mode === 3 || mode === 4
+      || mode === 6 || mode === 7) {
       ctx.beginPath();
       ctx.moveTo(mouseX, mouseY);
       ctx.lineTo(lastX, lastY);
@@ -200,18 +212,20 @@ function endInteraction(x, y) {
 
   if (lastX === 0 && lastY === 0) return;
 
-  if (lastX != 0 && lastY != 0 && (mode === 0 || mode === 6)) {
+  if (lastX != 0 && lastY != 0 && (mode === 0 || mode === 6 || mode === 7)) {
     let newBall = new Ball(new Vec2(lastX, lastY),
       new Vec2((lastX - mouseX), (lastY - mouseY)), defaultSize, k, 0, fc);
     if (isFinite(newBall.pos.x) && isFinite(newBall.pos.y) &&
       isFinite(newBall.vel.x) && isFinite(newBall.vel.y)) {
       if (mode === 0) physics.addBall(newBall);
       else if (mode === 6) {
-        let sb = new SoftBall(newBall.pos, defaultSize, 1000000, fc, 20);
+        let sb = new SoftBall(newBall.pos, defaultSize, 1000000, fc, 24);
         sb.points.forEach((p) => {
           p.vel = newBall.vel.copy;
         });
         physics.addSoftBall(sb);
+      } else if (mode === 7) {
+        physics.addSoftSquare(newBall.pos, defaultSize * 2, fc, newBall.vel);
       }
     } else {
       newBall.vel.x = 0;
@@ -227,7 +241,7 @@ function endInteraction(x, y) {
       2 * Math.abs(lastY / 2 - mouseY / 2));
   }
 
-  if (mode === 7) {
+  if (mode === 8) {
     physics.addRectBody(
       lastX / 2 + mouseX / 2,
       lastY / 2 + mouseY / 2,
