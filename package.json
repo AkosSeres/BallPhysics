@@ -2,6 +2,7 @@
   "name": "ballphysics",
   "version": "1.0.0",
   "description": "2D rigid body physics engine to-be",
+  "main": "./dist/build/physics.js",
   "scripts": {},
   "repository": {
     "type": "git",
