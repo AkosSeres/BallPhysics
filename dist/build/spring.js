@@ -19,6 +19,11 @@ class Spring {
         this.pinned = false;
         this.objects = [];
         this.rotationLocked = false;
+        this.id =
+            '_' +
+                Math.random()
+                    .toString(36)
+                    .substr(2, 9);
     }
     /**
      * Pins one side of the the spring to a given coordinate in space
@@ -79,7 +84,7 @@ class Spring {
             let dist = new vec2_1.default(p2.x - p1.pos.x, p2.y - p1.pos.y);
             let dl = dist.length - this.length;
             dist.setMag(1);
-            dist.mult(dl * this.springConstant * t / (p1.m));
+            dist.mult((dl * this.springConstant * t) / p1.m);
             p1.vel.x += dist.x;
             p1.vel.y += dist.y;
             let v = p1.vel;
@@ -88,7 +93,7 @@ class Spring {
                 let s = new vec2_1.default(p2.x, p2.y);
                 let r2 = vec2_1.default.sub(p1.pos, s);
                 let am = r2.length * r2.length * p1.m + p1.am;
-                let ang = (p1.am * p1.ang - r2.length * p1.m * (v.y)) / (am);
+                let ang = (p1.am * p1.ang - r2.length * p1.m * v.y) / am;
                 v.y = -ang * r2.length;
                 p1.ang = ang;
             }
@@ -113,13 +118,16 @@ class Spring {
                 s.div(p1.m + p2.m);
                 let r1 = vec2_1.default.sub(p1.pos, s);
                 let r2 = vec2_1.default.sub(p2.pos, s);
-                let am = r1.length * r1.length * p1.m + p1.am +
-                    r2.length * r2.length * p2.m + p2.am;
-                let sv = (v1.y - v2.y) * r2.length /
-                    (r1.length + r2.length) + v2.y;
-                let ang = (p1.am * p1.ang + p2.am * p2.ang -
+                let am = r1.length * r1.length * p1.m +
+                    p1.am +
+                    r2.length * r2.length * p2.m +
+                    p2.am;
+                let sv = ((v1.y - v2.y) * r2.length) / (r1.length + r2.length) + v2.y;
+                let ang = (p1.am * p1.ang +
+                    p2.am * p2.ang -
                     r1.length * p1.m * (v1.y - sv) +
-                    r2.length * p2.m * (v2.y - sv)) / (am);
+                    r2.length * p2.m * (v2.y - sv)) /
+                    am;
                 v1.y = -ang * r1.length + sv;
                 v2.y = +ang * r2.length + sv;
                 p1.ang = ang;

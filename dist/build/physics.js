@@ -444,6 +444,12 @@ class Physics {
             ret.num = this.bodies.indexOf(bodies[0]);
             return ret;
         }
+        let springs = this.springs.filter(filter);
+        if (springs.length >= 1) {
+            ret.type = 'spring';
+            ret.num = this.springs.indexOf(springs[0]);
+            return ret;
+        }
     }
 }
 exports.Physics = Physics;

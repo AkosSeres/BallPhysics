@@ -536,16 +536,25 @@ class Physics {
   getItemDataFromId(id: String): { type: string; num: number } {
     let ret: any = {};
     let filter = (b: any) => b.id === id;
+
     let balls = this.balls.filter(filter);
     if (balls.length >= 1) {
       ret.type = 'ball';
       ret.num = this.balls.indexOf(balls[0]);
       return ret;
     }
+
     let bodies = this.bodies.filter(filter);
     if (bodies.length >= 1) {
       ret.type = 'body';
       ret.num = this.bodies.indexOf(bodies[0]);
+      return ret;
+    }
+
+    let springs = this.springs.filter(filter);
+    if (springs.length >= 1) {
+      ret.type = 'spring';
+      ret.num = this.springs.indexOf(springs[0]);
       return ret;
     }
   }
