@@ -56,6 +56,11 @@ class Body {
             this.vel = vel.copy;
         else
             this.vel = new vec2_1.default(0, 0);
+        this.id =
+            "_" +
+                Math.random()
+                    .toString(36)
+                    .substr(2, 9);
     }
     /**
      * Get a copy of the body that is not a reference to it
@@ -105,8 +110,8 @@ class Body {
                 rel = p.length;
                 let move = vec2_1.default.fromAngle(heading);
                 move.mult(ball.r - rel);
-                this.move(move.x * -1 * ball.m / (this.m + ball.m), move.y * -1 * ball.m / (this.m + ball.m));
-                ball.move(move.x * 1 * this.m / (this.m + ball.m), move.y * 1 * this.m / (this.m + ball.m));
+                this.move((move.x * -1 * ball.m) / (this.m + ball.m), (move.y * -1 * ball.m) / (this.m + ball.m));
+                ball.move((move.x * 1 * this.m) / (this.m + ball.m), (move.y * 1 * this.m) / (this.m + ball.m));
                 cp = new vec2_1.default(point.x, point.y);
                 let a = vec2_1.default.fromAngle(heading);
                 a.mult(-30);
@@ -119,14 +124,14 @@ class Body {
             p.rotate(-h + Math.PI);
             np.rotate(-h + Math.PI);
             bp.rotate(-h + Math.PI);
-            let d = bp.y - ((p.y + np.y) / 2);
+            let d = bp.y - (p.y + np.y) / 2;
             if (d >= -ball.r && d <= ball.r && bp.x >= np.x && bp.x <= p.x) {
                 heading = h - Math.PI / 2;
                 rel = d;
                 let move = vec2_1.default.fromAngle(heading);
                 move.mult(ball.r - rel);
-                this.move(move.x * -1 * ball.m / (this.m + ball.m), move.y * -1 * ball.m / (this.m + ball.m));
-                ball.move(move.x * 1 * this.m / (this.m + ball.m), move.y * 1 * this.m / (this.m + ball.m));
+                this.move((move.x * -1 * ball.m) / (this.m + ball.m), (move.y * -1 * ball.m) / (this.m + ball.m));
+                ball.move((move.x * 1 * this.m) / (this.m + ball.m), (move.y * 1 * this.m) / (this.m + ball.m));
                 cp = ball.pos.copy;
                 cp.add(vec2_1.default.mult(vec2_1.default.fromAngle(heading + Math.PI), d));
                 let a = vec2_1.default.fromAngle(heading);
@@ -156,10 +161,8 @@ class Body {
             v2v.add(v2);
             v1v.rotate(-heading);
             v2v.rotate(-heading);
-            let dv1vx = (1 + k) * (m1 * v1v.x + m2 * v2v.x) /
-                (m1 + m2) - (k + 1) * v1v.x;
-            let dv2vx = (1 + k) * (m1 * v1v.x + m2 * v2v.x) /
-                (m1 + m2) - (k + 1) * v2v.x;
+            let dv1vx = ((1 + k) * (m1 * v1v.x + m2 * v2v.x)) / (m1 + m2) - (k + 1) * v1v.x;
+            let dv2vx = ((1 + k) * (m1 * v1v.x + m2 * v2v.x)) / (m1 + m2) - (k + 1) * v2v.x;
             let vk = (v1v.y * m1 + v2v.y * m2) / (m1 + m2);
             let dv1vy = -Math.sign(v1v.y) * fc * dv1vx;
             let dv2vy = -Math.sign(v2v.y) * fc * dv2vx;
@@ -175,10 +178,8 @@ class Body {
             v2.add(dv2v);
             dv1v.rotate(-r1.heading);
             dv2v.rotate(-r2.heading);
-            let dang1 = (dv1v.y * m1 * r1.length) /
-                (am1 + r1.length * r1.length * m1);
-            let dang2 = -(dv2v.y * m2 * r2.length) /
-                (am2 + r2.length * r2.length * m2);
+            let dang1 = (dv1v.y * m1 * r1.length) / (am1 + r1.length * r1.length * m1);
+            let dang2 = -(dv2v.y * m2 * r2.length) / (am2 + r2.length * r2.length * m2);
             ang1 += dang1;
             ang2 += dang2;
             let vp1 = vec2_1.default.fromAngle(r1.heading - Math.PI / 2);
@@ -234,23 +235,21 @@ class Body {
                         let j = 0;
                         let k = j + 2;
                         let newSide = new linesegment_1.default(new vec2_1.default(pol[j].x, pol[j].y), new vec2_1.default(pol[k % pol.length].x, pol[k % pol.length].y));
-                        let newSideHeading = (new vec2_1.default(newSide.b.x - newSide.a.x, newSide.b.y - newSide.a.y)).heading;
-                        while (!(a.heading > b.heading ?
-                            ((newSideHeading > a.heading &&
+                        let newSideHeading = new vec2_1.default(newSide.b.x - newSide.a.x, newSide.b.y - newSide.a.y).heading;
+                        while (!(a.heading > b.heading
+                            ? (newSideHeading > a.heading &&
                                 newSideHeading < 2 * Math.PI) ||
-                                (newSideHeading > 0 &&
-                                    newSideHeading < b.heading)) :
-                            (newSideHeading > a.heading &&
-                                newSideHeading < b.heading)) ||
-                            intersectWithPoligon(new linesegment_1.default(new vec2_1.default(pol[j % pol.length].x, pol[j % pol.length].y), new vec2_1.default(pol[k % pol.length].x, pol[k % pol.length].y)), pol, [(pol.length - 1) % pol.length,
+                                (newSideHeading > 0 && newSideHeading < b.heading)
+                            : newSideHeading > a.heading && newSideHeading < b.heading) ||
+                            intersectWithPoligon(new linesegment_1.default(new vec2_1.default(pol[j % pol.length].x, pol[j % pol.length].y), new vec2_1.default(pol[k % pol.length].x, pol[k % pol.length].y)), pol, [
+                                (pol.length - 1) % pol.length,
                                 j % pol.length,
                                 (k - 1) % pol.length,
-                                k % pol.length,
+                                k % pol.length
                             ])) {
                             k++;
                             newSide = new linesegment_1.default(new vec2_1.default(pol[j].x, pol[j].y), new vec2_1.default(pol[k % pol.length].x, pol[k % pol.length].y));
-                            newSideHeading = (new vec2_1.default(newSide.b.x - newSide.a.x, newSide.b.y - newSide.a.y))
-                                .heading;
+                            newSideHeading = new vec2_1.default(newSide.b.x - newSide.a.x, newSide.b.y - newSide.a.y).heading;
                         }
                         let pol1 = [];
                         let pol2 = [];
@@ -272,24 +271,21 @@ class Body {
                             found = true;
                             let k = j + 2;
                             let newSide = new linesegment_1.default(new vec2_1.default(pol[j].x, pol[j].y), new vec2_1.default(pol[k % pol.length].x, pol[k % pol.length].y));
-                            let newSideHeading = (new vec2_1.default(newSide.b.x - newSide.a.x, newSide.b.y - newSide.a.y))
-                                .heading;
-                            while (!(a.heading > b.heading ?
-                                ((newSideHeading > a.heading &&
+                            let newSideHeading = new vec2_1.default(newSide.b.x - newSide.a.x, newSide.b.y - newSide.a.y).heading;
+                            while (!(a.heading > b.heading
+                                ? (newSideHeading > a.heading &&
                                     newSideHeading < 2 * Math.PI) ||
-                                    (newSideHeading > 0 &&
-                                        newSideHeading < b.heading)) :
-                                (newSideHeading > a.heading &&
-                                    newSideHeading < b.heading)) ||
-                                intersectWithPoligon(newSide, pol, [(j - 1) % pol.length,
+                                    (newSideHeading > 0 && newSideHeading < b.heading)
+                                : newSideHeading > a.heading && newSideHeading < b.heading) ||
+                                intersectWithPoligon(newSide, pol, [
+                                    (j - 1) % pol.length,
                                     j % pol.length,
                                     (k - 1) % pol.length,
-                                    k % pol.length,
+                                    k % pol.length
                                 ])) {
                                 k++;
                                 newSide = new linesegment_1.default(new vec2_1.default(pol[j].x, pol[j].y), new vec2_1.default(pol[k % pol.length].x, pol[k % pol.length].y));
-                                newSideHeading = (new vec2_1.default(newSide.b.x - newSide.a.x, newSide.b.y - newSide.a.y))
-                                    .heading;
+                                newSideHeading = new vec2_1.default(newSide.b.x - newSide.a.x, newSide.b.y - newSide.a.y).heading;
                             }
                             let pol1 = [];
                             let pol2 = [];
@@ -318,39 +314,35 @@ class Body {
         let amSum = 0;
         let pSum = new vec2_1.default(0, 0);
         poligons.forEach((pol) => {
-            let a = Math.sqrt(Math.pow(pol[0].x - pol[1].x, 2) +
-                Math.pow(pol[0].y - pol[1].y, 2));
-            let b = Math.sqrt(Math.pow(pol[1].x - pol[2].x, 2) +
-                Math.pow(pol[1].y - pol[2].y, 2));
-            let c = Math.sqrt(Math.pow(pol[2].x - pol[0].x, 2) +
-                Math.pow(pol[2].y - pol[0].y, 2));
+            let a = Math.sqrt(Math.pow(pol[0].x - pol[1].x, 2) + Math.pow(pol[0].y - pol[1].y, 2));
+            let b = Math.sqrt(Math.pow(pol[1].x - pol[2].x, 2) + Math.pow(pol[1].y - pol[2].y, 2));
+            let c = Math.sqrt(Math.pow(pol[2].x - pol[0].x, 2) + Math.pow(pol[2].y - pol[0].y, 2));
             let s = (a + b + c) / 2;
             let m = Math.sqrt(s * (s - a) * (s - b) * (s - c));
             mSum += m;
-            pSum.x += m * (pol[0].x + pol[1].x + pol[2].x) / 3;
-            pSum.y += m * (pol[0].y + pol[1].y + pol[2].y) / 3;
+            pSum.x += (m * (pol[0].x + pol[1].x + pol[2].x)) / 3;
+            pSum.y += (m * (pol[0].y + pol[1].y + pol[2].y)) / 3;
         });
         pSum.div(mSum);
         this.pos = pSum;
         this.m = mSum;
         // calculating the moment of inertia finally
         for (let pol of poligons) {
-            let a = Math.sqrt(Math.pow(pol[0].x - pol[1].x, 2) +
-                Math.pow(pol[0].y - pol[1].y, 2));
-            let b = Math.sqrt(Math.pow(pol[1].x - pol[2].x, 2) +
-                Math.pow(pol[1].y - pol[2].y, 2));
-            let c = Math.sqrt(Math.pow(pol[2].x - pol[0].x, 2) +
-                Math.pow(pol[2].y - pol[0].y, 2));
+            let a = Math.sqrt(Math.pow(pol[0].x - pol[1].x, 2) + Math.pow(pol[0].y - pol[1].y, 2));
+            let b = Math.sqrt(Math.pow(pol[1].x - pol[2].x, 2) + Math.pow(pol[1].y - pol[2].y, 2));
+            let c = Math.sqrt(Math.pow(pol[2].x - pol[0].x, 2) + Math.pow(pol[2].y - pol[0].y, 2));
             let w = Math.max(a, b, c);
             let s = (a + b + c) / 2;
             let m = Math.sqrt(s * (s - a) * (s - b) * (s - c));
-            let h = 2 * m / w;
+            let h = (2 * m) / w;
             let wpartial = Math.sqrt(Math.min(a, c, b) ** 2 - h * h);
-            let am = h * w * (h * h + w * w) / 24;
-            let d = Math.sqrt(h * h / 36 +
-                (Math.abs(wpartial - w / 2) / 3) ** 2);
+            let am = (h * w * (h * h + w * w)) / 24;
+            let d = Math.sqrt((h * h) / 36 + (Math.abs(wpartial - w / 2) / 3) ** 2);
             am -= d * d * m;
-            am += new vec2_1.default((pol[0].x + pol[1].x + pol[2].x) / 3, (pol[0].y + pol[1].y + pol[2].y) / 3).dist(this.pos) ** 2 * m;
+            am +=
+                new vec2_1.default((pol[0].x + pol[1].x + pol[2].x) / 3, (pol[0].y + pol[1].y + pol[2].y) / 3).dist(this.pos) **
+                    2 *
+                    m;
             amSum += am;
         }
         this.am = amSum;
@@ -448,12 +440,12 @@ class Body {
         let vel1perpendicular = vec2_1.default.dot(b1.vel, a);
         // let vel2parralel = Vec2.cross(b2.vel, a);
         let vel2perpendicular = vec2_1.default.dot(b2.vel, a);
-        let newVel1Perpendicular = (1 + k) * ((b1.m * vel1perpendicular) +
-            (b2.m * vel2perpendicular)) / (b1.m + b2.m) -
-            (k * vel1perpendicular);
-        let newVel2Perpendicular = (1 + k) * ((b1.m * vel1perpendicular) +
-            (b2.m * vel2perpendicular)) / (b1.m + b2.m) -
-            (k * vel2perpendicular);
+        let newVel1Perpendicular = ((1 + k) * (b1.m * vel1perpendicular + b2.m * vel2perpendicular)) /
+            (b1.m + b2.m) -
+            k * vel1perpendicular;
+        let newVel2Perpendicular = ((1 + k) * (b1.m * vel1perpendicular + b2.m * vel2perpendicular)) /
+            (b1.m + b2.m) -
+            k * vel2perpendicular;
         b1.vel.add(vec2_1.default.mult(a.copy, newVel1Perpendicular - vel1perpendicular));
         b2.vel.add(vec2_1.default.mult(a.copy, newVel2Perpendicular - vel2perpendicular));
     }

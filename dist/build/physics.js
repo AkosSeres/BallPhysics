@@ -59,7 +59,7 @@ class Physics {
             this.balls[i].pos.add(vec2_1.default.mult(this.balls[i].vel, t));
             // Angular velocity
             this.balls[i].rotation += this.balls[i].ang * t;
-            this.balls[i].rotation %= (Math.PI * 2);
+            this.balls[i].rotation %= Math.PI * 2;
         }
         for (let i = 0; i < this.bodies.length; i++) {
             this.bodies[i].lastPos = this.bodies[i].pos.copy;
@@ -110,13 +110,13 @@ class Physics {
                         break fixedBallCollision;
                     vel.y *= -ball.k;
                     pos.y += ball.r + b.r - rel;
-                    let dvy = vel.y * (1 + (1 / ball.k));
-                    let deltaAng = Math.sign(vel.x - ball.ang * ball.r) *
-                        (dvy * ball.fc) / (ball.amc * ball.r);
+                    let dvy = vel.y * (1 + 1 / ball.k);
+                    let deltaAng = (Math.sign(vel.x - ball.ang * ball.r) * (dvy * ball.fc)) /
+                        (ball.amc * ball.r);
                     let maxDeltaAng = (vel.x - ball.ang * ball.r) / ball.r;
                     if (deltaAng / maxDeltaAng > 1)
                         deltaAng = maxDeltaAng;
-                    deltaAng *= (ball.amc) / (ball.amc + 1);
+                    deltaAng *= ball.amc / (ball.amc + 1);
                     ball.ang += deltaAng;
                     let dvx = deltaAng * ball.r;
                     vel.x -= dvx;
@@ -164,11 +164,11 @@ class Physics {
         // Apply air friction
         this.balls.forEach((b) => {
             b.vel.mult(Math.pow(this.airFriction, t));
-            b.ang *= (Math.pow(this.airFriction, t));
+            b.ang *= Math.pow(this.airFriction, t);
         });
         this.bodies.forEach((b) => {
             b.vel.mult(Math.pow(this.airFriction, t));
-            b.ang *= (Math.pow(this.airFriction, t));
+            b.ang *= Math.pow(this.airFriction, t);
         });
         // Then take the average of this system and the other system
         // if in precise mode
@@ -276,9 +276,9 @@ class Physics {
      * @param {Vec2} vel The initial velocity of the soft square
      */
     addSoftSquare(pos, sideSize, fc, vel) {
-        let softSquare = new softball_1.default(pos, Math.sqrt(sideSize * sideSize / Math.PI), 1, fc, 24);
+        let softSquare = new softball_1.default(pos, Math.sqrt((sideSize * sideSize) / Math.PI), 1, fc, 24);
         softSquare.sides.forEach((side) => {
-            side.length = (0.96 * 4 * sideSize / softSquare.resolution);
+            side.length = (0.96 * 4 * sideSize) / softSquare.resolution;
         });
         softSquare.points.forEach((b) => {
             b.vel = vel.copy;
@@ -292,15 +292,15 @@ class Physics {
         this.springs.push(bigStick);
         bigStick = new spring_1.default(Math.sqrt(softSquare.r * softSquare.r * Math.PI), springStrength / 2);
         bigStick.attachObject(softSquare.points[softSquare.resolution / 4]);
-        bigStick.attachObject(softSquare.points[3 * softSquare.resolution / 4]);
+        bigStick.attachObject(softSquare.points[(3 * softSquare.resolution) / 4]);
         this.springs.push(bigStick);
         bigStick = new spring_1.default(Math.sqrt(2 * softSquare.r * softSquare.r * Math.PI), springStrength);
         bigStick.attachObject(softSquare.points[softSquare.resolution / 8]);
-        bigStick.attachObject(softSquare.points[5 * softSquare.resolution / 8]);
+        bigStick.attachObject(softSquare.points[(5 * softSquare.resolution) / 8]);
         this.springs.push(bigStick);
         bigStick = new spring_1.default(Math.sqrt(2 * softSquare.r * softSquare.r * Math.PI), springStrength);
-        bigStick.attachObject(softSquare.points[3 * softSquare.resolution / 8]);
-        bigStick.attachObject(softSquare.points[7 * softSquare.resolution / 8]);
+        bigStick.attachObject(softSquare.points[(3 * softSquare.resolution) / 8]);
+        bigStick.attachObject(softSquare.points[(7 * softSquare.resolution) / 8]);
         this.springs.push(bigStick);
     }
     /**
@@ -351,7 +351,9 @@ class Physics {
      */
     addFixedBall(x, y, r) {
         this.fixedBalls.push({
-            x: x, y: y, r: r,
+            x: x,
+            y: y,
+            r: r
         });
     }
     /**
@@ -421,6 +423,26 @@ class Physics {
             ret.push(item.copy);
         });
         return ret;
+    }
+    /**
+     * Finds the ball or body with the given id
+     * @param {String} id The id of the object to find
+     */
+    getItemDataFromId(id) {
+        let ret = {};
+        let filter = (b) => b.id === id;
+        let balls = this.balls.filter(filter);
+        if (balls.length >= 1) {
+            ret.type = "ball";
+            ret.num = this.balls.indexOf(balls[0]);
+            return;
+        }
+        let bodies = this.bodies.filter(filter);
+        if (bodies.length >= 1) {
+            ret.type = "body";
+            ret.num = this.bodies.indexOf(bodies[0]);
+            return;
+        }
     }
 }
 exports.Physics = Physics;

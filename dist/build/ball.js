@@ -38,6 +38,11 @@ class Ball {
             this.vel = vel.copy;
         else
             this.vel = new vec2_1.default(0, 0);
+        this.id =
+            "_" +
+                Math.random()
+                    .toString(36)
+                    .substr(2, 9);
     }
     /**
      * Get the mass of the ball
@@ -78,7 +83,7 @@ class Ball {
      * @return {boolean} True if they colidre
      */
     collided(ball) {
-        if (this.pos.dist(ball.pos) < (this.r + ball.r))
+        if (this.pos.dist(ball.pos) < this.r + ball.r)
             return true;
         else
             return false;
@@ -105,10 +110,10 @@ class Ball {
         let too = r1 + r2 - dist;
         let d = vec2_1.default.sub(pos1, pos2);
         d.setMag(1);
-        d.mult(too * m2 / (m1 + m2));
+        d.mult((too * m2) / (m1 + m2));
         cp1.add(d);
         d.setMag(1);
-        d.mult(-too * m1 / (m1 + m2));
+        d.mult((-too * m1) / (m1 + m2));
         cp2.add(d);
         ball1.pos = cp1;
         ball2.pos = cp2;
@@ -123,37 +128,34 @@ class Ball {
         let vk2 = r2 * ball2.ang;
         let vel1InPos = vel1Parralel - vk1;
         let vel2InPos = vel2Parralel + vk2;
-        let vCommon = ((vel1InPos * ball1.am) +
-            (vel2InPos * ball2.am)) / (ball1.am + ball2.am);
+        let vCommon = (vel1InPos * ball1.am + vel2InPos * ball2.am) / (ball1.am + ball2.am);
         let tovCommon1 = vCommon - vel1InPos;
         let tovCommon2 = vCommon - vel2InPos;
         let maxDeltaAng1 = tovCommon1 / r1;
         let maxDeltaAng2 = tovCommon2 / r2;
         // Calculate the new perpendicular velocities
-        let u1Perpendicular = ((1 + k) *
-            ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2))) -
-            (k * vel1Perpendicular);
-        let u2Perpendicular = ((1 + k) *
-            ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2))) -
-            (k * vel2Perpendicular);
+        let u1Perpendicular = (1 + k) *
+            ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
+            k * vel1Perpendicular;
+        let u2Perpendicular = (1 + k) *
+            ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
+            k * vel2Perpendicular;
         ball1.vel = vec2_1.default.mult(d, u1Perpendicular);
         ball2.vel = vec2_1.default.mult(d, u2Perpendicular);
         let deltav1Perpendicular = u1Perpendicular - vel1Perpendicular;
         let deltav2Perpendicular = u2Perpendicular - vel2Perpendicular;
-        let deltaAng1 = -(Math.sign(tovCommon1)) *
-            (deltav1Perpendicular * fc) / (ball1.amc * r1);
-        let deltaAng2 = (Math.sign(tovCommon2)) *
-            (deltav2Perpendicular * fc) / (ball2.amc * r2);
+        let deltaAng1 = (-Math.sign(tovCommon1) * (deltav1Perpendicular * fc)) / (ball1.amc * r1);
+        let deltaAng2 = (Math.sign(tovCommon2) * (deltav2Perpendicular * fc)) / (ball2.amc * r2);
         if (deltaAng1 / maxDeltaAng1 > 1)
             deltaAng1 = maxDeltaAng1;
         if (deltaAng2 / maxDeltaAng2 > 1)
             deltaAng2 = maxDeltaAng2;
-        deltaAng1 *= (ball1.amc) / (ball1.amc + 1);
-        deltaAng2 *= (ball2.amc) / (ball2.amc + 1);
+        deltaAng1 *= ball1.amc / (ball1.amc + 1);
+        deltaAng2 *= ball2.amc / (ball2.amc + 1);
         ball1.ang -= deltaAng1;
         ball2.ang += deltaAng2;
-        let u1Parralel = vel1Parralel + (deltaAng1 * r1);
-        let u2Parralel = vel2Parralel + (deltaAng2 * r2);
+        let u1Parralel = vel1Parralel + deltaAng1 * r1;
+        let u2Parralel = vel2Parralel + deltaAng2 * r2;
         d.rotate(Math.PI / 2);
         ball1.vel.add(vec2_1.default.mult(d, u1Parralel));
         ball2.vel.add(vec2_1.default.mult(d, u2Parralel));
