@@ -353,7 +353,7 @@ class Physics {
         this.fixedBalls.push({
             x: x,
             y: y,
-            r: r
+            r: r,
         });
     }
     /**
@@ -427,21 +427,22 @@ class Physics {
     /**
      * Finds the ball or body with the given id
      * @param {String} id The id of the object to find
+     * @return {any} The data of the object
      */
     getItemDataFromId(id) {
         let ret = {};
         let filter = (b) => b.id === id;
         let balls = this.balls.filter(filter);
         if (balls.length >= 1) {
-            ret.type = "ball";
+            ret.type = 'ball';
             ret.num = this.balls.indexOf(balls[0]);
-            return;
+            return ret;
         }
         let bodies = this.bodies.filter(filter);
         if (bodies.length >= 1) {
-            ret.type = "body";
+            ret.type = 'body';
             ret.num = this.bodies.indexOf(bodies[0]);
-            return;
+            return ret;
         }
     }
 }

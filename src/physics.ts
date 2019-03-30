@@ -1,11 +1,11 @@
-import Vec2 from "./vec2";
-import Ball from "./ball";
-import Wall from "./wall";
-import LineSegment from "./linesegment";
-import Stick from "./stick";
-import Spring from "./spring";
-import SoftBall from "./softball";
-import Body from "./body";
+import Vec2 from './vec2';
+import Ball from './ball';
+import Wall from './wall';
+import LineSegment from './linesegment';
+import Stick from './stick';
+import Spring from './spring';
+import SoftBall from './softball';
+import Body from './body';
 
 /**
  * Class that creates a new world ba the physics engine
@@ -450,7 +450,7 @@ class Physics {
     this.fixedBalls.push({
       x: x,
       y: y,
-      r: r
+      r: r,
     });
   }
 
@@ -531,21 +531,22 @@ class Physics {
   /**
    * Finds the ball or body with the given id
    * @param {String} id The id of the object to find
+   * @return {any} The data of the object
    */
-  getItemDataFromId(id: String) {
+  getItemDataFromId(id: String): { type: string; num: number } {
     let ret: any = {};
     let filter = (b: any) => b.id === id;
     let balls = this.balls.filter(filter);
     if (balls.length >= 1) {
-      ret.type = "ball";
+      ret.type = 'ball';
       ret.num = this.balls.indexOf(balls[0]);
-      return;
+      return ret;
     }
     let bodies = this.bodies.filter(filter);
     if (bodies.length >= 1) {
-      ret.type = "body";
+      ret.type = 'body';
       ret.num = this.bodies.indexOf(bodies[0]);
-      return;
+      return ret;
     }
   }
 }
