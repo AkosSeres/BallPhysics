@@ -1,6 +1,6 @@
 # Balls-Physics
 Physics simulation on balls
-[Try out the editor!](https://akosseres.github.io/BallPhysics/test/)
+[Try out the editor!](https://akosseres.github.io/BallPhysicsEditor/dist/)
 
 Controls:
 * up and down arrows to switch between modes
