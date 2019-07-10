@@ -77,3 +77,6 @@ package-lock.json
 
 # TypeScript cache
 .tscache
+
+# jsdoc
+out
