@@ -425,6 +425,14 @@ class Physics {
         return ret;
     }
     /**
+     * Removes the given object from the system
+     * @param {any} obj The object to remove
+     */
+    removeObjFromSystem(obj) {
+        console.log(this.balls.indexOf(obj));
+        this.balls.splice(this.balls.indexOf(obj), 1);
+    }
+    /**
      * Finds the ball or body with the given id
      * @param {String} id The id of the object to find
      * @return {any} The data of the object

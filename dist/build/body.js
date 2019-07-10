@@ -57,7 +57,7 @@ class Body {
         else
             this.vel = new vec2_1.default(0, 0);
         this.id =
-            "_" +
+            '_' +
                 Math.random()
                     .toString(36)
                     .substr(2, 9);
@@ -245,7 +245,7 @@ class Body {
                                 (pol.length - 1) % pol.length,
                                 j % pol.length,
                                 (k - 1) % pol.length,
-                                k % pol.length
+                                k % pol.length,
                             ])) {
                             k++;
                             newSide = new linesegment_1.default(new vec2_1.default(pol[j].x, pol[j].y), new vec2_1.default(pol[k % pol.length].x, pol[k % pol.length].y));
@@ -281,7 +281,7 @@ class Body {
                                     (j - 1) % pol.length,
                                     j % pol.length,
                                     (k - 1) % pol.length,
-                                    k % pol.length
+                                    k % pol.length,
                                 ])) {
                                 k++;
                                 newSide = new linesegment_1.default(new vec2_1.default(pol[j].x, pol[j].y), new vec2_1.default(pol[k % pol.length].x, pol[k % pol.length].y));

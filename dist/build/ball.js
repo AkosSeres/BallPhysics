@@ -39,7 +39,7 @@ class Ball {
         else
             this.vel = new vec2_1.default(0, 0);
         this.id =
-            "_" +
+            '_' +
                 Math.random()
                     .toString(36)
                     .substr(2, 9);
