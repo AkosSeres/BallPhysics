@@ -25,7 +25,8 @@ let lastFrameTime;
 window.lockRotation = false;
 window.time = true;
 let choosed = false;
-let mx = 0; my = 0;
+let mx = 0;
+my = 0;
 let preciseMode = false;
 let modes = [
   'ball creator',
@@ -36,6 +37,7 @@ let modes = [
   'move',
   'elastic ball creator',
   'soft square creator',
+  'delete',
   // 'rectangle body',
 ];
 
@@ -81,7 +83,7 @@ function resizeCanvas() {
   cnv.width = window.innerWidth;
   cnv.height = window.innerHeight;
   physics.setBounds(0, 0, cnv.width, cnv.height);
-};
+}
 
 /**
  * My draw function
@@ -94,8 +96,8 @@ function drawFunction() {
   }
   elapsedTime /= 1000;
 
-  mouseX = (isFinite(mouseX) ? mouseX : mx);
-  mouseY = (isFinite(mouseY) ? mouseY : my);
+  mouseX = isFinite(mouseX) ? mouseX : mx;
+  mouseY = isFinite(mouseY) ? mouseY : my;
   if (mouseX && isFinite(mouseX)) mx = mouseX;
   if (mouseY && isFinite(mouseY)) my = mouseY;
 
@@ -129,10 +131,15 @@ function drawFunction() {
   }
 
   if (lastX != 0 && lastY != 0) {
-    if (mode === 1 || mode === 8) {
+    if (mode === 1 || mode === 9) {
       ctx.strokeRect(mouseX, mouseY, lastX - mouseX, lastY - mouseY);
-    } else if (mode === 0 || mode === 3 || mode === 4
-      || mode === 6 || mode === 7) {
+    } else if (
+      mode === 0 ||
+      mode === 3 ||
+      mode === 4 ||
+      mode === 6 ||
+      mode === 7
+    ) {
       ctx.beginPath();
       ctx.moveTo(mouseX, mouseY);
       ctx.lineTo(lastX, lastY);
@@ -199,6 +206,11 @@ function startInteraction(x, y) {
   }
   lastX = mouseX;
   lastY = mouseY;
+
+  if (mode === 8) {
+    choosed = physics.getObjectAtCoordinates(mouseX, mouseY);
+    if (choosed) physics.removeObjFromSystem(choosed);
+  }
 }
 
 /**
@@ -213,10 +225,20 @@ function endInteraction(x, y) {
   if (lastX === 0 && lastY === 0) return;
 
   if (lastX != 0 && lastY != 0 && (mode === 0 || mode === 6 || mode === 7)) {
-    let newBall = new Ball(new Vec2(lastX, lastY),
-      new Vec2((lastX - mouseX), (lastY - mouseY)), defaultSize, k, 0, fc);
-    if (isFinite(newBall.pos.x) && isFinite(newBall.pos.y) &&
-      isFinite(newBall.vel.x) && isFinite(newBall.vel.y)) {
+    let newBall = new Ball(
+      new Vec2(lastX, lastY),
+      new Vec2(lastX - mouseX, lastY - mouseY),
+      defaultSize,
+      k,
+      0,
+      fc
+    );
+    if (
+      isFinite(newBall.pos.x) &&
+      isFinite(newBall.pos.y) &&
+      isFinite(newBall.vel.x) &&
+      isFinite(newBall.vel.y)
+    ) {
       if (mode === 0) physics.addBall(newBall);
       else if (mode === 6) {
         let sb = new SoftBall(newBall.pos, defaultSize, 1000000, fc, 24);
@@ -238,15 +260,19 @@ function endInteraction(x, y) {
       lastX / 2 + mouseX / 2,
       lastY / 2 + mouseY / 2,
       2 * Math.abs(lastX / 2 - mouseX / 2),
-      2 * Math.abs(lastY / 2 - mouseY / 2));
+      2 * Math.abs(lastY / 2 - mouseY / 2)
+    );
   }
 
-  if (mode === 8) {
+  if (mode === 9) {
     physics.addRectBody(
       lastX / 2 + mouseX / 2,
       lastY / 2 + mouseY / 2,
       2 * Math.abs(lastX / 2 - mouseX / 2),
-      2 * Math.abs(lastY / 2 - mouseY / 2), fc, k);
+      2 * Math.abs(lastY / 2 - mouseY / 2),
+      fc,
+      k
+    );
   }
 
   if (mode === 3 || mode === 4) {
@@ -262,23 +288,40 @@ function endInteraction(x, y) {
         };
       }
 
-      if (choosed == newChoosed ||
-        (choosed == undefined && newChoosed == undefined)) break mode3;
-      else if (choosed.pinPoint && newChoosed.pinPoint) break mode3;
+      if (
+        choosed == newChoosed ||
+        (choosed == undefined && newChoosed == undefined)
+      ) {
+        break mode3;
+      } else if (choosed.pinPoint && newChoosed.pinPoint) break mode3;
       else if (choosed.pinPoint) {
-        stick = new Thing(Math.sqrt(Math.pow(choosed.x - newChoosed.pos.x, 2) +
-          Math.pow(choosed.y - newChoosed.pos.y, 2)), springConstant);
+        stick = new Thing(
+          Math.sqrt(
+            Math.pow(choosed.x - newChoosed.pos.x, 2) +
+              Math.pow(choosed.y - newChoosed.pos.y, 2)
+          ),
+          springConstant
+        );
         stick.attachObject(newChoosed);
         stick.pinHere(choosed.x, choosed.y);
       } else if (newChoosed.pinPoint) {
-        stick = new Thing(Math.sqrt(Math.pow(choosed.pos.x - newChoosed.x, 2) +
-          Math.pow(choosed.pos.y - newChoosed.y, 2)), springConstant);
+        stick = new Thing(
+          Math.sqrt(
+            Math.pow(choosed.pos.x - newChoosed.x, 2) +
+              Math.pow(choosed.pos.y - newChoosed.y, 2)
+          ),
+          springConstant
+        );
         stick.attachObject(choosed);
         stick.pinHere(newChoosed.x, newChoosed.y);
       } else {
         stick = new Thing(
-          Math.sqrt(Math.pow(choosed.pos.x - newChoosed.pos.x, 2) +
-            Math.pow(choosed.pos.y - newChoosed.pos.y, 2)), springConstant);
+          Math.sqrt(
+            Math.pow(choosed.pos.x - newChoosed.pos.x, 2) +
+              Math.pow(choosed.pos.y - newChoosed.pos.y, 2)
+          ),
+          springConstant
+        );
         stick.attachObject(choosed);
         stick.attachObject(newChoosed);
       }
@@ -351,8 +394,10 @@ function startTouch(event) {
     mode = mode === -1 ? modes.length - 1 : mode;
     return;
   }
-  startInteraction(event.changedTouches[0].clientX,
-    event.changedTouches[0].clientY);
+  startInteraction(
+    event.changedTouches[0].clientX,
+    event.changedTouches[0].clientY
+  );
   return false;
 }
 
@@ -362,8 +407,10 @@ function startTouch(event) {
  * @return {boolean} Returns false for preventing default browser behavior
  */
 function endTouch(event) {
-  endInteraction(event.changedTouches[0].clientX,
-    event.changedTouches[0].clientY);
+  endInteraction(
+    event.changedTouches[0].clientX,
+    event.changedTouches[0].clientY
+  );
   return false;
 }
 
@@ -373,8 +420,7 @@ function endTouch(event) {
  * @return {boolean} Returns false for preventing default browser behavior
  */
 function startMouse(event) {
-  startInteraction(event.clientX,
-    event.clientY);
+  startInteraction(event.clientX, event.clientY);
   return false;
 }
 
@@ -384,8 +430,7 @@ function startMouse(event) {
  * @return {boolean} Returns false for preventing default browser behavior
  */
 function endMouse(event) {
-  endInteraction(event.clientX,
-    event.clientY);
+  endInteraction(event.clientX, event.clientY);
   return false;
 }
 
@@ -405,10 +450,13 @@ Physics.prototype.draw = function(cnv) {
   ctx.strokeStyle = 'black';
   for (let i = 0; i < physics.balls.length; i++) {
     ctx.beginPath();
-    ctx.arc(physics.balls[i].pos.x,
+    ctx.arc(
+      physics.balls[i].pos.x,
       physics.balls[i].pos.y,
       physics.balls[i].r,
-      0, 2 * Math.PI);
+      0,
+      2 * Math.PI
+    );
     ctx.stroke();
     ctx.fill();
 
@@ -424,8 +472,10 @@ Physics.prototype.draw = function(cnv) {
 
   physics.bodies.forEach((element) => {
     ctx.beginPath();
-    ctx.moveTo(element.points[element.points.length - 1].x,
-      element.points[element.points.length - 1].y);
+    ctx.moveTo(
+      element.points[element.points.length - 1].x,
+      element.points[element.points.length - 1].y
+    );
     element.points.forEach((p) => {
       ctx.lineTo(p.x, p.y);
     });
@@ -440,8 +490,10 @@ Physics.prototype.draw = function(cnv) {
   ctx.fillStyle = 'white';
   physics.walls.forEach((element) => {
     ctx.beginPath();
-    ctx.moveTo(element.points[element.points.length - 1].x,
-      element.points[element.points.length - 1].y);
+    ctx.moveTo(
+      element.points[element.points.length - 1].x,
+      element.points[element.points.length - 1].y
+    );
     element.points.forEach((p) => {
       ctx.lineTo(p.x, p.y);
     });
@@ -484,18 +536,18 @@ Physics.prototype.draw = function(cnv) {
         if (i === num) v = new Vec2(0, 0);
         ctx.beginPath();
         ctx.moveTo(last.x, last.y);
-        ctx.lineTo(x1 + i / num * c.x + v.x,
-          y1 + i / num * c.y + v.y);
+        ctx.lineTo(x1 + (i / num) * c.x + v.x, y1 + (i / num) * c.y + v.y);
         ctx.stroke();
-        last = new Vec2(x1 + i / num * c.x + v.x, y1 + i / num * c.y + v.y);
+        last = new Vec2(x1 + (i / num) * c.x + v.x, y1 + (i / num) * c.y + v.y);
         v.mult(-1);
       }
     } else {
       ctx.beginPath();
-      ctx.moveTo(element.objects[0].pos.x,
-        element.objects[0].pos.y);
-      ctx.lineTo(element.pinned ? element.pinned.x : element.objects[1].pos.x,
-        element.pinned ? element.pinned.y : element.objects[1].pos.y);
+      ctx.moveTo(element.objects[0].pos.x, element.objects[0].pos.y);
+      ctx.lineTo(
+        element.pinned ? element.pinned.x : element.objects[1].pos.x,
+        element.pinned ? element.pinned.y : element.objects[1].pos.y
+      );
       ctx.stroke();
     }
     element.objects.forEach((o) => {
@@ -516,10 +568,16 @@ Physics.prototype.draw = function(cnv) {
   ctx.strokeStyle = 'black';
   ctx.fillStyle = 'white';
   ctx.fillText('Mode: ' + modes[mode], 10, 25);
-  ctx.fillText(Math.round(mouseX).toString() + ' '
-    + Math.round(mouseY).toString(), 10, 40);
-  ctx.fillText(Math.round(lastX).toString() + ' '
-    + Math.round(lastY).toString(), 10, 55);
+  ctx.fillText(
+    Math.round(mouseX).toString() + ' ' + Math.round(mouseY).toString(),
+    10,
+    40
+  );
+  ctx.fillText(
+    Math.round(lastX).toString() + ' ' + Math.round(lastY).toString(),
+    10,
+    55
+  );
 };
 
 /**
@@ -535,12 +593,21 @@ function spawnNewtonsCradle(x, y, scale, phy) {
   let defaultR = 25;
   let defaultStick = 250;
   let ballNumber = 8;
-  balls.push(new Ball(new Vec2(x, y),
-    new Vec2(0, 0), scale * defaultR, 1, 0, 0));
+  balls.push(
+    new Ball(new Vec2(x, y), new Vec2(0, 0), scale * defaultR, 1, 0, 0)
+  );
   let count = 1;
   for (let i = 0; i < ballNumber - 1; i++) {
-    balls.push(new Ball(new Vec2(x + count * scale * defaultR * 1.01 * 2, y),
-      new Vec2(0, 0), scale * 25, 1, 0, 0));
+    balls.push(
+      new Ball(
+        new Vec2(x + count * scale * defaultR * 1.01 * 2, y),
+        new Vec2(0, 0),
+        scale * 25,
+        1,
+        0,
+        0
+      )
+    );
     count *= -1;
     if (count > 0) count += 1;
     if (i === ballNumber - 2) {
