@@ -1,6 +1,6 @@
-import Vec2 from "./vec2";
-import Ball from "./ball";
-import LineSegment from "./linesegment";
+import Vec2 from './vec2';
+import Ball from './ball';
+import LineSegment from './linesegment';
 
 /**
  * Class representing a body
@@ -85,7 +85,7 @@ export default class Body {
     else this.vel = new Vec2(0, 0);
 
     this.id =
-      "_" +
+      '_' +
       Math.random()
         .toString(36)
         .substr(2, 9);
@@ -336,7 +336,7 @@ export default class Body {
                   (pol.length - 1) % pol.length,
                   j % pol.length,
                   (k - 1) % pol.length,
-                  k % pol.length
+                  k % pol.length,
                 ]
               )
             ) {
@@ -387,7 +387,7 @@ export default class Body {
                   (j - 1) % pol.length,
                   j % pol.length,
                   (k - 1) % pol.length,
-                  k % pol.length
+                  k % pol.length,
                 ])
               ) {
                 k++;

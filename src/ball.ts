@@ -1,4 +1,4 @@
-import Vec2 from "./vec2";
+import Vec2 from './vec2';
 
 /**
  * A class representing a ball
@@ -56,7 +56,7 @@ export default class Ball {
     else this.vel = new Vec2(0, 0);
 
     this.id =
-      "_" +
+      '_' +
       Math.random()
         .toString(36)
         .substr(2, 9);
