@@ -620,4 +620,40 @@ export default class Body {
     b1.vel.add(Vec2.mult(a.copy, newVel1Perpendicular - vel1perpendicular));
     b2.vel.add(Vec2.mult(a.copy, newVel2Perpendicular - vel2perpendicular));
   }
+
+  /**
+   *Returns true if the point is inside the body
+   * @param Vec2 p The point
+   */
+  containsPoint(p: Vec2): boolean {
+    let sides = this.sides;
+    let r =
+      Math.max(
+        ...this.points.map((point) => {
+          return Vec2.dist(point, p);
+        })
+      ) + 1;
+
+    let v = Vec2.fromAngle(0);
+    v.setMag(r);
+
+    let testerSegment = new LineSegment(p, Vec2.add(v, p));
+
+    let filtered = sides.filter((side) => {
+      return LineSegment.intersect(side, testerSegment) != undefined;
+    });
+    return filtered.length % 2 == 1;
+  }
+
+  /**
+   * Returns an array containing all the sides of the body
+   */
+  get sides(): Array<LineSegment> {
+    return this.points.map((element, index) => {
+      return new LineSegment(
+        element,
+        this.points[(index + 1) % this.points.length]
+      );
+    });
+  }
 }
