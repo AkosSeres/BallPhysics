@@ -4,7 +4,7 @@
   "description": "2D rigid body physics engine to-be",
   "main": "./build/physics.js",
   "scripts": {
-    "doc": "jsdoc ./build/ -r"
+    "build": "grunt build --force"
   },
   "repository": {
     "type": "git",
@@ -40,7 +40,9 @@
     "grunt-contrib-uglify": "^3.4.0",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-eslint": "^21.0.0",
+    "grunt-ts": "^6.0.0-beta.22",
     "typescript": "^3.2.2",
     "typescript-eslint-parser": "^21.0.2"
-  }
+  },
+  "dependencies": {}
 }
