@@ -1,5 +1,6 @@
 import Vec2 from './vec2';
 import Ball from './ball';
+import LineSegment from './linesegment';
 
 /** Class representing a wall
  * Walls are objects that are immovable  and they are rigid
@@ -100,5 +101,41 @@ export default class Wall {
             ball.vel.x = vel.x;
             ball.vel.y = vel.y;
         }
+    }
+
+    /**
+    *Returns true if the point is inside the body
+    * @param Vec2 p The point
+    */
+    containsPoint(p: Vec2): boolean {
+        let sides = this.sides;
+        let r =
+            Math.max(
+                ...this.points.map((point) => {
+                    return Vec2.dist(point, p);
+                })
+            ) + 1;
+
+        let v = Vec2.fromAngle(0);
+        v.setMag(r);
+
+        let testerSegment = new LineSegment(p, Vec2.add(v, p));
+
+        let filtered = sides.filter((side) => {
+            return LineSegment.intersect(side, testerSegment) != undefined;
+        });
+        return filtered.length % 2 == 1;
+    }
+
+    /**
+     * Returns an array containing all the sides of the body
+     */
+    get sides(): Array<LineSegment> {
+        return this.points.map((element, index) => {
+            return new LineSegment(
+                element,
+                this.points[(index + 1) % this.points.length]
+            );
+        });
     }
 }
