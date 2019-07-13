@@ -1,27 +1,25 @@
-import Vec2 from './vec2';
-import Ball from './ball';
-import Wall from './wall';
-import LineSegment from './linesegment';
-import Stick from './stick';
-import Spring from './spring';
-import SoftBall from './softball';
-import Body from './body';
+const Vec2 = require('./vec2');
+const Ball = require('./ball');
+const Wall = require('./wall');
+const LineSegment = require('./linesegment');
+const Stick = require('./stick');
+const Spring = require('./spring');
+const SoftBall = require('./softball');
+const Body = require('./body');
 
 /**
  * Class that creates a new world ba the physics engine
  */
 class Physics {
-  balls: Array<Ball>;
-  bodies: Array<Body>;
-  fixedBalls: Array<{
-    x: number; y: number; r: number
-  }>;
-  softBalls: Array<SoftBall>;
-  walls: Array<Wall>;
-  bounds: Array<Wall>;
-  springs: Array<Spring>;
-  airFriction: number;
-  gravity: Vec2;
+  balls;
+  bodies;
+  fixedBalls;
+  softBalls;
+  walls;
+  bounds;
+  springs;
+  airFriction;
+  gravity;
 
   /**
    * Create and initalize a new world
@@ -52,10 +50,10 @@ class Physics {
    * @param {boolean} precise If this is true,
    * then the simulation is going to be more precise
    */
-  update(t: number, precise: boolean) {
+  update(t, precise) {
     // Do the simulation on the reversed system
     // if the simulation is in precise mode
-    let clonedSystem: Physics = precise ? this.copy : new Physics();
+    let clonedSystem = precise ? this.copy : new Physics();
     if (precise) {
       clonedSystem.bodies.reverse();
       clonedSystem.balls.reverse();
@@ -254,7 +252,7 @@ class Physics {
    * Returns a copy of this system
    * @return {Physics} The copy of this system
    */
-  get copy(): Physics {
+  get copy() {
     let ret = new Physics();
     ret.balls = this.getCopyOfBalls();
     ret.bodies = this.getCopyOfBodies();
@@ -290,7 +288,7 @@ class Physics {
    * 1 - no friction
    * @param {number} airFriction Has to be between 0 and 1
    */
-  setAirFriction(airFriction: number) {
+  setAirFriction(airFriction) {
     if (!isFinite(airFriction)) return;
     this.airFriction = airFriction;
     if (this.airFriction < 0) this.airFriction = 0;
@@ -301,7 +299,7 @@ class Physics {
    * Sets the gravity in the world
    * @param {Vec2} dir The acceleration vector of the gravity
    */
-  setGravity(dir: Vec2) {
+  setGravity(dir) {
     this.gravity = dir.copy;
   }
 
@@ -309,7 +307,7 @@ class Physics {
    * Appends a new ball to the world
    * @param {Ball} ball Ball to add to the world
    */
-  addBall(ball: Ball) {
+  addBall(ball) {
     this.balls.push(ball);
   }
 
@@ -317,7 +315,7 @@ class Physics {
    * Appends a new body to the world
    * @param {Body} body Body to add to the world
    */
-  addBody(body: Body) {
+  addBody(body) {
     this.bodies.push(body);
   }
 
@@ -325,7 +323,7 @@ class Physics {
    * Appends a new soft ball to the world
    * @param {SoftBall} softBall SoftBall to be added to the world
    */
-  addSoftBall(softBall: SoftBall) {
+  addSoftBall(softBall) {
     this.balls.push(...softBall.points);
     this.springs.push(...softBall.sides);
 
@@ -339,7 +337,7 @@ class Physics {
    * @param {number} fc Friction coefficient
    * @param {Vec2} vel The initial velocity of the soft square
    */
-  addSoftSquare(pos: Vec2, sideSize: number, fc: number, vel: Vec2) {
+  addSoftSquare(pos, sideSize, fc, vel) {
     let softSquare = new SoftBall(
       pos,
       Math.sqrt((sideSize * sideSize) / Math.PI),
@@ -399,7 +397,7 @@ class Physics {
    * @param {number} w width of the rectangular wall
    * @param {number} h height of the rectangular wall
    */
-  addRectWall(x: number, y: number, w: number, h: number) {
+  addRectWall(x, y, w, h) {
     let points = [];
     points.push(new Vec2(x - w / 2, y - h / 2));
     points.push(new Vec2(x + w / 2, y - h / 2));
@@ -417,14 +415,7 @@ class Physics {
    * @param {number} fc friction coefficient of the body
    * @param {number} k coefficient of restitution of the body
    */
-  addRectBody(
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-    fc: number,
-    k: number
-  ) {
+  addRectBody(x, y, w, h, fc, k) {
     let points = [];
     points.push(new Vec2(x - w / 2, y - h / 2));
     points.push(new Vec2(x + w / 2, y - h / 2));
@@ -437,7 +428,7 @@ class Physics {
    * Append a new wall to the world
    * @param {Wall} wall Wall to append to the world
    */
-  addWall(wall: Wall) {
+  addWall(wall) {
     this.walls.push(wall);
   }
 
@@ -448,7 +439,7 @@ class Physics {
    * @param {number} y y coordinate of the fixed ball
    * @param {number} r radius of the fixed ball
    */
-  addFixedBall(x: number, y: number, r: number) {
+  addFixedBall(x, y, r) {
     this.fixedBalls.push({
       x: x,
       y: y,
@@ -460,7 +451,7 @@ class Physics {
    * Appends a new spring to the world
    * @param {Spring} spring Spring to add to the world
    */
-  addSpring(spring: Spring) {
+  addSpring(spring) {
     this.springs.push(spring);
   }
 
@@ -472,10 +463,10 @@ class Physics {
    * @param {number} w Width of the world
    * @param {number} h Height of the world
    */
-  setBounds(x: number, y: number, w: number, h: number) {
+  setBounds(x, y, w, h) {
     this.bounds = [];
 
-    const getRectBody = (x_: number, y_: number, w_: number, h_: number) => {
+    const getRectBody = (x_, y_, w_, h_) => {
       let points = [];
       points.push(new Vec2(x_ - w_ / 2, y_ - h_ / 2));
       points.push(new Vec2(x_ + w_ / 2, y_ - h_ / 2));
@@ -497,7 +488,7 @@ class Physics {
    * @param {number} y y coordinate
    * @return {Ball} The found object
    */
-  getObjectAtCoordinates(x: number, y: number): Ball {
+  getObjectAtCoordinates(x, y) {
     let ret = undefined;
     let v = new Vec2(x, y);
     this.balls.forEach((ball) => {
@@ -519,8 +510,8 @@ class Physics {
    * Returns an array of copies of all balls in the system
    * @return {Array<Ball>} The array of the copied balls
    */
-  getCopyOfBalls(): Array<Ball> {
-    let ret: Array<Ball> = [];
+  getCopyOfBalls() {
+    let ret = [];
     this.balls.forEach((item) => {
       ret.push(item.copy);
     });
@@ -531,8 +522,8 @@ class Physics {
    * Returns an array of copies of all bodies in the system
    * @return {Array<Body>} The array of the copied bodies
    */
-  getCopyOfBodies(): Array<Body> {
-    let ret: Array<Body> = [];
+  getCopyOfBodies() {
+    let ret = [];
     this.bodies.forEach((item) => {
       ret.push(item.copy);
     });
@@ -543,7 +534,7 @@ class Physics {
    * Removes the given object from the system
    * @param {any} obj The object to remove
    */
-  removeObjFromSystem(obj: any) {
+  removeObjFromSystem(obj) {
     let idx = this.balls.indexOf(obj);
     if (idx != -1) {
       this.balls.splice(idx, 1);
@@ -571,9 +562,9 @@ class Physics {
    * @param {String} id The id of the object to find
    * @return {any} The data of the object
    */
-  getItemDataFromId(id: String): { type: string; num: number } {
-    let ret: any = {};
-    let filter = (b: any) => b.id === id;
+  getItemDataFromId() {
+    let ret = {};
+    let filter = (b) => b.id === id;
 
     let balls = this.balls.filter(filter);
     if (balls.length >= 1) {
@@ -598,12 +589,13 @@ class Physics {
   }
 }
 
-export { Ball };
-export { Body };
-export { Vec2 };
-export { Wall };
-export { LineSegment };
-export { Spring };
-export { Stick };
-export { SoftBall };
-export { Physics };
+module.exports = Physics;
+
+module.exports.Ball = Ball;
+module.exports.Body = Body;
+module.exports.Vec2 = Vec2;
+module.exports.Wall = Wall;
+module.exports.LineSegment = LineSegment;
+module.exports.Spring = Spring;
+module.exports.Stick = Stick;
+module.exports.SoftBall = SoftBall;

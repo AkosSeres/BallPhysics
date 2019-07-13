@@ -1,6 +1,5 @@
-import Vec2 from './vec2';
-import Ball from './ball';
-import LineSegment from './linesegment';
+const Vec2 = require('./vec2');
+const LineSegment = require('./linesegment');
 
 /**
  * Class representing a body
@@ -8,18 +7,18 @@ import LineSegment from './linesegment';
  * and they collide with other objects (balls)
  */
 export default class Body {
-  points: Array<Vec2>;
-  lastPos: Vec2;
-  pos: Vec2;
-  fc: number;
-  rotation: number;
-  ang: number;
-  k: number;
-  vel: Vec2;
-  m: number;
-  am: number;
-  layer: any;
-  id: string;
+  points;
+  lastPos;
+  pos;
+  fc;
+  rotation;
+  ang;
+  k;
+  vel;
+  m;
+  am;
+  layer;
+  id;
 
   /**
    * Creates a body and calculates it's centre of mass (position)
@@ -29,13 +28,7 @@ export default class Body {
    * @param {number} ang Angular velocity
    * @param {number} fc Friction coefficient
    */
-  constructor(
-    points: Array<Vec2>,
-    vel: Vec2,
-    k: number,
-    ang: number,
-    fc: number
-  ) {
+  constructor(points, vel, k, ang, fc) {
     this.points = points;
 
     let pol = this.points;
@@ -95,7 +88,7 @@ export default class Body {
    * Get a copy of the body that is not a reference to it
    * @return {Body} The copy of the body
    */
-  get copy(): Body {
+  get copy() {
     let pointsCopy = [];
     for (let i = 0; i < this.points.length; i++) {
       pointsCopy.push(new Vec2(this.points[i].x, this.points[i].y));
@@ -115,7 +108,7 @@ export default class Body {
    * @param {number} x x coordinate
    * @param {number} y y coordinate
    */
-  move(x: number, y: number) {
+  move(x, y) {
     this.pos.x += x;
     this.pos.y += y;
     this.points.forEach((p) => {
@@ -129,9 +122,9 @@ export default class Body {
    * collision behavior between the body and ball
    * @param {Ball} ball The ball to collide with the body
    */
-  collideWithBall(ball: Ball) {
-    let heading: number;
-    let rel: number;
+  collideWithBall(ball) {
+    let heading;
+    let rel;
     let cp;
 
     this.points.forEach((point, idx) => {
@@ -270,24 +263,20 @@ export default class Body {
    * the centre of mass of the body
    */
   calculatePosAndMass() {
-    let poligons: Array<Array<Vec2>> = [];
+    let poligons = [];
     poligons.push([]);
     this.points.forEach((p) => {
       poligons[0].push(new Vec2(p.x, p.y));
     });
 
     if (this.isConcave) {
-      const includes = (arr: Array<number>, item: number) => {
+      const includes = (arr, item) => {
         for (let i = 0; i < arr.length; i++) {
           if (arr[i] === item) return true;
         }
         return false;
       };
-      const intersectWithPoligon = function(
-        segment: LineSegment,
-        pol: Array<Vec2>,
-        exceptions: Array<number>
-      ) {
+      const intersectWithPoligon = function(segment, pol, exceptions) {
         for (let i = 0; i < pol.length; i++) {
           if (!includes(exceptions, i)) {
             let side = new LineSegment(
@@ -484,7 +473,7 @@ export default class Body {
    * Has to do the transformation for all the points
    * @param {number} angle Rotation angle
    */
-  rotate(angle: number) {
+  rotate(angle) {
     this.points.forEach((p) => {
       let point = new Vec2(p.x, p.y);
       point.sub(this.pos);
@@ -527,11 +516,11 @@ export default class Body {
    * @param {Body} b1 First body
    * @param {Body} b2 Second body
    */
-  static collide(b1: Body, b2: Body) {
+  static collide(b1, b2) {
     let matches = 0;
     let heading = 0;
     let cp = new Vec2(0, 0);
-    let cps: Array<Vec2> = [];
+    let cps = [];
     let intersect = false;
     b1.points.forEach((p, idx) => {
       let side1 = new LineSegment(
@@ -623,9 +612,10 @@ export default class Body {
 
   /**
    *Returns true if the point is inside the body
-   * @param Vec2 p The point
+   * @param {Vec2} p The point
+   * @return {boolean} The boolean value
    */
-  containsPoint(p: Vec2): boolean {
+  containsPoint(p) {
     let sides = this.sides;
     let r =
       Math.max(
@@ -648,7 +638,7 @@ export default class Body {
   /**
    * Returns an array containing all the sides of the body
    */
-  get sides(): Array<LineSegment> {
+  get sides() {
     return this.points.map((element, index) => {
       return new LineSegment(
         element,

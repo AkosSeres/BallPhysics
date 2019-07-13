@@ -1,4 +1,4 @@
-import Vec2 from './vec2';
+const Vec2 = require('./vec2');
 
 /**
  * A class representing a ball
@@ -6,17 +6,17 @@ import Vec2 from './vec2';
  * has a shape of a circle and it is affected by gravity
  */
 export default class Ball {
-  pos: Vec2;
-  lastPos: Vec2;
-  r: number;
-  fc: number;
-  amc: number;
-  rotation: number;
-  ang: number;
-  k: number;
-  vel: Vec2;
-  layer: any;
-  id: string;
+  pos;
+  lastPos;
+  r;
+  fc;
+  amc;
+  rotation;
+  ang;
+  k;
+  vel;
+  layer;
+  id;
 
   /**
    * Crete a ball
@@ -28,14 +28,7 @@ export default class Ball {
    * @param {number} ang The angular velocity of the ball (optional)
    * @param {number} fc The friction coefficient (optional, defaults to 0.4)
    */
-  constructor(
-    pos: Vec2,
-    vel: Vec2,
-    r: number,
-    k: number,
-    ang: number,
-    fc: number
-  ) {
+  constructor(pos, vel, r, k, ang, fc) {
     this.pos = pos.copy;
     this.lastPos = this.pos.copy;
     this.r = r;
@@ -66,7 +59,7 @@ export default class Ball {
    * Get the mass of the ball
    * @return {number} The mass
    */
-  get m(): number {
+  get m() {
     return this.r * this.r * Math.PI;
   }
 
@@ -74,7 +67,7 @@ export default class Ball {
    * Get the moment of inertia of the ball
    * @return {number} The moment of inertia
    */
-  get am(): number {
+  get am() {
     return this.amc * this.r * this.r * this.m;
   }
 
@@ -82,7 +75,7 @@ export default class Ball {
    * Get a copy of the ball that is not a reference to it
    * @return {Ball} The copy of the ball
    */
-  get copy(): Ball {
+  get copy() {
     let ret = new Ball(
       this.pos.copy,
       this.vel.copy,
@@ -101,7 +94,7 @@ export default class Ball {
    * @param {number} x x coordinate
    * @param {number} y y coordinate
    */
-  move(x: number, y: number) {
+  move(x, y) {
     this.pos.x += x;
     this.pos.y += y;
   }
@@ -111,7 +104,7 @@ export default class Ball {
    * @param {Ball} ball the other ball
    * @return {boolean} True if they colidre
    */
-  collided(ball: Ball): boolean {
+  collided(ball) {
     if (this.pos.dist(ball.pos) < this.r + ball.r) return true;
     else return false;
   }
@@ -121,7 +114,7 @@ export default class Ball {
    * @param {Ball} ball1 First ball
    * @param {Ball} ball2 Second ball
    */
-  static collide(ball1: Ball, ball2: Ball) {
+  static collide(ball1, ball2) {
     if (!ball1.collided(ball2)) return;
 
     let pos1 = ball1.pos;
@@ -207,9 +200,10 @@ export default class Ball {
 
   /**
    *Returns true if the point is inside the ball
-   * @param Vec2 p The point
+   * @param {Vec2} p The point
+   * @return {boolean} The boolean value
    */
-  containsPoint(p: Vec2): boolean {
+  containsPoint(p) {
     return Vec2.dist(this.pos, p) <= this.r;
   }
 }

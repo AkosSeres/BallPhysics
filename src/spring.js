@@ -1,4 +1,4 @@
-import Vec2 from './vec2';
+const Vec2 = require('./vec2');
 
 /**
  * Class representing a string
@@ -7,19 +7,19 @@ import Vec2 from './vec2';
  * They do not collide with other object neither with each other
  */
 export default class Spring {
-  length: number;
-  springConstant: number;
-  pinned: any;
-  objects: Array<any>;
-  rotationLocked: boolean;
-  id: string;
+  length;
+  springConstant;
+  pinned;
+  objects;
+  rotationLocked;
+  id;
 
   /**
    * Creates a spring
    * @param {number} length The unstreched length of the spring
    * @param {number} springConstant Spring constant
    */
-  constructor(length: number, springConstant: number) {
+  constructor(length, springConstant) {
     this.length = length;
     this.springConstant = springConstant;
     this.pinned = false;
@@ -37,7 +37,7 @@ export default class Spring {
    * @param {number} x x coordinate
    * @param {number} y y coordinate
    */
-  pinHere(x: number, y: number) {
+  pinHere(x, y) {
     this.pinned = {
       x: x,
       y: y,
@@ -56,7 +56,7 @@ export default class Spring {
    * Attaches one end of the spring to an object (eg. Ball)
    * @param {any} object The object that the spring is getting attached to
    */
-  attachObject(object: any) {
+  attachObject(object) {
     let ob = this.objects;
     ob.push(object);
     if (ob.length === 2) {
@@ -87,7 +87,7 @@ export default class Spring {
    * Updates the spring bay the elapsed time
    * @param {number} t Elapsed time
    */
-  update(t: number) {
+  update(t) {
     let p1;
     let p2;
     if (this.pinned && this.objects[0]) {
