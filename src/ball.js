@@ -5,19 +5,7 @@ const Vec2 = require('./vec2');
  * A ball is an object in the physics engine that
  * has a shape of a circle and it is affected by gravity
  */
-export default class Ball {
-  pos;
-  lastPos;
-  r;
-  fc;
-  amc;
-  rotation;
-  ang;
-  k;
-  vel;
-  layer;
-  id;
-
+class Ball {
   /**
    * Crete a ball
    * The mass of the ball is calculated from its radius
@@ -207,3 +195,5 @@ export default class Ball {
     return Vec2.dist(this.pos, p) <= this.r;
   }
 }
+
+module.exports = Ball;

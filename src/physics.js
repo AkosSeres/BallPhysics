@@ -11,16 +11,6 @@ const Body = require('./body');
  * Class that creates a new world ba the physics engine
  */
 class Physics {
-  balls;
-  bodies;
-  fixedBalls;
-  softBalls;
-  walls;
-  bounds;
-  springs;
-  airFriction;
-  gravity;
-
   /**
    * Create and initalize a new world
    */

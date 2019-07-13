@@ -1,10 +1,11 @@
 const Vec2 = require('./vec2');
 const LineSegment = require('./linesegment');
+
 /** Class representing a wall
  * Walls are objects that are immovable  and they are rigid
  * It can be convex or concave
  */
-export default class Wall {
+class Wall {
   /**
    * Create a wall
    * @param {Array<Vec2>} _points Array of points that make up the wall
@@ -147,3 +148,5 @@ export default class Wall {
     });
   }
 }
+
+module.exports = Wall;

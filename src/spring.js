@@ -6,14 +6,7 @@ const Vec2 = require('./vec2');
  * You can attach other objects to the ends of them
  * They do not collide with other object neither with each other
  */
-export default class Spring {
-  length;
-  springConstant;
-  pinned;
-  objects;
-  rotationLocked;
-  id;
-
+class Spring {
   /**
    * Creates a spring
    * @param {number} length The unstreched length of the spring
@@ -162,3 +155,5 @@ export default class Spring {
     }
   }
 }
+
+module.exports = Spring;

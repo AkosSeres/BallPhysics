@@ -7,14 +7,7 @@ const LineSegment = require('./linesegment');
  * Class representing a softbody object
  * They work like a ball, with pressure inside
  */
-export default class SoftBall {
-  points;
-  pressure;
-  fc;
-  resolution;
-  r;
-  sides;
-
+class SoftBall {
   /**
    * Creates a SoftBall
    * @param {Vec2} pos The starting position of the soft ball
@@ -274,3 +267,5 @@ export default class SoftBall {
     });
   }
 }
+
+module.exports = SoftBall;

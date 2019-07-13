@@ -1,11 +1,7 @@
 {
-    "extends": "google",
-    "parser": "typescript-eslint-parser",
-    "plugins": [
-        "typescript"
-    ],
-    "parserOptions": {
-        "ecmaVersion": 2018,
-        "sourceType": "script"
-    }
+  "extends": "google",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "script"
+  }
 }

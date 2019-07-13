@@ -6,20 +6,7 @@ const LineSegment = require('./linesegment');
  * Bodies are movable objects
  * and they collide with other objects (balls)
  */
-export default class Body {
-  points;
-  lastPos;
-  pos;
-  fc;
-  rotation;
-  ang;
-  k;
-  vel;
-  m;
-  am;
-  layer;
-  id;
-
+class Body {
   /**
    * Creates a body and calculates it's centre of mass (position)
    * @param {Array} points The points that make up the body
@@ -647,3 +634,5 @@ export default class Body {
     });
   }
 }
+
+module.exports = Body;

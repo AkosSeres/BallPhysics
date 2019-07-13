@@ -3,7 +3,7 @@ const Vec2 = require('./vec2');
 /**
  * Class representing a segment of a line
  */
-export default class LineSegment {
+class LineSegment {
   /**
    * Create a segment
    * @param {Vec2} a_ Starting point
@@ -146,3 +146,5 @@ export default class LineSegment {
     } else return undefined;
   }
 }
+
+module.exports = LineSegment;
