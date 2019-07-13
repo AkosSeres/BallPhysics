@@ -579,13 +579,13 @@ class Physics {
   }
 }
 
-module.exports = Physics;
+Physics.Ball = Ball;
+Physics.Body = Body;
+Physics.Vec2 = Vec2;
+Physics.Wall = Wall;
+Physics.LineSegment = LineSegment;
+Physics.Spring = Spring;
+Physics.Stick = Stick;
+Physics.SoftBall = SoftBall;
 
-exports.Ball = Ball;
-exports.Body = Body;
-exports.Vec2 = Vec2;
-exports.Wall = Wall;
-exports.LineSegment = LineSegment;
-exports.Spring = Spring;
-exports.Stick = Stick;
-exports.SoftBall = SoftBall;
+module.exports = Physics;
