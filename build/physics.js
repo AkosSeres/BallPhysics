@@ -397,8 +397,12 @@ class Physics {
         let ret = undefined;
         let v = new vec2_1.default(x, y);
         this.balls.forEach((ball) => {
-            if (ball.pos.dist(v) < ball.r)
+            if (ball.containsPoint(v))
                 ret = ball;
+        });
+        this.bodies.forEach((body) => {
+            if (body.containsPoint(v))
+                ret = body;
         });
         return ret;
     }
@@ -429,8 +433,16 @@ class Physics {
      * @param {any} obj The object to remove
      */
     removeObjFromSystem(obj) {
-        console.log(this.balls.indexOf(obj));
-        this.balls.splice(this.balls.indexOf(obj), 1);
+        let idx = this.balls.indexOf(obj);
+        if (idx != -1) {
+            this.balls.splice(idx, 1);
+            return;
+        }
+        idx = this.bodies.indexOf(obj);
+        if (idx != -1) {
+            this.bodies.splice(idx, 1);
+            return;
+        }
     }
     /**
      * Finds the ball or body with the given id

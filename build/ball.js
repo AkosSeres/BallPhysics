@@ -160,5 +160,12 @@ class Ball {
         ball1.vel.add(vec2_1.default.mult(d, u1Parralel));
         ball2.vel.add(vec2_1.default.mult(d, u2Parralel));
     }
+    /**
+     *Returns true if the point is inside the ball
+     * @param Vec2 p The point
+     */
+    containsPoint(p) {
+        return vec2_1.default.dist(this.pos, p) <= this.r;
+    }
 }
 exports.default = Ball;
