@@ -581,11 +581,11 @@ class Physics {
 
 module.exports = Physics;
 
-module.exports.Ball = Ball;
-module.exports.Body = Body;
-module.exports.Vec2 = Vec2;
-module.exports.Wall = Wall;
-module.exports.LineSegment = LineSegment;
-module.exports.Spring = Spring;
-module.exports.Stick = Stick;
-module.exports.SoftBall = SoftBall;
+exports.Ball = Ball;
+exports.Body = Body;
+exports.Vec2 = Vec2;
+exports.Wall = Wall;
+exports.LineSegment = LineSegment;
+exports.Spring = Spring;
+exports.Stick = Stick;
+exports.SoftBall = SoftBall;
