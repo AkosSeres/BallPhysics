@@ -13,7 +13,9 @@ import Body from './body';
 class Physics {
   balls: Array<Ball>;
   bodies: Array<Body>;
-  fixedBalls: Array<{ x: number; y: number; r: number }>;
+  fixedBalls: Array<{
+    x: number; y: number; r: number
+  }>;
   softBalls: Array<SoftBall>;
   walls: Array<Wall>;
   bounds: Array<Wall>;
@@ -504,6 +506,12 @@ class Physics {
     this.bodies.forEach((body) => {
       if (body.containsPoint(v)) ret = body;
     });
+    this.walls.forEach((wall) => {
+      if (wall.containsPoint(v)) ret = wall;
+    });
+    this.fixedBalls.forEach((e) => {
+      if (Vec2.dist(new Vec2(e.x, e.y), new Vec2(x, y)) <= e.r) ret = e;
+    });
     return ret;
   }
 
@@ -544,6 +552,16 @@ class Physics {
     idx = this.bodies.indexOf(obj);
     if (idx != -1) {
       this.bodies.splice(idx, 1);
+      return;
+    }
+    idx = this.walls.indexOf(obj);
+    if (idx != -1) {
+      this.walls.splice(idx, 1);
+      return;
+    }
+    idx = this.fixedBalls.indexOf(obj);
+    if (idx != -1) {
+      this.fixedBalls.splice(idx, 1);
       return;
     }
   }

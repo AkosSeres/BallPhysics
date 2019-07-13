@@ -404,6 +404,14 @@ class Physics {
             if (body.containsPoint(v))
                 ret = body;
         });
+        this.walls.forEach((wall) => {
+            if (wall.containsPoint(v))
+                ret = wall;
+        });
+        this.fixedBalls.forEach((e) => {
+            if (vec2_1.default.dist(new vec2_1.default(e.x, e.y), new vec2_1.default(x, y)) <= e.r)
+                ret = e;
+        });
         return ret;
     }
     /**
@@ -441,6 +449,16 @@ class Physics {
         idx = this.bodies.indexOf(obj);
         if (idx != -1) {
             this.bodies.splice(idx, 1);
+            return;
+        }
+        idx = this.walls.indexOf(obj);
+        if (idx != -1) {
+            this.walls.splice(idx, 1);
+            return;
+        }
+        idx = this.fixedBalls.indexOf(obj);
+        if (idx != -1) {
+            this.fixedBalls.splice(idx, 1);
             return;
         }
     }

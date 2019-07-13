@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const vec2_1 = require("./vec2");
+const linesegment_1 = require("./linesegment");
 /** Class representing a wall
  * Walls are objects that are immovable  and they are rigid
  * It can be convex or concave
@@ -91,6 +92,31 @@ class Wall {
             ball.vel.x = vel.x;
             ball.vel.y = vel.y;
         }
+    }
+    /**
+    *Returns true if the point is inside the body
+    * @param Vec2 p The point
+    */
+    containsPoint(p) {
+        let sides = this.sides;
+        let r = Math.max(...this.points.map((point) => {
+            return vec2_1.default.dist(point, p);
+        })) + 1;
+        let v = vec2_1.default.fromAngle(0);
+        v.setMag(r);
+        let testerSegment = new linesegment_1.default(p, vec2_1.default.add(v, p));
+        let filtered = sides.filter((side) => {
+            return linesegment_1.default.intersect(side, testerSegment) != undefined;
+        });
+        return filtered.length % 2 == 1;
+    }
+    /**
+     * Returns an array containing all the sides of the body
+     */
+    get sides() {
+        return this.points.map((element, index) => {
+            return new linesegment_1.default(element, this.points[(index + 1) % this.points.length]);
+        });
     }
 }
 exports.default = Wall;
