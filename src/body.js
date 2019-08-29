@@ -67,8 +67,8 @@ class Body {
     this.id =
       '_' +
       Math.random()
-        .toString(36)
-        .substr(2, 9);
+      .toString(36)
+      .substr(2, 9);
   }
 
   /**
@@ -224,8 +224,8 @@ class Body {
 
       let dang1 =
         (dv1v.y * m1 * r1.length) / (am1 + r1.length * r1.length * m1);
-      let dang2 =
-        -(dv2v.y * m2 * r2.length) / (am2 + r2.length * r2.length * m2);
+      let dang2 = -(dv2v.y * m2 * r2.length) /
+        (am2 + r2.length * r2.length * m2);
 
       ang1 += dang1;
       ang2 += dang2;
@@ -297,11 +297,11 @@ class Body {
               newSide.b.y - newSide.a.y
             ).heading;
             while (
-              !(a.heading > b.heading
-                ? (newSideHeading > a.heading &&
-                    newSideHeading < 2 * Math.PI) ||
-                  (newSideHeading > 0 && newSideHeading < b.heading)
-                : newSideHeading > a.heading && newSideHeading < b.heading) ||
+              !(a.heading > b.heading ?
+                (newSideHeading > a.heading &&
+                  newSideHeading < 2 * Math.PI) ||
+                (newSideHeading > 0 && newSideHeading < b.heading) :
+                newSideHeading > a.heading && newSideHeading < b.heading) ||
               intersectWithPoligon(
                 new LineSegment(
                   new Vec2(pol[j % pol.length].x, pol[j % pol.length].y),
@@ -354,11 +354,11 @@ class Body {
                 newSide.b.y - newSide.a.y
               ).heading;
               while (
-                !(a.heading > b.heading
-                  ? (newSideHeading > a.heading &&
-                      newSideHeading < 2 * Math.PI) ||
-                    (newSideHeading > 0 && newSideHeading < b.heading)
-                  : newSideHeading > a.heading && newSideHeading < b.heading) ||
+                !(a.heading > b.heading ?
+                  (newSideHeading > a.heading &&
+                    newSideHeading < 2 * Math.PI) ||
+                  (newSideHeading > 0 && newSideHeading < b.heading) :
+                  newSideHeading > a.heading && newSideHeading < b.heading) ||
                 intersectWithPoligon(newSide, pol, [
                   (j - 1) % pol.length,
                   j % pol.length,
@@ -448,7 +448,7 @@ class Body {
           (pol[0].x + pol[1].x + pol[2].x) / 3,
           (pol[0].y + pol[1].y + pol[2].y) / 3
         ).dist(this.pos) **
-          2 *
+        2 *
         m;
       amSum += am;
     }
@@ -586,11 +586,11 @@ class Body {
 
     let newVel1Perpendicular =
       ((1 + k) * (b1.m * vel1perpendicular + b2.m * vel2perpendicular)) /
-        (b1.m + b2.m) -
+      (b1.m + b2.m) -
       k * vel1perpendicular;
     let newVel2Perpendicular =
       ((1 + k) * (b1.m * vel1perpendicular + b2.m * vel2perpendicular)) /
-        (b1.m + b2.m) -
+      (b1.m + b2.m) -
       k * vel2perpendicular;
 
     b1.vel.add(Vec2.mult(a.copy, newVel1Perpendicular - vel1perpendicular));
@@ -632,6 +632,52 @@ class Body {
         this.points[(index + 1) % this.points.length]
       );
     });
+  }
+
+  /**
+   * @return {Object} The Body represented in a JS object
+   * Ready to be converted into JSON
+   */
+  toJSObject() {
+    let ret = {};
+
+    ret.points = this.points.map((p) => {
+      return {
+        x: p.x,
+        y: p.y,
+      };
+    });
+    ret.vel = this.vel.toJSObject();
+    ret.k = this.k;
+    ret.ang = this.ang;
+    ret.fc = this.fc;
+    ret.pos = this.pos.toJSObject();
+    ret.lastPos = this.lastPos.toJSObject();
+    ret.rotation = this.rotation;
+    ret.id = this.id;
+
+    return ret;
+  }
+
+  /**
+   * Creates a Body class from the given object
+   * @param {Object} obj The object to create the class from
+   * @return {Body} The Body object
+   */
+  static fromObject(obj) {
+    let ret = new Body(obj.points.map((p) => {
+      return {
+        x: p.x,
+        y: p.y,
+      };
+    }), Vec2.fromObject(obj.vel), obj.k, obj.ang, obj.fc);
+
+    ret.id = obj.id;
+    ret.pos = Vec2.fromObject(obj.pos);
+    ret.lastPos = Vec2.fromObject(obj.lastPos);
+    ret.rotation = obj.rotation;
+
+    return ret;
   }
 }
 

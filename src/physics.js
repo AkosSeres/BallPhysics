@@ -577,6 +577,64 @@ class Physics {
       return ret;
     }
   }
+
+  /**
+   * @return {Object} The physics world represented in a JS object
+   * Ready to be converted into JSON
+   */
+  toJSObject() {
+    let ret = {};
+
+    ret.balls = this.balls.map((b) => {
+      return b.toJSObject();
+    });
+    ret.bounds = this.bounds.map((w) => {
+      return w.toJSObject();
+    });
+    ret.walls = this.walls.map((w) => {
+      return w.toJSObject();
+    });
+    ret.bodies = this.bodies.map((b) => {
+      return b.toJSObject();
+    });
+    ret.springs = this.springs.map((s) => {
+      return s.toJSObject();
+    });
+    ret.softBalls = this.softBalls.map((s) => {
+      return s.toJSObject();
+    });
+
+    ret.fixedBalls = this.fixedBalls;
+    ret.airFriction = this.airFriction;
+    ret.gravity = this.gravity.toJSObject();
+
+    return ret;
+  }
+
+  /**
+   * Creates a Physics class from the given object
+   * @param {Object} obj The object to create the class from
+   * @return {Physics} The Physics object
+   */
+  static fromObject(obj) {
+    let newWorld = new Physics();
+
+    newWorld.balls = obj.balls.map((b) => Ball.fromObject(b));
+    newWorld.bounds = obj.bounds.map((b) => Wall.fromObject(b));
+    newWorld.walls = obj.walls.map((w) => Wall.fromObject(w));
+    newWorld.bodies = obj.bodies.map((b) => Body.fromObject(b));
+    newWorld.springs = obj.springs.map((s) => Spring.fromObject(s,
+      newWorld.balls));
+    newWorld.softBalls = obj.softBalls.map(
+      (s) => SoftBall.fromObject(s, newWorld.balls, newWorld.springs)
+    );
+
+    newWorld.fixedBalls = obj.fixedBalls;
+    newWorld.airFriction = obj.airFriction;
+    newWorld.gravity = Vec2.fromObject(obj.gravity);
+
+    return newWorld;
+  }
 }
 
 Physics.Ball = Ball;

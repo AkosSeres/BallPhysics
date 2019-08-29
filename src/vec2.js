@@ -253,6 +253,28 @@ class Vec2 {
     let l = v.length;
     return l === 0 ? v : new Vec2(v.x / l, v.y / l);
   }
+
+  /**
+   * @return {Object} The vector represented in a JS object
+   * Ready to be converted into JSON
+   */
+  toJSObject() {
+    let ret = {};
+
+    ret.x = this.x;
+    ret.y = this.y;
+
+    return ret;
+  }
+
+  /**
+   * Creates a Vec2 class from the given object
+   * @param {Object} obj The object to create the class from
+   * @return {Vec2} The Vec2 object
+   */
+  static fromObject(obj) {
+    return new Vec2(obj.x, obj.y);
+  }
 }
 
 module.exports = Vec2;

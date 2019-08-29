@@ -134,11 +134,11 @@ class SoftBall {
               newSide.b.y - newSide.a.y
             ).heading;
             while (
-              !(a.heading > b.heading
-                ? (newSideHeading > a.heading &&
-                    newSideHeading < 2 * Math.PI) ||
-                  (newSideHeading > 0 && newSideHeading < b.heading)
-                : newSideHeading > a.heading && newSideHeading < b.heading) ||
+              !(a.heading > b.heading ?
+                (newSideHeading > a.heading &&
+                  newSideHeading < 2 * Math.PI) ||
+                (newSideHeading > 0 && newSideHeading < b.heading) :
+                newSideHeading > a.heading && newSideHeading < b.heading) ||
               intersectWithPoligon(
                 new LineSegment(
                   new Vec2(pol[j % pol.length].x, pol[j % pol.length].y),
@@ -191,11 +191,11 @@ class SoftBall {
                 newSide.b.y - newSide.a.y
               ).heading;
               while (
-                !(a.heading > b.heading
-                  ? (newSideHeading > a.heading &&
-                      newSideHeading < 2 * Math.PI) ||
-                    (newSideHeading > 0 && newSideHeading < b.heading)
-                  : newSideHeading > a.heading && newSideHeading < b.heading) ||
+                !(a.heading > b.heading ?
+                  (newSideHeading > a.heading &&
+                    newSideHeading < 2 * Math.PI) ||
+                  (newSideHeading > 0 && newSideHeading < b.heading) :
+                  newSideHeading > a.heading && newSideHeading < b.heading) ||
                 intersectWithPoligon(newSide, pol, [
                   (j - 1) % pol.length,
                   j % pol.length,
@@ -265,6 +265,50 @@ class SoftBall {
       side.objects[0].vel.add(Vec2.div(force, side.objects[0].m));
       side.objects[1].vel.add(Vec2.div(force, side.objects[1].m));
     });
+  }
+
+  /**
+   * @return {Object} The SoftBall represented in a JS object
+   * Ready to be converted into JSON
+   */
+  toJSObject() {
+    let ret = {};
+
+    ret.pressure = this.pressure;
+    ret.fc = this.fc;
+    ret.r = this.r;
+    ret.resolution = this.resolution;
+    ret.points = this.points.map((p) => p.id);
+    ret.sides = this.sides.map((s) => s.id);
+
+    return ret;
+  }
+
+  /**
+   * Creates a SoftBall class from the given object
+   * @param {Object} obj The object to create the class from
+   * @param {Array<Ball>} ballList An array of all the balls in the system
+   * @param {Array<Spring>} springList An array of all the springs in the system
+   * @return {SoftBall} The SoftBall object
+   */
+  static fromObject(obj, ballList, springList) {
+    let ret = Object.create(SoftBall.prototype);
+    console.log(ret);
+
+    ret.pressure = obj.pressure;
+    ret.fc = obj.fc;
+    ret.resolution = obj.resolution;
+    ret.r = obj.r;
+    ret.points = obj.points.map((e) => {
+      let arr = ballList.filter((p) => e == p.id);
+      return arr[0];
+    });
+    ret.sides = obj.sides.map((e) => {
+      let arr = springList.filter((p) => e == p.id);
+      return arr[0];
+    });
+
+    return ret;
   }
 }
 

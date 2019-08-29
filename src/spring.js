@@ -21,8 +21,8 @@ class Spring {
     this.id =
       '_' +
       Math.random()
-        .toString(36)
-        .substr(2, 9);
+      .toString(36)
+      .substr(2, 9);
   }
 
   /**
@@ -154,6 +154,71 @@ class Spring {
       v2.rotate(dist.heading);
     }
   }
+
+  /**
+   * @return {Object} The spring represented in a JS object
+   * Ready to be converted into JSON
+   */
+  toJSObject() {
+    let ret = {};
+
+    ret.length = this.length;
+    ret.springConstant = this.springConstant;
+    ret.pinned = this.pinned;
+    ret.rotationLocked = this.rotationLocked;
+    ret.id = this.id;
+    ret.objects = this.objects.map((o) => o.id);
+    ret.type = this.__proto__ == Spring.prototype ? 'spring' : 'stick';
+
+    return ret;
+  }
+
+  /**
+   * Creates a Spring class from the given object
+   * @param {Object} obj The object to create the class from
+   * @param {Array<Ball>} ballList An array of all the balls in the system
+   * @return {Spring} The Spring object
+   */
+  static fromObject(obj, ballList) {
+    let factory = new TypeSetter();
+    let ret = factory.createStickOrSpring(obj.type,
+      obj.length, obj.springConstant);
+
+    ret.pinned = obj.pinned;
+    ret.rotationLocked = obj.rotationLocked;
+    ret.id = obj.id;
+
+    ret.objects = obj.objects.map((e) => {
+      let arr = ballList.filter((p) => e == p.id);
+      return arr[0];
+    });
+
+    return ret;
+  }
+}
+
+/**
+ * Factory for springs and sticks
+ */
+function TypeSetter() {
+  /**
+   * Creates either a spring or a stick
+   * @param {String} type Specifies the type of the new item
+   * @param {number} length The length of the item
+   * @param {number} springConstant The spring constant
+   * @return {Spring} Returns the item
+   */
+  this.createStickOrSpring = function(type, length, springConstant) {
+    let item;
+    if (type == 'spring') {
+      item = new Spring(length, springConstant);
+    } else if (type == 'stick') {
+      const Stick = require('./stick');
+      item = new Stick(length);
+    }
+
+    return item;
+  };
 }
 
 module.exports = Spring;

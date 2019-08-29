@@ -39,8 +39,8 @@ class Ball {
     this.id =
       '_' +
       Math.random()
-        .toString(36)
-        .substr(2, 9);
+      .toString(36)
+      .substr(2, 9);
   }
 
   /**
@@ -151,11 +151,11 @@ class Ball {
     // Calculate the new perpendicular velocities
     let u1Perpendicular =
       (1 + k) *
-        ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
+      ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
       k * vel1Perpendicular;
     let u2Perpendicular =
       (1 + k) *
-        ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
+      ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
       k * vel2Perpendicular;
 
     ball1.vel = Vec2.mult(d, u1Perpendicular);
@@ -193,6 +193,52 @@ class Ball {
    */
   containsPoint(p) {
     return Vec2.dist(this.pos, p) <= this.r;
+  }
+
+  /**
+   * @return {Object} The ball represented in a JS object
+   * Ready to be converted into JSON
+   */
+  toJSObject() {
+    let ret = {};
+
+    ret.pos = this.pos.toJSObject();
+    ret.lastPos = this.lastPos.toJSObject();
+    ret.r = this.r;
+    ret.fc = this.fc;
+    ret.amc = this.amc;
+    ret.rotation = this.rotation;
+    ret.ang = this.ang;
+    ret.fc = this.fc;
+    ret.k = this.k;
+    ret.vel = this.vel.toJSObject();
+    ret.id = this.id;
+    if (this.layer != undefined) {
+      ret.layer = this.layer;
+    }
+
+    return ret;
+  }
+
+  /**
+   * Creates a Ball class from the given object
+   * @param {Object} obj The object to create the class from
+   * @return {Ball} The Ball object
+   */
+  static fromObject(obj) {
+    let ret = new Ball(Vec2.fromObject(obj.pos), Vec2.fromObject(obj.vel),
+      obj.r, obj.k, obj.ang, obj.fc);
+
+    ret.lastPos = Vec2.fromObject(obj.lastPos);
+    ret.amc = obj.amc;
+    ret.rotation = obj.rotation;
+    ret.vel = Vec2.fromObject(obj.vel);
+    ret.id = obj.id;
+    if (obj.layer != undefined) {
+      ret.layer = obj.layer;
+    }
+
+    return ret;
   }
 }
 

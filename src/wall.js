@@ -19,6 +19,7 @@ class Wall {
       Vec2.sub(pol[1], pol[0]),
       Vec2.sub(pol[pol.length - 1], pol[0])
     );
+
     sum1 += angle;
     sum2 += Math.PI * 2 - angle;
     for (let i = 1; i < pol.length - 1; i++) {
@@ -146,6 +147,39 @@ class Wall {
         this.points[(index + 1) % this.points.length]
       );
     });
+  }
+
+  /**
+   * @return {Object} The Wall represented in a JS object
+   * Ready to be converted into JSON
+   */
+  toJSObject() {
+    let ret = {};
+
+    ret.points = this.points.map((p) => {
+      return {
+        x: p.x,
+        y: p.y,
+      };
+    });
+
+    return ret;
+  }
+
+  /**
+   * Creates a Wall class from the given object
+   * @param {Object} obj The object to create the class from
+   * @return {Wall} The Wall object
+   */
+  static fromObject(obj) {
+    let ret = new Wall(obj.points.map((p) => {
+      return {
+        x: p.x,
+        y: p.y,
+      };
+    }));
+
+    return ret;
   }
 }
 
