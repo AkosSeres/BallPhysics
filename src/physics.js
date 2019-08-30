@@ -608,6 +608,9 @@ class Physics {
     ret.airFriction = this.airFriction;
     ret.gravity = this.gravity.toJSObject();
 
+    // saving version too, for having backwards compatibility later
+    ret.version = require('../package.json').version;
+
     return ret;
   }
 
@@ -623,10 +626,11 @@ class Physics {
     newWorld.bounds = obj.bounds.map((b) => Wall.fromObject(b));
     newWorld.walls = obj.walls.map((w) => Wall.fromObject(w));
     newWorld.bodies = obj.bodies.map((b) => Body.fromObject(b));
-    newWorld.springs = obj.springs.map((s) => Spring.fromObject(s,
-      newWorld.balls));
-    newWorld.softBalls = obj.softBalls.map(
-      (s) => SoftBall.fromObject(s, newWorld.balls, newWorld.springs)
+    newWorld.springs = obj.springs.map((s) =>
+      Spring.fromObject(s, newWorld.balls)
+    );
+    newWorld.softBalls = obj.softBalls.map((s) =>
+      SoftBall.fromObject(s, newWorld.balls, newWorld.springs)
     );
 
     newWorld.fixedBalls = obj.fixedBalls;
@@ -634,6 +638,22 @@ class Physics {
     newWorld.gravity = Vec2.fromObject(obj.gravity);
 
     return newWorld;
+  }
+
+  /**
+   * @return {String} The physics object in JSON format in a string
+   */
+  toJSON() {
+    return JSON.stringify(this.toJSObject());
+  }
+
+  /**
+   * Recreates the phyisics object from JSON
+   * @param {String} jsonString The JSON containing the physics object
+   * @return {Physics} The created Physics object
+   */
+  static fromJSON(jsonString) {
+    return Physics.fromObject(JSON.parse(jsonString));
   }
 }
 
