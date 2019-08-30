@@ -139,6 +139,7 @@ class Wall {
 
   /**
    * Returns an array containing all the sides of the body
+   * @return {Array<LineSegment>} The array of sides
    */
   get sides() {
     return this.points.map((element, index) => {

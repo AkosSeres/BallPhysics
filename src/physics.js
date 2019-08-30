@@ -493,6 +493,9 @@ class Physics {
     this.fixedBalls.forEach((e) => {
       if (Vec2.dist(new Vec2(e.x, e.y), new Vec2(x, y)) <= e.r) ret = e;
     });
+    this.softBalls.forEach((softBall) => {
+      if (softBall.containsPoint(v)) ret = softBall;
+    });
     return ret;
   }
 
@@ -527,6 +530,17 @@ class Physics {
   removeObjFromSystem(obj) {
     let idx = this.balls.indexOf(obj);
     if (idx != -1) {
+      let toReturn = false;
+      this.softBalls.forEach((s) => {
+        if (s.points.includes(this.balls[idx])) {
+          this.removeObjFromSystem(s);
+          toReturn = true;
+        }
+      });
+      if (toReturn) return;
+      this.springs.forEach((s) => {
+        if (s.objects.includes(this.balls[idx])) this.removeObjFromSystem(s);
+      });
       this.balls.splice(idx, 1);
       return;
     }
@@ -543,6 +557,28 @@ class Physics {
     idx = this.fixedBalls.indexOf(obj);
     if (idx != -1) {
       this.fixedBalls.splice(idx, 1);
+      return;
+    }
+    idx = this.springs.indexOf(obj);
+    if (idx != -1) {
+      this.springs.splice(idx, 1);
+      let toReturn = false;
+      this.softBalls.forEach((s) => {
+        if (s.points.includes(this.springs[idx])) {
+          this.removeObjFromSystem(s);
+          toReturn = true;
+        }
+      });
+      if (toReturn) return;
+      return;
+    }
+    idx = this.softBalls.indexOf(obj);
+    if (idx != -1) {
+      let sf = this.softBalls[idx];
+      this.softBalls.splice(idx, 1);
+      sf.points.forEach((p) => {
+        this.removeObjFromSystem(p);
+      });
       return;
     }
   }

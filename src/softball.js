@@ -134,11 +134,11 @@ class SoftBall {
               newSide.b.y - newSide.a.y
             ).heading;
             while (
-              !(a.heading > b.heading ?
-                (newSideHeading > a.heading &&
-                  newSideHeading < 2 * Math.PI) ||
-                (newSideHeading > 0 && newSideHeading < b.heading) :
-                newSideHeading > a.heading && newSideHeading < b.heading) ||
+              !(a.heading > b.heading
+                ? (newSideHeading > a.heading &&
+                    newSideHeading < 2 * Math.PI) ||
+                  (newSideHeading > 0 && newSideHeading < b.heading)
+                : newSideHeading > a.heading && newSideHeading < b.heading) ||
               intersectWithPoligon(
                 new LineSegment(
                   new Vec2(pol[j % pol.length].x, pol[j % pol.length].y),
@@ -191,11 +191,11 @@ class SoftBall {
                 newSide.b.y - newSide.a.y
               ).heading;
               while (
-                !(a.heading > b.heading ?
-                  (newSideHeading > a.heading &&
-                    newSideHeading < 2 * Math.PI) ||
-                  (newSideHeading > 0 && newSideHeading < b.heading) :
-                  newSideHeading > a.heading && newSideHeading < b.heading) ||
+                !(a.heading > b.heading
+                  ? (newSideHeading > a.heading &&
+                      newSideHeading < 2 * Math.PI) ||
+                    (newSideHeading > 0 && newSideHeading < b.heading)
+                  : newSideHeading > a.heading && newSideHeading < b.heading) ||
                 intersectWithPoligon(newSide, pol, [
                   (j - 1) % pol.length,
                   j % pol.length,
@@ -265,6 +265,44 @@ class SoftBall {
       side.objects[0].vel.add(Vec2.div(force, side.objects[0].m));
       side.objects[1].vel.add(Vec2.div(force, side.objects[1].m));
     });
+  }
+
+  /**
+   * Returns an array containing all the sides of the body
+   * @return {Array<LineSegment>} The array of sides
+   */
+  get sideSegments() {
+    return this.points.map((element, index) => {
+      return new LineSegment(
+        element.pos,
+        this.points[(index + 1) % this.points.length].pos
+      );
+    });
+  }
+
+  /**
+   *Returns true if the point is inside the body
+   * @param {Vec2} p The point
+   * @return {boolean} The boolean value
+   */
+  containsPoint(p) {
+    let sides = this.sideSegments;
+    let r =
+      Math.max(
+        ...this.points.map((point) => {
+          return Vec2.dist(point.pos, p);
+        })
+      ) + 1;
+
+    let v = Vec2.fromAngle(0);
+    v.setMag(r);
+
+    let testerSegment = new LineSegment(p, Vec2.add(v, p));
+
+    let filtered = sides.filter((side) => {
+      return LineSegment.intersect(side, testerSegment) != undefined;
+    });
+    return filtered.length % 2 == 1;
   }
 
   /**
