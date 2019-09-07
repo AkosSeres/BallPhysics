@@ -67,8 +67,8 @@ class Body {
     this.id =
       '_' +
       Math.random()
-      .toString(36)
-      .substr(2, 9);
+        .toString(36)
+        .substr(2, 9);
   }
 
   /**
@@ -224,8 +224,8 @@ class Body {
 
       let dang1 =
         (dv1v.y * m1 * r1.length) / (am1 + r1.length * r1.length * m1);
-      let dang2 = -(dv2v.y * m2 * r2.length) /
-        (am2 + r2.length * r2.length * m2);
+      let dang2 =
+        -(dv2v.y * m2 * r2.length) / (am2 + r2.length * r2.length * m2);
 
       ang1 += dang1;
       ang2 += dang2;
@@ -297,11 +297,11 @@ class Body {
               newSide.b.y - newSide.a.y
             ).heading;
             while (
-              !(a.heading > b.heading ?
-                (newSideHeading > a.heading &&
-                  newSideHeading < 2 * Math.PI) ||
-                (newSideHeading > 0 && newSideHeading < b.heading) :
-                newSideHeading > a.heading && newSideHeading < b.heading) ||
+              !(a.heading > b.heading
+                ? (newSideHeading > a.heading &&
+                    newSideHeading < 2 * Math.PI) ||
+                  (newSideHeading > 0 && newSideHeading < b.heading)
+                : newSideHeading > a.heading && newSideHeading < b.heading) ||
               intersectWithPoligon(
                 new LineSegment(
                   new Vec2(pol[j % pol.length].x, pol[j % pol.length].y),
@@ -354,11 +354,11 @@ class Body {
                 newSide.b.y - newSide.a.y
               ).heading;
               while (
-                !(a.heading > b.heading ?
-                  (newSideHeading > a.heading &&
-                    newSideHeading < 2 * Math.PI) ||
-                  (newSideHeading > 0 && newSideHeading < b.heading) :
-                  newSideHeading > a.heading && newSideHeading < b.heading) ||
+                !(a.heading > b.heading
+                  ? (newSideHeading > a.heading &&
+                      newSideHeading < 2 * Math.PI) ||
+                    (newSideHeading > 0 && newSideHeading < b.heading)
+                  : newSideHeading > a.heading && newSideHeading < b.heading) ||
                 intersectWithPoligon(newSide, pol, [
                   (j - 1) % pol.length,
                   j % pol.length,
@@ -448,7 +448,7 @@ class Body {
           (pol[0].x + pol[1].x + pol[2].x) / 3,
           (pol[0].y + pol[1].y + pol[2].y) / 3
         ).dist(this.pos) **
-        2 *
+          2 *
         m;
       amSum += am;
     }
@@ -586,15 +586,132 @@ class Body {
 
     let newVel1Perpendicular =
       ((1 + k) * (b1.m * vel1perpendicular + b2.m * vel2perpendicular)) /
-      (b1.m + b2.m) -
+        (b1.m + b2.m) -
       k * vel1perpendicular;
     let newVel2Perpendicular =
       ((1 + k) * (b1.m * vel1perpendicular + b2.m * vel2perpendicular)) /
-      (b1.m + b2.m) -
+        (b1.m + b2.m) -
       k * vel2perpendicular;
 
     b1.vel.add(Vec2.mult(a.copy, newVel1Perpendicular - vel1perpendicular));
     b2.vel.add(Vec2.mult(a.copy, newVel2Perpendicular - vel2perpendicular));
+  }
+
+  /**
+   * Detects and reacts to collision with a fixedBall
+   * @param {FixedBall} fixedBall The fixedBall to take the collision with
+   */
+  collideWithFixedBall(fixedBall) {
+    let fbPos = new Vec2(fixedBall.x, fixedBall.y);
+    let collisionPoint;
+
+    // Detect collision with sides
+    for (let side of this.sides) {
+      let angle1;
+      let angle2;
+      angle1 = Vec2.angle(Vec2.sub(side.a, side.b), Vec2.sub(fbPos, side.b));
+      angle2 = Vec2.angle(Vec2.sub(side.b, side.a), Vec2.sub(fbPos, side.a));
+
+      if (angle1 < Math.PI / 2 && angle2 < Math.PI / 2) {
+        let d = side.distFromPoint(fbPos);
+        if (d <= fixedBall.r) {
+          let perp = Vec2.sub(side.a, side.b);
+          perp.rotate(Math.PI / 2);
+          perp.setMag(fixedBall.r * 2);
+          let negPerp = Vec2.mult(perp, -1);
+          let detectorSegment = new LineSegment(
+            Vec2.add(perp, fbPos),
+            Vec2.add(negPerp, fbPos)
+          );
+          collisionPoint = LineSegment.intersect(detectorSegment, side);
+          if (collisionPoint != undefined) {
+            perp = Vec2.sub(collisionPoint, fbPos);
+            perp.setMag(fixedBall.r - perp.length);
+            this.move(perp.x, perp.y);
+          }
+        }
+      }
+    }
+
+    // Detect collison with points
+    if (!collisionPoint || collisionPoint == undefined) {
+      pointLoop: for (let point of this.points) {
+        if (Vec2.dist(point, fbPos) < fixedBall.r) {
+          let d = Vec2.sub(point, fbPos);
+          d.setMag(fixedBall.r - d.length);
+          this.move(d.x, d.y);
+          d.setMag(fixedBall.r);
+          collisionPoint = Vec2.add(fbPos, d);
+          break pointLoop;
+        }
+      }
+    }
+
+    if (!collisionPoint || collisionPoint == undefined) return;
+
+    // Deal with the change in velocity by the collision
+    let vel = this.vel;
+    let pos = this.pos;
+    let normal = Vec2.sub(collisionPoint, fbPos);
+    normal.setMag(1);
+    let r = Vec2.sub(pos, collisionPoint);
+    let angle = Vec2.angleACW(normal, r);
+
+    let velInCollisionPoint = vel.copy;
+    let rotater = r.copy;
+    rotater.mult(-1 * this.ang);
+    rotater.rotate(Math.PI / 2);
+    velInCollisionPoint.add(rotater);
+    let perpVel = Vec2.dot(normal, velInCollisionPoint);
+    if (perpVel >= 0) return;
+    perpVel *= 1 + this.k;
+
+    let deltaVel = Vec2.mult(Vec2.normalized(normal), -1 * perpVel);
+    let deltaAng = deltaVel.copy;
+
+    deltaVel.mult(Math.cos(angle));
+    this.vel.add(deltaVel);
+
+    deltaAng = deltaAng.length / r.length;
+    deltaAng *= Math.sin(angle);
+    this.ang += deltaAng;
+
+    // Then deal with friction
+    let massInPoint =
+      this.m * Math.abs(Math.cos(angle)) +
+      (this.am / r.length / r.length) * Math.abs(Math.sin(angle));
+    let massParralel =
+      this.m * Math.abs(Math.sin(angle)) +
+      (this.am / r.length / r.length) * Math.abs(Math.cos(angle));
+
+    deltaVel = Vec2.mult(Vec2.normalized(normal), -1 * perpVel);
+
+    let parralelVec = normal.copy;
+    parralelVec.rotate(Math.PI / 2);
+    parralelVec.mult(Math.sign(Vec2.dot(parralelVec, velInCollisionPoint)));
+    if (parralelVec.length == 0) return;
+
+    let parralelVel = Vec2.dot(velInCollisionPoint, parralelVec);
+    let deltaMomentum = Vec2.mult(deltaVel, massInPoint);
+    let deltaVelParralel = Vec2.div(deltaMomentum, massParralel);
+
+    deltaVelParralel.mult(this.fc);
+    deltaVelParralel = Vec2.mult(parralelVec, deltaVelParralel.length);
+    if (deltaVelParralel.length > parralelVel) {
+      deltaVelParralel.setMag(parralelVel);
+    }
+
+    angle = Vec2.angleACW(parralelVec, r);
+
+    deltaVel = deltaVelParralel;
+    deltaAng = deltaVel.copy;
+
+    deltaVel.mult(Math.cos(angle));
+    this.vel.add(deltaVel);
+
+    deltaAng = deltaAng.length / r.length;
+    deltaAng *= Math.sin(angle);
+    this.ang -= deltaAng;
   }
 
   /**
@@ -665,12 +782,18 @@ class Body {
    * @return {Body} The Body object
    */
   static fromObject(obj) {
-    let ret = new Body(obj.points.map((p) => {
-      return {
-        x: p.x,
-        y: p.y,
-      };
-    }), Vec2.fromObject(obj.vel), obj.k, obj.ang, obj.fc);
+    let ret = new Body(
+      obj.points.map((p) => {
+        return {
+          x: p.x,
+          y: p.y,
+        };
+      }),
+      Vec2.fromObject(obj.vel),
+      obj.k,
+      obj.ang,
+      obj.fc
+    );
 
     ret.id = obj.id;
     ret.pos = Vec2.fromObject(obj.pos);

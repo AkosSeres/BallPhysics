@@ -168,6 +168,13 @@ class Physics {
         }
       }
 
+      // Body vs fixedBall collisions
+      for (let body of this.bodies) {
+        for (let fixedBall of this.fixedBalls) {
+          body.collideWithFixedBall(fixedBall);
+        }
+      }
+
       // Apply gravity
       if (this.gravity) {
         this.bodies[i].vel.add(
@@ -412,7 +419,7 @@ class Physics {
     points.push(new Vec2(x + w / 2, y - h / 2));
     points.push(new Vec2(x + w / 2, y + h / 2));
     points.push(new Vec2(x - w / 2, y + h / 2));
-    this.bodies.push(new Body(points, new Vec2(0, 0), 0.5, 0, 0.3));
+    this.bodies.push(new Body(points, new Vec2(0, 0), k, 0, fc));
   }
 
   /**
