@@ -306,7 +306,32 @@ class Physics {
    * @param {Ball} ball Ball to add to the world
    */
   addBall(ball) {
-    this.balls.push(ball);
+    if (isFinite(addBodyNotBall) && addBodyNotBall > 2) {
+      const getPointsForBall = (pos, r, resolution) => {
+        let points = [];
+
+        for (let i = 0; i < resolution; i++) {
+          let newPoint = Vec2.fromAngle((i / resolution) * 2 * Math.PI);
+          newPoint.mult(r);
+          newPoint.add(pos);
+          points.push(newPoint);
+        }
+
+        return points;
+      };
+
+      this.bodies.push(
+        new Body(
+          getPointsForBall(ball.pos, ball.r, addBodyNotBall),
+          ball.vel,
+          ball.k,
+          ball.ang,
+          ball.fc
+        )
+      );
+    } else {
+      this.balls.push(ball);
+    }
   }
 
   /**
