@@ -1,6 +1,6 @@
 {
   "name": "ballphysics",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "2D rigid body physics engine to-be",
   "main": "./src/physics.js",
   "scripts": {
