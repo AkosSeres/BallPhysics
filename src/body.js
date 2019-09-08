@@ -731,6 +731,13 @@ class Body {
    * @return {Array<LineSegment>} Debug data provided
    */
   collideWithWall(wall) {
+    if (
+      this.boundRadius + wall.boundRadius <
+      Vec2.dist(this.pos, wall.center)
+    ) {
+      return;
+    }
+
     let debugData = [];
     let collisionPoints = [];
     for (let bodySide of this.sides) {
