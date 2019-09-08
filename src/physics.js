@@ -175,6 +175,13 @@ class Physics {
         }
       }
 
+      // Body vs wall collisions
+      for (let body of this.bodies) {
+        for (let wall of this.walls) {
+          body.collideWithWall(wall);
+        }
+      }
+
       // Apply gravity
       if (this.gravity) {
         this.bodies[i].vel.add(

@@ -725,6 +725,49 @@ class Body {
   }
 
   /**
+   * Does a collision with a wall
+   * @param {Wall} wall The wall to collide with
+   */
+  collideWithWall(wall) {
+    let collisionPoints = [];
+    for (let bodySide of this.sides) {
+      for (let wallSide of wall.sides) {
+        let collisionPoint = LineSegment.intersect(bodySide, wallSide);
+        if (collisionPoint != undefined) {
+          collisionPoints.push(collisionPoint);
+        }
+      }
+    }
+    if (collisionPoints.length < 2) return;
+
+    // Need to adjust the position of the Body
+    let normal = Vec2.sub(...collisionPoints);
+    normal.rotate(Math.PI / 2);
+
+    let r = Vec2.sub(collisionPoints[0], this.pos);
+    if (Vec2.dot(normal, r) > 0) normal.mult(-1);
+    normal.setMag(1);
+    let moveAmounts = [];
+
+    for (let cp of collisionPoints) {
+      for (let p of wall.points) {
+        let pointVec = Vec2.sub(p, cp);
+        let dist = Vec2.dot(pointVec, normal);
+        if (dist > 0) {
+          moveAmounts.push(dist);
+        }
+      }
+    }
+
+    let moveVector = normal.copy;
+    moveVector.mult(Math.max(...moveAmounts));
+    this.move(moveVector.x, moveVector.y);
+
+    this.vel = new Vec2(0, 0);
+    this.ang = 0;
+  }
+
+  /**
    *Returns true if the point is inside the body
    * @param {Vec2} p The point
    * @return {boolean} The boolean value
