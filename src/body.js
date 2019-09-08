@@ -114,6 +114,8 @@ class Body {
     let rel;
     let cp;
 
+    if (Vec2.dist(ball.pos, this.pos) > ball.r + this.boundRadius) return;
+
     this.points.forEach((point, idx) => {
       let p = new Vec2(point.x, point.y);
       p.x -= ball.pos.x;
@@ -453,6 +455,12 @@ class Body {
       amSum += am;
     }
     this.am = amSum;
+
+    this.boundRadius = Math.max(
+      ...this.points.map((p) => {
+        return Vec2.dist(p, this.pos);
+      })
+    );
   }
 
   /**
@@ -604,6 +612,8 @@ class Body {
   collideWithFixedBall(fixedBall) {
     let fbPos = new Vec2(fixedBall.x, fixedBall.y);
     let collisionPoint;
+
+    if (Vec2.dist(fbPos, this.pos) > this.boundRadius + fixedBall.r) return;
 
     // Detect collision with sides
     for (let side of this.sides) {
