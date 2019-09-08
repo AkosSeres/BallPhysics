@@ -704,6 +704,7 @@ class Body {
     let parralelVel = Vec2.dot(velInCollisionPoint, parralelVec);
     let deltaMomentum = Vec2.mult(deltaVel, massInPoint);
     let deltaVelParralel = Vec2.div(deltaMomentum, massParralel);
+    if (massParralel == 0) deltaVelParralel = 0;
 
     deltaVelParralel.mult(this.fc);
     deltaVelParralel = Vec2.mult(parralelVec, deltaVelParralel.length);
@@ -740,6 +741,12 @@ class Body {
     }
     if (collisionPoints.length < 2) return;
 
+    let startingVel = this.vel.copy;
+    let startingAng = this.ang;
+
+    let endVels = [];
+    let endAngs = [];
+
     // Need to adjust the position of the Body
     let normal = Vec2.sub(...collisionPoints);
     normal.rotate(Math.PI / 2);
@@ -758,13 +765,103 @@ class Body {
         }
       }
     }
+    for (let cp of collisionPoints) {
+      for (let p of this.points) {
+        let pointVec = Vec2.sub(p, cp);
+        let dist = -Vec2.dot(pointVec, normal);
+        if (dist > 0) {
+          moveAmounts.push(dist);
+        }
+      }
+    }
 
     let moveVector = normal.copy;
     moveVector.mult(Math.max(...moveAmounts));
     this.move(moveVector.x, moveVector.y);
 
-    this.vel = new Vec2(0, 0);
-    this.ang = 0;
+    for (let collisionPoint of collisionPoints) {
+      // Deal with the change in velocity by the collision
+      let vel = this.vel;
+      let pos = this.pos;
+      let r = Vec2.sub(pos, collisionPoint);
+      let angle = Vec2.angleACW(normal, r);
+
+      let velInCollisionPoint = vel.copy;
+      let rotater = r.copy;
+      rotater.mult(-1 * this.ang);
+      rotater.rotate(Math.PI / 2);
+      velInCollisionPoint.add(rotater);
+      let perpVel = Vec2.dot(normal, velInCollisionPoint);
+      if (perpVel >= 0) return;
+      perpVel *= 1 + this.k;
+
+      let deltaVel = Vec2.mult(Vec2.normalized(normal), -1 * perpVel);
+      let deltaAng = deltaVel.copy;
+
+      deltaVel.mult(Math.cos(angle));
+      this.vel.add(deltaVel);
+
+      deltaAng = deltaAng.length / r.length;
+      deltaAng *= Math.sin(angle);
+      this.ang += deltaAng;
+
+      // Then deal with friction
+      let massInPoint =
+        this.m * Math.abs(Math.cos(angle)) +
+        (this.am / r.length / r.length) * Math.abs(Math.sin(angle));
+      let massParralel =
+        this.m * Math.abs(Math.sin(angle)) +
+        (this.am / r.length / r.length) * Math.abs(Math.cos(angle));
+
+      deltaVel = Vec2.mult(Vec2.normalized(normal), -1 * perpVel);
+
+      let parralelVec = normal.copy;
+      parralelVec.rotate(Math.PI / 2);
+      parralelVec.mult(Math.sign(Vec2.dot(parralelVec, velInCollisionPoint)));
+      if (parralelVec.length == 0) return;
+
+      let parralelVel = Vec2.dot(velInCollisionPoint, parralelVec);
+      let deltaMomentum = Vec2.mult(deltaVel, massInPoint);
+      let deltaVelParralel = Vec2.div(deltaMomentum, massParralel);
+      if (massParralel == 0) deltaVelParralel = 0;
+
+      deltaVelParralel.mult(this.fc);
+      deltaVelParralel = Vec2.mult(parralelVec, deltaVelParralel.length);
+      if (deltaVelParralel.length > parralelVel) {
+        deltaVelParralel.setMag(parralelVel);
+      }
+
+      angle = Vec2.angleACW(parralelVec, r);
+
+      deltaVel = deltaVelParralel;
+      deltaAng = deltaVel.copy;
+
+      deltaVel.mult(Math.cos(angle));
+      this.vel.add(deltaVel);
+
+      deltaAng = deltaAng.length / r.length;
+      deltaAng *= Math.sin(angle);
+      this.ang -= deltaAng;
+
+      endVels.push(this.vel);
+      this.vel = startingVel.copy;
+
+      endAngs.push(this.ang);
+      this.ang = startingAng;
+    }
+
+    if (endAngs.length != endVels.length) return;
+    if (endAngs.length == 0) return;
+    if (endVels.length == 0) return;
+
+    this.vel = endVels.reduce((prev, curr) => {
+      return Vec2.add(prev, curr);
+    });
+    this.vel.div(endVels.length);
+    this.ang = endAngs.reduce((prev, curr) => {
+      return prev + curr;
+    });
+    this.ang /= endAngs.length;
   }
 
   /**
