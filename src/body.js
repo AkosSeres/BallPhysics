@@ -728,8 +728,10 @@ class Body {
   /**
    * Does a collision with a wall
    * @param {Wall} wall The wall to collide with
+   * @return {Array<LineSegment>} Debug data provided
    */
   collideWithWall(wall) {
+    let debugData = [];
     let collisionPoints = [];
     for (let bodySide of this.sides) {
       for (let wallSide of wall.sides) {
@@ -754,6 +756,19 @@ class Body {
     let r = Vec2.sub(collisionPoints[0], this.pos);
     if (Vec2.dot(normal, r) > 0) normal.mult(-1);
     normal.setMag(1);
+    debugData.push(new LineSegment(...collisionPoints));
+    debugData.push(
+      new LineSegment(
+        collisionPoints[0],
+        Vec2.add(collisionPoints[0], Vec2.mult(normal, 20))
+      )
+    );
+    debugData.push(
+      new LineSegment(
+        collisionPoints[1],
+        Vec2.add(collisionPoints[1], Vec2.mult(normal, 20))
+      )
+    );
     let moveAmounts = [];
 
     for (let cp of collisionPoints) {
@@ -775,9 +790,11 @@ class Body {
       }
     }
 
-    let moveVector = normal.copy;
-    moveVector.mult(Math.max(...moveAmounts));
-    this.move(moveVector.x, moveVector.y);
+    if (moveAmounts.length > 0) {
+      let moveVector = normal.copy;
+      moveVector.mult(Math.max(...moveAmounts));
+      this.move(moveVector.x, moveVector.y);
+    }
 
     for (let collisionPoint of collisionPoints) {
       // Deal with the change in velocity by the collision
@@ -862,6 +879,13 @@ class Body {
       return prev + curr;
     });
     this.ang /= endAngs.length;
+
+    if (!isFinite(this.vel.x) || !isFinite(this.vel.y) || !isFinite(this.ang)) {
+      this.vel = startingVel;
+      this.ang = startingAng;
+    }
+
+    return debugData;
   }
 
   /**

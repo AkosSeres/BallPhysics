@@ -33,6 +33,8 @@ class Physics {
     this.airFriction = 1;
 
     this.gravity = new Vec2(0, 0);
+
+    this.debugData = [];
   }
 
   /**
@@ -42,6 +44,9 @@ class Physics {
    * then the simulation is going to be more precise
    */
   update(t, precise) {
+    // Resets debug data
+    this.debugData = [];
+
     // Do the simulation on the reversed system
     // if the simulation is in precise mode
     let clonedSystem = precise ? this.copy : new Physics();
@@ -178,7 +183,10 @@ class Physics {
       // Body vs wall collisions
       for (let body of this.bodies) {
         for (let wall of this.walls) {
-          body.collideWithWall(wall);
+          let additionalDebugData = body.collideWithWall(wall);
+          if (additionalDebugData) {
+            this.debugData.push(...additionalDebugData);
+          }
         }
       }
 
