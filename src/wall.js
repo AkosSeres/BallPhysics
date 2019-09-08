@@ -19,6 +19,7 @@ class Wall {
       Vec2.sub(pol[1], pol[0]),
       Vec2.sub(pol[pol.length - 1], pol[0])
     );
+    this.calculateCenterAndRadius();
 
     sum1 += angle;
     sum2 += Math.PI * 2 - angle;
@@ -138,6 +139,22 @@ class Wall {
   }
 
   /**
+   * Calculates the center and the bound radius of the wall
+   */
+  calculateCenterAndRadius() {
+    this.center = this.points.reduce((prev, curr) => {
+      return Vec2.add(prev, curr);
+    });
+    this.center.div(this.points.length);
+
+    this.boundRadius = Math.max(
+      this.points.map((p) => {
+        return Vec2.dist(p, this.center);
+      })
+    );
+  }
+
+  /**
    * Returns an array containing all the sides of the body
    * @return {Array<LineSegment>} The array of sides
    */
@@ -173,12 +190,11 @@ class Wall {
    * @return {Wall} The Wall object
    */
   static fromObject(obj) {
-    let ret = new Wall(obj.points.map((p) => {
-      return {
-        x: p.x,
-        y: p.y,
-      };
-    }));
+    let ret = new Wall(
+      obj.points.map((p) => {
+        return new Vec2(v.x, v.y);
+      })
+    );
 
     return ret;
   }
