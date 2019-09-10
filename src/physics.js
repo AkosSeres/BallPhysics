@@ -321,7 +321,11 @@ class Physics {
    * @param {Ball} ball Ball to add to the world
    */
   addBall(ball) {
-    if (isFinite(addBodyNotBall) && addBodyNotBall > 2) {
+    if (
+      typeof addBodyNotBall != 'undefined' &&
+      isFinite(addBodyNotBall) &&
+      addBodyNotBall > 2
+    ) {
       const getPointsForBall = (pos, r, resolution) => {
         let points = [];
 
