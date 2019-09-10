@@ -190,6 +190,16 @@ class Physics {
         }
       }
 
+      // Body vs world boundary collision
+      for (let body of this.bodies) {
+        for (let bound of this.bounds) {
+          let additionalDebugData = body.collideWithWall(bound);
+          if (additionalDebugData) {
+            this.debugData.push(...additionalDebugData);
+          }
+        }
+      }
+
       // Apply gravity
       if (this.gravity) {
         this.bodies[i].vel.add(
