@@ -738,9 +738,11 @@ class Body {
       return;
     }
 
+    let sides = this.sides;
+
     let debugData = [];
     let collisionPoints = [];
-    for (let bodySide of this.sides) {
+    for (let bodySide of sides) {
       for (let wallSide of wall.sides) {
         let collisionPoint = LineSegment.intersect(bodySide, wallSide);
         if (collisionPoint != undefined) {
@@ -763,6 +765,10 @@ class Body {
     let r = Vec2.sub(collisionPoints[0], this.pos);
     if (Vec2.dot(normal, r) > 0) normal.mult(-1);
     normal.setMag(1);
+    if (Vec2.dot(normal, Vec2.sub(this.pos, wall.center))<0) {
+      normal.mult(-1);
+    }
+
     debugData.push(new LineSegment(...collisionPoints));
     debugData.push(
       new LineSegment(
@@ -778,22 +784,12 @@ class Body {
     );
     let moveAmounts = [];
 
-    for (let cp of collisionPoints) {
-      for (let p of wall.points) {
-        let pointVec = Vec2.sub(p, cp);
-        let dist = Vec2.dot(pointVec, normal);
-        if (dist > 0) {
-          moveAmounts.push(dist);
-        }
-      }
-    }
-    for (let cp of collisionPoints) {
-      for (let p of this.points) {
-        let pointVec = Vec2.sub(p, cp);
-        let dist = -Vec2.dot(pointVec, normal);
-        if (dist > 0) {
-          moveAmounts.push(dist);
-        }
+    let cp = collisionPoints[0];
+    for (let p of wall.points) {
+      let pointVec = Vec2.sub(p, cp);
+      let dist = Vec2.dot(pointVec, normal);
+      if (dist > 0) {
+        moveAmounts.push(dist);
       }
     }
 
@@ -801,6 +797,23 @@ class Body {
       let moveVector = normal.copy;
       moveVector.mult(Math.max(...moveAmounts));
       this.move(moveVector.x, moveVector.y);
+    }
+
+    moveAmounts = [];
+    let midCp = Vec2.add(...collisionPoints);
+    midCp.div(2);
+    if (this.containsPoint(midCp)) {
+      for (let side of sides) {
+        moveAmounts.push(side.distFromPoint(midCp));
+      }
+    }
+
+    if (moveAmounts.length > 0) {
+      let moveVector = normal.copy;
+      moveVector.mult(Math.min(...moveAmounts));
+      if (moveVector.length < this.boundRadius / 2) {
+        this.move(moveVector.x, moveVector.y);
+      }
     }
 
     for (let collisionPoint of collisionPoints) {
