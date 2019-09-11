@@ -587,22 +587,176 @@ class Body {
     }
 
     let k = (b1.k + b2.k) / 2;
-    // let vel1parralel = Vec2.cross(b1.vel, a);
-    let vel1perpendicular = Vec2.dot(b1.vel, a);
-    // let vel2parralel = Vec2.cross(b2.vel, a);
-    let vel2perpendicular = Vec2.dot(b2.vel, a);
+    let collisionPoints = cps;
 
-    let newVel1Perpendicular =
-      ((1 + k) * (b1.m * vel1perpendicular + b2.m * vel2perpendicular)) /
-        (b1.m + b2.m) -
-      k * vel1perpendicular;
-    let newVel2Perpendicular =
-      ((1 + k) * (b1.m * vel1perpendicular + b2.m * vel2perpendicular)) /
-        (b1.m + b2.m) -
-      k * vel2perpendicular;
+    let endAngs1 = [];
+    let endAngs2 = [];
+    let endVels1 = [];
+    let endVels2 = [];
 
-    b1.vel.add(Vec2.mult(a.copy, newVel1Perpendicular - vel1perpendicular));
-    b2.vel.add(Vec2.mult(a.copy, newVel2Perpendicular - vel2perpendicular));
+    for (let collisionPoint of collisionPoints) {
+      // Deal with the change in velocity by the collision
+      let normal = Vec2.fromAngle(heading);
+      let vel1 = b1.vel;
+      let vel2 = b2.vel;
+      let pos1 = b1.pos;
+      let pos2 = b2.pos;
+      let r1 = Vec2.sub(pos1, collisionPoint);
+      let r2 = Vec2.sub(pos2, collisionPoint);
+      let angle1 = Vec2.angleACW(normal, r1);
+      let angle2 = Vec2.angleACW(normal, r2);
+      let basicAngle1 = Vec2.angle(normal, r1);
+      let basicAngle2 = Vec2.angle(normal, r2);
+
+      let velInCollisionPoint1 = vel1.copy;
+      let velInCollisionPoint2 = vel2.copy;
+      let rotater1 = r1.copy;
+      let rotater2 = r2.copy;
+      rotater1.mult(-1 * b1.ang);
+      rotater2.mult(-1 * b2.ang);
+      rotater2.rotate(Math.PI / 2);
+      rotater2.rotate(Math.PI / 2);
+      velInCollisionPoint1.add(rotater1);
+      velInCollisionPoint2.add(rotater2);
+      let perpVel1 = Vec2.dot(normal, velInCollisionPoint1);
+      let perpVel2 = Vec2.dot(normal, velInCollisionPoint2);
+      if (Vec2.dot(normal, r1) > Vec2.dot(normal, r2)) {
+        if (perpVel1 >= perpVel2) return;
+      } else if (perpVel2 >= perpVel1) return;
+      console.log('hey');
+      let m1 =
+        b1.m * Math.abs(Math.cos(basicAngle1)) +
+        (Math.abs(Math.sin(basicAngle1)) * b1.am) / r1.length / r1.length;
+      let m2 =
+        b2.m * Math.abs(Math.cos(basicAngle2)) +
+        (Math.abs(Math.sin(basicAngle2)) * b2.am) / r2.length / r2.length;
+      let perpU1 =
+        (1 + k) * ((m1 * perpVel1 + m2 * perpVel2) / (m1 + m2)) - k * perpVel1;
+      let perpU2 =
+        (1 + k) * ((m1 * perpVel1 + m2 * perpVel2) / (m1 + m2)) - k * perpVel2;
+
+      let deltaVel1;
+      let deltaVel2;
+      if (Vec2.dot(normal, r1) > Vec2.dot(normal, r2)) {
+        if (perpU2 >= perpU1) {
+          deltaVel1 = Vec2.mult(Vec2.normalized(normal), -perpU1 + perpVel1);
+          deltaVel2 = Vec2.mult(Vec2.normalized(normal), -perpU2 + perpVel2);
+        } else {
+          deltaVel1 = Vec2.mult(Vec2.normalized(normal), -perpU1 + perpVel1);
+          deltaVel2 = Vec2.mult(Vec2.normalized(normal), -perpU2 + perpVel2);
+        }
+      } else if (perpU2 <= perpU1) {
+        deltaVel1 = Vec2.mult(Vec2.normalized(normal), -perpU1 + perpVel1);
+        deltaVel2 = Vec2.mult(Vec2.normalized(normal), -perpU2 + perpVel2);
+      } else {
+        deltaVel1 = Vec2.mult(Vec2.normalized(normal), -perpU1 + perpVel1);
+        deltaVel2 = Vec2.mult(Vec2.normalized(normal), -perpU2 + perpVel2);
+      }
+
+      deltaVel1 = Vec2.mult(Vec2.normalized(normal), perpU1 - perpVel1);
+      deltaVel2 = Vec2.mult(Vec2.normalized(normal), perpU2 - perpVel2);
+
+      let deltaAng1 = deltaVel1.copy;
+      let deltaAng2 = deltaVel2.copy;
+
+      deltaVel1.mult(Math.cos(basicAngle1));
+      deltaVel2.mult(Math.cos(basicAngle2));
+      if (Vec2.dot(deltaVel1, r1) < 0) deltaVel1.mult(-1);
+      if (Vec2.dot(deltaVel2, r2) < 0) deltaVel2.mult(-1);
+      b1.vel.add(deltaVel1);
+      b2.vel.add(deltaVel2);
+
+      deltaAng1.sub(Vec2.mult(normal, Vec2.dot(normal, deltaVel1)));
+      deltaAng1.div(r1.length);
+      deltaAng1.rotate(Math.PI / 2);
+      deltaAng1 = Vec2.dot(deltaAng1, r1) / r1.length;
+      b1.ang += deltaAng1;
+
+      deltaAng2.sub(Vec2.mult(normal, Vec2.dot(normal, deltaVel2)));
+      deltaAng2.div(r2.length);
+      deltaAng2.rotate(Math.PI / 2);
+      deltaAng2 = Vec2.dot(deltaAng2, r2) / r2.length;
+      b2.ang += deltaAng2;
+
+      endAngs1.push(b1.ang);
+      endVels1.push(b1.vel);
+      endAngs2.push(b2.ang);
+      endVels2.push(b2.vel);
+
+      break;
+
+      // Then deal with friction
+      let massParralel =
+        this.m * Math.abs(Math.sin(angle)) +
+        (this.am / r.length / r.length) * Math.abs(Math.cos(angle));
+
+      deltaVel = Vec2.mult(Vec2.normalized(normal), -1 * perpVel);
+
+      let parralelVec = normal.copy;
+      parralelVec.rotate(Math.PI / 2);
+      parralelVec.mult(Math.sign(Vec2.dot(parralelVec, velInCollisionPoint)));
+      if (parralelVec.length == 0) return;
+
+      let parralelVel = Vec2.dot(velInCollisionPoint, parralelVec);
+      let deltaMomentum = Vec2.mult(deltaVel, massInPoint);
+      let deltaVelParralel = Vec2.div(deltaMomentum, massParralel);
+      if (massParralel == 0) deltaVelParralel = 0;
+
+      deltaVelParralel.mult(this.fc);
+      deltaVelParralel = Vec2.mult(parralelVec, deltaVelParralel.length);
+      if (deltaVelParralel.length > parralelVel) {
+        deltaVelParralel.setMag(parralelVel);
+      }
+
+      angle = Vec2.angleACW(parralelVec, r);
+
+      deltaVel = deltaVelParralel;
+      deltaAng = deltaVel.copy;
+
+      deltaVel.mult(Math.cos(angle));
+      this.vel.add(deltaVel);
+
+      deltaAng = deltaAng.length / r.length;
+      deltaAng *= Math.sin(angle);
+      this.ang -= deltaAng;
+
+      endVels.push(this.vel);
+      this.vel = startingVel.copy;
+
+      endAngs.push(this.ang);
+      this.ang = startingAng;
+    }
+
+    if (endAngs1.length != endVels1.length) return;
+    if (endAngs1.length == 0) return;
+    if (endVels1.length == 0) return;
+    if (endAngs2.length != endVels2.length) return;
+    if (endAngs2.length == 0) return;
+    if (endVels2.length == 0) return;
+
+    b1.vel = endVels1.reduce((prev, curr) => {
+      return Vec2.add(prev, curr);
+    });
+    b1.vel.div(endVels1.length);
+    b1.ang = endAngs1.reduce((prev, curr) => {
+      return prev + curr;
+    });
+    b1.ang /= endAngs1.length;
+    b2.vel = endVels2.reduce((prev, curr) => {
+      return Vec2.add(prev, curr);
+    });
+    b2.vel.div(endVels2.length);
+    b2.ang = endAngs2.reduce((prev, curr) => {
+      return prev + curr;
+    });
+    b2.ang /= endAngs2.length;
+
+    return;
+
+    if (!isFinite(this.vel.x) || !isFinite(this.vel.y) || !isFinite(this.ang)) {
+      this.vel = startingVel;
+      this.ang = startingAng;
+    }
   }
 
   /**
@@ -765,7 +919,7 @@ class Body {
     let r = Vec2.sub(collisionPoints[0], this.pos);
     if (Vec2.dot(normal, r) > 0) normal.mult(-1);
     normal.setMag(1);
-    if (Vec2.dot(normal, Vec2.sub(this.pos, wall.center))<0) {
+    if (Vec2.dot(normal, Vec2.sub(this.pos, wall.center)) < 0) {
       normal.mult(-1);
     }
 
