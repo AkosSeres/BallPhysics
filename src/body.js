@@ -554,6 +554,11 @@ class Body {
 
     let a = Vec2.fromAngle(heading);
 
+    let startAng1 = b1.ang;
+    let startVel1 = b1.vel.copy;
+    let startAng2 = b2.ang;
+    let startVel2 = b2.vel.copy;
+
     let move1Min = 0;
     let move1Max = 0;
     let move2Min = 0;
@@ -682,6 +687,11 @@ class Body {
       endVels1.push(b1.vel);
       endAngs2.push(b2.ang);
       endVels2.push(b2.vel);
+
+      b1.ang = startAng1;
+      b1.vel = startVel1;
+      b2.ang = startAng2;
+      b2.vel = startVel2;
 
       break;
 
