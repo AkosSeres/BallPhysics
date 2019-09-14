@@ -60,6 +60,19 @@ class Ball {
   }
 
   /**
+   * Gives the angular mass of the ball measured in a given point
+   * @param {Vec2} point The point to measure the angular mass
+   * @return {number} The adjusted angular mass
+   */
+  getAmInPoint(point) {
+    let ret = this.am;
+
+    ret += Vec2.sub(this.pos, point).sqlength * this.m;
+
+    return ret;
+  }
+
+  /**
    * Get a copy of the ball that is not a reference to it
    * @return {Ball} The copy of the ball
    */
