@@ -39,8 +39,8 @@ class Ball {
     this.id =
       '_' +
       Math.random()
-      .toString(36)
-      .substr(2, 9);
+        .toString(36)
+        .substr(2, 9);
   }
 
   /**
@@ -85,6 +85,14 @@ class Ball {
   move(x, y) {
     this.pos.x += x;
     this.pos.y += y;
+  }
+
+  /**
+   * Rotates the ball with the given angle anticlockwise
+   * @param {number} angle The angle to rotate the ball in radians
+   */
+  rotate(angle) {
+    this.rotation += angle;
   }
 
   /**
@@ -151,11 +159,11 @@ class Ball {
     // Calculate the new perpendicular velocities
     let u1Perpendicular =
       (1 + k) *
-      ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
+        ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
       k * vel1Perpendicular;
     let u2Perpendicular =
       (1 + k) *
-      ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
+        ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
       k * vel2Perpendicular;
 
     ball1.vel = Vec2.mult(d, u1Perpendicular);
@@ -226,8 +234,14 @@ class Ball {
    * @return {Ball} The Ball object
    */
   static fromObject(obj) {
-    let ret = new Ball(Vec2.fromObject(obj.pos), Vec2.fromObject(obj.vel),
-      obj.r, obj.k, obj.ang, obj.fc);
+    let ret = new Ball(
+      Vec2.fromObject(obj.pos),
+      Vec2.fromObject(obj.vel),
+      obj.r,
+      obj.k,
+      obj.ang,
+      obj.fc
+    );
 
     ret.lastPos = Vec2.fromObject(obj.lastPos);
     ret.amc = obj.amc;
