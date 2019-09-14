@@ -61,7 +61,7 @@ class Ball {
 
   /**
    * Gives the angular mass of the ball measured in a given point
-   * @param {Vec2} point The point to measure the angular mass
+   * @param {Vec2} point The point to measure the angular mass in
    * @return {number} The adjusted angular mass
    */
   getAmInPoint(point) {

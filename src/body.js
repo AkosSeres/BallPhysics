@@ -71,6 +71,19 @@ class Body {
         .substr(2, 9);
   }
 
+    /**
+   * Gives the angular mass of the body measured in a given point
+   * @param {Vec2} point The point to measure the angular mass ins
+   * @return {number} The adjusted angular mass
+   */
+  getAmInPoint(point) {
+    let ret = this.am;
+
+    ret += Vec2.sub(this.pos, point).sqlength * this.m;
+
+    return ret;
+  }
+
   /**
    * Get a copy of the body that is not a reference to it
    * @return {Body} The copy of the body
@@ -628,7 +641,7 @@ class Body {
       if (Vec2.dot(normal, r1) > Vec2.dot(normal, r2)) {
         if (perpVel1 >= perpVel2) return;
       } else if (perpVel2 >= perpVel1) return;
-      console.log('hey');
+
       let m1 =
         b1.m * Math.abs(Math.cos(basicAngle1)) +
         (Math.abs(Math.sin(basicAngle1)) * b1.am) / r1.length / r1.length;
