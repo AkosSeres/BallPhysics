@@ -97,11 +97,9 @@ class Wall {
       let maxDeltaAng = (vel.x - ball.ang * ball.r) / ball.r;
 
       if (deltaAng / maxDeltaAng > 1) deltaAng = maxDeltaAng;
-      deltaAng *= ball.amc / (ball.amc + 1);
       ball.ang += deltaAng;
 
-      let dvx = deltaAng * ball.r;
-
+      let dvx = deltaAng * ball.am / ball.r / ball.m;
       vel.x -= dvx;
 
       pos.rotate(heading - Math.PI / 2);
