@@ -162,8 +162,11 @@ class Ball {
 
     let vel1InPos = vel1Parralel - vk1;
     let vel2InPos = vel2Parralel + vk2;
+    let effectiveMass1 = 1 / ((1 / m1) + (r1 * r1 / ball1.am));
+    let effectiveMass2 = 1 / ((1 / m2) + (r2 * r2 / ball2.am));
     let vCommon =
-      (vel1InPos * ball1.am + vel2InPos * ball2.am) / (ball1.am + ball2.am);
+      (vel1InPos * effectiveMass1 + vel2InPos * effectiveMass2) /
+      (effectiveMass1 + effectiveMass2);
     let tovCommon1 = vCommon - vel1InPos;
     let tovCommon2 = vCommon - vel2InPos;
     let maxDeltaAng1 = tovCommon1 / r1;
@@ -172,11 +175,11 @@ class Ball {
     // Calculate the new perpendicular velocities
     let u1Perpendicular =
       (1 + k) *
-        ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
+      ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
       k * vel1Perpendicular;
     let u2Perpendicular =
       (1 + k) *
-        ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
+      ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
       k * vel2Perpendicular;
 
     ball1.vel = Vec2.mult(d, u1Perpendicular);
