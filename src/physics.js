@@ -527,10 +527,10 @@ class Physics {
       return new Wall(points);
     };
 
-    this.bounds.push(getRectBody(x - w, y, 2 * w, 2 * h));
-    this.bounds.push(getRectBody(x + 2 * w, y, 2 * w, 2 * h));
-    this.bounds.push(getRectBody(x, y - h, 2 * w, h * 2));
-    this.bounds.push(getRectBody(x, y + 2 * h, 2 * w, 2 * h));
+    this.bounds.push(getRectBody(x - w, y, 2 * w, 4 * h));
+    this.bounds.push(getRectBody(x + 2 * w, y, 2 * w, 4 * h));
+    this.bounds.push(getRectBody(x, y - h, 4 * w, h * 2));
+    this.bounds.push(getRectBody(x, y + 2 * h, 4 * w, 2 * h));
   }
 
   /**
