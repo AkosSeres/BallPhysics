@@ -3,7 +3,9 @@
   "version": "1.6.0",
   "description": "2D rigid body physics engine to-be",
   "main": "./src/physics.js",
-  "scripts": {},
+  "scripts": {
+    "test": "jest --verbose ./tests"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AkosSeres/BallPhysics.git"
@@ -22,7 +24,8 @@
   "homepage": "https://github.com/AkosSeres/BallPhysics#readme",
   "devDependencies": {
     "eslint": "^6.0.1",
-    "eslint-config-google": "^0.9.1"
+    "eslint-config-google": "^0.9.1",
+    "jest": "^26.4.2"
   },
   "dependencies": {}
 }
