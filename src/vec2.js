@@ -119,7 +119,7 @@ class Vec2 {
 
   /**
    * Rotate the vector anticlockwise.
-   * @param {number} angle - Rotation angle.
+   * @param {number} angle Rotation angle in radians
    */
   rotate(angle) {
     let h = this.heading;
