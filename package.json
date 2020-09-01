@@ -3,9 +3,7 @@
   "version": "1.6.0",
   "description": "2D rigid body physics engine to-be",
   "main": "./src/physics.js",
-  "scripts": {
-    "build": "grunt build --force"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AkosSeres/BallPhysics.git"
