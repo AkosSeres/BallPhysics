@@ -8,7 +8,6 @@ const SoftBall = require('./softball');
 const Body = require('./body');
 const Line = require('./line');
 const Polygon = require('./polygon');
-const Compress = require('./compressJSON');
 
 /**
  * Class that creates a new world ba the physics engine
@@ -754,24 +753,6 @@ class Physics {
    */
   static fromJSON(jsonString) {
     return Physics.fromObject(JSON.parse(jsonString));
-  }
-
-  /**
-   * @return {String} The physics object in compressed format in a string
-   */
-  toCompressed() {
-    return Compress.compress(JSON.stringify(this.toJSObject()));
-  }
-
-  /**
-   * Recreates the phyisics object from compressed format
-   * @param {String} compressedString The string containing the physics object
-   * @return {Physics} The created Physics object
-   */
-  static fromCompressed(compressedString) {
-    return Physics.fromObject(
-      JSON.parse(Compress.uncompress(compressedString))
-    );
   }
 }
 
