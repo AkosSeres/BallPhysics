@@ -80,3 +80,6 @@ package-lock.json
 
 # jsdoc
 out
+
+# Build files
+dest
