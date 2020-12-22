@@ -283,6 +283,87 @@ class Polygon {
 
         return new Polygon(finalPoints);
     }
+
+    /**
+     * Creates a regular polygon (circle) with
+     * the given center point and radius
+     * @param {number} radius The radius of the circle
+     * @param {Vec2} center The center of the circle
+     * @param {number} resolution The resolution of the circle
+     * @return {Polygon} The created Polygon
+     */
+    static createCircle(radius, center, resolution = 25) {
+        let pts = [...Array(resolution).keys()].map((number) => {
+            let p = Vec2.fromAngle(2 * Math.PI * number / resolution);
+            p.setMag(radius);
+            p.add(center);
+            return p;
+        });
+        return new Polygon(pts);
+    }
+
+    /**
+     * Creates a fracture diagram based on the given points
+     * Looks like a Voronoi diagram
+     * @param {Vec2[]} middlePoints Points of fractures
+     * @param {number} maxLength Max length of sides on the peripherals
+     * @return {Polygon[]} The fractured shapes
+     */
+    static fracture(middlePoints, maxLength = 500) {
+        let shapes = middlePoints.map((p, i) => {
+            let lines = [];
+            for (let j = 0; j < middlePoints.length; j++) {
+                if (i === j) continue;
+                let otherPoint = middlePoints[j];
+                let avg = Vec2.div(Vec2.add(p, otherPoint), 2);
+                let e = Vec2.sub(p, otherPoint);
+                e.rotate(Math.PI / 2);
+
+                lines.push(new Line(avg, Vec2.add(e, avg)));
+            }
+
+            lines = lines.filter((line, idx) => {
+                let connectingSegment = new LineSegment(line.a, p);
+                for (let j = 0; j < lines.length; j++) {
+                    if (idx === j) continue;
+                    let sectP = Line.intersectWithLineSegment(lines[j], connectingSegment);
+                    if (sectP) return false;
+                }
+                return true;
+            });
+
+            lines = lines.sort((a, b) => {
+                return Vec2.sub(a.a, a.b).heading - Vec2.sub(b.a, b.b).heading;
+            });
+
+            let shape = lines.map((line, index) => {
+                let intersectPoints = [];
+                for (let j = 0; j < lines.length; j++) {
+                    if (index === j) continue;
+                    let newIntersection = Line.intersect(line, lines[j]);
+                    if (newIntersection) intersectPoints.push(newIntersection);
+                }
+                let e = Vec2.sub(line.a, line.b);
+                intersectPoints = intersectPoints.filter((ip) => {
+                    let v = Vec2.sub(ip, p);
+                    e.setMag(1);
+                    let dist = Vec2.dot(v, e);
+                    return dist > 0;
+                });
+                if (intersectPoints.length === 0) {
+                    intersectPoints.push(Vec2.add(Vec2.mult(e, maxLength * 1.2), line.a));
+                }
+                intersectPoints = intersectPoints.sort((a, b) => {
+                    return Vec2.dist(a, p) - Vec2.dist(b, p);
+                });
+                return intersectPoints[0];
+            });
+
+            return shape;
+        });
+
+        return shapes.filter((shape) => shape.length >= 3).map((shape) => new Polygon(shape));
+    }
 }
 
 module.exports = Polygon;

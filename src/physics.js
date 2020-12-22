@@ -6,6 +6,8 @@ const Stick = require('./stick');
 const Spring = require('./spring');
 const SoftBall = require('./softball');
 const Body = require('./body');
+const Line = require('./line');
+const Polygon = require('./polygon');
 const Compress = require('./compressJSON');
 
 /**
@@ -781,5 +783,7 @@ Physics.LineSegment = LineSegment;
 Physics.Spring = Spring;
 Physics.Stick = Stick;
 Physics.SoftBall = SoftBall;
+Physics.Line = Line;
+Physics.Polygon = Polygon;
 
 module.exports = Physics;

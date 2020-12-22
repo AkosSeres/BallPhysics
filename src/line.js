@@ -68,6 +68,69 @@ class Line extends LineSegment {
             return new Vec2(foundX, (e1 * foundX) + f1);
         }
     }
+
+    /**
+     * Returns the intersection point of a line and a line segment
+     * If there is none, it returns undefined
+     * @param {Line} line The line
+     * @param {LineSegment} segment The line segment
+     * @return {Vec2} Intersection point
+     */
+    static intersectWithLineSegment(line, segment) {
+        let v1 = Vec2.sub(line.b, line.a);
+        let e1 = v1.y / v1.x;
+        let f1 = line.b.y - line.b.x * e1;
+
+        let v2 = Vec2.sub(segment.b, segment.a);
+        let e2 = v2.y / v2.x;
+        let f2 = segment.b.y - segment.b.x * e2;
+
+        if (v1.x === 0) {
+            if (v2.x === 0) {
+                if (line.a.x == segment.a.x) {
+                    return new Vec2(
+                        (segment.a.x + segment.b.x) / 2,
+                        (segment.a.y + segment.b.y) / 2);
+                } else return undefined;
+            }
+
+            let foundX = line.a.x;
+            let foundY = (e2 * foundX) + f2;
+            if (Math.min(segment.a.x, segment.b.x) < foundX &&
+                foundX < Math.max(segment.a.x, segment.b.x) &&
+                Math.min(segment.a.y, segment.b.y) < foundY &&
+                Math.max(segment.a.y, segment.b.y) > foundY) {
+                return new Vec2(foundX, foundY);
+            } else return undefined;
+        }
+        if (v2.x === 0) {
+            let foundX = segment.a.x;
+            let foundY = (e1 * foundX) + f1;
+            if (Math.min(segment.a.x, segment.b.x) < foundX &&
+                foundX < Math.max(segment.a.x, segment.b.x) &&
+                Math.min(segment.a.y, segment.b.y) < foundY &&
+                Math.max(segment.a.y, segment.b.y) > foundY) {
+                return new Vec2(foundX, foundY);
+            } else return undefined;
+        }
+
+        if (e1 === e2) {
+            if (line.distFromPoint(segment.a) === 0) {
+                return new Vec2(
+                    (segment.a.x + segment.b.x) / 2,
+                    (segment.a.y + segment.b.y) / 2);
+            } else return undefined;
+        } else {
+            let foundX = (f2 - f1) / (e1 - e2);
+            let foundY = (e1 * foundX) + f1;
+            if (Math.min(segment.a.x, segment.b.x) < foundX &&
+                foundX < Math.max(segment.a.x, segment.b.x) &&
+                Math.min(segment.a.y, segment.b.y) < foundY &&
+                Math.max(segment.a.y, segment.b.y) > foundY) {
+                return new Vec2(foundX, foundY);
+            } else return undefined;
+        }
+    }
 }
 
 module.exports = Line;

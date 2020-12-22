@@ -207,3 +207,13 @@ test('right intersection for different polygon orientations', () => {
     expect(Polygon.intersection(poly7, poly8)).toEqual(poly9);
     expect(Polygon.intersection(poly10, poly11)).toEqual(poly12);
 });
+
+test('fractures the plane well', () => {
+    let fractures = Polygon.fracture([
+        new Vec2(0, 0.4),
+        new Vec2(-2.2, 0.3),
+        new Vec2(2.5, 0.01),
+        new Vec2(0.1, 2.2),
+        new Vec2(0, -2.32),
+    ]);
+});
