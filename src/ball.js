@@ -136,6 +136,7 @@ class Ball {
     let dist = Vec2.dist(pos1, pos2);
     let fc = (ball1.fc + ball2.fc) / 2;
 
+    // Separate the balls
     let cp1 = pos1.copy;
     let cp2 = pos2.copy;
     let too = r1 + r2 - dist;
@@ -149,6 +150,7 @@ class Ball {
     ball1.pos = cp1;
     ball2.pos = cp2;
 
+    // Stop if they move in opposite directions
     if (Vec2.dot(d, Vec2.sub(ball1.vel, ball2.vel)) < 0) return;
 
     d.setMag(1);
@@ -196,9 +198,6 @@ class Ball {
     if (deltaAng1 / maxDeltaAng1 > 1) deltaAng1 = maxDeltaAng1;
     if (deltaAng2 / maxDeltaAng2 > 1) deltaAng2 = maxDeltaAng2;
 
-    deltaAng1 *= ball1.amc / (ball1.amc + 1);
-    deltaAng2 *= ball2.amc / (ball2.amc + 1);
-
     ball1.ang -= deltaAng1;
     ball2.ang += deltaAng2;
 
@@ -217,6 +216,35 @@ class Ball {
    */
   containsPoint(p) {
     return Vec2.dist(this.pos, p) <= this.r;
+  }
+
+  /**
+   * Calculates the effective velocity of the ball in a
+   * given point from it's velocity and angular velocity
+   * @param {Vec2} point The point to be taken a look at
+   * @return {Vec2} The velocity of the Ball in the given point
+   */
+  velInPlace(point) {
+    let vp = Vec2.sub(point, this.pos);
+    vp.rotate(Math.PI / 2);
+    vp.mult(this.ang);
+    vp.add(this.vel);
+    return vp;
+  }
+
+  /**
+   * Calculates the effective mass of the ball in
+   * a given point when pulled/pushed in a given direction
+   * by a hypothetical force
+   * @param {Vec2} point The given point
+   * @param {Vec2} direction The direction of the force
+   * @return {Number}
+   */
+  effectiveMass(point, direction) {
+    let r = Vec2.sub(point, this.pos);// Vector to the collision point
+    let angle = Vec2.angle(direction, r);
+    let rotationalMass = (Math.sin(angle) ** 2) * (r.length ** 2) / this.am;
+    return 1 / (rotationalMass + (1 / this.m));
   }
 
   /**

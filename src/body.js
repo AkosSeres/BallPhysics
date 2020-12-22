@@ -71,11 +71,11 @@ class Body {
         .substr(2, 9);
   }
 
-    /**
-   * Gives the angular mass of the body measured in a given point
-   * @param {Vec2} point The point to measure the angular mass ins
-   * @return {number} The adjusted angular mass
-   */
+  /**
+ * Gives the angular mass of the body measured in a given point
+ * @param {Vec2} point The point to measure the angular mass ins
+ * @return {number} The adjusted angular mass
+ */
   getAmInPoint(point) {
     let ret = this.am;
 
@@ -314,8 +314,8 @@ class Body {
             while (
               !(a.heading > b.heading
                 ? (newSideHeading > a.heading &&
-                    newSideHeading < 2 * Math.PI) ||
-                  (newSideHeading > 0 && newSideHeading < b.heading)
+                  newSideHeading < 2 * Math.PI) ||
+                (newSideHeading > 0 && newSideHeading < b.heading)
                 : newSideHeading > a.heading && newSideHeading < b.heading) ||
               intersectWithPoligon(
                 new LineSegment(
@@ -371,8 +371,8 @@ class Body {
               while (
                 !(a.heading > b.heading
                   ? (newSideHeading > a.heading &&
-                      newSideHeading < 2 * Math.PI) ||
-                    (newSideHeading > 0 && newSideHeading < b.heading)
+                    newSideHeading < 2 * Math.PI) ||
+                  (newSideHeading > 0 && newSideHeading < b.heading)
                   : newSideHeading > a.heading && newSideHeading < b.heading) ||
                 intersectWithPoligon(newSide, pol, [
                   (j - 1) % pol.length,
@@ -463,7 +463,7 @@ class Body {
           (pol[0].x + pol[1].x + pol[2].x) / 3,
           (pol[0].y + pol[1].y + pol[2].y) / 3
         ).dist(this.pos) **
-          2 *
+        2 *
         m;
       amSum += am;
     }
@@ -1120,6 +1120,35 @@ class Body {
         this.points[(index + 1) % this.points.length]
       );
     });
+  }
+
+  /**
+   * Calculates the effective velocity of the body object in a
+   * given point from it's velocity and angular velocity
+   * @param {Vec2} point The point to be taken a look at
+   * @return {Vec2} The velocity of the Body in the given point
+   */
+  velInPlace(point) {
+    let vp = Vec2.sub(point, this.pos);
+    vp.rotate(Math.PI / 2);
+    vp.mult(this.ang);
+    vp.add(this.vel);
+    return vp;
+  }
+
+  /**
+   * Calculates the effective mass of the body in
+   * a given point when pulled/pushed in a given direction
+   * by a hypothetical force
+   * @param {Vec2} point The given point
+   * @param {Vec2} direction The direction of the force
+   * @return {Number}
+   */
+  effectiveMass(point, direction) {
+    let r = Vec2.sub(point, this.pos);// Vector to the collision point
+    let angle = Vec2.angle(direction, r);
+    let rotationalMass = (Math.sin(angle) ** 2) * (r.length ** 2) / this.am;
+    return 1 / (rotationalMass + (1 / this.m));
   }
 
   /**

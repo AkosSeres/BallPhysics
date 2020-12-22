@@ -70,18 +70,18 @@ window.onload = () => {
   document.addEventListener('keyup', keyGotUp, false);
   window.addEventListener('resize', resizeCanvas, false);
   cnv.addEventListener(
-      'mousedown',
-      function() {
-        mouseDown = 1;
-      },
-      false
+    'mousedown',
+    function() {
+      mouseDown = 1;
+    },
+    false
   );
   cnv.addEventListener(
-      'mouseup',
-      function() {
-        mouseDown = 0;
-      },
-      false
+    'mouseup',
+    function() {
+      mouseDown = 0;
+    },
+    false
   );
 
   resizeCanvas();
@@ -117,7 +117,6 @@ function drawFunction() {
   if (mouseX && isFinite(mouseX)) mx = mouseX;
   if (mouseY && isFinite(mouseY)) my = mouseY;
 
-  // TODO: ditch p5.js
   const ctx = cnv.getContext('2d');
 
   // paint the background
@@ -130,28 +129,32 @@ function drawFunction() {
   ctx.fillText('BallPhysics', 10, 10);
   ctx.fillText('Mode: ' + modes[mode].name, 10, 25);
   ctx.fillText(
-      Math.round(mouseX).toString() + ' ' + Math.round(mouseY).toString(),
-      10,
-      40
+    Math.round(mouseX).toString() + ' ' + Math.round(mouseY).toString(),
+    10,
+    40
   );
   ctx.fillText(
-      Math.round(lastX).toString() + ' ' + Math.round(lastY).toString(),
-      10,
-      55
+    Math.round(lastX).toString() + ' ' + Math.round(lastY).toString(),
+    10,
+    55
   );
 
   modes[mode].drawFunc(
-      ctx,
-      mouseX,
-      mouseY,
-      lastX,
-      lastY,
-      defaultSize * window.scaling,
-      mouseDown,
-      physics,
-      choosed,
-      elapsedTime * timeMultiplier,
-      {scaling: window.scaling, viewOffsetX: window.viewOffsetX, viewOffsetY: window.viewOffsetY}
+    ctx,
+    mouseX,
+    mouseY,
+    lastX,
+    lastY,
+    defaultSize * window.scaling,
+    mouseDown,
+    physics,
+    choosed,
+    elapsedTime * timeMultiplier,
+    {
+      scaling: window.scaling,
+      viewOffsetX: window.viewOffsetX,
+      viewOffsetY: window.viewOffsetY,
+    }
   );
 
   // the size indicator for creating balls
@@ -188,7 +191,9 @@ function drawFunction() {
 function startInteraction(x, y) {
   mouseX = x;
   mouseY = y;
-  choosed = physics.getObjectAtCoordinates(mouseX / window.scaling - window.viewOffsetX / window.scaling, mouseY / window.scaling - window.viewOffsetY / window.scaling);
+  choosed = physics.getObjectAtCoordinates(
+    mouseX / window.scaling - window.viewOffsetX / window.scaling,
+    mouseY / window.scaling - window.viewOffsetY / window.scaling);
   if (!choosed) {
     choosed = {
       x: mouseX / window.scaling - window.viewOffsetX / window.scaling,
@@ -200,11 +205,11 @@ function startInteraction(x, y) {
   lastY = mouseY;
 
   modes[mode].startInteractionFunc(physics,
-      x / window.scaling - window.viewOffsetX / window.scaling,
-      y / window.scaling - window.viewOffsetY / window.scaling,
-      mouseX / window.scaling - window.viewOffsetX / window.scaling,
-      mouseY / window.scaling - window.viewOffsetY / window.scaling,
-      choosed);
+    x / window.scaling - window.viewOffsetX / window.scaling,
+    y / window.scaling - window.viewOffsetY / window.scaling,
+    mouseX / window.scaling - window.viewOffsetX / window.scaling,
+    mouseY / window.scaling - window.viewOffsetY / window.scaling,
+    choosed);
 }
 
 /**
@@ -217,16 +222,16 @@ function endInteraction(x, y) {
   mouseY = y;
 
   modes[mode].endInteractionFunc(
-      physics,
-      x / window.scaling - window.viewOffsetX / window.scaling,
-      y / window.scaling - window.viewOffsetY / window.scaling,
-      mouseX / window.scaling - window.viewOffsetX / window.scaling,
-      mouseY / window.scaling - window.viewOffsetY / window.scaling,
-      lastX / window.scaling - window.viewOffsetX / window.scaling,
-      lastY / window.scaling - window.viewOffsetY / window.scaling,
-      choosed,
-      fc,
-      k
+    physics,
+    x / window.scaling - window.viewOffsetX / window.scaling,
+    y / window.scaling - window.viewOffsetY / window.scaling,
+    mouseX / window.scaling - window.viewOffsetX / window.scaling,
+    mouseY / window.scaling - window.viewOffsetY / window.scaling,
+    lastX / window.scaling - window.viewOffsetX / window.scaling,
+    lastY / window.scaling - window.viewOffsetY / window.scaling,
+    choosed,
+    fc,
+    k
   );
 
   if (lastX === 0 && lastY === 0) return;
@@ -313,8 +318,8 @@ function startTouch(event) {
     return;
   }
   startInteraction(
-      event.changedTouches[0].clientX,
-      event.changedTouches[0].clientY
+    event.changedTouches[0].clientX,
+    event.changedTouches[0].clientY
   );
   return false;
 }
@@ -327,8 +332,8 @@ function startTouch(event) {
 function endTouch(event) {
   event.preventDefault();
   endInteraction(
-      event.changedTouches[0].clientX,
-      event.changedTouches[0].clientY
+    event.changedTouches[0].clientX,
+    event.changedTouches[0].clientY
   );
   return false;
 }
@@ -385,11 +390,11 @@ const physicsDraw = function(cnv) {
   for (let i = 0; i < physics.balls.length; i++) {
     ctx.beginPath();
     ctx.arc(
-        physics.balls[i].pos.x,
-        physics.balls[i].pos.y,
-        physics.balls[i].r,
-        0,
-        2 * Math.PI
+      physics.balls[i].pos.x,
+      physics.balls[i].pos.y,
+      physics.balls[i].r,
+      0,
+      2 * Math.PI
     );
     ctx.stroke();
     ctx.fill();
@@ -407,8 +412,8 @@ const physicsDraw = function(cnv) {
   physics.bodies.forEach((element) => {
     ctx.beginPath();
     ctx.moveTo(
-        element.points[element.points.length - 1].x,
-        element.points[element.points.length - 1].y
+      element.points[element.points.length - 1].x,
+      element.points[element.points.length - 1].y
     );
     element.points.forEach((p) => {
       ctx.lineTo(p.x, p.y);
@@ -424,8 +429,8 @@ const physicsDraw = function(cnv) {
   const drawWall = (element) => {
     ctx.beginPath();
     ctx.moveTo(
-        element.points[element.points.length - 1].x,
-        element.points[element.points.length - 1].y
+      element.points[element.points.length - 1].x,
+      element.points[element.points.length - 1].y
     );
     element.points.forEach((p) => {
       ctx.lineTo(p.x, p.y);
@@ -528,19 +533,19 @@ function spawnNewtonsCradle(x, y, scale, phy) {
   const defaultStick = 250;
   const ballNumber = 8;
   balls.push(
-      new Ball(new Vec2(x, y), new Vec2(0, 0), scale * defaultR, 1, 0, 0)
+    new Ball(new Vec2(x, y), new Vec2(0, 0), scale * defaultR, 1, 0, 0)
   );
   let count = 1;
   for (let i = 0; i < ballNumber - 1; i++) {
     balls.push(
-        new Ball(
-            new Vec2(x + count * scale * defaultR * 1.01 * 2, y),
-            new Vec2(0, 0),
-            scale * 25,
-            1,
-            0,
-            0
-        )
+      new Ball(
+        new Vec2(x + count * scale * defaultR * 1.01 * 2, y),
+        new Vec2(0, 0),
+        scale * 25,
+        1,
+        0,
+        0
+      )
     );
     count *= -1;
     if (count > 0) count += 1;
