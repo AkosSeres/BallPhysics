@@ -1,5 +1,6 @@
-# Balls-Physics
-Physics simulation on balls
+# BallsPhysics
+Physics simulation on balls and a sandbox editor for it!
+
 [Try out the editor!](https://akosseres.github.io/BallPhysics)
 
 Controls:
