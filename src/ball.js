@@ -242,9 +242,42 @@ class Ball {
    */
   effectiveMass(point, direction) {
     let r = Vec2.sub(point, this.pos);// Vector to the collision point
+    if (r.length === 0) return this.m;
     let angle = Vec2.angle(direction, r);
     let rotationalMass = (Math.sin(angle) ** 2) * (r.length ** 2) / this.am;
+    if (isNaN(angle))console.log(direction, r, angle);
     return 1 / (rotationalMass + (1 / this.m));
+  }
+
+  /**
+   * Realistically applies a change of velocity (momentum)
+   * on the ball
+   * @param {Vec2} dvel The change in velocity
+   * @param {Vec2} point The point of pushing
+   */
+  applyDeltaVelInPoint(dvel, point) {
+    let r = Vec2.sub(point, this.pos);
+    if (r.length === 0) {
+      this.vel.add(dvel);
+      return;
+    }
+    let angle = Vec2.angle(r, dvel);
+    // Change vel in line with the center of mass
+    let deltaVlined = Vec2.mult(r, Vec2.dot(dvel, r) / (r.length ** 2));
+    this.vel.add(deltaVlined);
+
+    // Change it perpendicular to the line
+    let d = r.copy;
+    d.rotate(Math.PI / 2);
+    d.setMag(1);
+    let rotateDirection = Math.sign(Vec2.dot(dvel, d));
+    let dvelAng = dvel.length * Math.cos(angle);
+    let mEff = 1 / ((1 / this.m) + ((r.length ** 2) / this.am));
+    let dvm = dvelAng * mEff / this.m;
+    this.vel.add(Vec2.mult(d, dvm * rotateDirection));
+
+    let dAng = rotateDirection * dvelAng * mEff * r.length / this.am;
+    this.ang -= dAng;
   }
 
   /**

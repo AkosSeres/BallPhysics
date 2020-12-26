@@ -227,7 +227,10 @@ class Vec2 {
    * @return {number} Angle between them.
    */
   static angle(a, b) {
-    return Math.acos(Vec2.dot(a, b) / Math.sqrt(a.sqlength * b.sqlength));
+    return Math.acos(
+      Math.min(
+        Math.max(
+          Vec2.dot(a, b) / Math.sqrt(a.sqlength * b.sqlength), 1), -1));
   }
 
   /**

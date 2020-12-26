@@ -1,5 +1,6 @@
 const Vec2 = require('./vec2');
 const LineSegment = require('./linesegment');
+const Ball = require('./ball');
 
 /**
  * Class representing a body
@@ -202,61 +203,63 @@ class Body {
       let k = (this.k + ball.k) / 2;
       let fc = (this.fc + ball.fc) / 2;
 
-      let v1v = r1.copy;
-      let v2v = r2.copy;
-      v1v.rotate(Math.PI / 2);
-      v2v.rotate(-Math.PI / 2);
-      v1v.mult(ang1);
-      v2v.mult(ang2);
-      v1v.add(v1);
-      v2v.add(v2);
+      // Create collision space basis
+      let n = r2.copy;// normal/perpendicular
+      n.setMag(1);
+      let p = n.copy; // parralel
+      p.rotate(Math.PI / 2);
 
-      v1v.rotate(-heading);
-      v2v.rotate(-heading);
+      // Effective velocities in the collision point
+      let v1InCP = this.velInPlace(cp);
+      let v2InCP = ball.velInPlace(cp);
 
-      let dv1vx =
-        ((1 + k) * (m1 * v1v.x + m2 * v2v.x)) / (m1 + m2) - (k + 1) * v1v.x;
-      let dv2vx =
-        ((1 + k) * (m1 * v1v.x + m2 * v2v.x)) / (m1 + m2) - (k + 1) * v2v.x;
+      // Effective masses in collision space
+      let m1EffN = this.effectiveMass(cp, n);
+      let m1EffP = this.effectiveMass(cp, p);
+      let m2EffN = ball.effectiveMass(cp, n);
+      let m2EffP = ball.effectiveMass(cp, p);
 
-      let vk = (v1v.y * m1 + v2v.y * m2) / (m1 + m2);
+      // Effective velocities in collision space
+      let v1n = Vec2.dot(v1InCP, n);
+      let v1p = Vec2.dot(v1InCP, p);
+      let v2n = Vec2.dot(v2InCP, n);
+      let v2p = Vec2.dot(v2InCP, p);
 
-      let dv1vy = -Math.sign(v1v.y) * fc * dv1vx;
-      let dv2vy = -Math.sign(v2v.y) * fc * dv2vx;
-      if (Math.abs(vk - v1v.y) > Math.abs(dv1vy)) dv1vy = vk - v1v.y;
-      if (Math.abs(vk - v2v.y) > Math.abs(dv2vy)) dv2vy = vk - v2v.y;
+      // Calculate collsion response for the perpendicular velocities
+      let u1n = (m1EffN * v1n + m2EffN * v2n + m2EffN * k * (v2n - v1n))
+        / (m1EffN + m2EffN);
+      let u2n = (m1EffN * v1n + m2EffN * v2n + m1EffN * k * (v1n - v2n))
+        / (m1EffN + m2EffN);
 
-      let dv1v = new Vec2(dv1vx, dv1vy);
-      let dv2v = new Vec2(dv2vx, dv2vy);
-      dv1v.rotate(heading);
-      dv2v.rotate(heading);
+      // Change in momentum and max in parralel movement
+      let dpn = (u2n - v2n) * m2EffN;
+      let dppMax = dpn * fc;
 
-      v1.add(dv1v);
-      v2.add(dv2v);
+      // Common velocity in parralel movement
+      let vpCommon = (m1EffP * v1p + m2EffP * v2p) / (m1EffP + m2EffP);
 
-      dv1v.rotate(-r1.heading);
-      dv2v.rotate(-r2.heading);
+      // If the impulse is bigger than the max, use the common v
+      let u1p = v1p + Math.sign(vpCommon - v1p) * dppMax / m1EffP;
+      let u2p = v2p + Math.sign(vpCommon - v2p) * dppMax / m2EffP;
+      if (Math.abs(u2p - v2p) > Math.abs(vpCommon - v2p)) {
+        u1p = u2p = vpCommon;
+      }
 
-      let dang1 =
-        (dv1v.y * m1 * r1.length) / (am1 + r1.length * r1.length * m1);
-      let dang2 =
-        -(dv2v.y * m2 * r2.length) / (am2 + r2.length * r2.length * m2);
+      // Changes in velocity in the collision point
+      let du1 = Vec2.add(Vec2.mult(n, u1n - v1n), Vec2.mult(p, u1p - v1p));
+      let du2 = Vec2.add(Vec2.mult(n, u2n - v2n), Vec2.mult(p, u2p - v2p));
 
-      ang1 += dang1;
-      ang2 += dang2;
+      // console.log(du1);
 
-      let vp1 = Vec2.fromAngle(r1.heading - Math.PI / 2);
-      vp1.mult(r1.length * dang1);
-      let vp2 = Vec2.fromAngle(r2.heading - Math.PI / 2);
-      vp2.mult(r2.length * dang2);
-      v2.sub(vp2);
-      v1.add(vp1);
+      // Apply changes in velocity in the collision point
+      this.applyDeltaVelInPoint(Vec2.mult(n, u1n - v1n), cp);
+      this.applyDeltaVelInPoint(Vec2.mult(p, u1p - v1p), cp);
+      ball.applyDeltaVelInPoint(Vec2.mult(n, u2n - v2n), cp);
+      ball.applyDeltaVelInPoint(Vec2.mult(p, u2p - v2p), cp);
 
-      this.vel = v1;
-      ball.vel = v2;
-
-      this.ang = ang1;
-      ball.ang = ang2;
+      if (isNaN(this.vel.x) || isNaN(ball.vel.x)) {
+        console.log('EOW');
+      }
     }
   }
 
@@ -1149,6 +1152,38 @@ class Body {
     let angle = Vec2.angle(direction, r);
     let rotationalMass = (Math.sin(angle) ** 2) * (r.length ** 2) / this.am;
     return 1 / (rotationalMass + (1 / this.m));
+  }
+
+  /**
+   * Realistically applies a change of velocity (momentum)
+   * on the body
+   * @param {Vec2} dvel The change in velocity
+   * @param {Vec2} point The point of pushing
+   */
+  applyDeltaVelInPoint(dvel, point) {
+    let r = Vec2.sub(point, this.pos);
+    if (r.length == 0) {
+      this.vel.add(dvel);
+      return;
+    }
+    let angle = Vec2.angle(r, dvel);
+    // Change vel in line with the center of mass
+    let deltaVlined = Vec2.mult(r, Vec2.dot(dvel, r) / (r.length ** 2));
+    this.vel.add(deltaVlined);
+
+    // Change it perpendicular to the line
+    let d = r.copy;
+    d.rotate(Math.PI / 2);
+    d.setMag(1);
+    let rotateDirection = Math.sign(Vec2.dot(dvel, d));
+    let dvelAng = dvel.length * Math.cos(angle);
+    let mEff = 1 / ((1 / this.m) + ((r.length ** 2) / this.am));
+    let dvm = dvelAng * mEff / this.m;
+    this.vel.add(Vec2.mult(d, dvm * rotateDirection));
+
+    let dAng = rotateDirection * dvelAng * mEff * r.length / this.am;
+    console.log(angle);
+    this.ang -= dAng;
   }
 
   /**
