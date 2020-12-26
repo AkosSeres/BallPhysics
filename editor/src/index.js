@@ -388,25 +388,23 @@ const physicsDraw = function(cnv) {
   ctx.fillStyle = 'green';
   ctx.strokeStyle = 'black';
   for (let i = 0; i < physics.balls.length; i++) {
+    let ball = physics.balls[i];
     ctx.beginPath();
     ctx.arc(
-      physics.balls[i].pos.x,
-      physics.balls[i].pos.y,
-      physics.balls[i].r,
+      ball.pos.x,
+      ball.pos.y,
+      ball.r,
       0,
       2 * Math.PI
     );
     ctx.stroke();
     ctx.fill();
 
-    ctx.save();
-    ctx.translate(physics.balls[i].pos.x, physics.balls[i].pos.y);
-    ctx.rotate(-Math.PI / 2 - physics.balls[i].rotation);
     ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(0, physics.balls[i].r);
+    ctx.moveTo(ball.pos.x, ball.pos.y);
+    ctx.lineTo(ball.pos.x + ball.r * Math.cos(ball.rotation),
+      ball.pos.y + ball.r * Math.sin(ball.rotation));
     ctx.stroke();
-    ctx.restore();
   }
 
   physics.bodies.forEach((element) => {
