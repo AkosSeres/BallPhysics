@@ -241,7 +241,7 @@ class Body {
         Vec2.crossScalarFirst(Vec2.cross(r1, t) / am1, r1), t);
       maxImpulse += Vec2.dot(
         Vec2.crossScalarFirst(Vec2.cross(r2, t) / am2, r2), t);
-      maxImpulse = -0.5 * Vec2.dot(vRelInCP, t) / maxImpulse;
+      maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
 
       // Friction impulse
       let frictionImpulse = impulse * fc;
@@ -607,7 +607,6 @@ class Body {
       b2.move(-a.x * move2Min, -a.y * move2Min);
     }
 
-    let k = (b1.k + b2.k) / 2;
     let collisionPoints = cps;
 
     let endAngs1 = [];
@@ -617,88 +616,79 @@ class Body {
 
     for (let collisionPoint of collisionPoints) {
       // Deal with the change in velocity by the collision
-      let normal = Vec2.fromAngle(heading);
-      let vel1 = b1.vel;
-      let vel2 = b2.vel;
-      let pos1 = b1.pos;
-      let pos2 = b2.pos;
-      let r1 = Vec2.sub(pos1, collisionPoint);
-      let r2 = Vec2.sub(pos2, collisionPoint);
-      let angle1 = Vec2.angleACW(normal, r1);
-      let angle2 = Vec2.angleACW(normal, r2);
-      let basicAngle1 = Vec2.angle(normal, r1);
-      let basicAngle2 = Vec2.angle(normal, r2);
+      let n = Vec2.fromAngle(heading);
+      let cp = collisionPoint;
 
-      let velInCollisionPoint1 = vel1.copy;
-      let velInCollisionPoint2 = vel2.copy;
-      let rotater1 = r1.copy;
-      let rotater2 = r2.copy;
-      rotater1.mult(-1 * b1.ang);
-      rotater2.mult(-1 * b2.ang);
-      rotater2.rotate(Math.PI / 2);
-      rotater2.rotate(Math.PI / 2);
-      velInCollisionPoint1.add(rotater1);
-      velInCollisionPoint2.add(rotater2);
-      let perpVel1 = Vec2.dot(normal, velInCollisionPoint1);
-      let perpVel2 = Vec2.dot(normal, velInCollisionPoint2);
-      if (Vec2.dot(normal, r1) > Vec2.dot(normal, r2)) {
-        if (perpVel1 >= perpVel2) return;
-      } else if (perpVel2 >= perpVel1) return;
+      let v1 = b1.vel.copy;
+      let v2 = b2.vel.copy;
+      let ang1 = b1.ang;
+      let ang2 = b2.ang;
+      let r1 = Vec2.sub(cp, b1.pos);
+      let r2 = Vec2.sub(cp, b2.pos);
+      let am1 = b1.am;
+      let am2 = b2.am;
+      let m1 = b1.m;
+      let m2 = b2.m;
+      let k = (b1.k + b2.k) / 2;
+      let fc = (b1.fc + b2.fc) / 2;
 
-      let m1 =
-        b1.m * Math.abs(Math.cos(basicAngle1)) +
-        (Math.abs(Math.sin(basicAngle1)) * b1.am) / r1.length / r1.length;
-      let m2 =
-        b2.m * Math.abs(Math.cos(basicAngle2)) +
-        (Math.abs(Math.sin(basicAngle2)) * b2.am) / r2.length / r2.length;
-      let perpU1 =
-        (1 + k) * ((m1 * perpVel1 + m2 * perpVel2) / (m1 + m2)) - k * perpVel1;
-      let perpU2 =
-        (1 + k) * ((m1 * perpVel1 + m2 * perpVel2) / (m1 + m2)) - k * perpVel2;
+      // Effective velocities in the collision point
+      let v1InCP = b1.velInPlace(cp);
+      let v2InCP = b2.velInPlace(cp);
+      // Relative velocity in collision point
+      let vRelInCP = Vec2.sub(v2InCP, v1InCP);
 
-      let deltaVel1;
-      let deltaVel2;
-      if (Vec2.dot(normal, r1) > Vec2.dot(normal, r2)) {
-        if (perpU2 >= perpU1) {
-          deltaVel1 = Vec2.mult(Vec2.normalized(normal), -perpU1 + perpVel1);
-          deltaVel2 = Vec2.mult(Vec2.normalized(normal), -perpU2 + perpVel2);
-        } else {
-          deltaVel1 = Vec2.mult(Vec2.normalized(normal), -perpU1 + perpVel1);
-          deltaVel2 = Vec2.mult(Vec2.normalized(normal), -perpU2 + perpVel2);
-        }
-      } else if (perpU2 <= perpU1) {
-        deltaVel1 = Vec2.mult(Vec2.normalized(normal), -perpU1 + perpVel1);
-        deltaVel2 = Vec2.mult(Vec2.normalized(normal), -perpU2 + perpVel2);
-      } else {
-        deltaVel1 = Vec2.mult(Vec2.normalized(normal), -perpU1 + perpVel1);
-        deltaVel2 = Vec2.mult(Vec2.normalized(normal), -perpU2 + perpVel2);
-      }
+      // Calculate impulse
+      let impulse = (1 / m1) + (1 / m2);
+      impulse += Vec2.dot(
+        Vec2.crossScalarFirst(Vec2.cross(r1, n) / am1, r1), n);
+      impulse += Vec2.dot(
+        Vec2.crossScalarFirst(Vec2.cross(r2, n) / am2, r2), n);
+      impulse = -(1 + k) * Vec2.dot(vRelInCP, n) / impulse;
 
-      deltaVel1 = Vec2.mult(Vec2.normalized(normal), perpU1 - perpVel1);
-      deltaVel2 = Vec2.mult(Vec2.normalized(normal), perpU2 - perpVel2);
+      // Calculate post-collision velocities
+      let u1 = Vec2.sub(v1, Vec2.mult(n, impulse / m1));
+      let u2 = Vec2.add(v2, Vec2.mult(n, impulse / m2));
 
-      let deltaAng1 = deltaVel1.copy;
-      let deltaAng2 = deltaVel2.copy;
+      // Calculate post-collision angular velocities
+      let pAng1 = ang1 - impulse * Vec2.cross(r1, n) / am1;
+      let pAng2 = ang2 + impulse * Vec2.cross(r2, n) / am2;
 
-      deltaVel1.mult(Math.cos(basicAngle1));
-      deltaVel2.mult(Math.cos(basicAngle2));
-      if (Vec2.dot(deltaVel1, r1) < 0) deltaVel1.mult(-1);
-      if (Vec2.dot(deltaVel2, r2) < 0) deltaVel2.mult(-1);
-      b1.vel.add(deltaVel1);
-      b2.vel.add(deltaVel2);
+      /**
+       * Now calculate the friction reaction
+       */
+      // Tangential direction
+      let t = vRelInCP.copy;
+      t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
+      t.setMag(1);
 
-      deltaAng1.sub(Vec2.mult(normal, Vec2.dot(normal, deltaVel1)));
-      deltaAng1.div(r1.length);
-      deltaAng1.rotate(Math.PI / 2);
-      deltaAng1 = Vec2.dot(deltaAng1, r1) / r1.length;
-      b1.ang += deltaAng1;
+      // Calculate max impulse
+      let maxImpulse = (1 / m1) + (1 / m2);
+      maxImpulse += Vec2.dot(
+        Vec2.crossScalarFirst(Vec2.cross(r1, t) / am1, r1), t);
+      maxImpulse += Vec2.dot(
+        Vec2.crossScalarFirst(Vec2.cross(r2, t) / am2, r2), t);
+      maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
 
-      deltaAng2.sub(Vec2.mult(normal, Vec2.dot(normal, deltaVel2)));
-      deltaAng2.div(r2.length);
-      deltaAng2.rotate(Math.PI / 2);
-      deltaAng2 = Vec2.dot(deltaAng2, r2) / r2.length;
-      b2.ang += deltaAng2;
+      // Friction impulse
+      let frictionImpulse = impulse * fc;
+      if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
 
+      // Calculate post-friction velocities
+      u1 = Vec2.sub(u1, Vec2.mult(t, frictionImpulse / m1));
+      u2 = Vec2.add(u2, Vec2.mult(t, frictionImpulse / m2));
+
+      // Calculate post-friction angular velocities
+      pAng1 = pAng1 - frictionImpulse * Vec2.cross(r1, t) / am1;
+      pAng2 = pAng2 + frictionImpulse * Vec2.cross(r2, t) / am2;
+
+      // Store the new values in the ball and body
+      b1.vel = u1;
+      b2.vel = u2;
+      b1.ang = pAng1;
+      b2.ang = pAng2;
+
+      // Store calculated values and revert
       endAngs1.push(b1.ang);
       endVels1.push(b1.vel);
       endAngs2.push(b2.ang);
@@ -708,49 +698,6 @@ class Body {
       b1.vel = startVel1;
       b2.ang = startAng2;
       b2.vel = startVel2;
-
-      break;
-
-      // Then deal with friction
-      let massParralel =
-        this.m * Math.abs(Math.sin(angle)) +
-        (this.am / r.length / r.length) * Math.abs(Math.cos(angle));
-
-      deltaVel = Vec2.mult(Vec2.normalized(normal), -1 * perpVel);
-
-      let parralelVec = normal.copy;
-      parralelVec.rotate(Math.PI / 2);
-      parralelVec.mult(Math.sign(Vec2.dot(parralelVec, velInCollisionPoint)));
-      if (parralelVec.length == 0) return;
-
-      let parralelVel = Vec2.dot(velInCollisionPoint, parralelVec);
-      let deltaMomentum = Vec2.mult(deltaVel, massInPoint);
-      let deltaVelParralel = Vec2.div(deltaMomentum, massParralel);
-      if (massParralel == 0) deltaVelParralel = 0;
-
-      deltaVelParralel.mult(this.fc);
-      deltaVelParralel = Vec2.mult(parralelVec, deltaVelParralel.length);
-      if (deltaVelParralel.length > parralelVel) {
-        deltaVelParralel.setMag(parralelVel);
-      }
-
-      angle = Vec2.angleACW(parralelVec, r);
-
-      deltaVel = deltaVelParralel;
-      deltaAng = deltaVel.copy;
-
-      deltaVel.mult(Math.cos(angle));
-      this.vel.add(deltaVel);
-
-      deltaAng = deltaAng.length / r.length;
-      deltaAng *= Math.sin(angle);
-      this.ang -= deltaAng;
-
-      endVels.push(this.vel);
-      this.vel = startingVel.copy;
-
-      endAngs.push(this.ang);
-      this.ang = startingAng;
     }
 
     if (endAngs1.length != endVels1.length) return;
@@ -776,13 +723,6 @@ class Body {
       return prev + curr;
     });
     b2.ang /= endAngs2.length;
-
-    return;
-
-    if (!isFinite(this.vel.x) || !isFinite(this.vel.y) || !isFinite(this.ang)) {
-      this.vel = startingVel;
-      this.ang = startingAng;
-    }
   }
 
   /**
