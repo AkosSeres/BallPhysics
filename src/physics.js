@@ -126,19 +126,19 @@ class Physics {
           if (vel.y > 0) break fixedBallCollision;
           vel.y *= -ball.k;
           pos.y += ball.r + b.r - rel;
-          let dvy = -vel.y * (1 + ball.k);
-          let t = -Math.sign(vel.x + ball.ang * ball.r);
+          let dvy = vel.y * (1 + ball.k);
 
-          let impulse = dvy * ball.m;
-          let frictionImpulse = t * impulse * ball.fc;
-          let maxImpulse = -(vel.x + ball.ang * ball.r);
-          maxImpulse /= (1 / ball.m + ball.r * ball.r / ball.am);
-          if (Math.abs(maxImpulse) < Math.abs(frictionImpulse)) {
-            frictionImpulse = maxImpulse;
-          }
+          let deltaAng =
+            (Math.sign(vel.x + ball.ang * ball.r) * (dvy * ball.fc)) /
+            (ball.amc * ball.r);
+          let maxDeltaAng = (vel.x + ball.ang * ball.r) / ball.r;
 
-          vel.x = vel.x + frictionImpulse / ball.m;
-          ball.ang = ball.ang + frictionImpulse * ball.r / ball.am;
+          if (deltaAng / maxDeltaAng > 1) deltaAng = maxDeltaAng;
+          ball.ang -= deltaAng;
+
+          let dvx = deltaAng * ball.am / ball.r / ball.m;
+          vel.x -= dvx;
+
 
           pos.rotate(heading - Math.PI / 2);
           vel.rotate(heading - Math.PI / 2);
