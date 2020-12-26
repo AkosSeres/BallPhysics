@@ -116,29 +116,29 @@ class Physics {
           rel = p.length;
         }
 
-        fixedBallCollision: if (heading === 0 || heading) {
-          let pos = new Vec2(ball.pos.x, ball.pos.y);
-          let vel = new Vec2(ball.vel.x, ball.vel.y);
+        fixedBallCollision: if (isFinite(heading)) {
+          let pos = ball.pos.copy;
+          let vel = ball.vel.copy;
           pos.rotate(-heading + Math.PI / 2);
           vel.rotate(-heading + Math.PI / 2);
 
+          // Only collide when moving towards the wall
           if (vel.y > 0) break fixedBallCollision;
           vel.y *= -ball.k;
           pos.y += ball.r + b.r - rel;
-          let dvy = vel.y * (1 + 1 / ball.k);
+          let dvy = -vel.y * (1 + ball.k);
+          let t = -Math.sign(vel.x + ball.ang * ball.r);
 
-          let deltaAng =
-            (Math.sign(vel.x - ball.ang * ball.r) * (dvy * ball.fc)) /
-            (ball.amc * ball.r);
-          let maxDeltaAng = (vel.x - ball.ang * ball.r) / ball.r;
+          let impulse = dvy * ball.m;
+          let frictionImpulse = t * impulse * ball.fc;
+          let maxImpulse = -(vel.x + ball.ang * ball.r);
+          maxImpulse /= (1 / ball.m + ball.r * ball.r / ball.am);
+          if (Math.abs(maxImpulse) < Math.abs(frictionImpulse)) {
+            frictionImpulse = maxImpulse;
+          }
 
-          if (deltaAng / maxDeltaAng > 1) deltaAng = maxDeltaAng;
-          deltaAng *= ball.amc / (ball.amc + 1);
-          ball.ang += deltaAng;
-
-          let dvx = deltaAng * ball.r;
-
-          vel.x -= dvx;
+          vel.x = vel.x + frictionImpulse / ball.m;
+          ball.ang = ball.ang + frictionImpulse * ball.r / ball.am;
 
           pos.rotate(heading - Math.PI / 2);
           vel.rotate(heading - Math.PI / 2);
