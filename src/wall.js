@@ -80,7 +80,7 @@ class Wall {
       }
     });
 
-    if (heading === 0 || heading) {
+    if (isFinite(heading)) {
       let pos = new Vec2(ball.pos.x, ball.pos.y);
       let vel = new Vec2(ball.vel.x, ball.vel.y);
       pos.rotate(-heading + Math.PI / 2);
@@ -89,15 +89,15 @@ class Wall {
       if (vel.y > 0) return;
       vel.y *= -ball.k;
       pos.y += ball.r - rel;
-      let dvy = vel.y * (1 + 1 / ball.k);
+      let dvy = vel.y * (1 + ball.k);
 
       let deltaAng =
-        (Math.sign(vel.x - ball.ang * ball.r) * (dvy * ball.fc)) /
+        (Math.sign(vel.x + ball.ang * ball.r) * (dvy * ball.fc)) /
         (ball.amc * ball.r);
-      let maxDeltaAng = (vel.x - ball.ang * ball.r) / ball.r;
+      let maxDeltaAng = (vel.x + ball.ang * ball.r) / ball.r;
 
       if (deltaAng / maxDeltaAng > 1) deltaAng = maxDeltaAng;
-      ball.ang += deltaAng;
+      ball.ang -= deltaAng;
 
       let dvx = deltaAng * ball.am / ball.r / ball.m;
       vel.x -= dvx;
