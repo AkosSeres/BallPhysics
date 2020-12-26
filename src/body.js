@@ -205,61 +205,62 @@ class Body {
 
       // Create collision space basis
       let n = r2.copy;// normal/perpendicular
-      n.setMag(1);
-      let p = n.copy; // parralel
-      p.rotate(Math.PI / 2);
+      n.setMag(-1);
 
       // Effective velocities in the collision point
       let v1InCP = this.velInPlace(cp);
       let v2InCP = ball.velInPlace(cp);
+      // Relative velocity in collision point
+      let vRelInCP = Vec2.sub(v2InCP, v1InCP);
 
-      // Effective masses in collision space
-      let m1EffN = this.effectiveMass(cp, n);
-      let m1EffP = this.effectiveMass(cp, p);
-      let m2EffN = ball.effectiveMass(cp, n);
-      let m2EffP = ball.effectiveMass(cp, p);
+      // Calculate impulse
+      let impulse = (1 / m1) + (1 / m2);
+      impulse += Vec2.dot(
+        Vec2.crossScalarFirst(Vec2.cross(r1, n) / am1, r1), n);
+      impulse = -(1 + k) * Vec2.dot(vRelInCP, n) / impulse;
 
-      // Effective velocities in collision space
-      let v1n = Vec2.dot(v1InCP, n);
-      let v1p = Vec2.dot(v1InCP, p);
-      let v2n = Vec2.dot(v2InCP, n);
-      let v2p = Vec2.dot(v2InCP, p);
+      // Calculate post-collision velocities
+      let u1 = Vec2.sub(v1, Vec2.mult(n, impulse / m1));
+      let u2 = Vec2.add(v2, Vec2.mult(n, impulse / m2));
 
-      // Calculate collsion response for the perpendicular velocities
-      let u1n = (m1EffN * v1n + m2EffN * v2n + m2EffN * k * (v2n - v1n))
-        / (m1EffN + m2EffN);
-      let u2n = (m1EffN * v1n + m2EffN * v2n + m1EffN * k * (v1n - v2n))
-        / (m1EffN + m2EffN);
+      // Calculate post-collision angular velocities
+      let pAng1 = ang1 - impulse * Vec2.cross(r1, n) / am1;
+      let pAng2 = ang2;
 
-      // Change in momentum and max in parralel movement
-      let dpn = (u2n - v2n) * m2EffN;
-      let dppMax = dpn * fc;
+      /**
+       * Now calculate the friction reaction
+       */
+      // Tangential direction
+      let t = vRelInCP.copy;
+      t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
+      t.setMag(1);
 
-      // Common velocity in parralel movement
-      let vpCommon = (m1EffP * v1p + m2EffP * v2p) / (m1EffP + m2EffP);
+      // Calculate max impulse
+      let maxImpulse = (1 / m1) + (1 / m2);
+      maxImpulse += Vec2.dot(
+        Vec2.crossScalarFirst(Vec2.cross(r1, t) / am1, r1), t);
+      maxImpulse += Vec2.dot(
+        Vec2.crossScalarFirst(Vec2.cross(r2, t) / am2, r2), t);
+      maxImpulse = -0.5 * Vec2.dot(vRelInCP, t) / maxImpulse;
 
-      // If the impulse is bigger than the max, use the common v
-      let u1p = v1p + Math.sign(vpCommon - v1p) * dppMax / m1EffP;
-      let u2p = v2p + Math.sign(vpCommon - v2p) * dppMax / m2EffP;
-      if (Math.abs(u2p - v2p) > Math.abs(vpCommon - v2p)) {
-        u1p = u2p = vpCommon;
-      }
+      // Friction impulse
+      let frictionImpulse = impulse * fc;
+      if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
 
-      // Changes in velocity in the collision point
-      let du1 = Vec2.add(Vec2.mult(n, u1n - v1n), Vec2.mult(p, u1p - v1p));
-      let du2 = Vec2.add(Vec2.mult(n, u2n - v2n), Vec2.mult(p, u2p - v2p));
+      // Calculate post-friction velocities
+      u1 = Vec2.sub(u1, Vec2.mult(t, frictionImpulse / m1));
+      u2 = Vec2.add(u2, Vec2.mult(t, frictionImpulse / m2));
 
-      // console.log(du1);
+      // Calculate post-friction angular velocities
+      pAng1 = pAng1 - frictionImpulse * Vec2.cross(r1, t) / am1;
+      pAng2 = pAng2 + frictionImpulse * Vec2.cross(r2, t) / am2;
 
-      // Apply changes in velocity in the collision point
-      this.applyDeltaVelInPoint(Vec2.mult(n, u1n - v1n), cp);
-      this.applyDeltaVelInPoint(Vec2.mult(p, u1p - v1p), cp);
-      ball.applyDeltaVelInPoint(Vec2.mult(n, u2n - v2n), cp);
-      ball.applyDeltaVelInPoint(Vec2.mult(p, u2p - v2p), cp);
-
-      if (isNaN(this.vel.x) || isNaN(ball.vel.x)) {
-        console.log('EOW');
-      }
+      // Store the new values in the ball and body
+      this.vel = u1;
+      ball.vel = u2;
+      this.ang = pAng1;
+      ball.ang = pAng2;
+      console.log(this.velInPlace(cp), ball.velInPlace(cp));
     }
   }
 
