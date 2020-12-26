@@ -221,6 +221,28 @@ class Vec2 {
   }
 
   /**
+   * Returns the cross product of a scalar and a 2D vector
+   * when the scalar goes first
+   * @param {number} s The scalar
+   * @param {Vec2} v The vector
+   * @return {Vec2} The cross product
+   */
+  static crossScalarFirst(s, v) {
+    return new Vec2(-v.y * s, v.x * s);
+  }
+
+  /**
+   * Returns the cross product of a scalar and a 2D vector
+   * when the scalar goes second
+   * @param {Vec2} v The vector
+   * @param {number} s The scalar
+   * @return {Vec2} The cross product
+   */
+  static crossScalarSecond(v, s) {
+    return new Vec2(v.y * s, -v.x * s);
+  }
+
+  /**
    * Get the angle between two vectors.
    * @param {Vec2} a - A vector.
    * @param {Vec2} b - Other vector
