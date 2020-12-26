@@ -126,21 +126,16 @@ class Ball {
   static collide(ball1, ball2) {
     if (!ball1.collided(ball2)) return;
 
-    let pos1 = ball1.pos;
-    let pos2 = ball2.pos;
-    let r1 = ball1.r;
-    let r2 = ball2.r;
-    let k = (ball1.k + ball2.k) / 2;
+    // Completely necessary quantities
+    let dist = Vec2.dist(ball1.pos, ball2.pos);
     let m1 = ball1.m;
     let m2 = ball2.m;
-    let dist = Vec2.dist(pos1, pos2);
-    let fc = (ball1.fc + ball2.fc) / 2;
 
     // Separate the balls
-    let cp1 = pos1.copy;
-    let cp2 = pos2.copy;
-    let too = r1 + r2 - dist;
-    let d = Vec2.sub(pos1, pos2);
+    let cp1 = ball1.pos.copy;
+    let cp2 = ball2.pos.copy;
+    let too = ball1.r + ball2.r - dist;
+    let d = Vec2.sub(ball1.pos, ball2.pos);
     d.setMag(1);
     d.mult((too * m2) / (m1 + m2));
     cp1.add(d);
@@ -152,61 +147,76 @@ class Ball {
 
     // Stop if they move in opposite directions
     if (Vec2.dot(d, Vec2.sub(ball1.vel, ball2.vel)) < 0) return;
-
     d.setMag(1);
-    let vel1Parralel = Vec2.cross(d, ball1.vel);
-    let vel2Parralel = Vec2.cross(d, ball2.vel);
-    let vel1Perpendicular = Vec2.dot(d, ball1.vel);
-    let vel2Perpendicular = Vec2.dot(d, ball2.vel);
+    // Collision point
+    let cp = Vec2.add(ball1.pos, Vec2.mult(d, ball1.r));
 
-    let vk1 = r1 * ball1.ang;
-    let vk2 = r2 * ball2.ang;
+    // Calculate collision response
+    let v1 = ball1.vel.copy;
+    let v2 = ball2.vel.copy;
+    let ang1 = ball1.ang;
+    let ang2 = ball2.ang;
+    let r1 = Vec2.sub(cp, ball1.pos);
+    let r2 = Vec2.sub(cp, ball2.pos);
+    let am1 = ball1.am;
+    let am2 = ball2.am;
+    let k = (ball1.k + ball2.k) / 2;
+    let fc = (ball1.fc + ball2.fc) / 2;
 
-    let vel1InPos = vel1Parralel - vk1;
-    let vel2InPos = vel2Parralel + vk2;
-    let effectiveMass1 = 1 / ((1 / m1) + (r1 * r1 / ball1.am));
-    let effectiveMass2 = 1 / ((1 / m2) + (r2 * r2 / ball2.am));
-    let vCommon =
-      (vel1InPos * effectiveMass1 + vel2InPos * effectiveMass2) /
-      (effectiveMass1 + effectiveMass2);
-    let tovCommon1 = vCommon - vel1InPos;
-    let tovCommon2 = vCommon - vel2InPos;
-    let maxDeltaAng1 = tovCommon1 / r1;
-    let maxDeltaAng2 = tovCommon2 / r2;
+    // Create collision space basis
+    let n = d.copy;// normal/perpendicular
 
-    // Calculate the new perpendicular velocities
-    let u1Perpendicular =
-      (1 + k) *
-      ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
-      k * vel1Perpendicular;
-    let u2Perpendicular =
-      (1 + k) *
-      ((m1 * vel1Perpendicular + m2 * vel2Perpendicular) / (m1 + m2)) -
-      k * vel2Perpendicular;
+    // Effective velocities in the collision point
+    let v1InCP = ball1.velInPlace(cp);
+    let v2InCP = ball2.velInPlace(cp);
+    // Relative velocity in collision point
+    let vRelInCP = Vec2.sub(v2InCP, v1InCP);
 
-    ball1.vel = Vec2.mult(d, u1Perpendicular);
-    ball2.vel = Vec2.mult(d, u2Perpendicular);
+    // Calculate impulse
+    let impulse = (1 / m1) + (1 / m2);
+    impulse = -(1 + k) * Vec2.dot(vRelInCP, n) / impulse;
 
-    let deltav1Perpendicular = u1Perpendicular - vel1Perpendicular;
-    let deltav2Perpendicular = u2Perpendicular - vel2Perpendicular;
+    // Calculate post-collision velocities
+    let u1 = Vec2.sub(v1, Vec2.mult(n, impulse / m1));
+    let u2 = Vec2.add(v2, Vec2.mult(n, impulse / m2));
 
-    let deltaAng1 =
-      (-Math.sign(tovCommon1) * (deltav1Perpendicular * fc)) / (ball1.amc * r1);
-    let deltaAng2 =
-      (Math.sign(tovCommon2) * (deltav2Perpendicular * fc)) / (ball2.amc * r2);
+    // Calculate post-collision angular velocities
+    let pAng1 = ang1 - impulse * Vec2.cross(r1, n) / am1;
+    let pAng2 = ang2;
 
-    if (deltaAng1 / maxDeltaAng1 > 1) deltaAng1 = maxDeltaAng1;
-    if (deltaAng2 / maxDeltaAng2 > 1) deltaAng2 = maxDeltaAng2;
+    /**
+     * Now calculate the friction reaction
+     */
+    // Tangential direction
+    let t = vRelInCP.copy;
+    t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
+    t.setMag(1);
 
-    ball1.ang -= deltaAng1;
-    ball2.ang += deltaAng2;
+    // Calculate max impulse
+    let maxImpulse = (1 / m1) + (1 / m2);
+    maxImpulse += Vec2.dot(
+      Vec2.crossScalarFirst(Vec2.cross(r1, t) / am1, r1), t);
+    maxImpulse += Vec2.dot(
+      Vec2.crossScalarFirst(Vec2.cross(r2, t) / am2, r2), t);
+    maxImpulse = -0.5 * Vec2.dot(vRelInCP, t) / maxImpulse;
 
-    let u1Parralel = vel1Parralel + deltaAng1 * r1;
-    let u2Parralel = vel2Parralel + deltaAng2 * r2;
+    // Friction impulse
+    let frictionImpulse = impulse * fc;
+    if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
 
-    d.rotate(Math.PI / 2);
-    ball1.vel.add(Vec2.mult(d, u1Parralel));
-    ball2.vel.add(Vec2.mult(d, u2Parralel));
+    // Calculate post-friction velocities
+    u1 = Vec2.sub(u1, Vec2.mult(t, frictionImpulse / m1));
+    u2 = Vec2.add(u2, Vec2.mult(t, frictionImpulse / m2));
+
+    // Calculate post-friction angular velocities
+    pAng1 = pAng1 - frictionImpulse * Vec2.cross(r1, t) / am1;
+    pAng2 = pAng2 + frictionImpulse * Vec2.cross(r2, t) / am2;
+
+    // Store the new values in the balls
+    ball1.vel = u1;
+    ball2.vel = u2;
+    ball1.ang = pAng1;
+    ball2.ang = pAng2;
   }
 
   /**
@@ -245,7 +255,7 @@ class Ball {
     if (r.length === 0) return this.m;
     let angle = Vec2.angle(direction, r);
     let rotationalMass = (Math.sin(angle) ** 2) * (r.length ** 2) / this.am;
-    if (isNaN(angle))console.log(direction, r, angle);
+    if (isNaN(angle)) console.log(direction, r, angle);
     return 1 / (rotationalMass + (1 / this.m));
   }
 

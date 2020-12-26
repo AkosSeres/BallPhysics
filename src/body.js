@@ -260,7 +260,6 @@ class Body {
       ball.vel = u2;
       this.ang = pAng1;
       ball.ang = pAng2;
-      console.log(this.velInPlace(cp), ball.velInPlace(cp));
     }
   }
 
