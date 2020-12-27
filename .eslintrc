@@ -3,5 +3,8 @@
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType": "script"
+  },
+  "env": {
+    "browser": true
   }
 }

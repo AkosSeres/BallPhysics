@@ -1,8 +1,50 @@
+/* Color palette: */
+:root {
+    --whitey: #faf3ddff;
+    --whitey-hover: #F4E6B8;
+    --greeny: #02c39aff;
+    --greeny-hover: #02A27F;
+    --pinky: #e58c8aff;
+    --pinky-hover: #DE6A68;
+    --pinky-darker: #DA5A58;
+    --blues: #77b6eaff;
+    --blues-hover: #77b6eaff;
+    --blues-hover: #60AAE6;
+    --blacky: #363732ff;
+    --blacky-hover: #2A2B27;
+}
+
+.bg-white {
+    background-color: var(--whitey);
+    color: black;
+}
+.bg-green {
+    background-color: var(--greeny);
+    color: white;
+}
+.bg-pink {
+    background-color: var(--pinky);
+    color: black;
+}
+.bg-pink-darker {
+    background-color: var(--pinky-darker) !important;
+    color: black;
+}
+.bg-blue {
+    background-color: var(--blues);
+    color: black;
+}
+.bg-black {
+    background-color: var(--blacky);
+    color: white;
+}
+
 body {
     padding: 0;
     margin: 0;
     font-family: Helvetica, sans-serif;
     overflow: hidden;
+    background-color: var(--whitey);
 }
 
 h3 {
@@ -11,26 +53,32 @@ h3 {
 
 .title {
     grid-area: header;
-    background-color: aqua;
     margin-top: 0px;
     margin-bottom: 0px;
+    text-align: center;
+    border-bottom-right-radius: 1rem;
 }
 
-.timebar{
+.timebar {
     grid-area: timebar;
-    background-color: magenta;
     text-align: center;
     padding-top: 0.2em;
 }
 
 .modes-holder {
     grid-area: modes;
+    text-align: center;
 }
 
 #canvas-holder {
     grid-area: main;
     padding: 0;
     margin: 0;
+}
+canvas{
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    box-shadow: 5px 10px 18px #888888;
 }
 
 .sidebar {
@@ -44,4 +92,39 @@ h3 {
     grid-template-areas:
         "header timebar sidebar"
         "modes main sidebar";
+}
+
+.button {
+    background-color: var(--pinky);
+    border: none;
+    color: white;
+    padding: 0.4em 0.6em;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 0.3em;
+    box-shadow: var(--black-olive);
+}
+
+.big-button {
+    background-color: var(--pinky);
+    border: none;
+    color: white;
+    padding: 0.4em 0.6em;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: medium;
+    border-radius: 0.3em;
+    box-shadow: var(--blacky);
+    margin-top: 0.5em;
+    box-shadow: 5px 10px 18px #888888;
+}
+
+.button:hover, .big-button:hover{
+    background-color: var(--pinky-hover);
+}
+
+.fix-width{
+    width: 75%;
 }

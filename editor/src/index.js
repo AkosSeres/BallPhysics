@@ -10,14 +10,51 @@ import startPauseControlsFunction from './startPauseControls';
 // Import css
 import '../css/style.css';
 
-window.editorApp = (function Editor() {
+const modeNames = [
+  'ballcreator',
+  'rectangle',
+  'walldrawer',
+  'stickcreator',
+  'springcreator',
+  'movemode',
+  'elasticballcreator',
+  'softsquarecreator',
+  'deletemode',
+  'rectanglebodycreator',
+];
+
+const modes = [
+  require('./modes/ballcreator.js'),
+  require('./modes/rectangle.js'),
+  require('./modes/walldrawer.js'),
+  require('./modes/stickcreator.js'),
+  require('./modes/springcreator.js'),
+  require('./modes/movemode.js'),
+  require('./modes/elasticballcreator.js'),
+  require('./modes/softsquarecreator.js'),
+  require('./modes/deletemode.js'),
+  require('./modes/rectanglebodycreator.js'),
+];
+
+const palette = {
+  "white": "#faf3dd",
+  "green": "#02c39a",
+  "pink": "#e58c8a",
+  "blue": "#77b6ea",
+  "black": "#363732"
+}
+
+window.editorApp = new (function Editor() {
   this.physics = new Physics();
   this.mouseX = 0;
   this.mouseY = 0;
   this.mouseDown = 0;
   this.defaultSize = 30;
+  window.defaultSize = 30;
   this.k = 0.5;
+  window.k = 0.5;
   this.fc = 2;
+  window.fc = 2;
   this.springConstant = 2000;
   window.springConstant = 2000; // To be removed
   this.scaling = 1;
@@ -32,19 +69,6 @@ window.editorApp = (function Editor() {
   this.choosed = false;
   this.mx = 0;
   this.my = 0;
-
-  const modes = [
-    require('./modes/ballcreator.js'),
-    require('./modes/rectangle.js'),
-    require('./modes/walldrawer.js'),
-    require('./modes/stickcreator.js'),
-    require('./modes/springcreator.js'),
-    require('./modes/movemode.js'),
-    require('./modes/elasticballcreator.js'),
-    require('./modes/softsquarecreator.js'),
-    require('./modes/deletemode.js'),
-    require('./modes/rectanglebodycreator.js'),
-  ];
 
   this.left = false;
   this.right = false;
@@ -86,10 +110,14 @@ window.editorApp = (function Editor() {
 
     resizeCanvas();
     this.defaultSize = (this.cnv.width + this.cnv.height) / 80;
+    window.defaultSize = (this.cnv.width + this.cnv.height) / 80;
+
+    // Set up modes and link them to the buttons
+    setupModes();
 
     startPauseControlsFunction(new Translator());
 
-    requestAnimationFrame(drawFunction);
+    requestAnimationFrame(this.drawFunction);
   };
 
   /**
@@ -105,7 +133,7 @@ window.editorApp = (function Editor() {
   /**
    * My draw function
    */
-  const drawFunction = () => {
+  this.drawFunction = () => {
     if (!isFinite(this.lastFrameTime)) this.lastFrameTime = performance.now();
     let elapsedTime = performance.now() - this.lastFrameTime;
     if (!isFinite(elapsedTime)) {
@@ -121,24 +149,8 @@ window.editorApp = (function Editor() {
     const ctx = this.cnv.getContext('2d');
 
     // paint the background
-    ctx.fillStyle = 'rgb(51, 51, 51)';
+    ctx.fillStyle = palette.black;
     ctx.fillRect(0, 0, this.cnv.width, this.cnv.height);
-
-    // Draw the logo up there and some coordinates
-    ctx.strokeStyle = 'black';
-    ctx.fillStyle = 'white';
-    ctx.fillText('BallPhysics', 10, 10);
-    ctx.fillText('Mode: ' + modes[this.mode].name, 10, 25);
-    ctx.fillText(
-      Math.round(this.mouseX).toString() + ' ' + Math.round(this.mouseY).toString(),
-      10,
-      40
-    );
-    ctx.fillText(
-      Math.round(this.lastX).toString() + ' ' + Math.round(this.lastY).toString(),
-      10,
-      55
-    );
 
     modes[this.mode].drawFunc(
       ctx,
@@ -158,7 +170,6 @@ window.editorApp = (function Editor() {
       }
     );
 
-    // the size indicator for creating balls
     ctx.strokeStyle = 'black';
 
     physicsDraw(this.cnv);
@@ -179,7 +190,7 @@ window.editorApp = (function Editor() {
     pmouseY = this.mouseY;
 
     this.lastFrameTime = performance.now();
-    requestAnimationFrame(drawFunction);
+    requestAnimationFrame(this.drawFunction);
   }
 
   /**
@@ -187,7 +198,7 @@ window.editorApp = (function Editor() {
    * @param {number} x The x position of the mouse of the finger on the canvas
    * @param {number} y The y position of the mouse of the finger on the canvas
    */
-  const startInteraction = (x, y) => {
+  startInteraction = (x, y) => {
     this.mouseX = x;
     this.mouseY = y;
     this.choosed = this.physics.getObjectAtCoordinates(
@@ -246,14 +257,6 @@ window.editorApp = (function Editor() {
    */
   const keyGotDown = (event) => {
     keyCode = event.key;
-    if (keyCode === 'ArrowUp') {
-      this.mode += 1;
-      this.mode %= modes.length;
-    }
-    if (keyCode === 'ArrowDown') {
-      this.mode -= 1;
-      this.mode = this.mode === -1 ? modes.length - 1 : this.mode;
-    }
     if (keyCode === 's') {
       spawnNewtonsCradle(this.cnv.width / 2, this.cnv.height / 2, 0.5, this.physics);
     }
@@ -377,7 +380,7 @@ window.editorApp = (function Editor() {
     ctx.translate(this.viewOffsetX, this.viewOffsetY);
     ctx.scale(this.scaling, this.scaling);
 
-    ctx.fillStyle = 'green';
+    ctx.fillStyle = palette.green;
     ctx.strokeStyle = 'black';
     for (let i = 0; i < this.physics.balls.length; i++) {
       let ball = this.physics.balls[i];
@@ -429,7 +432,6 @@ window.editorApp = (function Editor() {
     };
     ctx.fillStyle = 'white';
     this.physics.walls.forEach(drawWall);
-    ctx.fillStyle = 'yellow';
     this.physics.bounds.forEach(drawWall);
 
     this.physics.fixedBalls.forEach((b) => {
@@ -439,8 +441,6 @@ window.editorApp = (function Editor() {
     });
     ctx.save();
     ctx.lineWidth = 2;
-    ctx.strokeStyle = '#ADD8E6';
-    ctx.fillStyle = '#ADD8E6';
     this.physics.springs.forEach((element) => {
       if (element instanceof Spring && !(element instanceof Stick)) {
         let x1;
@@ -465,6 +465,8 @@ window.editorApp = (function Editor() {
         let last = new Vec2(x1, y1);
         const num = Math.floor(element.length / 10);
         for (let i = 1; i <= num; i++) {
+          ctx.strokeStyle = palette.blue;
+          ctx.fillStyle = palette.blue;
           if (i === num) v = new Vec2(0, 0);
           ctx.beginPath();
           ctx.moveTo(last.x, last.y);
@@ -474,6 +476,8 @@ window.editorApp = (function Editor() {
           v.mult(-1);
         }
       } else {
+        ctx.strokeStyle = palette.blue;
+        ctx.fillStyle = palette.blue;
         ctx.beginPath();
         ctx.moveTo(element.objects[0].pos.x, element.objects[0].pos.y);
         ctx.lineTo(
@@ -483,12 +487,16 @@ window.editorApp = (function Editor() {
         ctx.stroke();
       }
       element.objects.forEach((o) => {
+        ctx.strokeStyle = 'black';
+        ctx.fillStyle = palette.blue;
         ctx.beginPath();
         ctx.arc(o.pos.x, o.pos.y, 2.5, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
       });
       if (element.pinned) {
+        ctx.strokeStyle = 'black';
+        ctx.fillStyle = palette.blue;
         ctx.beginPath();
         ctx.arc(element.pinned.x, element.pinned.y, 3, 0, Math.PI * 2);
         ctx.fill();
@@ -551,6 +559,33 @@ window.editorApp = (function Editor() {
       phy.addSpring(stick);
       stick.lockRotation();
     });
+  }
+
+  const modeButtonClicked = (e) => {
+    let modeName = e.target.id.replace('-btn', '');
+    let modeNum = modeNames.indexOf(modeName);
+    let prevoiusBtn = document.getElementById(modeNames[this.mode] + '-btn');
+    prevoiusBtn.classList.remove('bg-pink-darker');
+
+    e.target.classList.add('bg-pink-darker');
+    this.mode = modeNum;
+  }
+
+  const setupModes = () => {
+    let buttonHolder = document.getElementById('button-holder');
+
+    modeNames.forEach(function (modeName, i) {
+      let button = document.createElement('div');
+      button.classList.add('big-button');
+      button.classList.add('fix-width');
+      button.id = modeName + '-btn';
+      button.textContent = modes[i].name;
+      button.onclick = modeButtonClicked;
+      buttonHolder.appendChild(button);
+    });
+
+    let btn = document.getElementById(modeNames[this.mode] + '-btn');
+    btn.classList.add('bg-pink-darker');
   }
 
   /**
