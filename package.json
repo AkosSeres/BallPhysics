@@ -5,6 +5,7 @@
   "main": "./src/physics.js",
   "scripts": {
     "test": "jest --verbose ./tests",
+    "watch": "nodemon --ignore \"dest/*.*\" -e js,css,html --exec npm run build",
     "build": "esbuild editor/src/index.js --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16 --outfile=dest/main.js && cp editor/static/index.html dest/index.html"
   },
   "repository": {
@@ -27,7 +28,8 @@
     "esbuild": "^0.8.26",
     "eslint": "^6.0.1",
     "eslint-config-google": "^0.9.1",
-    "jest": "^26.4.2"
+    "jest": "^26.4.2",
+    "nodemon": "^2.0.6"
   },
   "dependencies": {}
 }

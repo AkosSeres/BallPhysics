@@ -54,6 +54,7 @@ window.editorApp = (function Editor() {
    */
   window.onload = () => {
     this.cnv = document.getElementById('defaulCanvas0');
+    this.canvasHolder = document.getElementById('canvas-holder');
 
     this.physics.setBounds(0, 0, this.cnv.width, this.cnv.height);
     this.physics.setGravity(new Vec2(0, 1000));
@@ -95,8 +96,9 @@ window.editorApp = (function Editor() {
    * Function that is called when the window gest resized
    */
   const resizeCanvas = () => {
-    this.cnv.width = window.innerWidth;
-    this.cnv.height = window.innerHeight;
+    canvasRect = this.canvasHolder.getBoundingClientRect()
+    this.cnv.width = canvasRect.width;
+    this.cnv.height = window.innerHeight - canvasRect.top;
     this.physics.setBounds(0, 0, this.cnv.width, this.cnv.height);
   }
 
@@ -304,19 +306,10 @@ window.editorApp = (function Editor() {
    */
   const startTouch = (event) => {
     event.preventDefault();
-    if (this.cnv.width - event.changedTouches[0].clientX < this.cnv.width / 100) {
-      this.mode += 1;
-      this.mode %= modes.length;
-      return;
-    }
-    if (event.changedTouches[0].clientX < this.cnv.width / 100) {
-      this.mode -= 1;
-      this.mode = this.mode === -1 ? modes.length - 1 : this.mode;
-      return;
-    }
+    let cnvBounds = this.canvasHolder.getBoundingClientRect();
     startInteraction(
-      event.changedTouches[0].clientX,
-      event.changedTouches[0].clientY
+      event.changedTouches[0].clientX - cnvBounds.left,
+      event.changedTouches[0].clientY - cnvBounds.top
     );
     return false;
   }
@@ -328,9 +321,10 @@ window.editorApp = (function Editor() {
    */
   const endTouch = (event) => {
     event.preventDefault();
+    let cnvBounds = this.canvasHolder.getBoundingClientRect();
     endInteraction(
-      event.changedTouches[0].clientX,
-      event.changedTouches[0].clientY
+      event.changedTouches[0].clientX - cnvBounds.left,
+      event.changedTouches[0].clientY - cnvBounds.top
     );
     return false;
   }
@@ -342,8 +336,9 @@ window.editorApp = (function Editor() {
    */
   const moveTouch = (event) => {
     event.preventDefault();
-    this.mouseX = event.changedTouches[0].clientX;
-    this.mouseY = event.changedTouches[0].clientY;
+    let cnvBounds = this.canvasHolder.getBoundingClientRect();
+    this.mouseX = event.changedTouches[0].clientX - cnvBounds.left;
+    this.mouseY = event.changedTouches[0].clientY - cnvBounds.top;
     return false;
   }
 
@@ -353,7 +348,7 @@ window.editorApp = (function Editor() {
    * @return {boolean} Returns false for preventing default browser behavior
    */
   const startMouse = (event) => {
-    startInteraction(event.clientX, event.clientY);
+    startInteraction(event.layerX, event.layerY);
     return false;
   }
 
@@ -363,7 +358,7 @@ window.editorApp = (function Editor() {
    * @return {boolean} Returns false for preventing default browser behavior
    */
   const endMouse = (event) => {
-    endInteraction(event.clientX, event.clientY);
+    endInteraction(event.layerX, event.layerY);
     return false;
   }
 
@@ -372,8 +367,8 @@ window.editorApp = (function Editor() {
    * @param {TouchEvent} event The event containing data
    */
   const handleMouseMovement = (event) => {
-    this.mouseX = event.clientX;
-    this.mouseY = event.clientY;
+    this.mouseX = event.layerX;
+    this.mouseY = event.layerY;
   }
 
   const physicsDraw = (cnv) => {

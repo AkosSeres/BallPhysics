@@ -1,9 +1,47 @@
 body {
     padding: 0;
     margin: 0;
+    font-family: Helvetica, sans-serif;
+    overflow: hidden;
 }
 
-canvas {
-    vertical-align: top;
-    justify-content: center;
+h3 {
+    margin: 0.3rem;
+}
+
+.title {
+    grid-area: header;
+    background-color: aqua;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.timebar{
+    grid-area: timebar;
+    background-color: magenta;
+    text-align: center;
+    padding-top: 0.2em;
+}
+
+.modes-holder {
+    grid-area: modes;
+}
+
+#canvas-holder {
+    grid-area: main;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar {
+    grid-area: sidebar;
+}
+
+.page-container {
+    display: grid;
+    grid-template-columns: 10rem auto 10rem;
+    grid-template-rows: 2rem auto;
+    grid-template-areas:
+        "header timebar sidebar"
+        "modes main sidebar";
 }

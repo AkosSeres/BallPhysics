@@ -11,12 +11,28 @@
 </head>
 
 <body>
-  <canvas id="defaulCanvas0" style="position: relative;"></canvas>
-  <div style="position: absolute; left: 50%; top: 0%; transform: translate(-50%, 0%);">
-    <button id="pause">Start/Pause</button>
-    <button id="revert">Revert</button>
-    <button id="clear all">Clear world</button>
-    <button id="set start">Set as starting state</button>
+  <div class="page-container">
+    <div class="title">
+      <h3>BallPhysics</h3>
+    </div>
+    <div class="timebar">
+      <button id="pause">Start/Pause</button>
+      <button id="revert">Revert</button>
+      <button id="clear all">Clear world</button>
+      <button id="set start">Set as starting state</button>
+    </div>
+
+    <div class="modes-holder">
+      Modes go here
+    </div>
+
+    <div id="canvas-holder">
+      <canvas id="defaulCanvas0"></canvas>
+    </div>
+
+    <div class="sidebar">
+      Other tools here
+    </div>
   </div>
 </body>
 
