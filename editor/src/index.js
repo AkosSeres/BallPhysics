@@ -109,8 +109,6 @@ window.editorApp = new (function Editor() {
     );
 
     resizeCanvas();
-    this.defaultSize = (this.cnv.width + this.cnv.height) / 80;
-    window.defaultSize = (this.cnv.width + this.cnv.height) / 80;
 
     // Set up modes and link them to the buttons
     setupModes();
@@ -124,10 +122,28 @@ window.editorApp = new (function Editor() {
    * Function that is called when the window gest resized
    */
   const resizeCanvas = () => {
+    // Fit canvas inside the holder
     canvasRect = this.canvasHolder.getBoundingClientRect()
     this.cnv.width = canvasRect.width;
     this.cnv.height = window.innerHeight - canvasRect.top;
+
+    // Code for making the image sharp on high DPI displays
+    // Scale according to the pixel ratio of the display
+    var dpr = window.devicePixelRatio || 1;
+    var rect = this.cnv.getBoundingClientRect();
+    this.cnv.width = rect.width * dpr;
+    this.cnv.height = rect.height * dpr;
+    this.cnv.style.width = rect.width + 'px';
+    this.cnv.style.height = rect.height + 'px';
+    this.scaling = 1 / dpr;
     this.physics.setBounds(0, 0, this.cnv.width, this.cnv.height);
+    let ctx = this.cnv.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.lineWidth = dpr;
+
+    // Set the size of the balls
+    this.defaultSize = (this.cnv.width + this.cnv.height) / 80;
+    window.defaultSize = (this.cnv.width + this.cnv.height) / 80;
   }
 
   /**
