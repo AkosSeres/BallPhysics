@@ -1,6 +1,6 @@
-const Physics = require('../../src/physics');
+import Physics from '../../src/physics';
 
-module.exports = function(translator) {
+export default function (translator) {
   this.startingState = translator.getPhysics().toJSObject();
   this.inStartingState = true;
 
