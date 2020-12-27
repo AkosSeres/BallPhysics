@@ -780,69 +780,59 @@ class Body {
     if (!collisionPoint || collisionPoint == undefined) return;
 
     // Deal with the change in velocity by the collision
-    let vel = this.vel;
-    let pos = this.pos;
-    let normal = Vec2.sub(collisionPoint, fbPos);
-    normal.setMag(1);
-    let r = Vec2.sub(pos, collisionPoint);
-    let angle = Vec2.angleACW(normal, r);
+    let n = Vec2.sub(collisionPoint, fbPos);
+    n.setMag(1);
+    let cp = collisionPoint;
+    let v = this.vel.copy;
+    let ang = this.ang;
+    let r = Vec2.sub(cp, this.pos);
+    let am = this.am;
+    let m = this.m;
+    let k = this.k;
+    let fc = this.fc;
 
-    let velInCollisionPoint = vel.copy;
-    let rotater = r.copy;
-    rotater.mult(-1 * this.ang);
-    rotater.rotate(Math.PI / 2);
-    velInCollisionPoint.add(rotater);
-    let perpVel = Vec2.dot(normal, velInCollisionPoint);
-    if (perpVel >= 0) return;
-    perpVel *= 1 + this.k;
+    // Relative velocity in collision point
+    let vRelInCP = Vec2.mult(this.velInPlace(cp), -1);
 
-    let deltaVel = Vec2.mult(Vec2.normalized(normal), -1 * perpVel);
-    let deltaAng = deltaVel.copy;
+    // Calculate impulse
+    let impulse = (1 / m);
+    impulse += Vec2.dot(
+      Vec2.crossScalarFirst(Vec2.cross(r, n) / am, r), n);
+    impulse = -(1 + k) * Vec2.dot(vRelInCP, n) / impulse;
 
-    deltaVel.mult(Math.cos(angle));
-    this.vel.add(deltaVel);
+    // Calculate post-collision velocity
+    let u = Vec2.sub(v, Vec2.mult(n, impulse / m));
 
-    deltaAng = deltaAng.length / r.length;
-    deltaAng *= Math.sin(angle);
-    this.ang += deltaAng;
+    // Calculate post-collision angular velocity
+    let pAng = ang - impulse * Vec2.cross(r, n) / am;
 
-    // Then deal with friction
-    let massInPoint =
-      this.m * Math.abs(Math.cos(angle)) +
-      (this.am / r.length / r.length) * Math.abs(Math.sin(angle));
-    let massParralel =
-      this.m * Math.abs(Math.sin(angle)) +
-      (this.am / r.length / r.length) * Math.abs(Math.cos(angle));
+    /**
+     * Now calculate the friction reaction
+     */
+    // Tangential direction
+    let t = vRelInCP.copy;
+    t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
+    t.setMag(1);
 
-    deltaVel = Vec2.mult(Vec2.normalized(normal), -1 * perpVel);
+    // Calculate max impulse
+    let maxImpulse = (1 / m);
+    maxImpulse += Vec2.dot(
+      Vec2.crossScalarFirst(Vec2.cross(r, t) / am, r), t);
+    maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
 
-    let parralelVec = normal.copy;
-    parralelVec.rotate(Math.PI / 2);
-    parralelVec.mult(Math.sign(Vec2.dot(parralelVec, velInCollisionPoint)));
-    if (parralelVec.length == 0) return;
+    // Friction impulse
+    let frictionImpulse = impulse * fc;
+    if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
 
-    let parralelVel = Vec2.dot(velInCollisionPoint, parralelVec);
-    let deltaMomentum = Vec2.mult(deltaVel, massInPoint);
-    let deltaVelParralel = Vec2.div(deltaMomentum, massParralel);
-    if (massParralel == 0) deltaVelParralel = 0;
+    // Calculate post-friction velocity
+    u = Vec2.sub(u, Vec2.mult(t, frictionImpulse / m));
 
-    deltaVelParralel.mult(this.fc);
-    deltaVelParralel = Vec2.mult(parralelVec, deltaVelParralel.length);
-    if (deltaVelParralel.length > parralelVel) {
-      deltaVelParralel.setMag(parralelVel);
-    }
+    // Calculate post-friction angular velocity
+    pAng = pAng - frictionImpulse * Vec2.cross(r, t) / am;
 
-    angle = Vec2.angleACW(parralelVec, r);
-
-    deltaVel = deltaVelParralel;
-    deltaAng = deltaVel.copy;
-
-    deltaVel.mult(Math.cos(angle));
-    this.vel.add(deltaVel);
-
-    deltaAng = deltaAng.length / r.length;
-    deltaAng *= Math.sin(angle);
-    this.ang -= deltaAng;
+    // Store the new values in the body
+    this.vel = u;
+    this.ang = pAng;
   }
 
   /**
@@ -938,67 +928,59 @@ class Body {
 
     for (let collisionPoint of collisionPoints) {
       // Deal with the change in velocity by the collision
-      let vel = this.vel;
-      let pos = this.pos;
-      let r = Vec2.sub(pos, collisionPoint);
-      let angle = Vec2.angleACW(normal, r);
+      let n = normal;
+      n.setMag(1);
+      let cp = collisionPoint;
+      let v = this.vel.copy;
+      let ang = this.ang;
+      let r = Vec2.sub(cp, this.pos);
+      let am = this.am;
+      let m = this.m;
+      let k = this.k;
+      let fc = this.fc;
 
-      let velInCollisionPoint = vel.copy;
-      let rotater = r.copy;
-      rotater.mult(-1 * this.ang);
-      rotater.rotate(Math.PI / 2);
-      velInCollisionPoint.add(rotater);
-      let perpVel = Vec2.dot(normal, velInCollisionPoint);
-      if (perpVel >= 0) return;
-      perpVel *= 1 + this.k;
+      // Relative velocity in collision point
+      let vRelInCP = Vec2.mult(this.velInPlace(cp), -1);
 
-      let deltaVel = Vec2.mult(Vec2.normalized(normal), -1 * perpVel);
-      let deltaAng = deltaVel.copy;
+      // Calculate impulse
+      let impulse = (1 / m);
+      impulse += Vec2.dot(
+        Vec2.crossScalarFirst(Vec2.cross(r, n) / am, r), n);
+      impulse = -(1 + k) * Vec2.dot(vRelInCP, n) / impulse;
 
-      deltaVel.mult(Math.cos(angle));
-      this.vel.add(deltaVel);
+      // Calculate post-collision velocity
+      let u = Vec2.sub(v, Vec2.mult(n, impulse / m));
 
-      deltaAng = deltaAng.length / r.length;
-      deltaAng *= Math.sin(angle);
-      this.ang += deltaAng;
+      // Calculate post-collision angular velocity
+      let pAng = ang - impulse * Vec2.cross(r, n) / am;
 
-      // Then deal with friction
-      let massInPoint =
-        this.m * Math.abs(Math.cos(angle)) +
-        (this.am / r.length / r.length) * Math.abs(Math.sin(angle));
-      let massParralel =
-        this.m * Math.abs(Math.sin(angle)) +
-        (this.am / r.length / r.length) * Math.abs(Math.cos(angle));
+      /**
+       * Now calculate the friction reaction
+       */
+      // Tangential direction
+      let t = vRelInCP.copy;
+      t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
+      t.setMag(1);
 
-      deltaVel = Vec2.mult(Vec2.normalized(normal), -1 * perpVel);
+      // Calculate max impulse
+      let maxImpulse = (1 / m);
+      maxImpulse += Vec2.dot(
+        Vec2.crossScalarFirst(Vec2.cross(r, t) / am, r), t);
+      maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
 
-      let parralelVec = normal.copy;
-      parralelVec.rotate(Math.PI / 2);
-      parralelVec.mult(Math.sign(Vec2.dot(parralelVec, velInCollisionPoint)));
-      if (parralelVec.length == 0) return;
+      // Friction impulse
+      let frictionImpulse = impulse * fc;
+      if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
 
-      let parralelVel = Vec2.dot(velInCollisionPoint, parralelVec);
-      let deltaMomentum = Vec2.mult(deltaVel, massInPoint);
-      let deltaVelParralel = Vec2.div(deltaMomentum, massParralel);
-      if (massParralel == 0) deltaVelParralel = 0;
+      // Calculate post-friction velocity
+      u = Vec2.sub(u, Vec2.mult(t, frictionImpulse / m));
 
-      deltaVelParralel.mult(this.fc);
-      deltaVelParralel = Vec2.mult(parralelVec, deltaVelParralel.length);
-      if (deltaVelParralel.length > parralelVel) {
-        deltaVelParralel.setMag(parralelVel);
-      }
+      // Calculate post-friction angular velocity
+      pAng = pAng - frictionImpulse * Vec2.cross(r, t) / am;
 
-      angle = Vec2.angleACW(parralelVec, r);
-
-      deltaVel = deltaVelParralel;
-      deltaAng = deltaVel.copy;
-
-      deltaVel.mult(Math.cos(angle));
-      this.vel.add(deltaVel);
-
-      deltaAng = deltaAng.length / r.length;
-      deltaAng *= Math.sin(angle);
-      this.ang -= deltaAng;
+      // Store the new values in the body
+      this.vel = u;
+      this.ang = pAng;
 
       endVels.push(this.vel);
       this.vel = startingVel.copy;
