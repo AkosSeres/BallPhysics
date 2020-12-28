@@ -6,7 +6,7 @@ export const BallCreatorMode: Mode = {
   name: 'Ball creator',
   description: '',
   drawFunc: function (editorApp: Editor, dt: number) {
-    let ctx: CanvasRenderingContext2D = editorApp.cnv.getContext('2d');
+    const ctx: CanvasRenderingContext2D = editorApp.cnv.getContext('2d');
     ctx.strokeStyle = 'black';
 
     ctx.beginPath();

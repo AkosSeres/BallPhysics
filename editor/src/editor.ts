@@ -6,6 +6,7 @@ const Spring = BallPhysics.Spring;
 const Stick = BallPhysics.Stick;
 
 import startPauseControlsFunction from './startPauseControls';
+import Mode from './modeInterface';
 import * as Modes from './modes';
 
 // Import css
@@ -24,7 +25,7 @@ const modeNames = [
   'DeleteMode',
   'RectangleBodyMode',
 ];
-const modes = modeNames.map((name) => Modes[name]);
+const modes:Mode[] = modeNames.map((name) => Modes[name]);
 
 const palette = {
   'white': '#faf3dd',
@@ -112,21 +113,21 @@ function Editor() {
    */
   const resizeCanvas = () => {
     // Fit canvas inside the holder
-    let canvasRect = this.canvasHolder.getBoundingClientRect();
+    const canvasRect = this.canvasHolder.getBoundingClientRect();
     this.cnv.width = canvasRect.width;
     this.cnv.height = window.innerHeight - canvasRect.top;
 
     // Code for making the image sharp on high DPI displays
     // Scale according to the pixel ratio of the display
-    let dpr = window.devicePixelRatio || 1;
-    let rect = canvasRect;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvasRect;
     this.cnv.width = rect.width * dpr;
     this.cnv.height = rect.height * dpr;
     this.cnv.style.width = rect.width + 'px';
     this.cnv.style.height = rect.height + 'px';
     this.scaling = 1 / dpr;
     this.physics.setBounds(0, 0, this.cnv.width, this.cnv.height);
-    let ctx = this.cnv.getContext('2d');
+    const ctx = this.cnv.getContext('2d');
     ctx.scale(dpr, dpr);
     ctx.lineWidth = dpr;
 
@@ -161,7 +162,7 @@ function Editor() {
     ctx.scale(this.scaling, this.scaling);
 
     modes[this.mode].drawFunc(this, elapsedTime * this.timeMultiplier);
-    physicsDraw(this.cnv);
+    physicsDraw();
 
     ctx.restore();
 
@@ -226,7 +227,7 @@ function Editor() {
    * @param {KeyboardEvent} event The event containing data
    */
   const keyGotDown = (event) => {
-    let keyCode = event.key;
+    const keyCode = event.key;
     if (keyCode === 's') {
       spawnNewtonsCradle(this.cnv.width / 2, this.cnv.height / 2, 0.5, this.physics);
     }
@@ -261,7 +262,7 @@ function Editor() {
    * @param {KeyboardEvent} event The event containing data
    */
   const keyGotUp = (event) => {
-    let keyCode = event.key;
+    const keyCode = event.key;
     // Right arrow
     if (keyCode === 'ArrowRight') {
       this.right = false;
@@ -279,7 +280,7 @@ function Editor() {
    */
   const startTouch = (event) => {
     event.preventDefault();
-    let cnvBounds = this.canvasHolder.getBoundingClientRect();
+    const cnvBounds = this.canvasHolder.getBoundingClientRect();
     startInteraction(
       event.changedTouches[0].clientX - cnvBounds.left,
       event.changedTouches[0].clientY - cnvBounds.top
@@ -294,7 +295,7 @@ function Editor() {
    */
   const endTouch = (event) => {
     event.preventDefault();
-    let cnvBounds = this.canvasHolder.getBoundingClientRect();
+    const cnvBounds = this.canvasHolder.getBoundingClientRect();
     endInteraction(
       event.changedTouches[0].clientX - cnvBounds.left,
       event.changedTouches[0].clientY - cnvBounds.top
@@ -309,7 +310,7 @@ function Editor() {
    */
   const moveTouch = (event) => {
     event.preventDefault();
-    let cnvBounds = this.canvasHolder.getBoundingClientRect();
+    const cnvBounds = this.canvasHolder.getBoundingClientRect();
     this.mouseX = event.changedTouches[0].clientX - cnvBounds.left;
     this.mouseY = event.changedTouches[0].clientY - cnvBounds.top;
     this.mouseX = this.mouseX / this.scaling - this.viewOffsetX / this.scaling;
@@ -348,13 +349,13 @@ function Editor() {
     this.mouseY = this.mouseY / this.scaling - this.viewOffsetY / this.scaling;
   };
 
-  const physicsDraw = (cnv) => {
+  const physicsDraw = () => {
     const ctx = this.cnv.getContext('2d');
 
     ctx.fillStyle = palette.green;
     ctx.strokeStyle = 'black';
     for (let i = 0; i < this.physics.balls.length; i++) {
-      let ball = this.physics.balls[i];
+      const ball = this.physics.balls[i];
       ctx.beginPath();
       ctx.arc(
         ball.pos.x,
@@ -477,7 +478,7 @@ function Editor() {
     ctx.restore();
 
     // Visualizing debug data
-    for (let segment of this.physics.debugData) {
+    for (const segment of this.physics.debugData) {
       ctx.strokeStyle = 'red';
       ctx.beginPath();
       ctx.moveTo(segment.a.x, segment.a.y);
@@ -531,9 +532,9 @@ function Editor() {
   };
 
   const modeButtonClicked = (e) => {
-    let modeName = e.target.id.replace('-btn', '');
-    let modeNum = modeNames.indexOf(modeName);
-    let prevoiusBtn = document.getElementById(modeNames[this.mode] + '-btn');
+    const modeName = e.target.id.replace('-btn', '');
+    const modeNum = modeNames.indexOf(modeName);
+    const prevoiusBtn = document.getElementById(modeNames[this.mode] + '-btn');
     prevoiusBtn.classList.remove('bg-pink-darker');
 
     e.target.classList.add('bg-pink-darker');
@@ -541,10 +542,10 @@ function Editor() {
   };
 
   const setupModes = () => {
-    let buttonHolder = document.getElementById('button-holder');
+    const buttonHolder = document.getElementById('button-holder');
 
     modeNames.forEach(function (modeName, i) {
-      let button = document.createElement('div');
+      const button = document.createElement('div');
       button.classList.add('big-button');
       button.classList.add('fix-width');
       button.id = modeName + '-btn';
@@ -553,7 +554,7 @@ function Editor() {
       buttonHolder.appendChild(button);
     });
 
-    let btn = document.getElementById(modeNames[this.mode] + '-btn');
+    const btn = document.getElementById(modeNames[this.mode] + '-btn');
     btn.classList.add('bg-pink-darker');
   };
 
@@ -598,6 +599,6 @@ function Editor() {
     this.getPhysics = getPhysics;
     this.setPhysics = setPhysics;
   };
-};
+}
 
 export default Editor;
