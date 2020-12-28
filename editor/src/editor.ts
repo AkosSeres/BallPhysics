@@ -176,7 +176,7 @@ class Editor implements EditorInterface {
     }
     elapsedTime /= 1000;
 
-    const ctx = <CanvasRenderingContext2D>this.cnv.getContext('2d');
+    const ctx = <CanvasRenderingContext2D> this.cnv.getContext('2d');
 
     // paint the background
     ctx.fillStyle = palette.black;
