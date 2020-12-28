@@ -1,30 +1,31 @@
 import Physics from '../../src/physics';
+import Editor from './editor';
 
-export default function (translator) {
-  this.startingState = translator.getPhysics().toJSObject();
+export default function (editorApp: Editor):void {
+  this.startingState = editorApp.getPhysics().toJSObject();
   this.inStartingState = true;
 
   document.getElementById('pause').onclick = () => {
-    if (translator.getTimeMultiplier() !== 0) translator.setTimeMultiplier(0);
+    if (editorApp.getTimeMultiplier() !== 0) editorApp.setTimeMultiplier(0);
     else {
-      translator.setTimeMultiplier(1);
+      editorApp.setTimeMultiplier(1);
       if (this.inStartingState == true) {
-        this.startingState = translator.getPhysics().toJSObject();
+        this.startingState = editorApp.getPhysics().toJSObject();
       }
       this.inStartingState = false;
     }
   };
 
   document.getElementById('revert').onclick = () => {
-    translator.setTimeMultiplier(0);
-    translator.setPhysics(Physics.fromObject(this.startingState));
+    editorApp.setTimeMultiplier(0);
+    editorApp.setPhysics(Physics.fromObject(this.startingState));
     this.inStartingState = true;
   };
 
   document.getElementById('clear all').onclick = () => {
     this.inStartingState = true;
 
-    const physics = translator.getPhysics();
+    const physics = editorApp.getPhysics();
     physics.balls = [];
     physics.walls = [];
     physics.softBalls = [];
@@ -33,8 +34,8 @@ export default function (translator) {
   };
 
   document.getElementById('set start').onclick = () => {
-    this.startingState = translator.getPhysics().toJSObject();
+    this.startingState = editorApp.getPhysics().toJSObject();
     this.inStartingState = true;
-    translator.setTimeMultiplier(0);
+    editorApp.setTimeMultiplier(0);
   };
-};
+}
