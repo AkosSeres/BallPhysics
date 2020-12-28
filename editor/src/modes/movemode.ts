@@ -8,34 +8,37 @@ let pmouseY = 0;
 
 const element = document.createElement('div');
 
-export const MoveMode: Mode = {
+const MoveMode: Mode = {
   name: 'Move',
   description: '',
   element,
-  drawFunc: function (editorApp, dt) {
-    if (editorApp.choosed && !editorApp.choosed.pinPoint) {
-      editorApp.choosed.move(
-        editorApp.mouseX - editorApp.choosed.pos.x,
-        editorApp.mouseY - editorApp.choosed.pos.y);
+  drawFunc(editorApp, dt) {
+    const { choosed } = editorApp;
+    if (choosed && !choosed.pinPoint) {
+      choosed.move(
+        editorApp.mouseX - choosed.pos.x,
+        editorApp.mouseY - choosed.pos.y,
+      );
       if (dt === 0) {
-        editorApp.choosed.vel.x = 0;
-        editorApp.choosed.vel.y = 0;
+        choosed.vel.x = 0;
+        choosed.vel.y = 0;
       } else {
-        editorApp.choosed.vel.x = (editorApp.mouseX - pmouseX) / dt;
-        editorApp.choosed.vel.y = (editorApp.mouseY - pmouseY) / dt;
+        choosed.vel.x = (editorApp.mouseX - pmouseX) / dt;
+        choosed.vel.y = (editorApp.mouseY - pmouseY) / dt;
       }
-      editorApp.choosed.ang = 0;
+      choosed.ang = 0;
     }
-
     pmouseX = editorApp.mouseX;
     pmouseY = editorApp.mouseY;
   },
-  startInteractionFunc: function (editorApp) { },
-  endInteractionFunc: function (editorApp) { },
-  keyGotUpFunc: function (editorApp) { },
-  keyGotDownFunc: function (editorApp) { },
+  startInteractionFunc(editorApp) { },
+  endInteractionFunc(editorApp) { },
+  keyGotUpFunc(editorApp) { },
+  keyGotDownFunc(editorApp) { },
 };
 
 [
   Creator.createModeTitle(MoveMode.name),
 ].forEach(element.appendChild.bind(element));
+
+export default MoveMode;

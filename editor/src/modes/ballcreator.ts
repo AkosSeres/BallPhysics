@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import Editor from '../editor';
 import BallPhysics from '../../../src/physics';
 import * as Creator from '../elementCreator';
+import EditorInterface from '../editorInterface';
 
 let size = 35;
 let k = 0.5;
@@ -13,12 +13,12 @@ const element = document.createElement('div');
 /**
  * This mode is for placing down balls in the world
  */
-export const BallCreatorMode: Mode = {
+const BallCreatorMode: Mode = {
   name: 'Ball creator',
   description: '',
   element,
-  drawFunc: function (editorApp: Editor, dt: number) {
-    const ctx: CanvasRenderingContext2D = editorApp.cnv.getContext('2d');
+  drawFunc(editorApp: EditorInterface, _dt: number) {
+    const ctx = <CanvasRenderingContext2D>editorApp.cnv.getContext('2d');
     ctx.strokeStyle = 'black';
 
     ctx.beginPath();
@@ -26,26 +26,27 @@ export const BallCreatorMode: Mode = {
       size, 0, 2 * Math.PI);
     ctx.stroke();
 
-    if (editorApp.lastX != 0 && editorApp.lastY != 0) {
+    if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       ctx.beginPath();
       ctx.moveTo(editorApp.mouseX, editorApp.mouseY);
       ctx.lineTo(editorApp.lastX, editorApp.lastY);
       ctx.stroke();
     }
   },
-  startInteractionFunc: function (editorApp) { },
-  endInteractionFunc: function (editorApp) {
-    if (editorApp.lastX != 0 && editorApp.lastY != 0) {
+  startInteractionFunc(editorApp) { },
+  endInteractionFunc(editorApp) {
+    if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       const newBall = new BallPhysics.Ball(
         new BallPhysics.Vec2(editorApp.lastX, editorApp.lastY),
         new BallPhysics.Vec2(editorApp.lastX - editorApp.mouseX,
           editorApp.lastY - editorApp.mouseY),
-        size, k, 0, fc);
+        size, k, 0, fc,
+      );
       if (
-        isFinite(newBall.pos.x) &&
-        isFinite(newBall.pos.y) &&
-        isFinite(newBall.vel.x) &&
-        isFinite(newBall.vel.y)
+        Number.isFinite(newBall.pos.x)
+        && Number.isFinite(newBall.pos.y)
+        && Number.isFinite(newBall.vel.x)
+        && Number.isFinite(newBall.vel.y)
       ) {
         editorApp.physics.addBall(newBall);
       } else {
@@ -55,8 +56,8 @@ export const BallCreatorMode: Mode = {
       }
     }
   },
-  keyGotUpFunc: function (editorApp) { },
-  keyGotDownFunc: function (editorApp) { },
+  keyGotUpFunc(editorApp) { },
+  keyGotDownFunc(editorApp) { },
 };
 
 [
@@ -71,3 +72,5 @@ export const BallCreatorMode: Mode = {
     fc = (<HTMLInputElement>event.target).valueAsNumber;
   }, 0.1),
 ].forEach(element.appendChild.bind(element));
+
+export default BallCreatorMode;

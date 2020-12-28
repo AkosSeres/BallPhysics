@@ -2,9 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
 import BallPhysics from '../../../src/physics';
-import Editor from '../editor';
 import * as Creator from '../elementCreator';
-import SoftBall from '../../../src/softball';
 
 let size = 35;
 const k = 0.5;
@@ -13,12 +11,12 @@ let resolution = 24;
 let pressure = 1;
 const element = document.createElement('div');
 
-export const SoftSquareCreatorMode = {
+const SoftSquareCreatorMode: Mode = {
   name: 'Soft square creator',
   description: '',
   element,
-  drawFunc: function (editorApp: Editor, dt: number): void {
-    const ctx = editorApp.cnv.getContext('2d');
+  drawFunc(editorApp, dt: number): void {
+    const ctx = <CanvasRenderingContext2D>editorApp.cnv.getContext('2d');
     ctx.strokeStyle = 'black';
 
     ctx.beginPath();
@@ -34,33 +32,34 @@ export const SoftSquareCreatorMode = {
       editorApp.mouseY - size);
     ctx.stroke();
 
-    if (editorApp.lastX != 0 && editorApp.lastY != 0) {
+    if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       ctx.beginPath();
       ctx.moveTo(editorApp.mouseX, editorApp.mouseY);
       ctx.lineTo(editorApp.lastX, editorApp.lastY);
       ctx.stroke();
     }
   },
-  startInteractionFunc: function (editorApp: Editor): void { },
-  endInteractionFunc: function (editorApp: Editor): void {
-    if (editorApp.lastX != 0 && editorApp.lastY != 0) {
+  startInteractionFunc(editorApp): void { },
+  endInteractionFunc(editorApp): void {
+    if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       const newBall = new BallPhysics.Ball(
         new BallPhysics.Vec2(editorApp.lastX, editorApp.lastY),
         new BallPhysics.Vec2(editorApp.lastX - editorApp.mouseX,
-          editorApp.lastY - editorApp.mouseY), size, k, 0, fc);
+          editorApp.lastY - editorApp.mouseY), size, k, 0, fc,
+      );
       if (
-        isFinite(newBall.pos.x) &&
-        isFinite(newBall.pos.y) &&
-        isFinite(newBall.vel.x) &&
-        isFinite(newBall.vel.y)
+        Number.isFinite(newBall.pos.x)
+        && Number.isFinite(newBall.pos.y)
+        && Number.isFinite(newBall.vel.x)
+        && Number.isFinite(newBall.vel.y)
       ) {
         editorApp.physics.addSoftSquare(newBall.pos,
           size * 2, fc, newBall.vel, resolution, pressure);
       }
     }
   },
-  keyGotUpFunc: function (editorApp: Editor): void { },
-  keyGotDownFunc: function (editorApp: Editor): void { },
+  keyGotUpFunc(editorApp): void { },
+  keyGotDownFunc(editorApp): void { },
 };
 
 [
@@ -78,3 +77,5 @@ export const SoftSquareCreatorMode = {
     resolution = (<HTMLInputElement>event.target).valueAsNumber;
   }, 8),
 ].forEach(element.appendChild.bind(element));
+
+export default SoftSquareCreatorMode;

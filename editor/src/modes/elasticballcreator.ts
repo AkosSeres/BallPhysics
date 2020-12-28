@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
 import BallPhysics from '../../../src/physics';
-import Editor from '../editor';
 import * as Creator from '../elementCreator';
+import EditorInterface from '../editorInterface';
 
 let size = 35;
 const k = 0.5;
@@ -12,50 +12,52 @@ let resolution = 24;
 let pressure = 1000000;
 const element = document.createElement('div');
 
-export const ElasticBallCreatorMode: Mode = {
+const ElasticBallCreatorMode: Mode = {
   name: 'Elastic ball creator',
   description: '',
   element,
-  drawFunc: function (editorApp: Editor, dt: number): void {
-    const ctx = editorApp.cnv.getContext('2d');
+  drawFunc(editorApp: EditorInterface, dt: number): void {
+    const ctx = <CanvasRenderingContext2D>editorApp.cnv.getContext('2d');
     ctx.strokeStyle = 'black';
 
     ctx.beginPath();
     ctx.arc(editorApp.mouseX, editorApp.mouseY, size, 0, 2 * Math.PI);
     ctx.stroke();
 
-    if (editorApp.lastX != 0 && editorApp.lastY != 0) {
+    if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       ctx.beginPath();
       ctx.moveTo(editorApp.mouseX, editorApp.mouseY);
       ctx.lineTo(editorApp.lastX, editorApp.lastY);
       ctx.stroke();
     }
   },
-  startInteractionFunc: function (editorApp) { },
-  endInteractionFunc: function (editorApp) {
-    if (editorApp.lastX != 0 && editorApp.lastY != 0) {
+  startInteractionFunc(editorApp) { },
+  endInteractionFunc(editorApp) {
+    if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       const newBall = new BallPhysics.Ball(
         new BallPhysics.Vec2(editorApp.lastX, editorApp.lastY),
         new BallPhysics.Vec2(editorApp.lastX - editorApp.mouseX,
-          editorApp.lastY - editorApp.mouseY), size, k, 0, fc);
+          editorApp.lastY - editorApp.mouseY), size, k, 0, fc,
+      );
       if (
-        isFinite(newBall.pos.x) &&
-        isFinite(newBall.pos.y) &&
-        isFinite(newBall.vel.x) &&
-        isFinite(newBall.vel.y)
+        Number.isFinite(newBall.pos.x)
+        && Number.isFinite(newBall.pos.y)
+        && Number.isFinite(newBall.vel.x)
+        && Number.isFinite(newBall.vel.y)
       ) {
         const sb = new BallPhysics.SoftBall(
-          newBall.pos, size, pressure, fc, resolution
+          newBall.pos, size, pressure, fc, resolution,
         );
         sb.points.forEach((p) => {
-          p.vel = newBall.vel.copy;
+          const point = p;
+          point.vel = newBall.vel.copy;
         });
         editorApp.physics.addSoftBall(sb);
       }
     }
   },
-  keyGotUpFunc: function (editorApp) { },
-  keyGotDownFunc: function (editorApp) { },
+  keyGotUpFunc(editorApp) { },
+  keyGotDownFunc(editorApp) { },
 };
 
 [
@@ -73,3 +75,5 @@ export const ElasticBallCreatorMode: Mode = {
     resolution = (<HTMLInputElement>event.target).valueAsNumber;
   }, 1),
 ].forEach(element.appendChild.bind(element));
+
+export default ElasticBallCreatorMode;

@@ -10,26 +10,35 @@ const Line = require('./line');
 const Polygon = require('./polygon');
 
 /**
- * @typedef {Ball | Body | Wall | {x: number,y: number,r: number} | SoftBall | {x: number, y: number, pinPoint: boolean}|booelan} AnyPhysicsObject
+ * @typedef {{a:{x:number,y:number}, b:{x:number,y:number}}} DebugDataElement
+ * @typedef {{x:number, y:number, r:number}} FixedBall
+ * @typedef {x: number, y: number, pinPoint: boolean} PinPoint
+ * @typedef {Ball | Body | Wall | FixedBall | SoftBall |PinPoint|booelan} AnyPhysicsObject
  */
 
 /**
- * Class that creates a new world ba the physics engine
+ * Class that creates a new world with the physics engine
  */
 class Physics {
   /**
    * Create and initalize a new world
    */
   constructor() {
+    /** @type {Ball[]} */
     this.balls = [];
+    /** @type {Body[]} */
     this.bodies = [];
+    /** @type {FixedBall[]} */
     this.fixedBalls = [];
+    /** @type {SoftBall[]} */
     this.softBalls = [];
 
+    /** @type {Wall[]} */
     this.walls = [];
-
+    /** @type {Wall[]} */
     this.bounds = [];
 
+    /** @type {Spring[] | Stick[]} */
     this.springs = [];
 
     // Air friction has to be between 0 and 1
@@ -39,6 +48,7 @@ class Physics {
 
     this.gravity = new Vec2(0, 0);
 
+    /** @type {DebugDataElement[]} */
     this.debugData = [];
   }
 
@@ -54,7 +64,7 @@ class Physics {
 
     // Do the simulation on the reversed system
     // if the simulation is in precise mode
-    let clonedSystem = precise ? this.copy : new Physics();
+    const clonedSystem = precise ? this.copy : new Physics();
     if (precise) {
       clonedSystem.bodies.reverse();
       clonedSystem.balls.reverse();
@@ -62,7 +72,7 @@ class Physics {
     }
 
     // At first move objets
-    for (let i = 0; i < this.balls.length; i++) {
+    for (let i = 0; i < this.balls.length; i += 1) {
       // Move
       this.balls[i].lastPos = this.balls[i].pos.copy;
       this.balls[i].pos.add(Vec2.mult(this.balls[i].vel, t));
@@ -71,47 +81,47 @@ class Physics {
       this.balls[i].rotation += this.balls[i].ang * t;
       this.balls[i].rotation %= Math.PI * 2;
     }
-    for (let i = 0; i < this.bodies.length; i++) {
+    for (let i = 0; i < this.bodies.length; i += 1) {
       this.bodies[i].lastPos = this.bodies[i].pos.copy;
       this.bodies[i].move(this.bodies[i].vel.x * t, this.bodies[i].vel.y * t);
       this.bodies[i].rotate(this.bodies[i].ang * t);
     }
 
     // Update springs multiple times
-    for (let i = 0; i < 3; i++) {
-      for (let element of this.springs) {
+    for (let i = 0; i < 3; i += 1) {
+      this.springs.forEach((element) => {
         element.update(t / 3 / 2);
-      }
+      });
     }
 
-    for (let i = 0; i < this.balls.length; i++) {
+    for (let i = 0; i < this.balls.length; i += 1) {
       // Apply gravity
       if (this.gravity) {
         this.balls[i].vel.add(new Vec2(this.gravity.x * t, this.gravity.y * t));
       }
 
       // Collision
-      for (let j = i + 1; j < this.balls.length; j++) {
+      for (let j = i + 1; j < this.balls.length; j += 1) {
         if (
-          this.balls[i].layer != this.balls[j].layer ||
-          (!this.balls[i].layer && !this.balls[j].layer)
+          this.balls[i].layer !== this.balls[j].layer
+          || (!this.balls[i].layer && !this.balls[j].layer)
         ) {
           Ball.collide(this.balls[i], this.balls[j]);
         }
       }
 
       // Collision with walls
-      for (let wall of this.walls) {
+      for (const wall of this.walls) {
         wall.collideWithBall(this.balls[i]);
       }
 
       // Collision with fixed balls
-      for (let b of this.fixedBalls) {
-        let ball = this.balls[i];
+      for (const b of this.fixedBalls) {
+        const ball = this.balls[i];
 
         let heading;
         let rel = 0;
-        let p = new Vec2(b.x, b.y);
+        const p = new Vec2(b.x, b.y);
         p.x -= ball.pos.x;
         p.y -= ball.pos.y;
         p.mult(-1);
@@ -121,8 +131,8 @@ class Physics {
         }
 
         fixedBallCollision: if (isFinite(heading)) {
-          let pos = ball.pos.copy;
-          let vel = ball.vel.copy;
+          const pos = ball.pos.copy;
+          const vel = ball.vel.copy;
           pos.rotate(-heading + Math.PI / 2);
           vel.rotate(-heading + Math.PI / 2);
 
@@ -130,19 +140,17 @@ class Physics {
           if (vel.y > 0) break fixedBallCollision;
           vel.y *= -ball.k;
           pos.y += ball.r + b.r - rel;
-          let dvy = vel.y * (1 + ball.k);
+          const dvy = vel.y * (1 + ball.k);
 
-          let deltaAng =
-            (Math.sign(vel.x + ball.ang * ball.r) * (dvy * ball.fc)) /
-            (ball.amc * ball.r);
-          let maxDeltaAng = (vel.x + ball.ang * ball.r) / ball.r;
+          let deltaAng = (Math.sign(vel.x + ball.ang * ball.r) * (dvy * ball.fc))
+            / (ball.amc * ball.r);
+          const maxDeltaAng = (vel.x + ball.ang * ball.r) / ball.r;
 
           if (deltaAng / maxDeltaAng > 1) deltaAng = maxDeltaAng;
           ball.ang -= deltaAng;
 
-          let dvx = deltaAng * ball.am / ball.r / ball.m;
+          const dvx = deltaAng * ball.am / ball.r / ball.m;
           vel.x -= dvx;
-
 
           pos.rotate(heading - Math.PI / 2);
           vel.rotate(heading - Math.PI / 2);
@@ -154,16 +162,16 @@ class Physics {
       }
 
       // Bounce off the edges
-      for (let bound of this.bounds) {
+      for (const bound of this.bounds) {
         bound.collideWithBall(this.balls[i]);
       }
     }
 
     for (let i = 0; i < this.bodies.length; i++) {
-      for (let ball of this.balls) {
+      for (const ball of this.balls) {
         if (
-          ball.layer != this.bodies[i].layer ||
-          (!ball.layer && !this.bodies[i].layer)
+          ball.layer != this.bodies[i].layer
+          || (!ball.layer && !this.bodies[i].layer)
         ) {
           this.bodies[i].collideWithBall(ball);
         }
@@ -171,24 +179,24 @@ class Physics {
 
       for (let j = i + 1; j < this.bodies.length; j++) {
         if (
-          this.bodies[i].layer != this.bodies[j].layer ||
-          (!this.bodies[j].layer && !this.bodies[i].layer)
+          this.bodies[i].layer != this.bodies[j].layer
+          || (!this.bodies[j].layer && !this.bodies[i].layer)
         ) {
           Body.collide(this.bodies[i], this.bodies[j]);
         }
       }
 
       // Body vs fixedBall collisions
-      for (let body of this.bodies) {
-        for (let fixedBall of this.fixedBalls) {
+      for (const body of this.bodies) {
+        for (const fixedBall of this.fixedBalls) {
           body.collideWithFixedBall(fixedBall);
         }
       }
 
       // Body vs wall collisions
-      for (let body of this.bodies) {
-        for (let wall of this.walls) {
-          let additionalDebugData = body.collideWithWall(wall);
+      for (const body of this.bodies) {
+        for (const wall of this.walls) {
+          const additionalDebugData = body.collideWithWall(wall);
           if (additionalDebugData) {
             this.debugData.push(...additionalDebugData);
           }
@@ -196,9 +204,9 @@ class Physics {
       }
 
       // Body vs world boundary collision
-      for (let body of this.bodies) {
-        for (let bound of this.bounds) {
-          let additionalDebugData = body.collideWithWall(bound);
+      for (const body of this.bodies) {
+        for (const bound of this.bounds) {
+          const additionalDebugData = body.collideWithWall(bound);
           if (additionalDebugData) {
             this.debugData.push(...additionalDebugData);
           }
@@ -208,7 +216,7 @@ class Physics {
       // Apply gravity
       if (this.gravity) {
         this.bodies[i].vel.add(
-          new Vec2(this.gravity.x * t, this.gravity.y * t)
+          new Vec2(this.gravity.x * t, this.gravity.y * t),
         );
       }
     }
@@ -220,7 +228,7 @@ class Physics {
 
     // Update springs again multiple times
     for (let i = 0; i < 3; i++) {
-      for (let element of this.springs) {
+      for (const element of this.springs) {
         element.update(t / 3 / 2);
       }
     }
@@ -245,13 +253,13 @@ class Physics {
       this.balls.forEach((ball, i) => {
         ball.move(
           (clonedSystem.balls[i].pos.x - ball.pos.x) * 0.5,
-          (clonedSystem.balls[i].pos.y - ball.pos.y) * 0.5
+          (clonedSystem.balls[i].pos.y - ball.pos.y) * 0.5,
         );
         ball.vel.add(
           new Vec2(
             (clonedSystem.balls[i].vel.x - ball.vel.x) * 0.5,
-            (clonedSystem.balls[i].vel.y - ball.vel.y) * 0.5
-          )
+            (clonedSystem.balls[i].vel.y - ball.vel.y) * 0.5,
+          ),
         );
         ball.rotation = (ball.rotation + clonedSystem.balls[i].rotation) / 2;
         ball.ang = (ball.ang + clonedSystem.balls[i].ang) / 2;
@@ -259,16 +267,16 @@ class Physics {
 
       // Take the average of the bodies
       this.bodies.forEach((body, i) => {
-        let other = clonedSystem.bodies[i];
+        const other = clonedSystem.bodies[i];
         body.move(
           (other.pos.x - body.pos.x) * 0.5,
-          (other.pos.y - body.pos.y) * 0.5
+          (other.pos.y - body.pos.y) * 0.5,
         );
         body.vel.add(
           new Vec2(
             (other.vel.x - body.vel.x) * 0.5,
-            (other.vel.y - body.vel.y) * 0.5
-          )
+            (other.vel.y - body.vel.y) * 0.5,
+          ),
         );
         body.rotate((other.rotation - body.rotation) / 2);
         body.ang = (body.ang + other.ang) / 2;
@@ -281,7 +289,7 @@ class Physics {
    * @return {Physics} The copy of this system
    */
   get copy() {
-    let ret = new Physics();
+    const ret = new Physics();
     ret.balls = this.getCopyOfBalls();
     ret.bodies = this.getCopyOfBodies();
     ret.fixedBalls = this.fixedBalls;
@@ -290,8 +298,8 @@ class Physics {
     ret.gravity = this.gravity;
 
     this.springs.forEach((spring) => {
-      let TypeOfSpring = spring.constructor == Spring ? Spring : Stick;
-      let copiedSpring = new TypeOfSpring(spring.length, spring.springConstant);
+      const TypeOfSpring = spring.constructor == Spring ? Spring : Stick;
+      const copiedSpring = new TypeOfSpring(spring.length, spring.springConstant);
       copiedSpring.rotationLocked = spring.rotationLocked;
       copiedSpring.pinned = spring.pinned;
 
@@ -337,15 +345,15 @@ class Physics {
    */
   addBall(ball) {
     if (
-      typeof addBodyNotBall != 'undefined' &&
-      isFinite(addBodyNotBall) &&
-      addBodyNotBall > 2
+      typeof addBodyNotBall !== 'undefined'
+      && isFinite(addBodyNotBall)
+      && addBodyNotBall > 2
     ) {
       const getPointsForBall = (pos, r, resolution) => {
-        let points = [];
+        const points = [];
 
         for (let i = 0; i < resolution; i++) {
-          let newPoint = Vec2.fromAngle((i / resolution) * 2 * Math.PI);
+          const newPoint = Vec2.fromAngle((i / resolution) * 2 * Math.PI);
           newPoint.mult(r);
           newPoint.add(pos);
           points.push(newPoint);
@@ -360,8 +368,8 @@ class Physics {
           ball.vel,
           ball.k,
           ball.ang,
-          ball.fc
-        )
+          ball.fc,
+        ),
       );
     } else {
       this.balls.push(ball);
@@ -397,12 +405,12 @@ class Physics {
    * @param {number} pressure The 'pressure' of the soft square
    */
   addSoftSquare(pos, sideSize, fc, vel, resolution = 24, pressure = 1) {
-    let softSquare = new SoftBall(
+    const softSquare = new SoftBall(
       pos,
       Math.sqrt((sideSize * sideSize) / Math.PI),
       pressure,
       fc,
-      resolution
+      resolution,
     );
     softSquare.sides.forEach((side) => {
       side.length = (0.96 * 4 * sideSize) / softSquare.resolution;
@@ -414,11 +422,11 @@ class Physics {
     this.balls.push(...softSquare.points);
     this.springs.push(...softSquare.sides);
 
-    let springStrength = sideSize * sideSize * 200 * pressure;
+    const springStrength = sideSize * sideSize * 200 * pressure;
 
     let bigStick = new Spring(
       Math.sqrt(softSquare.r * softSquare.r * Math.PI),
-      springStrength / 2
+      springStrength / 2,
     );
     bigStick.attachObject(softSquare.points[0]);
     bigStick.attachObject(softSquare.points[softSquare.resolution / 2]);
@@ -426,7 +434,7 @@ class Physics {
 
     bigStick = new Spring(
       Math.sqrt(softSquare.r * softSquare.r * Math.PI),
-      springStrength / 2
+      springStrength / 2,
     );
     bigStick.attachObject(softSquare.points[softSquare.resolution / 4]);
     bigStick.attachObject(softSquare.points[(3 * softSquare.resolution) / 4]);
@@ -434,7 +442,7 @@ class Physics {
 
     bigStick = new Spring(
       Math.sqrt(2 * softSquare.r * softSquare.r * Math.PI),
-      springStrength
+      springStrength,
     );
     bigStick.attachObject(softSquare.points[softSquare.resolution / 8]);
     bigStick.attachObject(softSquare.points[(5 * softSquare.resolution) / 8]);
@@ -442,7 +450,7 @@ class Physics {
 
     bigStick = new Spring(
       Math.sqrt(2 * softSquare.r * softSquare.r * Math.PI),
-      springStrength
+      springStrength,
     );
     bigStick.attachObject(softSquare.points[(3 * softSquare.resolution) / 8]);
     bigStick.attachObject(softSquare.points[(7 * softSquare.resolution) / 8]);
@@ -457,7 +465,7 @@ class Physics {
    * @param {number} h height of the rectangular wall
    */
   addRectWall(x, y, w, h) {
-    let points = [];
+    const points = [];
     points.push(new Vec2(x - w / 2, y - h / 2));
     points.push(new Vec2(x + w / 2, y - h / 2));
     points.push(new Vec2(x + w / 2, y + h / 2));
@@ -475,7 +483,7 @@ class Physics {
    * @param {number} k coefficient of restitution of the body
    */
   addRectBody(x, y, w, h, fc, k) {
-    let points = [];
+    const points = [];
     points.push(new Vec2(x - w / 2, y - h / 2));
     points.push(new Vec2(x + w / 2, y - h / 2));
     points.push(new Vec2(x + w / 2, y + h / 2));
@@ -500,9 +508,9 @@ class Physics {
    */
   addFixedBall(x, y, r) {
     this.fixedBalls.push({
-      x: x,
-      y: y,
-      r: r,
+      x,
+      y,
+      r,
     });
   }
 
@@ -526,7 +534,7 @@ class Physics {
     this.bounds = [];
 
     const getRectBody = (x_, y_, w_, h_) => {
-      let points = [];
+      const points = [];
       points.push(new Vec2(x_ - w_ / 2, y_ - h_ / 2));
       points.push(new Vec2(x_ + w_ / 2, y_ - h_ / 2));
       points.push(new Vec2(x_ + w_ / 2, y_ + h_ / 2));
@@ -549,7 +557,7 @@ class Physics {
    */
   getObjectAtCoordinates(x, y) {
     let ret = false;
-    let v = new Vec2(x, y);
+    const v = new Vec2(x, y);
     this.balls.forEach((ball) => {
       if (ball.containsPoint(v)) ret = ball;
     });
@@ -573,7 +581,7 @@ class Physics {
    * @return {Array<Ball>} The array of the copied balls
    */
   getCopyOfBalls() {
-    let ret = [];
+    const ret = [];
     this.balls.forEach((item) => {
       ret.push(item.copy);
     });
@@ -585,7 +593,7 @@ class Physics {
    * @return {Array<Body>} The array of the copied bodies
    */
   getCopyOfBodies() {
-    let ret = [];
+    const ret = [];
     this.bodies.forEach((item) => {
       ret.push(item.copy);
     });
@@ -643,12 +651,11 @@ class Physics {
     }
     idx = this.softBalls.indexOf(obj);
     if (idx != -1) {
-      let sf = this.softBalls[idx];
+      const sf = this.softBalls[idx];
       this.softBalls.splice(idx, 1);
       sf.points.forEach((p) => {
         this.removeObjFromSystem(p);
       });
-      return;
     }
   }
 
@@ -658,24 +665,24 @@ class Physics {
    * @return {any} The data of the object
    */
   getItemDataFromId() {
-    let ret = {};
-    let filter = (b) => b.id === id;
+    const ret = {};
+    const filter = (b) => b.id === id;
 
-    let balls = this.balls.filter(filter);
+    const balls = this.balls.filter(filter);
     if (balls.length >= 1) {
       ret.type = 'ball';
       ret.num = this.balls.indexOf(balls[0]);
       return ret;
     }
 
-    let bodies = this.bodies.filter(filter);
+    const bodies = this.bodies.filter(filter);
     if (bodies.length >= 1) {
       ret.type = 'body';
       ret.num = this.bodies.indexOf(bodies[0]);
       return ret;
     }
 
-    let springs = this.springs.filter(filter);
+    const springs = this.springs.filter(filter);
     if (springs.length >= 1) {
       ret.type = 'spring';
       ret.num = this.springs.indexOf(springs[0]);
@@ -688,26 +695,14 @@ class Physics {
    * Ready to be converted into JSON
    */
   toJSObject() {
-    let ret = {};
+    const ret = {};
 
-    ret.balls = this.balls.map((b) => {
-      return b.toJSObject();
-    });
-    ret.bounds = this.bounds.map((w) => {
-      return w.toJSObject();
-    });
-    ret.walls = this.walls.map((w) => {
-      return w.toJSObject();
-    });
-    ret.bodies = this.bodies.map((b) => {
-      return b.toJSObject();
-    });
-    ret.springs = this.springs.map((s) => {
-      return s.toJSObject();
-    });
-    ret.softBalls = this.softBalls.map((s) => {
-      return s.toJSObject();
-    });
+    ret.balls = this.balls.map((b) => b.toJSObject());
+    ret.bounds = this.bounds.map((w) => w.toJSObject());
+    ret.walls = this.walls.map((w) => w.toJSObject());
+    ret.bodies = this.bodies.map((b) => b.toJSObject());
+    ret.springs = this.springs.map((s) => s.toJSObject());
+    ret.softBalls = this.softBalls.map((s) => s.toJSObject());
 
     ret.fixedBalls = this.fixedBalls;
     ret.airFriction = this.airFriction;
@@ -725,18 +720,14 @@ class Physics {
    * @return {Physics} The Physics object
    */
   static fromObject(obj) {
-    let newWorld = new Physics();
+    const newWorld = new Physics();
 
     newWorld.balls = obj.balls.map((b) => Ball.fromObject(b));
     newWorld.bounds = obj.bounds.map((b) => Wall.fromObject(b));
     newWorld.walls = obj.walls.map((w) => Wall.fromObject(w));
     newWorld.bodies = obj.bodies.map((b) => Body.fromObject(b));
-    newWorld.springs = obj.springs.map((s) =>
-      Spring.fromObject(s, newWorld.balls)
-    );
-    newWorld.softBalls = obj.softBalls.map((s) =>
-      SoftBall.fromObject(s, newWorld.balls, newWorld.springs)
-    );
+    newWorld.springs = obj.springs.map((s) => Spring.fromObject(s, newWorld.balls));
+    newWorld.softBalls = obj.softBalls.map((s) => SoftBall.fromObject(s, newWorld.balls, newWorld.springs));
 
     newWorld.fixedBalls = obj.fixedBalls;
     newWorld.airFriction = obj.airFriction;

@@ -5,21 +5,23 @@ import * as Creator from '../elementCreator';
 
 const element = document.createElement('div');
 
-export const DeleteMode: Mode = {
+const DeleteMode: Mode = {
   name: 'Delete',
   description: '',
   element,
-  drawFunc: function (editorApp, dt) { },
-  startInteractionFunc: function (editorApp) {
+  drawFunc(editorApp, dt) { },
+  startInteractionFunc(editorApp) {
     if (editorApp.choosed) {
       editorApp.physics.removeObjFromSystem(editorApp.choosed);
     }
   },
-  endInteractionFunc: function (editorApp) { },
-  keyGotUpFunc: function (editorApp) { },
-  keyGotDownFunc: function (editorApp) { },
+  endInteractionFunc(editorApp) { },
+  keyGotUpFunc(editorApp) { },
+  keyGotDownFunc(editorApp) { },
 };
 
 [
   Creator.createModeTitle(DeleteMode.name),
 ].forEach(element.appendChild.bind(element));
+
+export default DeleteMode;

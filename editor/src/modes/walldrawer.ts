@@ -6,30 +6,30 @@ import * as Creator from '../elementCreator';
 let size = 20;
 const element = document.createElement('div');
 
-export const WallDrawerMode: Mode = {
+const WallDrawerMode: Mode = {
   name: 'Wall drawer',
   description: '',
   element,
-  drawFunc: function (editorApp, dt) {
-    const ctx = editorApp.cnv.getContext('2d');
+  drawFunc(editorApp, dt) {
+    const ctx = <CanvasRenderingContext2D>editorApp.cnv.getContext('2d');
 
     ctx.strokeStyle = 'black';
     ctx.beginPath();
     ctx.arc(editorApp.mouseX, editorApp.mouseY,
       size, 0, 2 * Math.PI);
     ctx.stroke();
-    if (editorApp.lastX != 0 && editorApp.lastY != 0) {
+    if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       editorApp.physics.addFixedBall(editorApp.mouseX,
         editorApp.mouseY,
         size);
     }
   },
-  startInteractionFunc: function (editorApp) {
+  startInteractionFunc(editorApp) {
   },
-  endInteractionFunc: function (editorApp) {
+  endInteractionFunc(editorApp) {
   },
-  keyGotUpFunc: function (editorApp) { },
-  keyGotDownFunc: function (editorApp) { },
+  keyGotUpFunc(editorApp) { },
+  keyGotDownFunc(editorApp) { },
 };
 
 [
@@ -38,3 +38,5 @@ export const WallDrawerMode: Mode = {
     size = (<HTMLInputElement>event.target).valueAsNumber;
   }),
 ].forEach(element.appendChild.bind(element));
+
+export default WallDrawerMode;
