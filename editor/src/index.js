@@ -123,14 +123,14 @@ window.editorApp = new (function Editor() {
    */
   const resizeCanvas = () => {
     // Fit canvas inside the holder
-    canvasRect = this.canvasHolder.getBoundingClientRect()
+    let canvasRect = this.canvasHolder.getBoundingClientRect();
     this.cnv.width = canvasRect.width;
     this.cnv.height = window.innerHeight - canvasRect.top;
 
     // Code for making the image sharp on high DPI displays
     // Scale according to the pixel ratio of the display
     var dpr = window.devicePixelRatio || 1;
-    var rect = this.cnv.getBoundingClientRect();
+    var rect = canvasRect;
     this.cnv.width = rect.width * dpr;
     this.cnv.height = rect.height * dpr;
     this.cnv.style.width = rect.width + 'px';
