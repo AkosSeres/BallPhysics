@@ -59,6 +59,18 @@ h4 {
     border-bottom-right-radius: 1rem;
 }
 
+.mode-title {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    text-align: center;
+    border-bottom-left-radius: 1rem;
+}
+
+.modetitlemargin {
+    margin: 0px;
+    padding: 0.3rem;
+}
+
 .timebar {
     grid-area: timebar;
     text-align: center;
@@ -90,6 +102,10 @@ canvas {
     grid-area: sidebar;
     overflow: auto;
     padding-bottom: 1rem;
+    padding-left: 0.7rem;
+    padding-left: 0.7rem;
+    padding-top: 0rem;
+    margin-top: 0px;
 }
 
 .page-container {
@@ -145,6 +161,34 @@ canvas {
     display: none;
 }
 
+.slider {
+    margin-left: 0px;
+    margin-right: 0px;
+    width: max-content;
+    display: block;
+}
+
+p {
+    margin-top: 0.7em;
+    margin-bottom: 0.2em;
+    padding-left: 0em;
+    font-weight: bold;
+}
+
+.checkbox-label {
+    margin-top: 0.7em;
+    margin-bottom: 0.2em;
+    margin-left: 0rem;
+    font-weight: bold;
+}
+
+.ch-box {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    margin-right: 0.3em;
+    margin-left: 0em;
+}
+
 /* For smaller laptops */
 @media (max-width: 1125px) {
     .big-button {
@@ -176,7 +220,7 @@ canvas {
             "rotate rotate rotate";
     }
 
-    .rotate{
+    .rotate {
         display: block;
         font-size: x-large;
         font-weight: bold;

@@ -1,14 +1,17 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
+import * as Creator from '../elementCreator';
 
 let pmouseX = 0;
 let pmouseY = 0;
 
-/**
- * @type {Mode}
- */
-export const MoveMode = {
+const element = document.createElement('div');
+
+export const MoveMode: Mode = {
   name: 'Move',
   description: '',
+  element,
   drawFunc: function (editorApp, dt) {
     if (editorApp.choosed && !editorApp.choosed.pinPoint) {
       editorApp.choosed.move(
@@ -32,3 +35,7 @@ export const MoveMode = {
   keyGotUpFunc: function (editorApp) { },
   keyGotDownFunc: function (editorApp) { },
 };
+
+[
+  Creator.createModeTitle(MoveMode.name),
+].forEach(element.appendChild.bind(element));

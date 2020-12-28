@@ -1,11 +1,14 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
+import * as Creator from '../elementCreator';
 
-/**
- * @type {Mode}
- */
-export const RectangleMode = {
+const element = document.createElement('div');
+
+export const RectangleMode: Mode = {
   name: 'Rectangle wall',
   description: '',
+  element,
   drawFunc: function (editorApp, dt) {
     if (editorApp.lastX != 0 && editorApp.lastY != 0) {
       const ctx = editorApp.cnv.getContext('2d');
@@ -28,3 +31,7 @@ export const RectangleMode = {
   keyGotUpFunc: function (editorApp) { },
   keyGotDownFunc: function (editorApp) { },
 };
+
+[
+  Creator.createModeTitle(RectangleMode.name),
+].forEach(element.appendChild.bind(element));

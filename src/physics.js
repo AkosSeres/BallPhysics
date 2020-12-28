@@ -10,6 +10,10 @@ const Line = require('./line');
 const Polygon = require('./polygon');
 
 /**
+ * @typedef {Ball | Body | Wall | {x: number,y: number,r: number} | SoftBall | {x: number, y: number, pinPoint: boolean}|booelan} AnyPhysicsObject
+ */
+
+/**
  * Class that creates a new world ba the physics engine
  */
 class Physics {
@@ -389,14 +393,16 @@ class Physics {
    * @param {number} sideSize The size of the square
    * @param {number} fc Friction coefficient
    * @param {Vec2} vel The initial velocity of the soft square
+   * @param {number} resolution The resolution of the soft square
+   * @param {number} pressure The 'pressure' of the soft square
    */
-  addSoftSquare(pos, sideSize, fc, vel) {
+  addSoftSquare(pos, sideSize, fc, vel, resolution = 24, pressure = 1) {
     let softSquare = new SoftBall(
       pos,
       Math.sqrt((sideSize * sideSize) / Math.PI),
-      1,
+      pressure,
       fc,
-      24
+      resolution
     );
     softSquare.sides.forEach((side) => {
       side.length = (0.96 * 4 * sideSize) / softSquare.resolution;
@@ -408,7 +414,7 @@ class Physics {
     this.balls.push(...softSquare.points);
     this.springs.push(...softSquare.sides);
 
-    let springStrength = sideSize * sideSize * 200;
+    let springStrength = sideSize * sideSize * 200 * pressure;
 
     let bigStick = new Spring(
       Math.sqrt(softSquare.r * softSquare.r * Math.PI),
@@ -539,10 +545,10 @@ class Physics {
    * Return false if nothing is found
    * @param {number} x x coordinate
    * @param {number} y y coordinate
-   * @return {Ball} The found object
+   * @return {AnyPhysicsObject} The found object
    */
   getObjectAtCoordinates(x, y) {
-    let ret = undefined;
+    let ret = false;
     let v = new Vec2(x, y);
     this.balls.forEach((ball) => {
       if (ball.containsPoint(v)) ret = ball;

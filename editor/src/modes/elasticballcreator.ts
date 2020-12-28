@@ -1,21 +1,27 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
 import BallPhysics from '../../../src/physics';
+import Editor from '../editor';
+import * as Creator from '../elementCreator';
 
-/**
- * @type {Mode}
- */
-export const ElasticBallCreatorMode = {
+let size = 35;
+const k = 0.5;
+let fc = 1.5;
+let resolution = 24;
+let pressure = 1000000;
+const element = document.createElement('div');
+
+export const ElasticBallCreatorMode: Mode = {
   name: 'Elastic ball creator',
   description: '',
-  drawFunc: function(
-    editorApp,
-    dt
-  ) {
-    let ctx = editorApp.cnv.getContext('2d');
+  element,
+  drawFunc: function (editorApp: Editor, dt: number): void {
+    const ctx = editorApp.cnv.getContext('2d');
     ctx.strokeStyle = 'black';
 
     ctx.beginPath();
-    ctx.arc(editorApp.mouseX, editorApp.mouseY, editorApp.defaultSize, 0, 2 * Math.PI);
+    ctx.arc(editorApp.mouseX, editorApp.mouseY, size, 0, 2 * Math.PI);
     ctx.stroke();
 
     if (editorApp.lastX != 0 && editorApp.lastY != 0) {
@@ -25,18 +31,13 @@ export const ElasticBallCreatorMode = {
       ctx.stroke();
     }
   },
-  startInteractionFunc: function(editorApp) { },
-  endInteractionFunc: function(editorApp) {
+  startInteractionFunc: function (editorApp) { },
+  endInteractionFunc: function (editorApp) {
     if (editorApp.lastX != 0 && editorApp.lastY != 0) {
       const newBall = new BallPhysics.Ball(
         new BallPhysics.Vec2(editorApp.lastX, editorApp.lastY),
         new BallPhysics.Vec2(editorApp.lastX - editorApp.mouseX,
-          editorApp.lastY - editorApp.mouseY),
-        editorApp.defaultSize,
-        editorApp.k,
-        0,
-        editorApp.fc
-      );
+          editorApp.lastY - editorApp.mouseY), size, k, 0, fc);
       if (
         isFinite(newBall.pos.x) &&
         isFinite(newBall.pos.y) &&
@@ -44,11 +45,7 @@ export const ElasticBallCreatorMode = {
         isFinite(newBall.vel.y)
       ) {
         const sb = new BallPhysics.SoftBall(
-          newBall.pos,
-          editorApp.defaultSize,
-          1000000,
-          editorApp.fc,
-          24
+          newBall.pos, size, pressure, fc, resolution
         );
         sb.points.forEach((p) => {
           p.vel = newBall.vel.copy;
@@ -57,6 +54,22 @@ export const ElasticBallCreatorMode = {
       }
     }
   },
-  keyGotUpFunc: function(editorApp) { },
-  keyGotDownFunc: function(editorApp) { },
+  keyGotUpFunc: function (editorApp) { },
+  keyGotDownFunc: function (editorApp) { },
 };
+
+[
+  Creator.createModeTitle(ElasticBallCreatorMode.name),
+  Creator.createSlider('Size', 5, 60, size, (event) => {
+    size = (<HTMLInputElement>event.target).valueAsNumber;
+  }),
+  Creator.createSlider('Pressure', 500000, 3000000, pressure, (event) => {
+    pressure = (<HTMLInputElement>event.target).valueAsNumber;
+  }, 4000),
+  Creator.createSlider('Coefficient of friction', 0, 2, fc, (event) => {
+    fc = (<HTMLInputElement>event.target).valueAsNumber;
+  }, 0.1),
+  Creator.createSlider('Resolution', 6, 24, resolution, (event) => {
+    resolution = (<HTMLInputElement>event.target).valueAsNumber;
+  }, 1),
+].forEach(element.appendChild.bind(element));

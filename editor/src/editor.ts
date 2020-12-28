@@ -1,6 +1,6 @@
 import Physics from '../../src/physics';
 import Ball from '../../src/ball';
-import Vec2  from '../../src/vec2';
+import Vec2 from '../../src/vec2';
 import Spring from '../../src/spring';
 import Stick from '../../src/stick';
 
@@ -23,7 +23,7 @@ const modeNames = [
   'DeleteMode',
   'RectangleBodyMode',
 ];
-const modes:Mode[] = modeNames.map((name) => Modes[name]);
+const modes: Mode[] = modeNames.map((name) => Modes[name]);
 
 const palette = {
   'white': '#faf3dd',
@@ -38,99 +38,99 @@ const palette = {
  */
 class Editor {
   physics: Physics;
-  mouseX:number; mouseY: number;
-  mouseDown:number;
-  defaultSize:number;
-  k:number;
-  fc:number;
-  springConstant:number;
-  scaling:number;
-  viewOffsetX:number;
-  viewOffsetY:number;
-  mode:number;
-  lastX:number;lastY:number;
-  timeMultiplier:number;
-  lastFrameTime:number;
-  choosed:boolean | {x:number, y:number, pinPoint:boolean}| Ball;
-  left:boolean;right:boolean;
-  cnv:HTMLCanvasElement;
-  canvasHolder:HTMLElement;
-  sidebar:HTMLElement;
+  mouseX: number; mouseY: number;
+  mouseDown: number;
+  defaultSize: number;
+  k: number;
+  fc: number;
+  springConstant: number;
+  scaling: number;
+  viewOffsetX: number;
+  viewOffsetY: number;
+  mode: number;
+  lastX: number; lastY: number;
+  timeMultiplier: number;
+  lastFrameTime: number;
+  choosed: Physics.AnyPhysicsObject;
+  left: boolean; right: boolean;
+  cnv: HTMLCanvasElement;
+  canvasHolder: HTMLElement;
+  sidebar: HTMLElement;
 
-  constructor(){
-  this.physics = new Physics();
-  this.mouseX = 0;
-  this.mouseY = 0;
-  this.mouseDown = 0;
-  this.defaultSize = 30;
-  this.k = 0.5;
-  this.fc = 2;
-  this.springConstant = 2000;
-  this.scaling = 1;
-  this.viewOffsetX = 0;
-  this.viewOffsetY = 0;
-  this.mode = 0;
-  this.lastX = 0;
-  this.lastY = 0;
-  this.timeMultiplier = 1;
-  this.lastFrameTime = performance.now();
-  this.choosed = false;
+  constructor() {
+    this.physics = new Physics();
+    this.mouseX = 0;
+    this.mouseY = 0;
+    this.mouseDown = 0;
+    this.defaultSize = 30;
+    this.k = 0.5;
+    this.fc = 2;
+    this.springConstant = 2000;
+    this.scaling = 1;
+    this.viewOffsetX = 0;
+    this.viewOffsetY = 0;
+    this.mode = 0;
+    this.lastX = 0;
+    this.lastY = 0;
+    this.timeMultiplier = 1;
+    this.lastFrameTime = performance.now();
+    this.choosed = false;
 
-  this.left = false;
-  this.right = false;
+    this.left = false;
+    this.right = false;
 
-  /**
-   * Called when the page loaded
-   */
-  window.onload = () => {
-    this.cnv = <HTMLCanvasElement> document.getElementById('defaulCanvas0');
-    this.canvasHolder = document.getElementById('canvas-holder');
-    this.sidebar = document.getElementById('sidebar');
+    /**
+     * Called when the page loaded
+     */
+    window.onload = () => {
+      this.cnv = <HTMLCanvasElement>document.getElementById('defaulCanvas0');
+      this.canvasHolder = document.getElementById('canvas-holder');
+      this.sidebar = document.getElementById('sidebar');
 
-    this.physics.setBounds(0, 0, this.cnv.width, this.cnv.height);
-    this.physics.setGravity(new Vec2(0, 1000));
-    this.physics.setAirFriction(0.9);
+      this.physics.setBounds(0, 0, this.cnv.width, this.cnv.height);
+      this.physics.setGravity(new Vec2(0, 1000));
+      this.physics.setAirFriction(0.9);
 
-    this.cnv.addEventListener('touchstart', this.startTouch, false);
-    this.cnv.addEventListener('touchend', this.endTouch, false);
-    this.cnv.addEventListener('touchmove', this.moveTouch, false);
-    this.cnv.addEventListener('mousedown', this.startMouse, false);
-    this.cnv.addEventListener('mouseup', this.endMouse, false);
-    this.cnv.addEventListener('mousemove', this.handleMouseMovement, false);
-    document.addEventListener('keydown', this.keyGotDown, false);
-    document.addEventListener('keyup', this.keyGotUp, false);
-    window.addEventListener('resize', this.resizeCanvas, false);
-    this.cnv.addEventListener(
-      'mousedown',
-      () => {
-        this.mouseDown = 1;
-      },
-      false
-    );
-    this.cnv.addEventListener(
-      'mouseup',
-      () => {
-        this.mouseDown = 0;
-      },
-      false
-    );
+      this.cnv.addEventListener('touchstart', this.startTouch, false);
+      this.cnv.addEventListener('touchend', this.endTouch, false);
+      this.cnv.addEventListener('touchmove', this.moveTouch, false);
+      this.cnv.addEventListener('mousedown', this.startMouse, false);
+      this.cnv.addEventListener('mouseup', this.endMouse, false);
+      this.cnv.addEventListener('mousemove', this.handleMouseMovement, false);
+      document.addEventListener('keydown', this.keyGotDown, false);
+      document.addEventListener('keyup', this.keyGotUp, false);
+      window.addEventListener('resize', this.resizeCanvas, false);
+      this.cnv.addEventListener(
+        'mousedown',
+        () => {
+          this.mouseDown = 1;
+        },
+        false
+      );
+      this.cnv.addEventListener(
+        'mouseup',
+        () => {
+          this.mouseDown = 0;
+        },
+        false
+      );
 
-    this.resizeCanvas();
+      this.resizeCanvas();
 
-    // Set up modes and link them to the buttons
-    this.setupModes();
+      // Set up modes and link them to the buttons
+      this.setupModes();
 
-    startPauseControlsFunction(this);
+      startPauseControlsFunction(this);
 
-    requestAnimationFrame(this.drawFunction);
-  };
+      requestAnimationFrame(this.drawFunction);
+    };
 
-}
+  }
 
   /**
    * Function that is called when the window gest resized
    */
-  resizeCanvas=():void=> {
+  resizeCanvas = (): void => {
     // Fit canvas inside the holder
     const canvasRect = this.canvasHolder.getBoundingClientRect();
     this.cnv.width = canvasRect.width;
@@ -157,7 +157,7 @@ class Editor {
   /**
    * My draw function
    */
-  drawFunction =():void=>{
+  drawFunction = (): void => {
     if (!isFinite(this.lastFrameTime)) this.lastFrameTime = performance.now();
     let elapsedTime = performance.now() - this.lastFrameTime;
     if (!isFinite(elapsedTime)) {
@@ -201,7 +201,7 @@ class Editor {
    * @param {number} x The x position of the mouse of the finger on the canvas
    * @param {number} y The y position of the mouse of the finger on the canvas
    */
-  startInteraction=(x:number, y:number):void=> {
+  startInteraction = (x: number, y: number): void => {
     this.mouseX = x / this.scaling - this.viewOffsetX / this.scaling;
     this.mouseY = y / this.scaling - this.viewOffsetY / this.scaling;
     this.choosed = this.physics.getObjectAtCoordinates(this.mouseX, this.mouseY);
@@ -223,7 +223,7 @@ class Editor {
    * @param {number} x The x position of the mouse of the finger on the canvas
    * @param {number} y The y position of the mouse of the finger on the canvas
    */
-  endInteraction=(x:number, y:number):void =>{
+  endInteraction = (x: number, y: number): void => {
     this.mouseX = x / this.scaling - this.viewOffsetX / this.scaling;
     this.mouseY = y / this.scaling - this.viewOffsetY / this.scaling;
 
@@ -240,7 +240,7 @@ class Editor {
    * My keyboard event function for pressing down a key
    * @param {KeyboardEvent} event The event containing data
    */
-  keyGotDown=(event:KeyboardEvent):void=> {
+  keyGotDown = (event: KeyboardEvent): void => {
     const keyCode = event.key;
     if (keyCode === 's') {
       this.spawnNewtonsCradle(this.cnv.width / 2, this.cnv.height / 2, 0.5, this.physics);
@@ -275,7 +275,7 @@ class Editor {
    * My keyboard event function for releasing a key
    * @param {KeyboardEvent} event The event containing data
    */
-  keyGotUp=(event:KeyboardEvent):void =>{
+  keyGotUp = (event: KeyboardEvent): void => {
     const keyCode = event.key;
     // Right arrow
     if (keyCode === 'ArrowRight') {
@@ -292,7 +292,7 @@ class Editor {
    * @param {TouchEvent} event The event containing data
    * @return {boolean} Returns false for preventing default browser behavior
    */
-  startTouch=(event:TouchEvent):boolean=> {
+  startTouch = (event: TouchEvent): boolean => {
     event.preventDefault();
     const cnvBounds = this.canvasHolder.getBoundingClientRect();
     this.startInteraction(
@@ -307,7 +307,7 @@ class Editor {
    * @param {TouchEvent} event The event containing data
    * @return {boolean} Returns false for preventing default browser behavior
    */
-  endTouch=(event:TouchEvent):boolean=> {
+  endTouch = (event: TouchEvent): boolean => {
     event.preventDefault();
     const cnvBounds = this.canvasHolder.getBoundingClientRect();
     this.endInteraction(
@@ -322,7 +322,7 @@ class Editor {
    * @param {TouchEvent} event The event containing data
    * @return {boolean} Returns false for preventing default browser behavior
    */
-  moveTouch=(event:TouchEvent):boolean =>{
+  moveTouch = (event: TouchEvent): boolean => {
     event.preventDefault();
     const cnvBounds = this.canvasHolder.getBoundingClientRect();
     this.mouseX = event.changedTouches[0].clientX - cnvBounds.left;
@@ -337,7 +337,7 @@ class Editor {
    * @param {TouchEvent} event The event containing data
    * @return {boolean} Returns false for preventing default browser behavior
    */
-  startMouse=(event:MouseEvent):boolean=>{
+  startMouse = (event: MouseEvent): boolean => {
     this.startInteraction(event.offsetX, event.offsetY);
     return false;
   }
@@ -347,7 +347,7 @@ class Editor {
    * @param {TouchEvent} event The event containing data
    * @return {boolean} Returns false for preventing default browser behavior
    */
-  endMouse=(event:MouseEvent):boolean=>{
+  endMouse = (event: MouseEvent): boolean => {
     this.endInteraction(event.offsetX, event.offsetY);
     return false;
   }
@@ -356,14 +356,14 @@ class Editor {
    * My mouse event function that handles mouse movement
    * @param {TouchEvent} event The event containing data
    */
-  handleMouseMovement=(event:MouseEvent):void =>{
+  handleMouseMovement = (event: MouseEvent): void => {
     this.mouseX = event.offsetX;
     this.mouseY = event.offsetY;
     this.mouseX = this.mouseX / this.scaling - this.viewOffsetX / this.scaling;
     this.mouseY = this.mouseY / this.scaling - this.viewOffsetY / this.scaling;
   }
 
-  physicsDraw=():void=> {
+  physicsDraw = (): void => {
     const ctx = this.cnv.getContext('2d');
 
     ctx.fillStyle = palette.green;
@@ -509,7 +509,7 @@ class Editor {
    * @param {number} scale The size of it
    * @param {Physics} phy The world to put it in
    */
-  spawnNewtonsCradle=(x:number, y:number, scale:number, phy:Physics):void=> {
+  spawnNewtonsCradle = (x: number, y: number, scale: number, phy: Physics): void => {
     const balls = [];
     const defaultR = 25;
     const defaultStick = 250;
@@ -545,20 +545,27 @@ class Editor {
     });
   }
 
-  modeButtonClicked=(e:MouseEvent):void=> {
-    const modeName = (<HTMLElement> e.target).id.replace('-btn', '');
+  modeButtonClicked = (e: MouseEvent): void => {
+    const modeName = (<HTMLElement>e.target).id.replace('-btn', '');
     const modeNum = modeNames.indexOf(modeName);
-    const prevoiusBtn = document.getElementById(modeNames[this.mode] + '-btn');
-    prevoiusBtn.classList.remove('bg-pink-darker');
-
-    (<HTMLElement> e.target).classList.add('bg-pink-darker');
-    this.mode = modeNum;
+    this.switchToMode(modeNum);
   }
 
-  setupModes=():void=> {
+  switchToMode = (modeNum: number): void => {
+    const prevoiusBtn = document.getElementById(modeNames[this.mode] + '-btn');
+    prevoiusBtn.classList.remove('bg-pink-darker');
+    this.sidebar.innerHTML = '';
+
+    const newBtn = document.getElementById(modeNames[modeNum] + '-btn');
+    newBtn.classList.add('bg-pink-darker');
+    this.mode = modeNum;
+    this.sidebar.appendChild(modes[this.mode].element);
+  }
+
+  setupModes = (): void => {
     const buttonHolder = document.getElementById('button-holder');
 
-    modeNames.forEach((modeName, i)=>{
+    modeNames.forEach((modeName, i) => {
       const button = document.createElement('div');
       button.classList.add('big-button');
       button.classList.add('fix-width');
@@ -568,15 +575,14 @@ class Editor {
       buttonHolder.appendChild(button);
     });
 
-    const btn = document.getElementById(modeNames[this.mode] + '-btn');
-    btn.classList.add('bg-pink-darker');
+    this.switchToMode(this.mode);
   }
 
   /**
    * Setter for the variable timeMultipler for passing it to other scopes
    * @param {number} x The new value of timeMultiplier
    */
-  setTimeMultiplier=(x:number):void =>{
+  setTimeMultiplier = (x: number): void => {
     if (isFinite(x)) this.timeMultiplier = x;
   }
 
@@ -584,7 +590,7 @@ class Editor {
    * Getter for the variable timeMultiplier for passing it to other scopes
    * @return {number} The value of timeMultiplier
    */
-  getTimeMultiplier=():number =>{
+  getTimeMultiplier = (): number => {
     return this.timeMultiplier;
   }
 
@@ -592,7 +598,7 @@ class Editor {
    * Setter for the object physics for passing it to other scopes
    * @param {number} phy The new objejet physics
    */
-  setPhysics=(phy:Physics):void=> {
+  setPhysics = (phy: Physics): void => {
     if (phy instanceof Physics) this.physics = phy;
   }
 
@@ -600,7 +606,7 @@ class Editor {
    * Getter for the physics object for passing it to other scopes
    * @return {number} The object physics
    */
-  getPhysics=():Physics=>{
+  getPhysics = (): Physics => {
     return this.physics;
   }
 }
