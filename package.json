@@ -5,7 +5,7 @@
   "main": "./src/physics.js",
   "scripts": {
     "test": "jest --verbose ./tests",
-    "watch": "nodemon --ignore \"dest/*.*\" -e js,css,html --exec npm run build",
+    "watch": "nodemon --ignore \"dest/*.*\" -e js,ts,css,html --exec npm run build",
     "build": "esbuild editor/src/index.js --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16 --outfile=dest/main.js && cp editor/static/index.html dest/index.html"
   },
   "repository": {
