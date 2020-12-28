@@ -132,7 +132,6 @@ function Editor() {
 
     // Set the size of the balls
     this.defaultSize = (this.cnv.width + this.cnv.height) / 80;
-    window.defaultSize = (this.cnv.width + this.cnv.height) / 80;
   };
 
   /**
@@ -177,9 +176,6 @@ function Editor() {
     this.physics.update(elapsedTime / 5, false);
     this.physics.update(elapsedTime / 5, false);
     this.physics.update(elapsedTime / 5, false);
-
-    pmouseX = this.mouseX;
-    pmouseY = this.mouseY;
 
     this.lastFrameTime = performance.now();
     requestAnimationFrame(this.drawFunction);
@@ -265,7 +261,7 @@ function Editor() {
    * @param {KeyboardEvent} event The event containing data
    */
   const keyGotUp = (event) => {
-    keyCode = event.key;
+    let keyCode = event.key;
     // Right arrow
     if (keyCode === 'ArrowRight') {
       this.right = false;
@@ -481,7 +477,7 @@ function Editor() {
     ctx.restore();
 
     // Visualizing debug data
-    for (segment of this.physics.debugData) {
+    for (let segment of this.physics.debugData) {
       ctx.strokeStyle = 'red';
       ctx.beginPath();
       ctx.moveTo(segment.a.x, segment.a.y);

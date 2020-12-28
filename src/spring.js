@@ -15,6 +15,7 @@ class Spring {
   constructor(length, springConstant) {
     this.length = length;
     this.springConstant = springConstant;
+    /** @type {boolean | Object} */
     this.pinned = false;
     this.objects = [];
     this.rotationLocked = false;
