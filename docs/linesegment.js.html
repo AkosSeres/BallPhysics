@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>linesegment.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Ball.html">Ball</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#.collide">collide</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#applyDeltaVelInPoint">applyDeltaVelInPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#collided">collided</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#containsPoint">containsPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#effectiveMass">effectiveMass</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#getAmInPoint">getAmInPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#move">move</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#rotate">rotate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#toJSObject">toJSObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#velInPlace">velInPlace</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Body.html">Body</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#.collide">collide</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#applyDeltaVelInPoint">applyDeltaVelInPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#calculatePosAndMass">calculatePosAndMass</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#collideWithBall">collideWithBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#collideWithFixedBall">collideWithFixedBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#collideWithWall">collideWithWall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#containsPoint">containsPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#effectiveMass">effectiveMass</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#getAmInPoint">getAmInPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#move">move</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#rotate">rotate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#toJSObject">toJSObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#velInPlace">velInPlace</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Line.html">Line</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Line.html#.intersect">intersect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Line.html#.intersectWithLineSegment">intersectWithLineSegment</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Line.html#distFromPoint">distFromPoint</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="LineSegment.html">LineSegment</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="LineSegment.html#.intersect">intersect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="LineSegment.html#distFromPoint">distFromPoint</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Physics.html">Physics</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#.fromJSON">fromJSON</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addBall">addBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addBody">addBody</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addFixedBall">addFixedBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addRectBody">addRectBody</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addRectWall">addRectWall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addSoftBall">addSoftBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addSoftSquare">addSoftSquare</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addSpring">addSpring</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addWall">addWall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#getCopyOfBalls">getCopyOfBalls</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#getCopyOfBodies">getCopyOfBodies</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#getItemDataFromId">getItemDataFromId</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#getObjectAtCoordinates">getObjectAtCoordinates</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#removeObjFromSystem">removeObjFromSystem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#setAirFriction">setAirFriction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#setBounds">setBounds</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#setGravity">setGravity</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#toJSObject">toJSObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#toJSON">toJSON</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#update">update</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Polygon.html">Polygon</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#.createCircle">createCircle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#.fracture">fracture</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#.intersection">intersection</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#getSideLine">getSideLine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#getSideSegment">getSideSegment</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#getSideVector">getSideVector</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#isPointInside">isPointInside</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#makeAntiClockwise">makeAntiClockwise</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#reverseOrder">reverseOrder</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="SoftBall.html">SoftBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="SoftBall.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="SoftBall.html#.updatePressureBasedForces">updatePressureBasedForces</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="SoftBall.html#containsPoint">containsPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="SoftBall.html#toJSObject">toJSObject</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Spring.html">Spring</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#.createStickOrSpring">createStickOrSpring</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#attachObject">attachObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#lockRotation">lockRotation</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#pinHere">pinHere</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#toJSObject">toJSObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#unlockRotation">unlockRotation</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#unpin">unpin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#update">update</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Stick.html">Stick</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Stick.html#update">update</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Vec2.html">Vec2</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#add">add</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#dist">dist</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#div">div</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#lerp">lerp</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#mult">mult</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#rotate">rotate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#setMag">setMag</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#sub">sub</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#toJSObject">toJSObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.add">add</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.angle">angle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.angleACW">angleACW</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.cross">cross</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.crossScalarFirst">crossScalarFirst</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.crossScalarSecond">crossScalarSecond</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.dist">dist</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.div">div</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.dot">dot</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.fromAngle">fromAngle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.lerp">lerp</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.mult">mult</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.normalized">normalized</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.sub">sub</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Wall.html">Wall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Wall.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Wall.html#calculateCenterAndRadius">calculateCenterAndRadius</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Wall.html#collideWithBall">collideWithBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Wall.html#containsPoint">containsPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Wall.html#toJSObject">toJSObject</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#arrayBuffertoBase64">arrayBuffertoBase64</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#base64ToArrayBuffer">base64ToArrayBuffer</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#codeTable">codeTable</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">linesegment.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const Vec2 = require('./vec2');
+
+/**
+ * Class representing a segment of a line
+ */
+class LineSegment {
+  /**
+   * Create a segment
+   * @param {Vec2} a_ Starting point
+   * @param {Vec2} b_ Ending point
+   */
+  constructor(a_, b_) {
+    this.a = a_;
+    this.b = b_;
+  }
+
+  /**
+   * Get the length of the segment
+   * @return {number} The length
+   */
+  get length() {
+    return Vec2.dist(this.a, this.b);
+  }
+
+  /**
+   * Get the distance between a point and the line segment
+   * @param {Vec2} p The point as a vector
+   * @return {number} The distance
+   */
+  distFromPoint(p) {
+    let e = Vec2.sub(this.a, this.b);
+    let A = Vec2.sub(p, this.b);
+    let B = Vec2.sub(p, this.a);
+    let a = A.length;
+    let b = B.length;
+    let c = e.length;
+    if (c === 0) return a;
+    let gamma = Vec2.angle(A, B);
+    let betha = Vec2.angle(A, e);
+    let alpha = Math.PI - gamma - betha;
+    let area = (Math.sin(alpha) * b * c) / 2;
+    let m = (2 * area) / c;
+    if (alpha > Math.PI / 2) return b;
+    if (betha > Math.PI / 2) return a;
+    return m;
+  }
+
+  /**
+   * Get if they intersect or not
+   * If they intersect it returns the intersection point
+   * If they not it returns undefined
+   * @param {LineSegment} segment1 A segment
+   * @param {LineSegment} segment2 Other segment
+   * @return {Vec2} Intersetion point
+   */
+  static intersect(segment1, segment2) {
+    let v1 = Vec2.sub(segment1.b, segment1.a);
+    let a1 = v1.y / v1.x;
+    let c1 = segment1.b.y - segment1.b.x * a1;
+
+    let v2 = Vec2.sub(segment2.b, segment2.a);
+    let a2 = v2.y / v2.x;
+    let c2 = segment2.b.y - segment2.b.x * a2;
+
+    if (v1.x === 0 &amp;&amp; v2.x !== 0) {
+      if (
+        (segment1.a.x >= segment2.a.x &amp;&amp; segment1.a.x &lt;= segment2.b.x) ||
+        (segment1.a.x &lt;= segment2.a.x &amp;&amp; segment1.a.x >= segment2.b.x)
+      ) {
+        let h = a2 * segment1.a.x + c2;
+        if (
+          (h > segment1.a.y &amp;&amp; h &lt; segment1.b.y) ||
+          (h &lt; segment1.a.y &amp;&amp; h > segment1.b.y)
+        ) {
+          return new Vec2(segment1.a.x, h);
+        }
+      }
+      return undefined;
+    }
+    if (v2.x === 0 &amp;&amp; v1.x !== 0) {
+      if (
+        (segment2.a.x >= segment1.a.x &amp;&amp; segment2.a.x &lt;= segment1.b.x) ||
+        (segment2.a.x &lt;= segment1.a.x &amp;&amp; segment2.a.x >= segment1.b.x)
+      ) {
+        let h = a1 * segment2.a.x + c1;
+        if (
+          (h > segment2.a.y &amp;&amp; h &lt; segment2.b.y) ||
+          (h &lt; segment2.a.y &amp;&amp; h > segment2.b.y)
+        ) {
+          return new Vec2(segment2.a.x, h);
+        }
+      }
+      return undefined;
+    }
+    if (v1.x === 0 &amp;&amp; v2.x === 0) {
+      if (segment1.a.x === segment2.a.x) {
+        let interval1;
+        if (segment1.a.y &lt; segment1.b.y) {
+          interval1 = [segment1.a.y, segment1.b.y];
+        } else {
+          interval1 = [segment1.b.y, segment1.a.y];
+        }
+        let interval2;
+        if (segment2.a.y &lt; segment2.b.y) {
+          interval2 = [segment2.a.y, segment2.b.y];
+        } else {
+          interval2 = [segment2.b.y, segment2.a.y];
+        }
+        let interval = [
+          interval1[0] > interval2[0] ? interval1[0] : interval2[0],
+          interval1[1] &lt; interval2[1] ? interval1[1] : interval2[1],
+        ];
+        if (interval[0] &lt;= interval[1]) {
+          return new Vec2(segment1.a.x, (interval[0] + interval[1]) / 2);
+        }
+      }
+      return undefined;
+    }
+
+    let interval1;
+    if (segment1.a.x &lt; segment1.b.x) {
+      interval1 = [segment1.a.x, segment1.b.x];
+    } else {
+      interval1 = [segment1.b.x, segment1.a.x];
+    }
+    let interval2;
+    if (segment2.a.x &lt; segment2.b.x) {
+      interval2 = [segment2.a.x, segment2.b.x];
+    } else {
+      interval2 = [segment2.b.x, segment2.a.x];
+    }
+    let interval = [
+      interval1[0] > interval2[0] ? interval1[0] : interval2[0],
+      interval1[1] &lt; interval2[1] ? interval1[1] : interval2[1],
+    ];
+    // If they are parralel the only time they intersect is when c1 == c2.
+    if (a1 === a2 &amp;&amp; c1 === c2 &amp;&amp; interval[0] &lt;= interval[1]) {
+      return new Vec2(
+        (interval[0] + interval[1]) / 2,
+        ((interval[0] + interval[1]) / 2) * a1 + c1
+      );
+    }
+    let x = (c2 - c1) / (a1 - a2);
+    if (x >= interval[0] &amp;&amp; x &lt;= interval[1]) {
+      return new Vec2(x, x * a1 + c1);
+    } else return undefined;
+  }
+}
+
+module.exports = LineSegment;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Tue Dec 29 2020 19:12:47 GMT+0000 (Coordinated Universal Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

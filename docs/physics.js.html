@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>physics.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Ball.html">Ball</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#.collide">collide</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#applyDeltaVelInPoint">applyDeltaVelInPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#collided">collided</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#containsPoint">containsPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#effectiveMass">effectiveMass</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#getAmInPoint">getAmInPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#move">move</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#rotate">rotate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#toJSObject">toJSObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Ball.html#velInPlace">velInPlace</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Body.html">Body</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#.collide">collide</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#applyDeltaVelInPoint">applyDeltaVelInPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#calculatePosAndMass">calculatePosAndMass</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#collideWithBall">collideWithBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#collideWithFixedBall">collideWithFixedBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#collideWithWall">collideWithWall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#containsPoint">containsPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#effectiveMass">effectiveMass</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#getAmInPoint">getAmInPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#move">move</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#rotate">rotate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#toJSObject">toJSObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Body.html#velInPlace">velInPlace</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Line.html">Line</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Line.html#.intersect">intersect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Line.html#.intersectWithLineSegment">intersectWithLineSegment</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Line.html#distFromPoint">distFromPoint</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="LineSegment.html">LineSegment</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="LineSegment.html#.intersect">intersect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="LineSegment.html#distFromPoint">distFromPoint</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Physics.html">Physics</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#.fromJSON">fromJSON</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addBall">addBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addBody">addBody</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addFixedBall">addFixedBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addRectBody">addRectBody</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addRectWall">addRectWall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addSoftBall">addSoftBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addSoftSquare">addSoftSquare</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addSpring">addSpring</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#addWall">addWall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#getCopyOfBalls">getCopyOfBalls</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#getCopyOfBodies">getCopyOfBodies</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#getItemDataFromId">getItemDataFromId</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#getObjectAtCoordinates">getObjectAtCoordinates</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#removeObjFromSystem">removeObjFromSystem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#setAirFriction">setAirFriction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#setBounds">setBounds</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#setGravity">setGravity</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#toJSObject">toJSObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#toJSON">toJSON</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Physics.html#update">update</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Polygon.html">Polygon</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#.createCircle">createCircle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#.fracture">fracture</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#.intersection">intersection</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#getSideLine">getSideLine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#getSideSegment">getSideSegment</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#getSideVector">getSideVector</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#isPointInside">isPointInside</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#makeAntiClockwise">makeAntiClockwise</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Polygon.html#reverseOrder">reverseOrder</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="SoftBall.html">SoftBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="SoftBall.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="SoftBall.html#.updatePressureBasedForces">updatePressureBasedForces</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="SoftBall.html#containsPoint">containsPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="SoftBall.html#toJSObject">toJSObject</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Spring.html">Spring</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#.createStickOrSpring">createStickOrSpring</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#attachObject">attachObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#lockRotation">lockRotation</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#pinHere">pinHere</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#toJSObject">toJSObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#unlockRotation">unlockRotation</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#unpin">unpin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Spring.html#update">update</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Stick.html">Stick</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Stick.html#update">update</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Vec2.html">Vec2</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#add">add</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#dist">dist</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#div">div</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#lerp">lerp</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#mult">mult</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#rotate">rotate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#setMag">setMag</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#sub">sub</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#toJSObject">toJSObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.add">add</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.angle">angle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.angleACW">angleACW</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.cross">cross</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.crossScalarFirst">crossScalarFirst</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.crossScalarSecond">crossScalarSecond</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.dist">dist</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.div">div</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.dot">dot</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.fromAngle">fromAngle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.lerp">lerp</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.mult">mult</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.normalized">normalized</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vec2.html#.sub">sub</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Wall.html">Wall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Wall.html#.fromObject">fromObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Wall.html#calculateCenterAndRadius">calculateCenterAndRadius</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Wall.html#collideWithBall">collideWithBall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Wall.html#containsPoint">containsPoint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Wall.html#toJSObject">toJSObject</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#arrayBuffertoBase64">arrayBuffertoBase64</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#base64ToArrayBuffer">base64ToArrayBuffer</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#codeTable">codeTable</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">physics.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const Vec2 = require('./vec2');
+const Ball = require('./ball');
+const Wall = require('./wall');
+const LineSegment = require('./linesegment');
+const Stick = require('./stick');
+const Spring = require('./spring');
+const SoftBall = require('./softball');
+const Body = require('./body');
+const Line = require('./line');
+const Polygon = require('./polygon');
+
+/**
+ * @typedef {{a:{x:number,y:number}, b:{x:number,y:number}}} DebugDataElement
+ * @typedef {{x:number, y:number, r:number}} FixedBall
+ * @typedef {{x: number, y: number, pinPoint: boolean}} PinPoint
+ * @typedef {Ball | Body | Wall | FixedBall | SoftBall |PinPoint|boolean} AnyPhysicsObject
+ */
+
+/**
+ * Class that creates a new world with the physics engine
+ */
+class Physics {
+  /**
+   * Create and initalize a new world
+   */
+  constructor() {
+    /** @type {Ball[]} */
+    this.balls = [];
+    /** @type {Body[]} */
+    this.bodies = [];
+    /** @type {FixedBall[]} */
+    this.fixedBalls = [];
+    /** @type {SoftBall[]} */
+    this.softBalls = [];
+
+    /** @type {Wall[]} */
+    this.walls = [];
+    /** @type {Wall[]} */
+    this.bounds = [];
+
+    /** @type {Spring[] | Stick[]} */
+    this.springs = [];
+
+    // Air friction has to be between 0 and 1
+    // 0 - no movement
+    // 1 - no friction
+    this.airFriction = 1;
+
+    this.gravity = new Vec2(0, 0);
+
+    /** @type {DebugDataElement[]} */
+    this.debugData = [];
+  }
+
+  /**
+   * Updates the world by a given amount of time
+   *
+   * @param {number} t Elapsed time
+   * @param {boolean} precise If this is true,
+   * then the simulation is going to be more precise
+   */
+  update(t, precise) {
+    // Resets debug data
+    this.debugData = [];
+
+    // Do the simulation on the reversed system
+    // if the simulation is in precise mode
+    const clonedSystem = precise ? this.copy : new Physics();
+    if (precise) {
+      clonedSystem.bodies.reverse();
+      clonedSystem.balls.reverse();
+      clonedSystem.update(t, false);
+    }
+
+    // At first move objets
+    for (let i = 0; i &lt; this.balls.length; i += 1) {
+      // Move
+      this.balls[i].lastPos = this.balls[i].pos.copy;
+      this.balls[i].pos.add(Vec2.mult(this.balls[i].vel, t));
+
+      // Angular velocity
+      this.balls[i].rotation += this.balls[i].ang * t;
+      this.balls[i].rotation %= Math.PI * 2;
+    }
+    for (let i = 0; i &lt; this.bodies.length; i += 1) {
+      this.bodies[i].lastPos = this.bodies[i].pos.copy;
+      this.bodies[i].move(this.bodies[i].vel.x * t, this.bodies[i].vel.y * t);
+      this.bodies[i].rotate(this.bodies[i].ang * t);
+    }
+
+    // Update springs multiple times
+    for (let i = 0; i &lt; 3; i += 1) {
+      this.springs.forEach((element) => {
+        element.update(t / 3 / 2);
+      });
+    }
+
+    for (let i = 0; i &lt; this.balls.length; i += 1) {
+      // Apply gravity
+      if (this.gravity) {
+        this.balls[i].vel.add(new Vec2(this.gravity.x * t, this.gravity.y * t));
+      }
+
+      // Collision
+      for (let j = i + 1; j &lt; this.balls.length; j += 1) {
+        if (
+          this.balls[i].layer !== this.balls[j].layer
+          || (!this.balls[i].layer &amp;&amp; !this.balls[j].layer)
+        ) {
+          Ball.collide(this.balls[i], this.balls[j]);
+        }
+      }
+
+      // Collision with walls
+      for (const wall of this.walls) {
+        wall.collideWithBall(this.balls[i]);
+      }
+
+      // Collision with fixed balls
+      for (const b of this.fixedBalls) {
+        const ball = this.balls[i];
+
+        let heading;
+        let rel = 0;
+        const p = new Vec2(b.x, b.y);
+        p.x -= ball.pos.x;
+        p.y -= ball.pos.y;
+        p.mult(-1);
+        if (p.length &lt;= ball.r + b.r) {
+          heading = p.heading;
+          rel = p.length;
+        }
+
+        fixedBallCollision: if (isFinite(heading)) {
+          const pos = ball.pos.copy;
+          const vel = ball.vel.copy;
+          pos.rotate(-heading + Math.PI / 2);
+          vel.rotate(-heading + Math.PI / 2);
+
+          // Only collide when moving towards the wall
+          if (vel.y > 0) break fixedBallCollision;
+          vel.y *= -ball.k;
+          pos.y += ball.r + b.r - rel;
+          const dvy = vel.y * (1 + ball.k);
+
+          let deltaAng = (Math.sign(vel.x + ball.ang * ball.r) * (dvy * ball.fc))
+            / (ball.amc * ball.r);
+          const maxDeltaAng = (vel.x + ball.ang * ball.r) / ball.r;
+
+          if (deltaAng / maxDeltaAng > 1) deltaAng = maxDeltaAng;
+          ball.ang -= deltaAng;
+
+          const dvx = deltaAng * ball.am / ball.r / ball.m;
+          vel.x -= dvx;
+
+          pos.rotate(heading - Math.PI / 2);
+          vel.rotate(heading - Math.PI / 2);
+          ball.pos.x = pos.x;
+          ball.pos.y = pos.y;
+          ball.vel.x = vel.x;
+          ball.vel.y = vel.y;
+        }
+      }
+
+      // Bounce off the edges
+      for (const bound of this.bounds) {
+        bound.collideWithBall(this.balls[i]);
+      }
+    }
+
+    for (let i = 0; i &lt; this.bodies.length; i++) {
+      for (const ball of this.balls) {
+        if (
+          ball.layer != this.bodies[i].layer
+          || (!ball.layer &amp;&amp; !this.bodies[i].layer)
+        ) {
+          this.bodies[i].collideWithBall(ball);
+        }
+      }
+
+      for (let j = i + 1; j &lt; this.bodies.length; j++) {
+        if (
+          this.bodies[i].layer != this.bodies[j].layer
+          || (!this.bodies[j].layer &amp;&amp; !this.bodies[i].layer)
+        ) {
+          Body.collide(this.bodies[i], this.bodies[j]);
+        }
+      }
+
+      // Body vs fixedBall collisions
+      for (const body of this.bodies) {
+        for (const fixedBall of this.fixedBalls) {
+          body.collideWithFixedBall(fixedBall);
+        }
+      }
+
+      // Body vs wall collisions
+      for (const body of this.bodies) {
+        for (const wall of this.walls) {
+          const additionalDebugData = body.collideWithWall(wall);
+          if (additionalDebugData) {
+            this.debugData.push(...additionalDebugData);
+          }
+        }
+      }
+
+      // Body vs world boundary collision
+      for (const body of this.bodies) {
+        for (const bound of this.bounds) {
+          const additionalDebugData = body.collideWithWall(bound);
+          if (additionalDebugData) {
+            this.debugData.push(...additionalDebugData);
+          }
+        }
+      }
+
+      // Apply gravity
+      if (this.gravity) {
+        this.bodies[i].vel.add(
+          new Vec2(this.gravity.x * t, this.gravity.y * t),
+        );
+      }
+    }
+
+    // Update soft balls
+    this.softBalls.forEach((sb) => {
+      SoftBall.updatePressureBasedForces(sb, t);
+    });
+
+    // Update springs again multiple times
+    for (let i = 0; i &lt; 3; i++) {
+      for (const element of this.springs) {
+        element.update(t / 3 / 2);
+      }
+    }
+
+    // Apply air friction
+    this.balls.forEach((b) => {
+      b.vel.mult(Math.pow(this.airFriction, t));
+      b.ang *= Math.pow(this.airFriction, t);
+    });
+    this.bodies.forEach((b) => {
+      b.vel.mult(Math.pow(this.airFriction, t));
+      b.ang *= Math.pow(this.airFriction, t);
+    });
+
+    // Then take the average of this system and the other system
+    // if in precise mode
+    if (precise) {
+      clonedSystem.bodies.reverse();
+      clonedSystem.balls.reverse();
+
+      // Take the average of the balls
+      this.balls.forEach((ball, i) => {
+        ball.move(
+          (clonedSystem.balls[i].pos.x - ball.pos.x) * 0.5,
+          (clonedSystem.balls[i].pos.y - ball.pos.y) * 0.5,
+        );
+        ball.vel.add(
+          new Vec2(
+            (clonedSystem.balls[i].vel.x - ball.vel.x) * 0.5,
+            (clonedSystem.balls[i].vel.y - ball.vel.y) * 0.5,
+          ),
+        );
+        ball.rotation = (ball.rotation + clonedSystem.balls[i].rotation) / 2;
+        ball.ang = (ball.ang + clonedSystem.balls[i].ang) / 2;
+      });
+
+      // Take the average of the bodies
+      this.bodies.forEach((body, i) => {
+        const other = clonedSystem.bodies[i];
+        body.move(
+          (other.pos.x - body.pos.x) * 0.5,
+          (other.pos.y - body.pos.y) * 0.5,
+        );
+        body.vel.add(
+          new Vec2(
+            (other.vel.x - body.vel.x) * 0.5,
+            (other.vel.y - body.vel.y) * 0.5,
+          ),
+        );
+        body.rotate((other.rotation - body.rotation) / 2);
+        body.ang = (body.ang + other.ang) / 2;
+      });
+    }
+  }
+
+  /**
+   * Returns a copy of this system
+   *
+   * @returns {Physics} The copy of this system
+   */
+  get copy() {
+    const ret = new Physics();
+    ret.balls = this.getCopyOfBalls();
+    ret.bodies = this.getCopyOfBodies();
+    ret.fixedBalls = this.fixedBalls;
+    ret.walls = this.walls;
+    ret.bounds = this.bounds;
+    ret.gravity = this.gravity;
+
+    this.springs.forEach((spring) => {
+      const TypeOfSpring = spring.constructor == Spring ? Spring : Stick;
+      const copiedSpring = new TypeOfSpring(spring.length, spring.springConstant);
+      copiedSpring.rotationLocked = spring.rotationLocked;
+      copiedSpring.pinned = spring.pinned;
+
+      spring.objects.forEach((obj) => {
+        let idx = this.balls.indexOf(obj);
+        if (idx != -1) copiedSpring.attachObject(ret.balls[idx]);
+        else {
+          idx = this.bodies.indexOf(obj);
+          if (idx != -1) copiedSpring.attachObject(ret.bodies[idx]);
+        }
+      });
+
+      ret.springs.push(copiedSpring);
+    });
+
+    return ret;
+  }
+
+  /**
+   * Air friction. has to be between 0 and 1
+   * 0 - no movement
+   * 1 - no friction
+   *
+   * @param {number} airFriction Has to be between 0 and 1
+   */
+  setAirFriction(airFriction) {
+    if (!isFinite(airFriction)) return;
+    this.airFriction = airFriction;
+    if (this.airFriction &lt; 0) this.airFriction = 0;
+    if (this.airFriction > 1) this.airFriction = 1;
+  }
+
+  /**
+   * Sets the gravity in the world
+   *
+   * @param {Vec2} dir The acceleration vector of the gravity
+   */
+  setGravity(dir) {
+    this.gravity = dir.copy;
+  }
+
+  /**
+   * Appends a new ball to the world
+   *
+   * @param {Ball} ball Ball to add to the world
+   */
+  addBall(ball) {
+    if (
+      typeof addBodyNotBall !== 'undefined'
+      &amp;&amp; isFinite(addBodyNotBall)
+      &amp;&amp; addBodyNotBall > 2
+    ) {
+      const getPointsForBall = (pos, r, resolution) => {
+        const points = [];
+
+        for (let i = 0; i &lt; resolution; i++) {
+          const newPoint = Vec2.fromAngle((i / resolution) * 2 * Math.PI);
+          newPoint.mult(r);
+          newPoint.add(pos);
+          points.push(newPoint);
+        }
+
+        return points;
+      };
+
+      this.bodies.push(
+        new Body(
+          getPointsForBall(ball.pos, ball.r, addBodyNotBall),
+          ball.vel,
+          ball.k,
+          ball.ang,
+          ball.fc,
+        ),
+      );
+    } else {
+      this.balls.push(ball);
+    }
+  }
+
+  /**
+   * Appends a new body to the world
+   *
+   * @param {Body} body Body to add to the world
+   */
+  addBody(body) {
+    this.bodies.push(body);
+  }
+
+  /**
+   * Appends a new soft ball to the world
+   *
+   * @param {SoftBall} softBall SoftBall to be added to the world
+   */
+  addSoftBall(softBall) {
+    this.balls.push(...softBall.points);
+    this.springs.push(...softBall.sides);
+
+    this.softBalls.push(softBall);
+  }
+
+  /**
+   * Appends a new soft square to the world
+   *
+   * @param {Vec2} pos The position of the soft square
+   * @param {number} sideSize The size of the square
+   * @param {number} fc Friction coefficient
+   * @param {Vec2} vel The initial velocity of the soft square
+   * @param {number} resolution The resolution of the soft square
+   * @param {number} pressure The 'pressure' of the soft square
+   */
+  addSoftSquare(pos, sideSize, fc, vel, resolution = 24, pressure = 1) {
+    const softSquare = new SoftBall(
+      pos,
+      Math.sqrt((sideSize * sideSize) / Math.PI),
+      pressure,
+      fc,
+      resolution,
+    );
+    softSquare.sides.forEach((side) => {
+      side.length = (0.96 * 4 * sideSize) / softSquare.resolution;
+    });
+    softSquare.points.forEach((b) => {
+      b.vel = vel.copy;
+    });
+
+    this.balls.push(...softSquare.points);
+    this.springs.push(...softSquare.sides);
+
+    const springStrength = sideSize * sideSize * 200 * pressure;
+
+    let bigStick = new Spring(
+      Math.sqrt(softSquare.r * softSquare.r * Math.PI),
+      springStrength / 2,
+    );
+    bigStick.attachObject(softSquare.points[0]);
+    bigStick.attachObject(softSquare.points[softSquare.resolution / 2]);
+    this.springs.push(bigStick);
+
+    bigStick = new Spring(
+      Math.sqrt(softSquare.r * softSquare.r * Math.PI),
+      springStrength / 2,
+    );
+    bigStick.attachObject(softSquare.points[softSquare.resolution / 4]);
+    bigStick.attachObject(softSquare.points[(3 * softSquare.resolution) / 4]);
+    this.springs.push(bigStick);
+
+    bigStick = new Spring(
+      Math.sqrt(2 * softSquare.r * softSquare.r * Math.PI),
+      springStrength,
+    );
+    bigStick.attachObject(softSquare.points[softSquare.resolution / 8]);
+    bigStick.attachObject(softSquare.points[(5 * softSquare.resolution) / 8]);
+    this.springs.push(bigStick);
+
+    bigStick = new Spring(
+      Math.sqrt(2 * softSquare.r * softSquare.r * Math.PI),
+      springStrength,
+    );
+    bigStick.attachObject(softSquare.points[(3 * softSquare.resolution) / 8]);
+    bigStick.attachObject(softSquare.points[(7 * softSquare.resolution) / 8]);
+    this.springs.push(bigStick);
+  }
+
+  /**
+   * Appends a rectangular wall to the world
+   *
+   * @param {number} x x coordinate of the rectangular wall
+   * @param {number} y y coordinate of the rectangular wall
+   * @param {number} w width of the rectangular wall
+   * @param {number} h height of the rectangular wall
+   */
+  addRectWall(x, y, w, h) {
+    const points = [];
+    points.push(new Vec2(x - w / 2, y - h / 2));
+    points.push(new Vec2(x + w / 2, y - h / 2));
+    points.push(new Vec2(x + w / 2, y + h / 2));
+    points.push(new Vec2(x - w / 2, y + h / 2));
+    this.walls.push(new Wall(points));
+  }
+
+  /**
+   * Appends a rectangular body to the world
+   *
+   * @param {number} x x coordinate of the rectangular body
+   * @param {number} y y coordinate of the rectangular body
+   * @param {number} w width of the rectangular body
+   * @param {number} h height of the rectangular body
+   * @param {number} fc friction coefficient of the body
+   * @param {number} k coefficient of restitution of the body
+   */
+  addRectBody(x, y, w, h, fc, k) {
+    const points = [];
+    points.push(new Vec2(x - w / 2, y - h / 2));
+    points.push(new Vec2(x + w / 2, y - h / 2));
+    points.push(new Vec2(x + w / 2, y + h / 2));
+    points.push(new Vec2(x - w / 2, y + h / 2));
+    this.bodies.push(new Body(points, new Vec2(0, 0), k, 0, fc));
+  }
+
+  /**
+   * Append a new wall to the world
+   *
+   * @param {Wall} wall Wall to append to the world
+   */
+  addWall(wall) {
+    this.walls.push(wall);
+  }
+
+  /**
+   * Appends a fixed ball to the world
+   * A fixed ball is immovable and other objects collide with it
+   *
+   * @param {number} x x coordinate of the fixed ball
+   * @param {number} y y coordinate of the fixed ball
+   * @param {number} r radius of the fixed ball
+   */
+  addFixedBall(x, y, r) {
+    this.fixedBalls.push({
+      x,
+      y,
+      r,
+    });
+  }
+
+  /**
+   * Appends a new spring to the world
+   *
+   * @param {Spring} spring Spring to add to the world
+   */
+  addSpring(spring) {
+    this.springs.push(spring);
+  }
+
+  /**
+   * Sets the size of the world (without this the world
+   * does not have bounds)
+   *
+   * @param {number} x x coordinate of the centre of the world
+   * @param {number} y y coordinate of the centre of the world
+   * @param {number} w Width of the world
+   * @param {number} h Height of the world
+   */
+  setBounds(x, y, w, h) {
+    this.bounds = [];
+
+    const getRectBody = (x_, y_, w_, h_) => {
+      const points = [];
+      points.push(new Vec2(x_ - w_ / 2, y_ - h_ / 2));
+      points.push(new Vec2(x_ + w_ / 2, y_ - h_ / 2));
+      points.push(new Vec2(x_ + w_ / 2, y_ + h_ / 2));
+      points.push(new Vec2(x_ - w_ / 2, y_ + h_ / 2));
+      return new Wall(points);
+    };
+
+    this.bounds.push(getRectBody(x - w, y, 2 * w, 4 * h));
+    this.bounds.push(getRectBody(x + 2 * w, y, 2 * w, 4 * h));
+    this.bounds.push(getRectBody(x, y - h, 4 * w, h * 2));
+    this.bounds.push(getRectBody(x, y + 2 * h, 4 * w, 2 * h));
+  }
+
+  /**
+   * Search for any object at the given coordinate then returns it
+   * Return false if nothing is found
+   *
+   * @param {number} x x coordinate
+   * @param {number} y y coordinate
+   * @returns {AnyPhysicsObject} The found object
+   */
+  getObjectAtCoordinates(x, y) {
+    let ret = false;
+    const v = new Vec2(x, y);
+    this.balls.forEach((ball) => {
+      if (ball.containsPoint(v)) ret = ball;
+    });
+    this.bodies.forEach((body) => {
+      if (body.containsPoint(v)) ret = body;
+    });
+    this.walls.forEach((wall) => {
+      if (wall.containsPoint(v)) ret = wall;
+    });
+    this.fixedBalls.forEach((e) => {
+      if (Vec2.dist(new Vec2(e.x, e.y), new Vec2(x, y)) &lt;= e.r) ret = e;
+    });
+    this.softBalls.forEach((softBall) => {
+      if (softBall.containsPoint(v)) ret = softBall;
+    });
+    return ret;
+  }
+
+  /**
+   * Returns an array of copies of all balls in the system
+   *
+   * @returns {Array&lt;Ball>} The array of the copied balls
+   */
+  getCopyOfBalls() {
+    const ret = [];
+    this.balls.forEach((item) => {
+      ret.push(item.copy);
+    });
+    return ret;
+  }
+
+  /**
+   * Returns an array of copies of all bodies in the system
+   *
+   * @returns {Array&lt;Body>} The array of the copied bodies
+   */
+  getCopyOfBodies() {
+    const ret = [];
+    this.bodies.forEach((item) => {
+      ret.push(item.copy);
+    });
+    return ret;
+  }
+
+  /**
+   * Removes the given object from the system
+   *
+   * @param {any} obj The object to remove
+   */
+  removeObjFromSystem(obj) {
+    let idx = this.balls.indexOf(obj);
+    if (idx !== -1) {
+      let toReturn = false;
+      this.softBalls.forEach((s) => {
+        if (s.points.includes(this.balls[idx])) {
+          this.removeObjFromSystem(s);
+          toReturn = true;
+        }
+      });
+      if (toReturn) return;
+      this.springs.forEach((s) => {
+        if (s.objects.includes(this.balls[idx])) this.removeObjFromSystem(s);
+      });
+      this.balls.splice(idx, 1);
+      return;
+    }
+    idx = this.bodies.indexOf(obj);
+    if (idx !== -1) {
+      this.bodies.splice(idx, 1);
+      return;
+    }
+    idx = this.walls.indexOf(obj);
+    if (idx !== -1) {
+      this.walls.splice(idx, 1);
+      return;
+    }
+    idx = this.fixedBalls.indexOf(obj);
+    if (idx !== -1) {
+      this.fixedBalls.splice(idx, 1);
+      return;
+    }
+    idx = this.springs.indexOf(obj);
+    if (idx !== -1) {
+      this.springs.splice(idx, 1);
+      let toReturn = false;
+      this.softBalls.forEach((s) => {
+        if (s.points.includes(this.springs[idx])) {
+          this.removeObjFromSystem(s);
+          toReturn = true;
+        }
+      });
+      if (toReturn) return;
+      return;
+    }
+    idx = this.softBalls.indexOf(obj);
+    if (idx !== -1) {
+      const sf = this.softBalls[idx];
+      this.softBalls.splice(idx, 1);
+      sf.points.forEach((p) => {
+        this.removeObjFromSystem(p);
+      });
+    }
+  }
+
+  /**
+   * Finds the ball or body with the given id
+   *
+   * @param {string} id The id of the object to find
+   * @returns {{type:("ball"|"body"|"spring"|""), num:number}} The data of the object
+   */
+  getItemDataFromId(id) {
+    const ret = { type: '', num: 0 };
+    const filter = (b) => b.id === id;
+
+    const balls = this.balls.filter(filter);
+    if (balls.length >= 1) {
+      ret.type = 'ball';
+      ret.num = this.balls.indexOf(balls[0]);
+      return ret;
+    }
+
+    const bodies = this.bodies.filter(filter);
+    if (bodies.length >= 1) {
+      ret.type = 'body';
+      ret.num = this.bodies.indexOf(bodies[0]);
+      return ret;
+    }
+
+    const springs = this.springs.filter(filter);
+    if (springs.length >= 1) {
+      ret.type = 'spring';
+      ret.num = this.springs.indexOf(springs[0]);
+      return ret;
+    }
+
+    return ret;
+  }
+
+  /**
+   * @returns {object} The physics world represented in a JS object
+   * Ready to be converted into JSON
+   */
+  toJSObject() {
+    const ret = {};
+
+    ret.balls = this.balls.map((b) => b.toJSObject());
+    ret.bounds = this.bounds.map((w) => w.toJSObject());
+    ret.walls = this.walls.map((w) => w.toJSObject());
+    ret.bodies = this.bodies.map((b) => b.toJSObject());
+    ret.springs = this.springs.map((s) => s.toJSObject());
+    ret.softBalls = this.softBalls.map((s) => s.toJSObject());
+
+    ret.fixedBalls = this.fixedBalls;
+    ret.airFriction = this.airFriction;
+    ret.gravity = this.gravity.toJSObject();
+
+    // saving version too, for having backwards compatibility later
+    ret.version = require('../package.json').version;
+
+    return ret;
+  }
+
+  /**
+   * Creates a Physics class from the given object
+   *
+   * @param {object} obj The object to create the class from
+   * @returns {Physics} The Physics object
+   */
+  static fromObject(obj) {
+    const newWorld = new Physics();
+
+    newWorld.balls = obj.balls.map((b) => Ball.fromObject(b));
+    newWorld.bounds = obj.bounds.map((b) => Wall.fromObject(b));
+    newWorld.walls = obj.walls.map((w) => Wall.fromObject(w));
+    newWorld.bodies = obj.bodies.map((b) => Body.fromObject(b));
+    newWorld.springs = obj.springs.map((s) => Spring.fromObject(s, newWorld.balls));
+    newWorld.softBalls = obj.softBalls.map((s) => SoftBall.fromObject(s,
+      newWorld.balls, newWorld.springs));
+
+    newWorld.fixedBalls = obj.fixedBalls;
+    newWorld.airFriction = obj.airFriction;
+    newWorld.gravity = Vec2.fromObject(obj.gravity);
+
+    return newWorld;
+  }
+
+  /**
+   * @returns {string} The physics object in JSON format in a string
+   */
+  toJSON() {
+    return JSON.stringify(this.toJSObject());
+  }
+
+  /**
+   * Recreates the phyisics object from JSON
+   *
+   * @param {string} jsonString The JSON containing the physics object
+   * @returns {Physics} The created Physics object
+   */
+  static fromJSON(jsonString) {
+    return Physics.fromObject(JSON.parse(jsonString));
+  }
+}
+
+Physics.Ball = Ball;
+Physics.Body = Body;
+Physics.Vec2 = Vec2;
+Physics.Wall = Wall;
+Physics.LineSegment = LineSegment;
+Physics.Spring = Spring;
+Physics.Stick = Stick;
+Physics.SoftBall = SoftBall;
+Physics.Line = Line;
+Physics.Polygon = Polygon;
+
+module.exports = Physics;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Tue Dec 29 2020 19:12:47 GMT+0000 (Coordinated Universal Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
