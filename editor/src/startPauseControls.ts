@@ -10,6 +10,13 @@ interface HasPhysicsAndTime {
   setTimeMultiplier(m: number): void
 }
 
+/**
+ * Sets event listeners for controlling the time in the Physics object of the editor
+ *
+ * @see Physics
+ *
+ * @param {HasPhysicsAndTime} editorApp The editor app to control
+ */
 export default function timeController(editorApp: HasPhysicsAndTime): void {
   startingState = editorApp.getPhysics().toJSObject();
   inStartingState = true;

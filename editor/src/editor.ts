@@ -209,8 +209,9 @@ class Editor implements EditorInterface {
 
   /**
    * Gets called on the start of an interaction with the canvas
-   * @param {number} x The x position of the mouse of the finger on the canvas
-   * @param {number} y The y position of the mouse of the finger on the canvas
+   *
+   * @param {number} x The x position of the mouse or the finger on the canvas
+   * @param {number} y The y position of the mouse or the finger on the canvas
    */
   startInteraction = (x: number, y: number): void => {
     this.mouseX = x / this.scaling - this.viewOffsetX / this.scaling;
@@ -231,6 +232,7 @@ class Editor implements EditorInterface {
 
   /**
    * Gets called on the end of an interaction with the canvas
+   *
    * @param {number} x The x position of the mouse of the finger on the canvas
    * @param {number} y The y position of the mouse of the finger on the canvas
    */
@@ -249,6 +251,7 @@ class Editor implements EditorInterface {
 
   /**
    * My keyboard event function for pressing down a key
+   *
    * @param {KeyboardEvent} event The event containing data
    */
   keyGotDown = (event: KeyboardEvent): void => {
@@ -284,6 +287,7 @@ class Editor implements EditorInterface {
 
   /**
    * My keyboard event function for releasing a key
+   *
    * @param {KeyboardEvent} event The event containing data
    */
   keyGotUp = (event: KeyboardEvent): void => {
@@ -300,8 +304,9 @@ class Editor implements EditorInterface {
 
   /**
    * My touch event function
+   *
    * @param {TouchEvent} event The event containing data
-   * @return {boolean} Returns false for preventing default browser behavior
+   * @returns {boolean} Returns false for preventing default browser behavior
    */
   startTouch = (event: TouchEvent): boolean => {
     event.preventDefault();
@@ -315,8 +320,9 @@ class Editor implements EditorInterface {
 
   /**
    * My touch event function
+   *
    * @param {TouchEvent} event The event containing data
-   * @return {boolean} Returns false for preventing default browser behavior
+   * @returns {boolean} Returns false for preventing default browser behavior
    */
   endTouch = (event: TouchEvent): boolean => {
     event.preventDefault();
@@ -330,8 +336,9 @@ class Editor implements EditorInterface {
 
   /**
    * My touch event function
+   *
    * @param {TouchEvent} event The event containing data
-   * @return {boolean} Returns false for preventing default browser behavior
+   * @returns {boolean} Returns false for preventing default browser behavior
    */
   moveTouch = (event: TouchEvent): boolean => {
     event.preventDefault();
@@ -345,8 +352,9 @@ class Editor implements EditorInterface {
 
   /**
    * My mouse event function that handles pressing down a mouse key
+   *
    * @param {TouchEvent} event The event containing data
-   * @return {boolean} Returns false for preventing default browser behavior
+   * @returns {boolean} Returns false for preventing default browser behavior
    */
   startMouse = (event: MouseEvent): boolean => {
     this.startInteraction(event.offsetX, event.offsetY);
@@ -355,8 +363,9 @@ class Editor implements EditorInterface {
 
   /**
    * My mouse event function that handles releasing a mouse key
+   *
    * @param {TouchEvent} event The event containing data
-   * @return {boolean} Returns false for preventing default browser behavior
+   * @returns {boolean} Returns false for preventing default browser behavior
    */
   endMouse = (event: MouseEvent): boolean => {
     this.endInteraction(event.offsetX, event.offsetY);
@@ -365,6 +374,7 @@ class Editor implements EditorInterface {
 
   /**
    * My mouse event function that handles mouse movement
+   *
    * @param {TouchEvent} event The event containing data
    */
   handleMouseMovement = (event: MouseEvent): void => {
@@ -517,6 +527,7 @@ class Editor implements EditorInterface {
   /**
    * Spawns a Newton cradle inside the given world at given size and
    * coordinates
+   *
    * @param {number} x The x coordinate of it
    * @param {number} y The y coordinate of it
    * @param {number} scale The size of it
@@ -558,12 +569,24 @@ class Editor implements EditorInterface {
     });
   };
 
+  /**
+   * Gets called when one of the mode buttons get clicked
+   * Swithces to the mode corresponding to the button
+   *
+   * @param {MouseEvent} e The click event
+   */
   modeButtonClicked = (e: MouseEvent): void => {
     const modeName = (<HTMLElement>e.target).id.replace('-btn', '');
     const modeNum = modeNames.indexOf(modeName);
     this.switchToMode(modeNum);
   };
 
+  /**
+   * Switches the editor to the given mode
+   * It also puts the corresponding HTML elements on the sidebar
+   *
+   * @param {number} modeNum The mode number to switch to
+   */
   switchToMode = (modeNum: number): void => {
     const prevoiusBtn = document.getElementById(`${modeNames[this.mode]}-btn`);
     if (prevoiusBtn) prevoiusBtn.classList.remove('bg-pink-darker');
@@ -575,6 +598,9 @@ class Editor implements EditorInterface {
     this.sidebar.appendChild(modes[this.mode].element);
   };
 
+  /**
+   * It initially creates the buttons for each mode and switches to the first one
+   */
   setupModes = (): void => {
     const buttonHolder = document.getElementById('button-holder');
 
@@ -593,6 +619,7 @@ class Editor implements EditorInterface {
 
   /**
    * Setter for the variable timeMultipler for passing it to other scopes
+   *
    * @param {number} x The new value of timeMultiplier
    */
   setTimeMultiplier = (x: number): void => {
@@ -601,13 +628,15 @@ class Editor implements EditorInterface {
 
   /**
    * Getter for the variable timeMultiplier for passing it to other scopes
-   * @return {number} The value of timeMultiplier
+   *
+   * @returns {number} The value of timeMultiplier
    */
   getTimeMultiplier = (): number => this.timeMultiplier;
 
   /**
    * Setter for the object physics for passing it to other scopes
-   * @param {number} phy The new objejet physics
+   *
+   * @param {Physics} phy The new physics object
    */
   setPhysics = (phy: Physics): void => {
     if (phy instanceof Physics) this.physics = phy;
@@ -615,7 +644,8 @@ class Editor implements EditorInterface {
 
   /**
    * Getter for the physics object for passing it to other scopes
-   * @return {number} The object physics
+   *
+   * @returns {Physics} The physics object
    */
   getPhysics = (): Physics => this.physics;
 }

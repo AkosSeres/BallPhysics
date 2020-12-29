@@ -75,7 +75,7 @@ class Body {
   /**
  * Gives the angular mass of the body measured in a given point
  * @param {Vec2} point The point to measure the angular mass ins
- * @return {number} The adjusted angular mass
+ * @returns {number} The adjusted angular mass
  */
   getAmInPoint(point) {
     let ret = this.am;
@@ -87,7 +87,7 @@ class Body {
 
   /**
    * Get a copy of the body that is not a reference to it
-   * @return {Body} The copy of the body
+   * @returns {Body} The copy of the body
    */
   get copy() {
     const pointsCopy = [];

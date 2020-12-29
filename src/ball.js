@@ -3,12 +3,13 @@ const Vec2 = require('./vec2');
 /**
  * A class representing a ball
  * A ball is an object in the physics engine that
- * has a shape of a circle and it is affected by gravity
+ * has a shape of a circle and it is affected by gravity.
  */
 class Ball {
   /**
    * Crete a ball
    * The mass of the ball is calculated from its radius
+   *
    * @param {Vec2} pos The position of the center of the circle
    * @param {Vec2} vel The velocity of the circle
    * @param {number} r The radius of the circe
@@ -43,7 +44,8 @@ class Ball {
 
   /**
    * Get the mass of the ball
-   * @return {number} The mass
+   *
+   * @returns {number} The mass
    */
   get m() {
     return this.r * this.r * Math.PI;
@@ -51,7 +53,8 @@ class Ball {
 
   /**
    * Get the moment of inertia of the ball
-   * @return {number} The moment of inertia
+   *
+   * @returns {number} The moment of inertia
    */
   get am() {
     return this.amc * this.r * this.r * this.m;
@@ -59,8 +62,9 @@ class Ball {
 
   /**
    * Gives the angular mass of the ball measured in a given point
+   *
    * @param {Vec2} point The point to measure the angular mass in
-   * @return {number} The adjusted angular mass
+   * @returns {number} The adjusted angular mass
    */
   getAmInPoint(point) {
     let ret = this.am;
@@ -72,7 +76,8 @@ class Ball {
 
   /**
    * Get a copy of the ball that is not a reference to it
-   * @return {Ball} The copy of the ball
+   *
+   * @returns {Ball} The copy of the ball
    */
   get copy() {
     const ret = new Ball(
@@ -90,6 +95,7 @@ class Ball {
 
   /**
    * Moves the ball by the given coordinates
+   *
    * @param {number} x x coordinate
    * @param {number} y y coordinate
    */
@@ -100,6 +106,7 @@ class Ball {
 
   /**
    * Rotates the ball with the given angle anticlockwise
+   *
    * @param {number} angle The angle to rotate the ball in radians
    */
   rotate(angle) {
@@ -108,8 +115,9 @@ class Ball {
 
   /**
    * Checks if two balls are colliding or not
+   *
    * @param {Ball} ball the other ball
-   * @return {boolean} True if they colidre
+   * @returns {boolean} True if they colidre
    */
   collided(ball) {
     if (this.pos.dist(ball.pos) < this.r + ball.r) return true;
@@ -118,6 +126,7 @@ class Ball {
 
   /**
    * Static function for collision between two balls
+   *
    * @param {Ball} ball1 First ball
    * @param {Ball} ball2 Second ball
    */
@@ -185,7 +194,7 @@ class Ball {
     let pAng2 = ang2;
 
     /**
-     * Now calculate the friction reaction
+     * Now calculate the friction reaction.
      */
     // Tangential direction
     const t = vRelInCP.copy;
@@ -222,9 +231,10 @@ class Ball {
   }
 
   /**
-   *Returns true if the point is inside the ball
+   * Returns true if the point is inside the ball
+   *
    * @param {Vec2} p The point
-   * @return {boolean} The boolean value
+   * @returns {boolean} The boolean value
    */
   containsPoint(p) {
     return Vec2.dist(this.pos, p) <= this.r;
@@ -233,8 +243,9 @@ class Ball {
   /**
    * Calculates the effective velocity of the ball in a
    * given point from it's velocity and angular velocity
+   *
    * @param {Vec2} point The point to be taken a look at
-   * @return {Vec2} The velocity of the Ball in the given point
+   * @returns {Vec2} The velocity of the Ball in the given point
    */
   velInPlace(point) {
     const vp = Vec2.sub(point, this.pos);
@@ -248,9 +259,11 @@ class Ball {
    * Calculates the effective mass of the ball in
    * a given point when pulled/pushed in a given direction
    * by a hypothetical force
+   *
    * @param {Vec2} point The given point
    * @param {Vec2} direction The direction of the force
-   * @return {Number}
+   * @returns {number} The effective mass of the ball in the given
+   * point when acting on it in the direction
    */
   effectiveMass(point, direction) {
     const r = Vec2.sub(point, this.pos);// Vector to the collision point
@@ -263,6 +276,7 @@ class Ball {
   /**
    * Realistically applies a change of velocity (momentum)
    * on the ball
+   *
    * @param {Vec2} dvel The change in velocity
    * @param {Vec2} point The point of pushing
    */
@@ -292,7 +306,7 @@ class Ball {
   }
 
   /**
-   * @return {Object} The ball represented in a JS object
+   * @returns {object} The ball represented in a JS object
    * Ready to be converted into JSON
    */
   toJSObject() {
@@ -318,8 +332,9 @@ class Ball {
 
   /**
    * Creates a Ball class from the given object
-   * @param {Object} obj The object to create the class from
-   * @return {Ball} The Ball object
+   *
+   * @param {object} obj The object to create the class from
+   * @returns {Ball} The Ball object
    */
   static fromObject(obj) {
     const ret = new Ball(
