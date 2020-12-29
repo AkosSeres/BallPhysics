@@ -21,6 +21,7 @@ jobs:
           recurse: true
           output_dir: ./dest/docs
           template: minami
+          front_page: README.md
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@3.7.1
