@@ -5,7 +5,7 @@ import BallPhysics from '../../../src/physics';
 import * as Creator from '../elementCreator';
 
 let lockRotation = false;
-let springConstant = 5000;
+let springConstant = 10000;
 const element = document.createElement('div');
 
 const SpringCreatorMode: Mode = {
@@ -89,7 +89,7 @@ const SpringCreatorMode: Mode = {
   Creator.createCheckbox('Rotation locked', lockRotation, (event) => {
     lockRotation = (<HTMLInputElement>event.target).checked;
   }),
-  Creator.createSlider('Spring stiffness', 1000, 50000, springConstant, (event) => {
+  Creator.createSlider('Spring stiffness', 2000, 100000, springConstant, (event) => {
     springConstant = (<HTMLInputElement>event.target).valueAsNumber;
   }, 50),
 ].forEach(element.appendChild.bind(element));
