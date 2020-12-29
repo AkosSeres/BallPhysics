@@ -12,8 +12,8 @@ const Polygon = require('./polygon');
 /**
  * @typedef {{a:{x:number,y:number}, b:{x:number,y:number}}} DebugDataElement
  * @typedef {{x:number, y:number, r:number}} FixedBall
- * @typedef {x: number, y: number, pinPoint: boolean} PinPoint
- * @typedef {Ball | Body | Wall | FixedBall | SoftBall |PinPoint|booelan} AnyPhysicsObject
+ * @typedef {{x: number, y: number, pinPoint: boolean}} PinPoint
+ * @typedef {Ball | Body | Wall | FixedBall | SoftBall |PinPoint|boolean} AnyPhysicsObject
  */
 
 /**
@@ -54,6 +54,7 @@ class Physics {
 
   /**
    * Updates the world by a given amount of time
+   *
    * @param {number} t Elapsed time
    * @param {boolean} precise If this is true,
    * then the simulation is going to be more precise
@@ -286,7 +287,8 @@ class Physics {
 
   /**
    * Returns a copy of this system
-   * @return {Physics} The copy of this system
+   *
+   * @returns {Physics} The copy of this system
    */
   get copy() {
     const ret = new Physics();
@@ -322,6 +324,7 @@ class Physics {
    * Air friction. has to be between 0 and 1
    * 0 - no movement
    * 1 - no friction
+   *
    * @param {number} airFriction Has to be between 0 and 1
    */
   setAirFriction(airFriction) {
@@ -333,6 +336,7 @@ class Physics {
 
   /**
    * Sets the gravity in the world
+   *
    * @param {Vec2} dir The acceleration vector of the gravity
    */
   setGravity(dir) {
@@ -341,6 +345,7 @@ class Physics {
 
   /**
    * Appends a new ball to the world
+   *
    * @param {Ball} ball Ball to add to the world
    */
   addBall(ball) {
@@ -378,6 +383,7 @@ class Physics {
 
   /**
    * Appends a new body to the world
+   *
    * @param {Body} body Body to add to the world
    */
   addBody(body) {
@@ -386,6 +392,7 @@ class Physics {
 
   /**
    * Appends a new soft ball to the world
+   *
    * @param {SoftBall} softBall SoftBall to be added to the world
    */
   addSoftBall(softBall) {
@@ -397,6 +404,7 @@ class Physics {
 
   /**
    * Appends a new soft square to the world
+   *
    * @param {Vec2} pos The position of the soft square
    * @param {number} sideSize The size of the square
    * @param {number} fc Friction coefficient
@@ -459,6 +467,7 @@ class Physics {
 
   /**
    * Appends a rectangular wall to the world
+   *
    * @param {number} x x coordinate of the rectangular wall
    * @param {number} y y coordinate of the rectangular wall
    * @param {number} w width of the rectangular wall
@@ -475,6 +484,7 @@ class Physics {
 
   /**
    * Appends a rectangular body to the world
+   *
    * @param {number} x x coordinate of the rectangular body
    * @param {number} y y coordinate of the rectangular body
    * @param {number} w width of the rectangular body
@@ -493,6 +503,7 @@ class Physics {
 
   /**
    * Append a new wall to the world
+   *
    * @param {Wall} wall Wall to append to the world
    */
   addWall(wall) {
@@ -502,6 +513,7 @@ class Physics {
   /**
    * Appends a fixed ball to the world
    * A fixed ball is immovable and other objects collide with it
+   *
    * @param {number} x x coordinate of the fixed ball
    * @param {number} y y coordinate of the fixed ball
    * @param {number} r radius of the fixed ball
@@ -516,6 +528,7 @@ class Physics {
 
   /**
    * Appends a new spring to the world
+   *
    * @param {Spring} spring Spring to add to the world
    */
   addSpring(spring) {
@@ -525,6 +538,7 @@ class Physics {
   /**
    * Sets the size of the world (without this the world
    * does not have bounds)
+   *
    * @param {number} x x coordinate of the centre of the world
    * @param {number} y y coordinate of the centre of the world
    * @param {number} w Width of the world
@@ -551,9 +565,10 @@ class Physics {
   /**
    * Search for any object at the given coordinate then returns it
    * Return false if nothing is found
+   *
    * @param {number} x x coordinate
    * @param {number} y y coordinate
-   * @return {AnyPhysicsObject} The found object
+   * @returns {AnyPhysicsObject} The found object
    */
   getObjectAtCoordinates(x, y) {
     let ret = false;
@@ -578,7 +593,8 @@ class Physics {
 
   /**
    * Returns an array of copies of all balls in the system
-   * @return {Array<Ball>} The array of the copied balls
+   *
+   * @returns {Array<Ball>} The array of the copied balls
    */
   getCopyOfBalls() {
     const ret = [];
@@ -590,7 +606,8 @@ class Physics {
 
   /**
    * Returns an array of copies of all bodies in the system
-   * @return {Array<Body>} The array of the copied bodies
+   *
+   * @returns {Array<Body>} The array of the copied bodies
    */
   getCopyOfBodies() {
     const ret = [];
@@ -602,11 +619,12 @@ class Physics {
 
   /**
    * Removes the given object from the system
+   *
    * @param {any} obj The object to remove
    */
   removeObjFromSystem(obj) {
     let idx = this.balls.indexOf(obj);
-    if (idx != -1) {
+    if (idx !== -1) {
       let toReturn = false;
       this.softBalls.forEach((s) => {
         if (s.points.includes(this.balls[idx])) {
@@ -622,22 +640,22 @@ class Physics {
       return;
     }
     idx = this.bodies.indexOf(obj);
-    if (idx != -1) {
+    if (idx !== -1) {
       this.bodies.splice(idx, 1);
       return;
     }
     idx = this.walls.indexOf(obj);
-    if (idx != -1) {
+    if (idx !== -1) {
       this.walls.splice(idx, 1);
       return;
     }
     idx = this.fixedBalls.indexOf(obj);
-    if (idx != -1) {
+    if (idx !== -1) {
       this.fixedBalls.splice(idx, 1);
       return;
     }
     idx = this.springs.indexOf(obj);
-    if (idx != -1) {
+    if (idx !== -1) {
       this.springs.splice(idx, 1);
       let toReturn = false;
       this.softBalls.forEach((s) => {
@@ -650,7 +668,7 @@ class Physics {
       return;
     }
     idx = this.softBalls.indexOf(obj);
-    if (idx != -1) {
+    if (idx !== -1) {
       const sf = this.softBalls[idx];
       this.softBalls.splice(idx, 1);
       sf.points.forEach((p) => {
@@ -661,11 +679,12 @@ class Physics {
 
   /**
    * Finds the ball or body with the given id
-   * @param {String} id The id of the object to find
-   * @return {any} The data of the object
+   *
+   * @param {string} id The id of the object to find
+   * @returns {{type:("ball"|"body"|"spring"|""), num:number}} The data of the object
    */
-  getItemDataFromId() {
-    const ret = {};
+  getItemDataFromId(id) {
+    const ret = { type: '', num: 0 };
     const filter = (b) => b.id === id;
 
     const balls = this.balls.filter(filter);
@@ -688,10 +707,12 @@ class Physics {
       ret.num = this.springs.indexOf(springs[0]);
       return ret;
     }
+
+    return ret;
   }
 
   /**
-   * @return {Object} The physics world represented in a JS object
+   * @returns {object} The physics world represented in a JS object
    * Ready to be converted into JSON
    */
   toJSObject() {
@@ -716,8 +737,9 @@ class Physics {
 
   /**
    * Creates a Physics class from the given object
-   * @param {Object} obj The object to create the class from
-   * @return {Physics} The Physics object
+   *
+   * @param {object} obj The object to create the class from
+   * @returns {Physics} The Physics object
    */
   static fromObject(obj) {
     const newWorld = new Physics();
@@ -727,7 +749,8 @@ class Physics {
     newWorld.walls = obj.walls.map((w) => Wall.fromObject(w));
     newWorld.bodies = obj.bodies.map((b) => Body.fromObject(b));
     newWorld.springs = obj.springs.map((s) => Spring.fromObject(s, newWorld.balls));
-    newWorld.softBalls = obj.softBalls.map((s) => SoftBall.fromObject(s, newWorld.balls, newWorld.springs));
+    newWorld.softBalls = obj.softBalls.map((s) => SoftBall.fromObject(s,
+      newWorld.balls, newWorld.springs));
 
     newWorld.fixedBalls = obj.fixedBalls;
     newWorld.airFriction = obj.airFriction;
@@ -737,7 +760,7 @@ class Physics {
   }
 
   /**
-   * @return {String} The physics object in JSON format in a string
+   * @returns {string} The physics object in JSON format in a string
    */
   toJSON() {
     return JSON.stringify(this.toJSObject());
@@ -745,8 +768,9 @@ class Physics {
 
   /**
    * Recreates the phyisics object from JSON
-   * @param {String} jsonString The JSON containing the physics object
-   * @return {Physics} The created Physics object
+   *
+   * @param {string} jsonString The JSON containing the physics object
+   * @returns {Physics} The created Physics object
    */
   static fromJSON(jsonString) {
     return Physics.fromObject(JSON.parse(jsonString));
