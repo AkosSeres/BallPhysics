@@ -22,14 +22,6 @@ jobs:
           output_dir: ./dest/docs
           template: minami
 
-      - name: Build documentation for the editor
-        uses: andstor/jsdoc-action@v1
-        with:
-          source_dir: ./editor/src
-          recurse: true
-          output_dir: ./dest/docs/editor
-          template: minami
-
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
