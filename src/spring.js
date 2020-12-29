@@ -1,4 +1,5 @@
 const Vec2 = require('./vec2');
+const Stick = require('./stick');
 
 /**
  * Class representing a string
@@ -19,10 +20,9 @@ class Spring {
     this.pinned = false;
     this.objects = [];
     this.rotationLocked = false;
-    this.id = `_${
-      Math.random()
-        .toString(36)
-        .substr(2, 9)}`;
+    this.id = `_${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
   }
 
   /**
@@ -84,8 +84,7 @@ class Spring {
     let p1;
     let p2;
     if (this.pinned && this.objects[0]) {
-      p2 = this.pinned;
-      p1 = this.objects[0];
+      [p2, p1] = [this.pinned, this.objects[0]];
       const dist = new Vec2(p2.x - p1.pos.x, p2.y - p1.pos.y);
       const dl = dist.length - this.length;
       dist.setMag(1);
@@ -107,8 +106,7 @@ class Spring {
       }
       v.rotate(dist.heading);
     } else if (this.objects[0] && this.objects[1]) {
-      p1 = this.objects[0];
-      p2 = this.objects[1];
+      [p1, p2] = [this.objects[0], this.objects[1]];
       let dist = Vec2.sub(p1.pos, p2.pos);
       const dl = dist.length - this.length;
       dist.setMag(1);
@@ -136,13 +134,13 @@ class Spring {
           + p2.am;
         const sv = ((v1.y - v2.y) * r2.length) / (r1.length + r2.length) + v2.y;
         const ang = (p1.am * p1.ang
-            + p2.am * p2.ang
-            - r1.length * p1.m * (v1.y - sv)
-            + r2.length * p2.m * (v2.y - sv))
+          + p2.am * p2.ang
+          + r1.length * p1.m * (v1.y - sv)
+          - r2.length * p2.m * (v2.y - sv))
           / am;
 
-        v1.y = -ang * r1.length + sv;
-        v2.y = +ang * r2.length + sv;
+        v1.y = ang * r1.length + sv;
+        v2.y = -ang * r2.length + sv;
 
         p1.ang = ang;
         p2.ang = ang;
@@ -166,7 +164,7 @@ class Spring {
     ret.rotationLocked = this.rotationLocked;
     ret.id = this.id;
     ret.objects = this.objects.map((o) => o.id);
-    ret.type = this.__proto__ == Spring.prototype ? 'spring' : 'stick';
+    ret.type = this instanceof Spring ? 'spring' : 'stick';
 
     return ret;
   }
@@ -178,8 +176,7 @@ class Spring {
    * @return {Spring} The Spring object
    */
   static fromObject(obj, ballList) {
-    const factory = new TypeSetter();
-    const ret = factory.createStickOrSpring(obj.type,
+    const ret = Spring.createStickOrSpring(obj.type,
       obj.length, obj.springConstant);
 
     ret.pinned = obj.pinned;
@@ -187,36 +184,30 @@ class Spring {
     ret.id = obj.id;
 
     ret.objects = obj.objects.map((e) => {
-      const arr = ballList.filter((p) => e == p.id);
+      const arr = ballList.filter((p) => e === p.id);
       return arr[0];
     });
 
     return ret;
   }
-}
 
-/**
- * Factory for springs and sticks
- */
-function TypeSetter() {
   /**
-   * Creates either a spring or a stick
-   * @param {String} type Specifies the type of the new item
-   * @param {number} length The length of the item
-   * @param {number} springConstant The spring constant
-   * @return {Spring} Returns the item
-   */
-  this.createStickOrSpring = function (type, length, springConstant) {
+  * Creates either a spring or a stick
+  * @param {"string"|"stick"} type Specifies the type of the new item
+  * @param {number} length The length of the item
+  * @param {number} springConstant The spring constant
+  * @return {Spring|Stick} Returns the item
+  */
+  static createStickOrSpring(type, length, springConstant) {
     let item;
-    if (type == 'spring') {
+    if (type === 'spring') {
       item = new Spring(length, springConstant);
-    } else if (type == 'stick') {
-      const Stick = require('./stick');
+    } else if (type === 'stick') {
       item = new Stick(length);
     }
 
     return item;
-  };
+  }
 }
 
 module.exports = Spring;
