@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import BallPhysics from '../../../src/physics';
+import { Spring } from '../../../src/physics';
 import * as Creator from '../elementCreator';
 
 let lockRotation = false;
@@ -28,7 +28,7 @@ const SpringCreatorMode: Mode = {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       let newChoosed = editorApp.physics.getObjectAtCoordinates(editorApp.mouseX, editorApp.mouseY);
       let stick;
-      const Thing = BallPhysics.Spring;
+      const Thing = Spring;
       if (!newChoosed) {
         newChoosed = {
           x: editorApp.mouseX,
@@ -42,8 +42,10 @@ const SpringCreatorMode: Mode = {
         || (editorApp.choosed === undefined && newChoosed === undefined)
       ) {
         return;
-      } if (editorApp.choosed.pinPoint && newChoosed.pinPoint) return;
-      if (editorApp.choosed.pinPoint) {
+      } if (editorApp.choosed instanceof Object && newChoosed instanceof Object
+        && 'pinPoint' in editorApp.choosed && 'pinPoint' in newChoosed) return;
+      if (editorApp.choosed instanceof Object && newChoosed instanceof Object
+        && 'pinPoint' in editorApp.choosed && 'pos' in newChoosed) {
         stick = new Thing(
           Math.sqrt(
             ((editorApp.choosed.x - newChoosed.pos.x) ** 2)
@@ -53,7 +55,8 @@ const SpringCreatorMode: Mode = {
         );
         stick.attachObject(newChoosed);
         stick.pinHere(editorApp.choosed.x, editorApp.choosed.y);
-      } else if (newChoosed.pinPoint) {
+      } else if (newChoosed instanceof Object && editorApp.choosed instanceof Object
+         && 'pos' in editorApp.choosed && 'pinPoint' in newChoosed) {
         stick = new Thing(
           Math.sqrt(
             ((editorApp.choosed.pos.x - newChoosed.x) ** 2)
@@ -63,7 +66,8 @@ const SpringCreatorMode: Mode = {
         );
         stick.attachObject(editorApp.choosed);
         stick.pinHere(newChoosed.x, newChoosed.y);
-      } else {
+      } else if (editorApp.choosed instanceof Object && newChoosed instanceof Object
+        && 'pos' in editorApp.choosed && 'pos' in newChoosed) {
         stick = new Thing(
           Math.sqrt(
             ((editorApp.choosed.pos.x - newChoosed.pos.x) ** 2)
@@ -74,6 +78,7 @@ const SpringCreatorMode: Mode = {
         stick.attachObject(editorApp.choosed);
         stick.attachObject(newChoosed);
       }
+      if (typeof stick === 'undefined') return;
       editorApp.physics.addSpring(stick);
       if (lockRotation) {
         stick.lockRotation();

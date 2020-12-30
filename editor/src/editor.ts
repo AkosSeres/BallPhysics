@@ -1,9 +1,6 @@
-import Physics from '../../src/physics';
-import Ball from '../../src/ball';
-import Vec2 from '../../src/vec2';
-import Spring from '../../src/spring';
-import Stick from '../../src/stick';
-import Wall from '../../src/wall';
+import Physics, {
+  Ball, Vec2, Spring, Stick, Wall, AnyPhysicsObject,
+} from '../../src/physics';
 import EditorInterface from './editorInterface';
 
 import startPauseControlsFunction from './startPauseControls';
@@ -59,7 +56,7 @@ class Editor implements EditorInterface {
 
   lastFrameTime: number;
 
-  choosed: Physics.AnyPhysicsObject;
+  choosed: AnyPhysicsObject;
 
   left: boolean;
 
@@ -512,15 +509,6 @@ class Editor implements EditorInterface {
         }
       });
       ctx.restore();
-
-      // Visualizing debug data
-      this.physics.debugData.forEach((segment) => {
-        ctx.strokeStyle = 'red';
-        ctx.beginPath();
-        ctx.moveTo(segment.a.x, segment.a.y);
-        ctx.lineTo(segment.b.x, segment.b.y);
-        ctx.stroke();
-      });
     }
   };
 

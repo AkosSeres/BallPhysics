@@ -8,6 +8,7 @@
         "forceConsistentCasingInFileNames": true,
         "preserveConstEnums": true,
         "allowJs": true,
+        "checkJs": true,
         "outDir": "./dest"
     },
     "include": [

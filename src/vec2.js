@@ -1,8 +1,18 @@
 // every angle is counterclockwise (anticlockwise)
+
+/**
+ * An object representation of the Vec2 class for easy conversion to JSON.
+ *
+ * @typedef {object} Vec2AsObject
+ * @property {number} x The x coordinate
+ * @property {number} y The y coordinate
+ */
+
 /** Class representing a 2d vector. */
 class Vec2 {
   /**
    * Create a vector.
+   *
    * @param {number} x - The x value.
    * @param {number} y - The y value.
    */
@@ -13,7 +23,8 @@ class Vec2 {
 
   /**
    * Get a copy of the vector.
-   * @return {Vec2} The copy.
+   *
+   * @returns {Vec2} The copy.
    */
   get copy() {
     return new Vec2(this.x, this.y);
@@ -21,7 +32,8 @@ class Vec2 {
 
   /**
    * Get the length of the vector.
-   * @return {number} The length.
+   *
+   * @returns {number} The length.
    */
   get length() {
     return Math.sqrt(this.x * this.x + this.y * this.y);
@@ -29,7 +41,8 @@ class Vec2 {
 
   /**
    * Get the length of the vector squared.
-   * @return {number} The length squared.
+   *
+   * @returns {number} The length squared.
    */
   get sqlength() {
     return this.x * this.x + this.y * this.y;
@@ -37,14 +50,15 @@ class Vec2 {
 
   /**
    * Get the heading of the vector compared to (1, 0).
-   * @return {number} The angle between (1, 0)
+   *
+   * @returns {number} The angle between (1, 0)
    * and the vector in anticlockwise direction.
    */
   get heading() {
     if (this.x === 0 && this.y === 0) return 0;
     if (this.x === 0) return this.y > 0 ? Math.PI / 2 : 1.5 * Math.PI;
     if (this.y === 0) return this.x > 0 ? 0 : Math.PI;
-    let v = Vec2.normalized(this);
+    const v = Vec2.normalized(this);
     if (this.x > 0 && this.y > 0) return Math.asin(v.y);
     if (this.x < 0 && this.y > 0) return Math.asin(-v.x) + Math.PI / 2;
     if (this.x < 0 && this.y < 0) return Math.asin(-v.y) + Math.PI;
@@ -54,7 +68,8 @@ class Vec2 {
 
   /**
    * Adds another vector to the vector.
-   * @param {Vec2} a - The other vector.
+   *
+   * @param {Vec2 | Vec2AsObject} a - The other vector.
    */
   add(a) {
     this.x += a.x;
@@ -63,7 +78,8 @@ class Vec2 {
 
   /**
    * Subtracts another vector from the vector.
-   * @param {Vec2} a - The other vector.
+   *
+   * @param {Vec2 | Vec2AsObject} a - The other vector.
    */
   sub(a) {
     this.x -= a.x;
@@ -72,6 +88,7 @@ class Vec2 {
 
   /**
    * Multiplies the vector by a scalar.
+   *
    * @param {number} x - The scalar.
    */
   mult(x) {
@@ -81,6 +98,7 @@ class Vec2 {
 
   /**
    * Divides the vector by a scalar.
+   *
    * @param {number} x - The scalar.
    */
   div(x) {
@@ -90,7 +108,8 @@ class Vec2 {
 
   /**
    * Linearry interpolates the vector into the other vector by scalar x.
-   * @param {Vec2} other - The other vector.
+   *
+   * @param {Vec2 | Vec2AsObject} other - The other vector.
    * @param {number} x - The scalar.
    */
   lerp(other, x) {
@@ -101,8 +120,9 @@ class Vec2 {
   /**
    * Get the distance between the vector and the other vector.
    * Vectors are representing points here.
-   * @param {Vec2} other - The other vector.
-   * @return {number} The distance between them.
+   *
+   * @param {Vec2 | Vec2AsObject} other - The other vector.
+   * @returns {number} The distance between them.
    */
   dist(other) {
     return new Vec2(this.x - other.x, this.y - other.y).length;
@@ -110,6 +130,7 @@ class Vec2 {
 
   /**
    * Set the length of the vector.
+   *
    * @param {number} l - The new length value.
    */
   setMag(l) {
@@ -119,11 +140,12 @@ class Vec2 {
 
   /**
    * Rotate the vector anticlockwise.
+   *
    * @param {number} angle Rotation angle in radians
    */
   rotate(angle) {
-    let h = this.heading;
-    let v = Vec2.fromAngle(angle + h);
+    const h = this.heading;
+    const v = Vec2.fromAngle(angle + h);
     v.mult(this.length);
     this.x = v.x;
     this.y = v.y;
@@ -132,9 +154,10 @@ class Vec2 {
   // Static functions:
   /**
    * Add two vectors together.
-   * @param {Vec2} a - Vector.
-   * @param {Vec2} b - Other vector.
-   * @return {Vec2} The sum of the vectors.
+   *
+   * @param {Vec2 | Vec2AsObject} a - Vector.
+   * @param {Vec2 | Vec2AsObject} b - Other vector.
+   * @returns {Vec2} The sum of the vectors.
    */
   static add(a, b) {
     return new Vec2(a.x + b.x, a.y + b.y);
@@ -142,9 +165,10 @@ class Vec2 {
 
   /**
    * Subtracts one vector from another.
-   * @param {Vec2} a - Vector.
-   * @param {Vec2} b - Other vector.
-   * @return {Vec2} The subtraction of the vectors.
+   *
+   * @param {Vec2 | Vec2AsObject} a - Vector.
+   * @param {Vec2 | Vec2AsObject} b - Other vector.
+   * @returns {Vec2} The subtraction of the vectors.
    */
   static sub(a, b) {
     return new Vec2(a.x - b.x, a.y - b.y);
@@ -152,9 +176,10 @@ class Vec2 {
 
   /**
    * Multiply the vector by a scalar.
-   * @param {Vec2} v - Vector.
+   *
+   * @param {Vec2 | Vec2AsObject} v - Vector.
    * @param {number} x - Scalar.
-   * @return {Vec2} The multiplied vector.
+   * @returns {Vec2} The multiplied vector.
    */
   static mult(v, x) {
     return new Vec2(v.x * x, v.y * x);
@@ -162,9 +187,10 @@ class Vec2 {
 
   /**
    * Divide the vector by a scalar.
-   * @param {Vec2} v - Vector.
+   *
+   * @param {Vec2 | Vec2AsObject} v - Vector.
    * @param {number} x - Scalar.
-   * @return {Vec2} The divided vector.
+   * @returns {Vec2} The divided vector.
    */
   static div(v, x) {
     return new Vec2(v.x / x, v.y / x);
@@ -172,8 +198,9 @@ class Vec2 {
 
   /**
    * Create a unit vector from an angle.
+   *
    * @param {number} a - The angle.
-   * @return {Vec2} The created vector.
+   * @returns {Vec2} The created vector.
    */
   static fromAngle(a) {
     return new Vec2(Math.cos(a), Math.sin(a));
@@ -181,10 +208,11 @@ class Vec2 {
 
   /**
    * Linearry interpolates a vector into another vector by scalar x.
-   * @param {Vec2} a - A vector.
-   * @param {Vec2} b - Other vector.
+   *
+   * @param {Vec2 | Vec2AsObject} a - A vector.
+   * @param {Vec2 | Vec2AsObject} b - Other vector.
    * @param {number} x - The scalar.
-   * @return {Vec2} The created vector.
+   * @returns {Vec2} The created vector.
    */
   static lerp(a, b, x) {
     return Vec2.add(a, Vec2.mult(Vec2.sub(b, a), x));
@@ -192,9 +220,10 @@ class Vec2 {
 
   /**
    * Get the distance between vectors.
-   * @param {Vec2} a - A vector.
-   * @param {Vec2} b - Other vector
-   * @return {number} The distance between them.
+   *
+   * @param {Vec2 | Vec2AsObject} a - A vector.
+   * @param {Vec2 | Vec2AsObject} b - Other vector
+   * @returns {number} The distance between them.
    */
   static dist(a, b) {
     return Vec2.sub(a, b).length;
@@ -202,9 +231,10 @@ class Vec2 {
 
   /**
    * Get the dot product of two vectors.
-   * @param {Vec2} a - A vector.
-   * @param {Vec2} b - Other vector
-   * @return {number} The dot product of them.
+   *
+   * @param {Vec2 | Vec2AsObject} a - A vector.
+   * @param {Vec2 | Vec2AsObject} b - Other vector
+   * @returns {number} The dot product of them.
    */
   static dot(a, b) {
     return a.x * b.x + a.y * b.y;
@@ -212,9 +242,10 @@ class Vec2 {
 
   /**
    * Get the cross product of two vectors.
-   * @param {Vec2} a - A vector.
-   * @param {Vec2} b - Other vector
-   * @return {number} The cross product of them.
+   *
+   * @param {Vec2 | Vec2AsObject} a - A vector.
+   * @param {Vec2 | Vec2AsObject} b - Other vector
+   * @returns {number} The cross product of them.
    */
   static cross(a, b) {
     return a.x * b.y - a.y * b.x;
@@ -223,9 +254,10 @@ class Vec2 {
   /**
    * Returns the cross product of a scalar and a 2D vector
    * when the scalar goes first
+   *
    * @param {number} s The scalar
-   * @param {Vec2} v The vector
-   * @return {Vec2} The cross product
+   * @param {Vec2 | Vec2AsObject} v The vector
+   * @returns {Vec2} The cross product
    */
   static crossScalarFirst(s, v) {
     return new Vec2(-v.y * s, v.x * s);
@@ -234,9 +266,10 @@ class Vec2 {
   /**
    * Returns the cross product of a scalar and a 2D vector
    * when the scalar goes second
-   * @param {Vec2} v The vector
+   *
+   * @param {Vec2 | Vec2AsObject} v The vector
    * @param {number} s The scalar
-   * @return {Vec2} The cross product
+   * @returns {Vec2} The cross product
    */
   static crossScalarSecond(v, s) {
     return new Vec2(v.y * s, -v.x * s);
@@ -244,62 +277,64 @@ class Vec2 {
 
   /**
    * Get the angle between two vectors.
+   *
    * @param {Vec2} a - A vector.
    * @param {Vec2} b - Other vector
-   * @return {number} Angle between them.
+   * @returns {number} Angle between them.
    */
   static angle(a, b) {
     return Math.acos(
       Math.min(
         Math.max(
-          Vec2.dot(a, b) / Math.sqrt(a.sqlength * b.sqlength), 1), -1));
+          Vec2.dot(a, b) / Math.sqrt(a.sqlength * b.sqlength), 1,
+        ), -1,
+      ),
+    );
   }
 
   /**
    * Get the angle between two vectors but in the anticlockwise direction.
+   *
    * @param {Vec2} a - A vector.
    * @param {Vec2} b - Other vector
-   * @return {number} Angle between them.
+   * @returns {number} Angle between them.
    */
   static angleACW(a, b) {
-    let ah = a.heading;
-    let bh = b.heading;
-    let angle = bh - ah;
+    const ah = a.heading;
+    const bh = b.heading;
+    const angle = bh - ah;
     return angle < 0 ? 2 * Math.PI + angle : angle;
   }
 
   /**
    * Get a vector with the same heading with the input vector
    * but with length = 1.
-   * @param {Vec2} v - A vector.
-   * @return {Vec2} Vector with length = 0.
+   *
+   * @param {Vec2} v A vector.
+   * @returns {Vec2} Vector with length = 1.
    */
   static normalized(v) {
-    let l = v.length;
+    const l = v.length;
     return l === 0 ? v : new Vec2(v.x / l, v.y / l);
   }
 
   /**
-   * @return {Object} The vector represented in a JS object
-   * Ready to be converted into JSON
+   * @returns {Vec2AsObject} The vector represented in a JS object,
+   * ready to be converted into JSON.
    */
   toJSObject() {
-    let ret = {};
-
-    ret.x = this.x;
-    ret.y = this.y;
-
-    return ret;
+    return { x: this.x, y: this.y };
   }
 
   /**
-   * Creates a Vec2 class from the given object
-   * @param {Object} obj The object to create the class from
-   * @return {Vec2} The Vec2 object
+   * Creates a Vec2 class from the given object.
+   *
+   * @param {Vec2AsObject} obj The object to create the class from
+   * @returns {Vec2} The Vec2 object
    */
   static fromObject(obj) {
     return new Vec2(obj.x, obj.y);
   }
 }
 
-module.exports = Vec2;
+export default Vec2;

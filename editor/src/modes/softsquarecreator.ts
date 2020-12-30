@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import BallPhysics from '../../../src/physics';
+import { Ball, Vec2 } from '../../../src/physics';
 import * as Creator from '../elementCreator';
 
 let size = 35;
@@ -42,9 +42,9 @@ const SoftSquareCreatorMode: Mode = {
   startInteractionFunc(editorApp): void { },
   endInteractionFunc(editorApp): void {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
-      const newBall = new BallPhysics.Ball(
-        new BallPhysics.Vec2(editorApp.lastX, editorApp.lastY),
-        new BallPhysics.Vec2(editorApp.lastX - editorApp.mouseX,
+      const newBall = new Ball(
+        new Vec2(editorApp.lastX, editorApp.lastY),
+        new Vec2(editorApp.lastX - editorApp.mouseX,
           editorApp.lastY - editorApp.mouseY), size, k, 0, fc,
       );
       if (

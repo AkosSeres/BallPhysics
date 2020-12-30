@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import BallPhysics from '../../../src/physics';
+import { Ball, SoftBall, Vec2 } from '../../../src/physics';
 import * as Creator from '../elementCreator';
 import EditorInterface from '../editorInterface';
 
@@ -34,9 +34,9 @@ const ElasticBallCreatorMode: Mode = {
   startInteractionFunc(editorApp) { },
   endInteractionFunc(editorApp) {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
-      const newBall = new BallPhysics.Ball(
-        new BallPhysics.Vec2(editorApp.lastX, editorApp.lastY),
-        new BallPhysics.Vec2(editorApp.lastX - editorApp.mouseX,
+      const newBall = new Ball(
+        new Vec2(editorApp.lastX, editorApp.lastY),
+        new Vec2(editorApp.lastX - editorApp.mouseX,
           editorApp.lastY - editorApp.mouseY), size, k, 0, fc,
       );
       if (
@@ -45,7 +45,7 @@ const ElasticBallCreatorMode: Mode = {
         && Number.isFinite(newBall.vel.x)
         && Number.isFinite(newBall.vel.y)
       ) {
-        const sb = new BallPhysics.SoftBall(
+        const sb = new SoftBall(
           newBall.pos, size, pressure, fc, resolution,
         );
         sb.points.forEach((p) => {

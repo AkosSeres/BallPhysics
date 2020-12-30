@@ -1,4 +1,4 @@
-import Physics from '../../src/physics';
+import Physics, { AnyPhysicsObject } from '../../src/physics';
 
 interface EditorInterface {
   physics: Physics;
@@ -9,7 +9,7 @@ interface EditorInterface {
   lastX: number;
   lastY: number;
   timeMultiplier: number;
-  choosed: Physics.AnyPhysicsObject;
+  choosed: AnyPhysicsObject;
   cnv: HTMLCanvasElement;
 }
 

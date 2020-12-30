@@ -1,26 +1,29 @@
 /**
  * Gives back the base64 code table
- * @return {Array<String>} The code table
+ *
+ * @type {string[]} The code table
  */
-exports.codeTable = (
-  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcde' + 'fghijklmnopqrstuvwxyz0123456789+/='
+export const codeTable = (
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
 ).split('');
 
 /**
  * Converts the content of an ArrayBuffer to a base64 string
+ *
  * @param {ArrayBuffer} arrayBuffer The buffer
- * @return {String} The base64 string
+ * @returns {string} The base64 string
  */
-exports.arrayBuffertoBase64 = (arrayBuffer) => {
+export const arrayBuffertoBase64 = (arrayBuffer) => {
   let base = '';
   const uintArr = new Uint8Array(arrayBuffer);
-  let binaryString = [];
+  /** @type {string[]} */
+  const binaryStrings = [];
   uintArr.forEach((n) => {
     let bin = n.toString(2);
     if (bin.length < 8) bin = '0'.repeat(8 - bin.length) + bin;
-    binaryString.push(bin);
+    binaryStrings.push(bin);
   });
-  binaryString = binaryString.reduce((a, b) => a + b);
+  const binaryString = binaryStrings.reduce((a, b) => a + b);
 
   for (let i = 0; i < binaryString.length; i += 6) {
     let current = binaryString.slice(i, i + 6);
@@ -39,15 +42,16 @@ exports.arrayBuffertoBase64 = (arrayBuffer) => {
 
 /**
  * Convert a base64 encoded string to an ArrayBuffer
- * @param {String} stringBase64 The base64 string
- * @return {ArrayBuffer} The buffer
+ *
+ * @param {string} stringBase64 The base64 string
+ * @returns {ArrayBuffer} The buffer
  */
-exports.base64ToArrayBuffer = (stringBase64) => {
+export const base64ToArrayBuffer = (stringBase64) => {
   let binaryString = '';
-  for (let i = 0; i < stringBase64.length / 4; i++) {
+  for (let i = 0; i < stringBase64.length / 4; i += 1) {
     const quad = stringBase64.slice(i * 4, (i + 1) * 4);
-    for (let j = 0; j < quad.length; j++) {
-      if (quad[j] != '=') {
+    for (let j = 0; j < quad.length; j += 1) {
+      if (quad[j] !== '=') {
         let additionalBinary = exports.codeTable.indexOf(quad[j]).toString(2);
         if (additionalBinary.length < 6) {
           additionalBinary = '0'.repeat(6 - additionalBinary.length) + additionalBinary;
@@ -61,13 +65,14 @@ exports.base64ToArrayBuffer = (stringBase64) => {
     0,
     binaryString.length - (binaryString.length % 8),
   );
-  const numArr = binaryString.match(/.{8}/g).map((b) => Number.parseInt(b, 2));
+  const numArr = binaryString.match(/.{8}/g)?.map((b) => Number.parseInt(b, 2));
+  if (numArr) {
+    const ret = new ArrayBuffer(numArr.length);
+    const view = new DataView(ret);
+    numArr.forEach((n, i) => {
+      view.setUint8(i, n);
+    });
 
-  const ret = new ArrayBuffer(numArr.length);
-  const view = new DataView(ret);
-  numArr.forEach((n, i) => {
-    view.setUint8(i, n);
-  });
-
-  return ret;
+    return ret;
+  } return new ArrayBuffer(0);
 };

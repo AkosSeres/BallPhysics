@@ -14,7 +14,7 @@ const MoveMode: Mode = {
   element,
   drawFunc(editorApp, dt) {
     const { choosed } = editorApp;
-    if (choosed && !choosed.pinPoint) {
+    if (choosed instanceof Object && 'move' in choosed) {
       choosed.move(
         editorApp.mouseX - choosed.pos.x,
         editorApp.mouseY - choosed.pos.y,

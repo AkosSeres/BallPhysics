@@ -1,5 +1,21 @@
-const Vec2 = require('./vec2');
-const Stick = require('./stick');
+import Ball from './ball';
+import Body from './body';
+import Vec2 from './vec2';
+
+/**
+ * An object representation of the Spring class for easy conversion to JSON.
+ *
+ * @typedef {object} SpringAsObject
+ * @property {number} length The length of the spring
+ * @property {number} springConstant The stiffness of the spring
+ * @property {boolean | {x:number, y:number}} pinned This property indicates whether
+ * the spring is pinned or not
+ * @property {string[]} objects The IDs of the attached objects
+ * @property {boolean} rotationLocked The variable inticating whether or not
+ * the attached objects are allowed to rotate freely
+ * @property {string} id The ID of the Spring
+ * @property {"spring"} type Indicates that the object is a spring
+ */
 
 /**
  * Class representing a string
@@ -10,6 +26,7 @@ const Stick = require('./stick');
 class Spring {
   /**
    * Creates a spring
+   *
    * @param {number} length The unstreched length of the spring
    * @param {number} springConstant Spring constant
    */
@@ -18,6 +35,7 @@ class Spring {
     this.springConstant = springConstant;
     /** @type {boolean | {x:number, y:number}} */
     this.pinned = false;
+    /** @type {(Body|Ball)[]} */
     this.objects = [];
     this.rotationLocked = false;
     this.id = `_${Math.random()
@@ -27,6 +45,7 @@ class Spring {
 
   /**
    * Pins one side of the the spring to a given coordinate in space
+   *
    * @param {number} x x coordinate
    * @param {number} y y coordinate
    */
@@ -47,7 +66,8 @@ class Spring {
 
   /**
    * Attaches one end of the spring to an object (eg. Ball)
-   * @param {any} object The object that the spring is getting attached to
+   *
+   * @param {Body | Ball} object The object that the spring is getting attached to
    */
   attachObject(object) {
     let ob = this.objects;
@@ -78,12 +98,13 @@ class Spring {
 
   /**
    * Updates the spring bay the elapsed time
+   *
    * @param {number} t Elapsed time
    */
   update(t) {
     let p1;
     let p2;
-    if (this.pinned && this.objects[0]) {
+    if (this.pinned instanceof Object && this.objects[0]) {
       [p2, p1] = [this.pinned, this.objects[0]];
       const dist = new Vec2(p2.x - p1.pos.x, p2.y - p1.pos.y);
       const dl = dist.length - this.length;
@@ -150,64 +171,6 @@ class Spring {
       v2.rotate(dist.heading);
     }
   }
-
-  /**
-   * @return {Object} The spring represented in a JS object
-   * Ready to be converted into JSON
-   */
-  toJSObject() {
-    const ret = {};
-
-    ret.length = this.length;
-    ret.springConstant = this.springConstant;
-    ret.pinned = this.pinned;
-    ret.rotationLocked = this.rotationLocked;
-    ret.id = this.id;
-    ret.objects = this.objects.map((o) => o.id);
-    ret.type = this instanceof Spring ? 'spring' : 'stick';
-
-    return ret;
-  }
-
-  /**
-   * Creates a Spring class from the given object
-   * @param {Object} obj The object to create the class from
-   * @param {Array<Ball>} ballList An array of all the balls in the system
-   * @return {Spring} The Spring object
-   */
-  static fromObject(obj, ballList) {
-    const ret = Spring.createStickOrSpring(obj.type,
-      obj.length, obj.springConstant);
-
-    ret.pinned = obj.pinned;
-    ret.rotationLocked = obj.rotationLocked;
-    ret.id = obj.id;
-
-    ret.objects = obj.objects.map((e) => {
-      const arr = ballList.filter((p) => e === p.id);
-      return arr[0];
-    });
-
-    return ret;
-  }
-
-  /**
-  * Creates either a spring or a stick
-  * @param {"string"|"stick"} type Specifies the type of the new item
-  * @param {number} length The length of the item
-  * @param {number} springConstant The spring constant
-  * @return {Spring|Stick} Returns the item
-  */
-  static createStickOrSpring(type, length, springConstant) {
-    let item;
-    if (type === 'spring') {
-      item = new Spring(length, springConstant);
-    } else if (type === 'stick') {
-      item = new Stick(length);
-    }
-
-    return item;
-  }
 }
 
-module.exports = Spring;
+export default Spring;

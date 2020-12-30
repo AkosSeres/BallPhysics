@@ -1,15 +1,33 @@
-const Vec2 = require('./vec2');
-const Spring = require('./spring');
+import Vec2 from './vec2';
+import Spring from './spring';
+
+/**
+ * An object representation of the Spring class for easy conversion to JSON.
+ *
+ * @typedef {object} StickAsObject
+ * @property {number} length The length of the stick
+ * @property {number} springConstant Always 0 for sticks
+ * @property {boolean | {x:number, y:number}} pinned This property indicates whether
+ * the stick is pinned or not
+ * @property {string[]} objects The IDs of the attached objects
+ * @property {boolean} rotationLocked The variable inticating whether or not
+ * the attached objects are allowed to rotate freely
+ * @property {string} id The ID of the Stick
+ * @property {"stick"} type Indicates that the object is a stick
+ */
 
 /**
  * Stick class for the physics engine
  * Sticks are not strechable objects that do not collide
  * with other objects but they can hold other objects on their ends
+ *
+ * @implements {Spring}
  */
 class Stick extends Spring {
   /**
    * Creates a stick
-   * @param {nuber} length The length of the stick
+   *
+   * @param {number} length The length of the stick
    */
   constructor(length) {
     super(length, 0);
@@ -18,12 +36,11 @@ class Stick extends Spring {
 
   /**
    * Updates the stick trough an elapsed time
-   * @param {number} t Elapsed time
    */
   update() {
     let p1;
     let p2;
-    if (this.pinned && this.objects[0]) {
+    if (this.pinned instanceof Object && 'x' in this.pinned && this.objects[0]) {
       [p2, p1] = [this.pinned, this.objects[0]];
       const dist = new Vec2(p2.x - p1.pos.x, p2.y - p1.pos.y);
       dist.setMag(1);
@@ -94,4 +111,4 @@ class Stick extends Spring {
   }
 }
 
-module.exports = Stick;
+export default Stick;

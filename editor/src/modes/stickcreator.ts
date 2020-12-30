@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import BallPhysics, {AnyPhysicsObject} from '../../../src/physics';
+import { Stick } from '../../../src/physics';
 import * as Creator from '../elementCreator';
 
 let lockRotation = false;
@@ -28,7 +28,7 @@ const StickCreatorMode: Mode = {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       let newChoosed = editorApp.physics.getObjectAtCoordinates(editorApp.mouseX, editorApp.mouseY);
       let stick;
-      const Thing = BallPhysics.Stick;
+      const Thing = Stick;
       if (!newChoosed) {
         newChoosed = {
           x: editorApp.mouseX,
@@ -42,8 +42,8 @@ const StickCreatorMode: Mode = {
         || (editorApp.choosed === undefined && newChoosed === undefined)
       ) {
         return;
-      } if ('pinPoint' in <AnyPhysicsObject>editorApp?.choosed && 'pinPoint' in newChoosed) return;
-      if ('pinPoint' in <AnyPhysicsObject>editorApp?.choosed) {
+      } if ('pinPoint' in editorApp.choosed && 'pinPoint' in newChoosed) return;
+      if ('pinPoint' in editorApp.choosed && 'pos' in newChoosed) {
         stick = new Thing(
           Math.sqrt(
             ((editorApp.choosed.x - newChoosed.pos.x) ** 2)
@@ -52,7 +52,7 @@ const StickCreatorMode: Mode = {
         );
         stick.attachObject(newChoosed);
         stick.pinHere(editorApp.choosed.x, editorApp.choosed.y);
-      } else if (newChoosed.pinPoint) {
+      } else if ('pinPoint' in newChoosed && 'pos' in editorApp.choosed) {
         stick = new Thing(
           Math.sqrt(
             ((editorApp.choosed.pos.x - newChoosed.x) ** 2)
@@ -61,7 +61,7 @@ const StickCreatorMode: Mode = {
         );
         stick.attachObject(editorApp.choosed);
         stick.pinHere(newChoosed.x, newChoosed.y);
-      } else {
+      } else if ('pos' in editorApp.choosed && 'pos' in newChoosed) {
         stick = new Thing(
           Math.sqrt(
             ((editorApp.choosed.pos.x - newChoosed.pos.x) ** 2)
@@ -71,6 +71,7 @@ const StickCreatorMode: Mode = {
         stick.attachObject(editorApp.choosed);
         stick.attachObject(newChoosed);
       }
+      if (typeof stick === 'undefined') return;
       editorApp.physics.addSpring(stick);
       if (lockRotation) {
         stick.lockRotation();

@@ -1,6 +1,22 @@
-const Vec2 = require('./vec2');
-const LineSegment = require('./linesegment');
-const Ball = require('./ball');
+import Vec2 from './vec2';
+import LineSegment from './linesegment';
+import Ball from './ball';
+import Wall from './wall';
+
+/**
+ * An object representation of the Body class for easy conversion to JSON.
+ *
+ * @typedef {object} BodyAsObject
+ * @property {import('./vec2').Vec2AsObject} pos The position
+ * @property {import('./vec2').Vec2AsObject} lastPos The last position
+ * @property {import('./vec2').Vec2AsObject[]} points The points of the body
+ * @property {number} fc The coefficient of friction
+ * @property {number} rotation The rotation of the body
+ * @property {number} ang The angular velocity
+ * @property {number} k The coefficient of restitution (bounciness)
+ * @property {import('./vec2').Vec2AsObject} vel The velocity
+ * @property {string} id The ID of the body
+ */
 
 /**
  * Class representing a body
@@ -10,6 +26,7 @@ const Ball = require('./ball');
 class Body {
   /**
    * Creates a body and calculates it's centre of mass (position)
+   *
    * @param {Vec2[]} points The points that make up the body
    * @param {Vec2} vel The velocity of the body
    * @param {number} k Coefficient of restitution
@@ -45,10 +62,13 @@ class Body {
     sum2 += Math.PI * 2 - angle;
     if (sum2 < sum1) {
       const temp = [];
-      for (let i = pol.length - 1; i >= 0; i--) temp.push(pol[i]);
+      for (let i = pol.length - 1; i >= 0; i -= 1) temp.push(pol[i]);
       this.points = temp;
     }
 
+    this.m = 1;
+    this.am = 1;
+    this.boundRadius = 1;
     this.calculatePosAndMass();
     this.lastPos = this.pos.copy;
     this.fc = 0.4;
@@ -63,20 +83,20 @@ class Body {
     if (k) this.k = k;
     else this.k = 0.8;
 
-    if (vel != undefined) this.vel = vel.copy;
+    if (vel !== undefined) this.vel = vel.copy;
     else this.vel = new Vec2(0, 0);
 
-    this.id = `_${
-      Math.random()
-        .toString(36)
-        .substr(2, 9)}`;
+    this.id = `_${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
   }
 
   /**
- * Gives the angular mass of the body measured in a given point
- * @param {Vec2} point The point to measure the angular mass ins
- * @returns {number} The adjusted angular mass
- */
+   * Gives the angular mass of the body measured in a given point
+   *
+   * @param {Vec2} point The point to measure the angular mass ins
+   * @returns {number} The adjusted angular mass
+   */
   getAmInPoint(point) {
     let ret = this.am;
 
@@ -87,13 +107,12 @@ class Body {
 
   /**
    * Get a copy of the body that is not a reference to it
+   *
    * @returns {Body} The copy of the body
    */
   get copy() {
-    const pointsCopy = [];
-    for (let i = 0; i < this.points.length; i++) {
-      pointsCopy.push(new Vec2(this.points[i].x, this.points[i].y));
-    }
+    const pointsCopy = this.points.map((p) => new Vec2(p.x, p.y));
+
     const ret = new Body(pointsCopy, this.vel.copy, this.k, this.ang, this.fc);
     ret.rotation = this.rotation;
     ret.lastPos = this.lastPos.copy;
@@ -106,13 +125,15 @@ class Body {
    * Moves the body by the given coordinates
    * It has to move all the points of the body and
    * also the centre of mass (pos) of the body
+   *
    * @param {number} x x coordinate
    * @param {number} y y coordinate
    */
   move(x, y) {
     this.pos.x += x;
     this.pos.y += y;
-    this.points.forEach((p) => {
+    this.points.forEach((point) => {
+      const p = point;
       p.x += x;
       p.y += y;
     });
@@ -121,6 +142,7 @@ class Body {
   /**
    * Function that does the collision detection and
    * collision behavior between the body and ball
+   *
    * @param {Ball} ball The ball to collide with the body
    */
   collideWithBall(ball) {
@@ -189,7 +211,7 @@ class Body {
       }
     });
 
-    if (heading === 0 || heading) {
+    if (Number.isFinite(heading) && cp) {
       const v1 = this.vel.copy;
       const v2 = ball.vel.copy;
       const ang1 = this.ang;
@@ -218,14 +240,14 @@ class Body {
       impulse += Vec2.dot(
         Vec2.crossScalarFirst(Vec2.cross(r1, n) / am1, r1), n,
       );
-      impulse = -(1 + k) * Vec2.dot(vRelInCP, n) / impulse;
+      impulse = -((1 + k) * Vec2.dot(vRelInCP, n)) / impulse;
 
       // Calculate post-collision velocities
       let u1 = Vec2.sub(v1, Vec2.mult(n, impulse / m1));
       let u2 = Vec2.add(v2, Vec2.mult(n, impulse / m2));
 
       // Calculate post-collision angular velocities
-      let pAng1 = ang1 - impulse * Vec2.cross(r1, n) / am1;
+      let pAng1 = ang1 - (impulse * Vec2.cross(r1, n)) / am1;
       let pAng2 = ang2;
 
       /**
@@ -255,14 +277,15 @@ class Body {
       u2 = Vec2.add(u2, Vec2.mult(t, frictionImpulse / m2));
 
       // Calculate post-friction angular velocities
-      pAng1 -= frictionImpulse * Vec2.cross(r1, t) / am1;
-      pAng2 += frictionImpulse * Vec2.cross(r2, t) / am2;
+      pAng1 -= (frictionImpulse * Vec2.cross(r1, t)) / am1;
+      pAng2 += (frictionImpulse * Vec2.cross(r2, t)) / am2;
 
       // Store the new values in the ball and body
+      const b = ball;
       this.vel = u1;
-      ball.vel = u2;
+      b.vel = u2;
       this.ang = pAng1;
-      ball.ang = pAng2;
+      b.ang = pAng2;
     }
   }
 
@@ -271,6 +294,7 @@ class Body {
    * the centre of mass of the body
    */
   calculatePosAndMass() {
+    /** @type {Vec2[][]} */
     const poligons = [];
     poligons.push([]);
     this.points.forEach((p) => {
@@ -278,14 +302,16 @@ class Body {
     });
 
     if (this.isConcave) {
+      /** @type {(arr:number[], item:number)=>boolean} */
       const includes = (arr, item) => {
-        for (let i = 0; i < arr.length; i++) {
+        for (let i = 0; i < arr.length; i += 1) {
           if (arr[i] === item) return true;
         }
         return false;
       };
-      const intersectWithPoligon = function (segment, pol, exceptions) {
-        for (let i = 0; i < pol.length; i++) {
+      /** @type {(segment:LineSegment,pol:Vec2[],exceptions:number[])=>boolean} */
+      const intersectWithPoligon = (segment, pol, exceptions) => {
+        for (let i = 0; i < pol.length; i += 1) {
           if (!includes(exceptions, i)) {
             const side = new LineSegment(
               new Vec2(pol[i].x, pol[i].y),
@@ -298,13 +324,13 @@ class Body {
       };
       let found = true;
 
-      checkAllPoligons: while (found) {
+      const loopFunc = () => {
         found = false;
-        for (let i = 0; i < poligons.length; i++) {
+        for (let i = 0; i < poligons.length; i += 1) {
           const pol = poligons[i];
-          const a = Vec2.sub(pol[1], pol[0]);
-          const b = Vec2.sub(pol[pol.length - 1], pol[0]);
-          const angle = Vec2.angleACW(a, b);
+          let a = Vec2.sub(pol[1], pol[0]);
+          let b = Vec2.sub(pol[pol.length - 1], pol[0]);
+          let angle = Vec2.angleACW(a, b);
           if (angle > Math.PI) {
             found = true;
             const j = 0;
@@ -337,7 +363,7 @@ class Body {
                 ],
               )
             ) {
-              k++;
+              k += 1;
               newSide = new LineSegment(
                 new Vec2(pol[j].x, pol[j].y),
                 new Vec2(pol[k % pol.length].x, pol[k % pol.length].y),
@@ -349,20 +375,20 @@ class Body {
             }
             const pol1 = [];
             const pol2 = [];
-            for (let l = j; l <= k; l++) {
+            for (let l = j; l <= k; l += 1) {
               pol1.push(pol[l % pol.length]);
             }
-            for (let l = k; l <= j + pol.length; l++) {
+            for (let l = k; l <= j + pol.length; l += 1) {
               pol2.push(pol[l % pol.length]);
             }
             poligons[i] = pol1;
             poligons.push(pol2);
-            continue checkAllPoligons;
+            return;
           }
-          for (let j = 1; j < pol.length; j++) {
-            const a = Vec2.sub(pol[(j + 1) % pol.length], pol[j]);
-            const b = Vec2.sub(pol[j - 1], pol[j]);
-            const angle = Vec2.angleACW(a, b);
+          for (let j = 1; j < pol.length; j += 1) {
+            a = Vec2.sub(pol[(j + 1) % pol.length], pol[j]);
+            b = Vec2.sub(pol[j - 1], pol[j]);
+            angle = Vec2.angleACW(a, b);
             if (angle > Math.PI) {
               found = true;
               let k = j + 2;
@@ -387,7 +413,7 @@ class Body {
                   k % pol.length,
                 ])
               ) {
-                k++;
+                k += 1;
                 newSide = new LineSegment(
                   new Vec2(pol[j].x, pol[j].y),
                   new Vec2(pol[k % pol.length].x, pol[k % pol.length].y),
@@ -399,22 +425,25 @@ class Body {
               }
               const pol1 = [];
               const pol2 = [];
-              for (let l = j; l <= k; l++) {
+              for (let l = j; l <= k; l += 1) {
                 pol1.push(pol[l % pol.length]);
               }
-              for (let l = k; l <= j + pol.length; l++) {
+              for (let l = k; l <= j + pol.length; l += 1) {
                 pol2.push(pol[l % pol.length]);
               }
               poligons[i] = pol1;
               poligons.push(pol2);
-              continue checkAllPoligons;
+              return;
             }
           }
         }
+      };
+      while (found) {
+        loopFunc();
       }
     }
 
-    for (let i = poligons.length - 1; i >= 0; i--) {
+    for (let i = poligons.length - 1; i >= 0; i -= 1) {
       const pol = poligons[i];
       while (pol.length > 3) {
         poligons.push([pol[0], pol[1], pol[2]]);
@@ -427,13 +456,13 @@ class Body {
     const pSum = new Vec2(0, 0);
     poligons.forEach((pol) => {
       const a = Math.sqrt(
-        Math.pow(pol[0].x - pol[1].x, 2) + Math.pow(pol[0].y - pol[1].y, 2),
+        ((pol[0].x - pol[1].x) ** 2) + ((pol[0].y - pol[1].y) ** 2),
       );
       const b = Math.sqrt(
-        Math.pow(pol[1].x - pol[2].x, 2) + Math.pow(pol[1].y - pol[2].y, 2),
+        ((pol[1].x - pol[2].x) ** 2) + ((pol[1].y - pol[2].y) ** 2),
       );
       const c = Math.sqrt(
-        Math.pow(pol[2].x - pol[0].x, 2) + Math.pow(pol[2].y - pol[0].y, 2),
+        ((pol[2].x - pol[0].x) ** 2) + ((pol[2].y - pol[0].y) ** 2),
       );
       const s = (a + b + c) / 2;
       const m = Math.sqrt(s * (s - a) * (s - b) * (s - c));
@@ -444,18 +473,19 @@ class Body {
     pSum.div(mSum);
     /** @type {Vec2} */
     this.pos = pSum;
+    /** @type {number} */
     this.m = mSum;
 
     // calculating the moment of inertia finally
-    for (const pol of poligons) {
+    poligons.forEach((pol) => {
       const a = Math.sqrt(
-        Math.pow(pol[0].x - pol[1].x, 2) + Math.pow(pol[0].y - pol[1].y, 2),
+        ((pol[0].x - pol[1].x) ** 2) + ((pol[0].y - pol[1].y) ** 2),
       );
       const b = Math.sqrt(
-        Math.pow(pol[1].x - pol[2].x, 2) + Math.pow(pol[1].y - pol[2].y, 2),
+        ((pol[1].x - pol[2].x) ** 2) + ((pol[1].y - pol[2].y) ** 2),
       );
       const c = Math.sqrt(
-        Math.pow(pol[2].x - pol[0].x, 2) + Math.pow(pol[2].y - pol[0].y, 2),
+        ((pol[2].x - pol[0].x) ** 2) + ((pol[2].y - pol[0].y) ** 2),
       );
       const w = Math.max(a, b, c);
       const s = (a + b + c) / 2;
@@ -473,7 +503,7 @@ class Body {
         ** 2
         * m;
       amSum += am;
-    }
+    });
     this.am = amSum;
 
     this.boundRadius = Math.max(
@@ -484,23 +514,23 @@ class Body {
   /**
    * Rotates the body around it's centre of mass by a given ange
    * Has to do the transformation for all the points
+   *
    * @param {number} angle Rotation angle
    */
   rotate(angle) {
     this.points.forEach((p) => {
-      const point = new Vec2(p.x, p.y);
+      const point = p;
       point.sub(this.pos);
       point.rotate(angle);
       point.add(this.pos);
-      p.x = point.x;
-      p.y = point.y;
     });
     this.rotation += angle;
   }
 
   /**
    * Finds out if the body is concave or not
-   * @return {Boolean} True if the body is concave
+   *
+   * @returns {boolean} True if the body is concave
    */
   get isConcave() {
     const pol = this.points;
@@ -509,7 +539,7 @@ class Body {
       Vec2.sub(pol[pol.length - 1], pol[0]),
     );
     if (angle > Math.PI) return true;
-    for (let i = 1; i < pol.length - 1; i++) {
+    for (let i = 1; i < pol.length - 1; i += 1) {
       angle = Vec2.angleACW(
         Vec2.sub(pol[(i + 1) % pol.length], pol[i]),
         Vec2.sub(pol[i - 1], pol[i]),
@@ -526,15 +556,19 @@ class Body {
 
   /**
    * Does the collision algorithm between two bodies
+   *
    * @param {Body} b1 First body
    * @param {Body} b2 Second body
    */
   static collide(b1, b2) {
     let matches = 0;
     let heading = 0;
-    const cp = new Vec2(0, 0);
+    let cp = new Vec2(0, 0);
+    /** @type {Vec2[]} */
     const cps = [];
     let intersect = false;
+    const body1 = b1;
+    const body2 = b2;
     b1.points.forEach((p, idx) => {
       const side1 = new LineSegment(
         new Vec2(p.x, p.y),
@@ -552,8 +586,8 @@ class Body {
           ),
         );
         const sect = LineSegment.intersect(side1, side2);
-        if (sect) {
-          matches++;
+        if (sect instanceof Vec2) {
+          matches += 1;
           cp.add(sect);
           cps.push(sect);
           intersect = true;
@@ -564,7 +598,7 @@ class Body {
     if (!intersect) return;
     cp.div(matches);
 
-    for (let i = 0; i < Math.floor(matches / 2); i++) {
+    for (let i = 0; i < Math.floor(matches / 2); i += 1) {
       heading += Vec2.sub(cps[2 * i + 1], cps[2 * i]).heading;
     }
     heading /= matches / 2;
@@ -581,26 +615,26 @@ class Body {
     let move1Max = 0;
     let move2Min = 0;
     let move2Max = 0;
-    for (const point of b1.points) {
+    b1.points.forEach((point) => {
       move1Min = Math.min(
-        Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)),
+        Vec2.dot(a, Vec2.sub(point, cp)),
         move1Min,
       );
       move1Max = Math.max(
-        Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)),
+        Vec2.dot(a, Vec2.sub(point, cp)),
         move1Max,
       );
-    }
-    for (const point of b2.points) {
+    });
+    b2.points.forEach((point) => {
       move2Min = Math.min(
-        Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)),
+        Vec2.dot(a, Vec2.sub(point, cp)),
         move2Min,
       );
       move2Max = Math.max(
-        Vec2.dot(a, Vec2.sub(new Vec2(point.x, point.y), cp)),
+        Vec2.dot(a, Vec2.sub(point, cp)),
         move2Max,
       );
-    }
+    });
     if (Math.abs(move1Min - move2Max) < Math.abs(move2Min - move1Max)) {
       b1.move(-a.x * move1Min, -a.y * move1Min);
       b2.move(-a.x * move2Max, -a.y * move2Max);
@@ -611,15 +645,19 @@ class Body {
 
     const collisionPoints = cps;
 
+    /** @type {number[]} */
     const endAngs1 = [];
+    /** @type {number[]} */
     const endAngs2 = [];
+    /** @type {Vec2[]} */
     const endVels1 = [];
+    /** @type {Vec2[]} */
     const endVels2 = [];
 
-    for (const collisionPoint of collisionPoints) {
+    collisionPoints.forEach((collisionPoint) => {
       // Deal with the change in velocity by the collision
       const n = Vec2.fromAngle(heading);
-      const cp = collisionPoint;
+      cp = collisionPoint;
 
       const v1 = b1.vel.copy;
       const v2 = b2.vel.copy;
@@ -648,15 +686,15 @@ class Body {
       impulse += Vec2.dot(
         Vec2.crossScalarFirst(Vec2.cross(r2, n) / am2, r2), n,
       );
-      impulse = -(1 + k) * Vec2.dot(vRelInCP, n) / impulse;
+      impulse = -((1 + k) * Vec2.dot(vRelInCP, n)) / impulse;
 
       // Calculate post-collision velocities
       let u1 = Vec2.sub(v1, Vec2.mult(n, impulse / m1));
       let u2 = Vec2.add(v2, Vec2.mult(n, impulse / m2));
 
       // Calculate post-collision angular velocities
-      let pAng1 = ang1 - impulse * Vec2.cross(r1, n) / am1;
-      let pAng2 = ang2 + impulse * Vec2.cross(r2, n) / am2;
+      let pAng1 = ang1 - (impulse * Vec2.cross(r1, n)) / am1;
+      let pAng2 = ang2 + (impulse * Vec2.cross(r2, n)) / am2;
 
       /**
        * Now calculate the friction reaction
@@ -685,14 +723,14 @@ class Body {
       u2 = Vec2.add(u2, Vec2.mult(t, frictionImpulse / m2));
 
       // Calculate post-friction angular velocities
-      pAng1 -= frictionImpulse * Vec2.cross(r1, t) / am1;
-      pAng2 += frictionImpulse * Vec2.cross(r2, t) / am2;
+      pAng1 -= (frictionImpulse * Vec2.cross(r1, t)) / am1;
+      pAng2 += (frictionImpulse * Vec2.cross(r2, t)) / am2;
 
       // Store the new values in the ball and body
-      b1.vel = u1;
-      b2.vel = u2;
-      b1.ang = pAng1;
-      b2.ang = pAng2;
+      body1.vel = u1;
+      body2.vel = u2;
+      body1.ang = pAng1;
+      body2.ang = pAng2;
 
       // Store calculated values and revert
       endAngs1.push(b1.ang);
@@ -700,32 +738,33 @@ class Body {
       endAngs2.push(b2.ang);
       endVels2.push(b2.vel);
 
-      b1.ang = startAng1;
-      b1.vel = startVel1;
-      b2.ang = startAng2;
-      b2.vel = startVel2;
-    }
+      body1.ang = startAng1;
+      body1.vel = startVel1;
+      body2.ang = startAng2;
+      body2.vel = startVel2;
+    });
 
-    if (endAngs1.length != endVels1.length) return;
-    if (endAngs1.length == 0) return;
-    if (endVels1.length == 0) return;
-    if (endAngs2.length != endVels2.length) return;
-    if (endAngs2.length == 0) return;
-    if (endVels2.length == 0) return;
+    if (endAngs1.length !== endVels1.length) return;
+    if (endAngs1.length === 0) return;
+    if (endVels1.length === 0) return;
+    if (endAngs2.length !== endVels2.length) return;
+    if (endAngs2.length === 0) return;
+    if (endVels2.length === 0) return;
 
-    b1.vel = endVels1.reduce((prev, curr) => Vec2.add(prev, curr));
-    b1.vel.div(endVels1.length);
-    b1.ang = endAngs1.reduce((prev, curr) => prev + curr);
-    b1.ang /= endAngs1.length;
-    b2.vel = endVels2.reduce((prev, curr) => Vec2.add(prev, curr));
-    b2.vel.div(endVels2.length);
-    b2.ang = endAngs2.reduce((prev, curr) => prev + curr);
-    b2.ang /= endAngs2.length;
+    body1.vel = endVels1.reduce((prev, curr) => Vec2.add(prev, curr));
+    body1.vel.div(endVels1.length);
+    body1.ang = endAngs1.reduce((prev, curr) => prev + curr);
+    body1.ang /= endAngs1.length;
+    body2.vel = endVels2.reduce((prev, curr) => Vec2.add(prev, curr));
+    body2.vel.div(endVels2.length);
+    body2.ang = endAngs2.reduce((prev, curr) => prev + curr);
+    body2.ang /= endAngs2.length;
   }
 
   /**
    * Detects and reacts to collision with a fixedBall
-   * @param {FixedBall} fixedBall The fixedBall to take the collision with
+   *
+   * @param {import('./physics').FixedBall} fixedBall The fixedBall to take the collision with
    */
   collideWithFixedBall(fixedBall) {
     const fbPos = new Vec2(fixedBall.x, fixedBall.y);
@@ -734,11 +773,9 @@ class Body {
     if (Vec2.dist(fbPos, this.pos) > this.boundRadius + fixedBall.r) return;
 
     // Detect collision with sides
-    for (const side of this.sides) {
-      let angle1;
-      let angle2;
-      angle1 = Vec2.angle(Vec2.sub(side.a, side.b), Vec2.sub(fbPos, side.b));
-      angle2 = Vec2.angle(Vec2.sub(side.b, side.a), Vec2.sub(fbPos, side.a));
+    this.sides.forEach((side) => {
+      const angle1 = Vec2.angle(Vec2.sub(side.a, side.b), Vec2.sub(fbPos, side.b));
+      const angle2 = Vec2.angle(Vec2.sub(side.b, side.a), Vec2.sub(fbPos, side.a));
 
       if (angle1 < Math.PI / 2 && angle2 < Math.PI / 2) {
         const d = side.distFromPoint(fbPos);
@@ -752,30 +789,29 @@ class Body {
             Vec2.add(negPerp, fbPos),
           );
           collisionPoint = LineSegment.intersect(detectorSegment, side);
-          if (collisionPoint != undefined) {
+          if (collisionPoint instanceof Vec2) {
             perp = Vec2.sub(collisionPoint, fbPos);
             perp.setMag(fixedBall.r - perp.length);
             this.move(perp.x, perp.y);
           }
         }
       }
-    }
+    });
 
     // Detect collison with points
-    if (!collisionPoint || collisionPoint == undefined) {
-      for (const point of this.points) {
+    if (!collisionPoint || collisionPoint === undefined) {
+      this.points.forEach((point) => {
         if (Vec2.dist(point, fbPos) < fixedBall.r) {
           const d = Vec2.sub(point, fbPos);
           d.setMag(fixedBall.r - d.length);
           this.move(d.x, d.y);
           d.setMag(fixedBall.r);
           collisionPoint = Vec2.add(fbPos, d);
-          break;
         }
-      }
+      });
     }
 
-    if (!collisionPoint || collisionPoint == undefined) return;
+    if (!collisionPoint || collisionPoint === undefined) return;
 
     // Deal with the change in velocity by the collision
     const n = Vec2.sub(collisionPoint, fbPos);
@@ -797,13 +833,13 @@ class Body {
     impulse += Vec2.dot(
       Vec2.crossScalarFirst(Vec2.cross(r, n) / am, r), n,
     );
-    impulse = -(1 + k) * Vec2.dot(vRelInCP, n) / impulse;
+    impulse = -((1 + k) * Vec2.dot(vRelInCP, n)) / impulse;
 
     // Calculate post-collision velocity
     let u = Vec2.sub(v, Vec2.mult(n, impulse / m));
 
     // Calculate post-collision angular velocity
-    let pAng = ang - impulse * Vec2.cross(r, n) / am;
+    let pAng = ang - (impulse * Vec2.cross(r, n)) / am;
 
     /**
      * Now calculate the friction reaction
@@ -828,7 +864,7 @@ class Body {
     u = Vec2.sub(u, Vec2.mult(t, frictionImpulse / m));
 
     // Calculate post-friction angular velocity
-    pAng -= frictionImpulse * Vec2.cross(r, t) / am;
+    pAng -= (frictionImpulse * Vec2.cross(r, t)) / am;
 
     // Store the new values in the body
     this.vel = u;
@@ -837,8 +873,8 @@ class Body {
 
   /**
    * Does a collision with a wall
+   *
    * @param {Wall} wall The wall to collide with
-   * @return {Array<LineSegment>} Debug data provided
    */
   collideWithWall(wall) {
     if (
@@ -851,167 +887,173 @@ class Body {
     const { sides } = this;
 
     const debugData = [];
+    /** @type {Vec2[]} */
     const collisionPoints = [];
-    for (const bodySide of sides) {
-      for (const wallSide of wall.sides) {
+    sides.forEach((bodySide) => {
+      wall.sides.forEach((wallSide) => {
         const collisionPoint = LineSegment.intersect(bodySide, wallSide);
-        if (collisionPoint != undefined) {
+        if (collisionPoint instanceof Vec2) {
           collisionPoints.push(collisionPoint);
         }
-      }
-    }
-    if (collisionPoints.length < 2) return;
+      });
+    });
 
     const startingVel = this.vel.copy;
     const startingAng = this.ang;
 
+    /** @type {Vec2[]} */
     const endVels = [];
+    /** @type {number[]} */
     const endAngs = [];
 
     // Need to adjust the position of the Body
-    const normal = Vec2.sub(...collisionPoints);
-    normal.rotate(Math.PI / 2);
+    if (collisionPoints.length >= 2) {
+      const normal = Vec2.sub(collisionPoints[0], collisionPoints[1]);
+      normal.rotate(Math.PI / 2);
 
-    const r = Vec2.sub(collisionPoints[0], this.pos);
-    if (Vec2.dot(normal, r) > 0) normal.mult(-1);
-    normal.setMag(1);
-    if (Vec2.dot(normal, Vec2.sub(this.pos, wall.center)) < 0) {
-      normal.mult(-1);
-    }
-
-    debugData.push(new LineSegment(...collisionPoints));
-    debugData.push(
-      new LineSegment(
-        collisionPoints[0],
-        Vec2.add(collisionPoints[0], Vec2.mult(normal, 20)),
-      ),
-    );
-    debugData.push(
-      new LineSegment(
-        collisionPoints[1],
-        Vec2.add(collisionPoints[1], Vec2.mult(normal, 20)),
-      ),
-    );
-    let moveAmounts = [];
-
-    const cp = collisionPoints[0];
-    for (const p of wall.points) {
-      const pointVec = Vec2.sub(p, cp);
-      const dist = Vec2.dot(pointVec, normal);
-      if (dist > 0) {
-        moveAmounts.push(dist);
+      let r = Vec2.sub(collisionPoints[0], this.pos);
+      if (Vec2.dot(normal, r) > 0) normal.mult(-1);
+      normal.setMag(1);
+      if (Vec2.dot(normal, Vec2.sub(this.pos, wall.center)) < 0) {
+        normal.mult(-1);
       }
-    }
 
-    if (moveAmounts.length > 0) {
-      const moveVector = normal.copy;
-      moveVector.mult(Math.max(...moveAmounts));
-      this.move(moveVector.x, moveVector.y);
-    }
+      debugData.push(new LineSegment(collisionPoints[0], collisionPoints[1]));
+      debugData.push(
+        new LineSegment(
+          collisionPoints[0],
+          Vec2.add(collisionPoints[0], Vec2.mult(normal, 20)),
+        ),
+      );
+      debugData.push(
+        new LineSegment(
+          collisionPoints[1],
+          Vec2.add(collisionPoints[1], Vec2.mult(normal, 20)),
+        ),
+      );
+      /** @type {number[]} */
+      let moveAmounts = [];
 
-    moveAmounts = [];
-    const midCp = Vec2.add(...collisionPoints);
-    midCp.div(2);
-    if (this.containsPoint(midCp)) {
-      for (const side of sides) {
-        moveAmounts.push(side.distFromPoint(midCp));
-      }
-    }
+      let cp = collisionPoints[0];
+      wall.points.forEach((p) => {
+        const pointVec = Vec2.sub(p, cp);
+        const dist = Vec2.dot(pointVec, normal);
+        if (dist > 0) {
+          moveAmounts.push(dist);
+        }
+      });
 
-    if (moveAmounts.length > 0) {
-      const moveVector = normal.copy;
-      moveVector.mult(Math.min(...moveAmounts));
-      if (moveVector.length < this.boundRadius / 2) {
+      if (moveAmounts.length > 0) {
+        const moveVector = normal.copy;
+        moveVector.mult(Math.max(...moveAmounts));
         this.move(moveVector.x, moveVector.y);
       }
+
+      moveAmounts = [];
+      const midCp = Vec2.add(collisionPoints[0], collisionPoints[1]);
+      midCp.div(2);
+      if (this.containsPoint(midCp)) {
+        sides.forEach((side) => {
+          moveAmounts.push(side.distFromPoint(midCp));
+        });
+      }
+
+      if (moveAmounts.length > 0) {
+        const moveVector = normal.copy;
+        moveVector.mult(Math.min(...moveAmounts));
+        if (moveVector.length < this.boundRadius / 2) {
+          this.move(moveVector.x, moveVector.y);
+        }
+      }
+
+      collisionPoints.forEach((collisionPoint) => {
+        // Deal with the change in velocity by the collision
+        const n = normal;
+        n.setMag(1);
+        cp = collisionPoint;
+        const v = this.vel.copy;
+        const { ang } = this;
+        r = Vec2.sub(cp, this.pos);
+        const { am } = this;
+        const { m } = this;
+        const { k } = this;
+        const { fc } = this;
+
+        // Relative velocity in collision point
+        const vRelInCP = Vec2.mult(this.velInPlace(cp), -1);
+
+        // Calculate impulse
+        let impulse = (1 / m);
+        impulse += Vec2.dot(
+          Vec2.crossScalarFirst(Vec2.cross(r, n) / am, r), n,
+        );
+        impulse = -((1 + k) * Vec2.dot(vRelInCP, n)) / impulse;
+
+        // Calculate post-collision velocity
+        let u = Vec2.sub(v, Vec2.mult(n, impulse / m));
+
+        // Calculate post-collision angular velocity
+        let pAng = ang - (impulse * Vec2.cross(r, n)) / am;
+
+        /**
+         * Now calculate the friction reaction
+         */
+        // Tangential direction
+        const t = vRelInCP.copy;
+        t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
+        t.setMag(1);
+
+        // Calculate max impulse
+        let maxImpulse = (1 / m);
+        maxImpulse += Vec2.dot(
+          Vec2.crossScalarFirst(Vec2.cross(r, t) / am, r), t,
+        );
+        maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
+
+        // Friction impulse
+        let frictionImpulse = impulse * fc;
+        if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
+
+        // Calculate post-friction velocity
+        u = Vec2.sub(u, Vec2.mult(t, frictionImpulse / m));
+
+        // Calculate post-friction angular velocity
+        pAng -= (frictionImpulse * Vec2.cross(r, t)) / am;
+
+        // Store the new values in the body
+        this.vel = u;
+        this.ang = pAng;
+
+        endVels.push(this.vel);
+        this.vel = startingVel.copy;
+
+        endAngs.push(this.ang);
+        this.ang = startingAng;
+      });
+
+      if (endAngs.length !== endVels.length) return;
+      if (endAngs.length === 0) return;
+      if (endVels.length === 0) return;
+
+      this.vel = endVels.reduce((prev, curr) => Vec2.add(prev, curr));
+      this.vel.div(endVels.length);
+      this.ang = endAngs.reduce((prev, curr) => prev + curr);
+      this.ang /= endAngs.length;
+
+      if (!Number.isFinite(this.vel.x)
+        || !Number.isFinite(this.vel.y)
+        || !Number.isFinite(this.ang)) {
+        this.vel = startingVel;
+        this.ang = startingAng;
+      }
     }
-
-    for (const collisionPoint of collisionPoints) {
-      // Deal with the change in velocity by the collision
-      const n = normal;
-      n.setMag(1);
-      const cp = collisionPoint;
-      const v = this.vel.copy;
-      const { ang } = this;
-      const r = Vec2.sub(cp, this.pos);
-      const { am } = this;
-      const { m } = this;
-      const { k } = this;
-      const { fc } = this;
-
-      // Relative velocity in collision point
-      const vRelInCP = Vec2.mult(this.velInPlace(cp), -1);
-
-      // Calculate impulse
-      let impulse = (1 / m);
-      impulse += Vec2.dot(
-        Vec2.crossScalarFirst(Vec2.cross(r, n) / am, r), n,
-      );
-      impulse = -(1 + k) * Vec2.dot(vRelInCP, n) / impulse;
-
-      // Calculate post-collision velocity
-      let u = Vec2.sub(v, Vec2.mult(n, impulse / m));
-
-      // Calculate post-collision angular velocity
-      let pAng = ang - impulse * Vec2.cross(r, n) / am;
-
-      /**
-       * Now calculate the friction reaction
-       */
-      // Tangential direction
-      const t = vRelInCP.copy;
-      t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
-      t.setMag(1);
-
-      // Calculate max impulse
-      let maxImpulse = (1 / m);
-      maxImpulse += Vec2.dot(
-        Vec2.crossScalarFirst(Vec2.cross(r, t) / am, r), t,
-      );
-      maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
-
-      // Friction impulse
-      let frictionImpulse = impulse * fc;
-      if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
-
-      // Calculate post-friction velocity
-      u = Vec2.sub(u, Vec2.mult(t, frictionImpulse / m));
-
-      // Calculate post-friction angular velocity
-      pAng -= frictionImpulse * Vec2.cross(r, t) / am;
-
-      // Store the new values in the body
-      this.vel = u;
-      this.ang = pAng;
-
-      endVels.push(this.vel);
-      this.vel = startingVel.copy;
-
-      endAngs.push(this.ang);
-      this.ang = startingAng;
-    }
-
-    if (endAngs.length != endVels.length) return;
-    if (endAngs.length == 0) return;
-    if (endVels.length == 0) return;
-
-    this.vel = endVels.reduce((prev, curr) => Vec2.add(prev, curr));
-    this.vel.div(endVels.length);
-    this.ang = endAngs.reduce((prev, curr) => prev + curr);
-    this.ang /= endAngs.length;
-
-    if (!isFinite(this.vel.x) || !isFinite(this.vel.y) || !isFinite(this.ang)) {
-      this.vel = startingVel;
-      this.ang = startingAng;
-    }
-
-    return debugData;
   }
 
   /**
    *Returns true if the point is inside the body
+   *
    * @param {Vec2} p The point
-   * @return {boolean} The boolean value
+   * @returns {boolean} The boolean value
    */
   containsPoint(p) {
     const { sides } = this;
@@ -1024,12 +1066,15 @@ class Body {
 
     const testerSegment = new LineSegment(p, Vec2.add(v, p));
 
-    const filtered = sides.filter((side) => LineSegment.intersect(side, testerSegment) != undefined);
-    return filtered.length % 2 == 1;
+    const filtered = sides
+      .filter((side) => LineSegment.intersect(side, testerSegment) !== undefined);
+    return filtered.length % 2 === 1;
   }
 
   /**
    * Returns an array containing all the sides of the body
+   *
+   * @returns {LineSegment[]} All the sides of the body
    */
   get sides() {
     return this.points.map((element, index) => new LineSegment(
@@ -1041,8 +1086,9 @@ class Body {
   /**
    * Calculates the effective velocity of the body object in a
    * given point from it's velocity and angular velocity
+   *
    * @param {Vec2} point The point to be taken a look at
-   * @return {Vec2} The velocity of the Body in the given point
+   * @returns {Vec2} The velocity of the Body in the given point
    */
   velInPlace(point) {
     const vp = Vec2.sub(point, this.pos);
@@ -1056,26 +1102,28 @@ class Body {
    * Calculates the effective mass of the body in
    * a given point when pulled/pushed in a given direction
    * by a hypothetical force
+   *
    * @param {Vec2} point The given point
    * @param {Vec2} direction The direction of the force
-   * @return {Number}
+   * @returns {number} The effective mass of the body in the given point
    */
   effectiveMass(point, direction) {
     const r = Vec2.sub(point, this.pos);// Vector to the collision point
     const angle = Vec2.angle(direction, r);
-    const rotationalMass = (Math.sin(angle) ** 2) * (r.length ** 2) / this.am;
+    const rotationalMass = ((Math.sin(angle) ** 2) * (r.length ** 2)) / this.am;
     return 1 / (rotationalMass + (1 / this.m));
   }
 
   /**
    * Realistically applies a change of velocity (momentum)
    * on the body
+   *
    * @param {Vec2} dvel The change in velocity
    * @param {Vec2} point The point of pushing
    */
   applyDeltaVelInPoint(dvel, point) {
     const r = Vec2.sub(point, this.pos);
-    if (r.length == 0) {
+    if (r.length === 0) {
       this.vel.add(dvel);
       return;
     }
@@ -1091,16 +1139,15 @@ class Body {
     const rotateDirection = Math.sign(Vec2.dot(dvel, d));
     const dvelAng = dvel.length * Math.cos(angle);
     const mEff = 1 / ((1 / this.m) + ((r.length ** 2) / this.am));
-    const dvm = dvelAng * mEff / this.m;
+    const dvm = (dvelAng * mEff) / this.m;
     this.vel.add(Vec2.mult(d, dvm * rotateDirection));
 
-    const dAng = rotateDirection * dvelAng * mEff * r.length / this.am;
-    console.log(angle);
+    const dAng = (rotateDirection * dvelAng * mEff * r.length) / this.am;
     this.ang -= dAng;
   }
 
   /**
-   * @return {Object} The Body represented in a JS object
+   * @returns {BodyAsObject} The Body represented in a JS object
    * Ready to be converted into JSON
    */
   toJSObject() {
@@ -1124,15 +1171,13 @@ class Body {
 
   /**
    * Creates a Body class from the given object
-   * @param {Object} obj The object to create the class from
-   * @return {Body} The Body object
+   *
+   * @param {BodyAsObject} obj The object to create the class from
+   * @returns {Body} The Body object
    */
   static fromObject(obj) {
     const ret = new Body(
-      obj.points.map((p) => ({
-        x: p.x,
-        y: p.y,
-      })),
+      obj.points.map((p) => (new Vec2(p.x, p.y))),
       Vec2.fromObject(obj.vel),
       obj.k,
       obj.ang,
@@ -1148,4 +1193,4 @@ class Body {
   }
 }
 
-module.exports = Body;
+export default Body;

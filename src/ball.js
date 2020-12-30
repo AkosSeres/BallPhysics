@@ -1,4 +1,21 @@
-const Vec2 = require('./vec2');
+import Vec2 from './vec2';
+
+/**
+ * An object representation of the Ball class for easy conversion to JSON.
+ *
+ * @typedef {object} BallAsObject
+ * @property {import('./vec2').Vec2AsObject} pos The position
+ * @property {import('./vec2').Vec2AsObject} lastPos The last position
+ * @property {number} r The radius of the ball
+ * @property {number} fc The coefficient of friction
+ * @property {number} amc Coefficient for the angular mass
+ * @property {number} rotation The rotation of the ball
+ * @property {number} ang The angular velocity
+ * @property {number} k The coefficient of restitution (bounciness)
+ * @property {import('./vec2').Vec2AsObject} vel The velocity
+ * @property {string} id The ID of the ball
+ * @property {string | number | undefined} layer The collision layer of the ball
+ */
 
 /**
  * A class representing a ball
@@ -40,6 +57,8 @@ class Ball {
     this.id = `_${Math.random()
       .toString(36)
       .substr(2, 9)}`;
+    /** @type {string | number | undefined} */
+    this.layer = undefined;
   }
 
   /**
@@ -306,7 +325,7 @@ class Ball {
   }
 
   /**
-   * @returns {object} The ball represented in a JS object
+   * @returns {BallAsObject} The ball represented in a JS object
    * Ready to be converted into JSON
    */
   toJSObject() {
@@ -323,7 +342,7 @@ class Ball {
     ret.k = this.k;
     ret.vel = this.vel.toJSObject();
     ret.id = this.id;
-    if (this.layer !== undefined) {
+    if (typeof this.layer !== 'undefined') {
       ret.layer = this.layer;
     }
 
@@ -333,7 +352,7 @@ class Ball {
   /**
    * Creates a Ball class from the given object
    *
-   * @param {object} obj The object to create the class from
+   * @param {BallAsObject} obj The object to create the class from
    * @returns {Ball} The Ball object
    */
   static fromObject(obj) {
@@ -351,7 +370,7 @@ class Ball {
     ret.rotation = obj.rotation;
     ret.vel = Vec2.fromObject(obj.vel);
     ret.id = obj.id;
-    if (obj.layer !== undefined) {
+    if (typeof obj.layer !== 'undefined') {
       ret.layer = obj.layer;
     }
 
@@ -359,4 +378,4 @@ class Ball {
   }
 }
 
-module.exports = Ball;
+export default Ball;

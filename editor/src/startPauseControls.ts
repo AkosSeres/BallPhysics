@@ -1,6 +1,6 @@
-import Physics from '../../src/physics';
+import Physics, { PhysicsAsObject } from '../../src/physics';
 
-let startingState: Object;
+let startingState: PhysicsAsObject;
 let inStartingState: boolean;
 
 interface HasPhysicsAndTime {
