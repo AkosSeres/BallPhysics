@@ -9,6 +9,7 @@ import Vec2 from './vec2';
 import Spring from './spring';
 import SoftBall from './softball';
 import { stickOrSpringFromObject, stickOrSpringToJSObject } from './stickspringhelpers';
+import { collisionResponseWithWall } from './collision';
 
 /**
  * @typedef {{x:number, y:number, r:number}} FixedBall
@@ -19,6 +20,12 @@ import { stickOrSpringFromObject, stickOrSpringToJSObject } from './stickspringh
 /**
  * @typedef {Ball | Body | Wall | FixedBall | SoftBall
  * | PinPoint | Spring | Stick} AnyPhysicsObject
+ */
+/**
+ * Any object that has mass and can be moved freely in the world,
+ * aka a {@link Body} or a {@link Ball}.
+ *
+ * @typedef {Ball | Body} PhysicalObject
  */
 
 /**
@@ -150,46 +157,14 @@ class Physics {
       this.fixedBalls.forEach((b) => {
         const ball = this.balls[i];
 
-        let heading;
-        let rel = 0;
-        const p = new Vec2(b.x, b.y);
-        p.x -= ball.pos.x;
-        p.y -= ball.pos.y;
-        p.mult(-1);
-        if (p.length <= ball.r + b.r) {
-          heading = p.heading;
-          rel = p.length;
-        }
-
-        if (Number.isFinite(heading) && typeof heading !== 'undefined') {
-          const pos = ball.pos.copy;
-          const vel = ball.vel.copy;
-          pos.rotate(-heading + Math.PI / 2);
-          vel.rotate(-heading + Math.PI / 2);
-
-          // Only collide when moving towards the wall
-          if (vel.y <= 0) {
-            vel.y *= -ball.k;
-            pos.y += ball.r + b.r - rel;
-            const dvy = vel.y * (1 + ball.k);
-
-            let deltaAng = (Math.sign(vel.x + ball.ang * ball.r) * (dvy * ball.fc))
-              / (ball.amc * ball.r);
-            const maxDeltaAng = (vel.x + ball.ang * ball.r) / ball.r;
-
-            if (deltaAng / maxDeltaAng > 1) deltaAng = maxDeltaAng;
-            ball.ang -= deltaAng;
-
-            const dvx = (deltaAng * ball.am) / ball.r / ball.m;
-            vel.x -= dvx;
-
-            pos.rotate(heading - Math.PI / 2);
-            vel.rotate(heading - Math.PI / 2);
-            ball.pos.x = pos.x;
-            ball.pos.y = pos.y;
-            ball.vel.x = vel.x;
-            ball.vel.y = vel.y;
-          }
+        const p = Vec2.sub(ball.pos, b);
+        if (p.sqlength <= (ball.r + b.r) ** 2) {
+          // const cp = Vec2.fromObject(b);
+          const n = p;
+          n.setMag(1);
+          ball.pos = Vec2.add(b, Vec2.mult(n, ball.r + b.r));
+          n.mult(-1);
+          collisionResponseWithWall(ball, b, n);
         }
       });
 
@@ -327,11 +302,11 @@ class Physics {
 
       spring.objects.forEach((obj) => {
         let idx = -1;
-        if (obj instanceof Ball)idx = this.balls.indexOf(obj);
+        if (obj instanceof Ball) idx = this.balls.indexOf(obj);
         if (idx !== -1) copiedSpring.attachObject(ret.balls[idx]);
         else {
           idx = -1;
-          if (obj instanceof Body)idx = this.bodies.indexOf(obj);
+          if (obj instanceof Body) idx = this.bodies.indexOf(obj);
           if (idx !== -1) copiedSpring.attachObject(ret.bodies[idx]);
         }
       });
@@ -698,7 +673,7 @@ class Physics {
       });
       return;
     }
-    if (obj instanceof SoftBall)idx = this.softBalls.indexOf(obj);
+    if (obj instanceof SoftBall) idx = this.softBalls.indexOf(obj);
     if (idx !== -1) {
       const sf = this.softBalls[idx];
       this.softBalls.splice(idx, 1);

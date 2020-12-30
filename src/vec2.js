@@ -151,6 +151,24 @@ class Vec2 {
     this.y = v.y;
   }
 
+  /**
+   * Rotates the vector by 90 degrees
+   */
+  rotate90() {
+    const { x } = this;
+    this.x = -this.y;
+    this.y = x;
+  }
+
+  /**
+   * Rotates the vector by 270 degrees
+   */
+  rotate270() {
+    const { x } = this;
+    this.x = this.y;
+    this.y = -x;
+  }
+
   // Static functions:
   /**
    * Add two vectors together.

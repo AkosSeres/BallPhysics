@@ -56,7 +56,7 @@ class Editor implements EditorInterface {
 
   lastFrameTime: number;
 
-  choosed: AnyPhysicsObject;
+  choosed: (AnyPhysicsObject | boolean);
 
   left: boolean;
 

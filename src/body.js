@@ -2,6 +2,7 @@ import Vec2 from './vec2';
 import LineSegment from './linesegment';
 import Ball from './ball';
 import Wall from './wall';
+import { collisionResponse, collisionResponseWithWall } from './collision';
 
 /**
  * An object representation of the Body class for easy conversion to JSON.
@@ -212,80 +213,11 @@ class Body {
     });
 
     if (Number.isFinite(heading) && cp) {
-      const v1 = this.vel.copy;
-      const v2 = ball.vel.copy;
-      const ang1 = this.ang;
-      const ang2 = ball.ang;
-      const r1 = Vec2.sub(cp, this.pos);
-      const r2 = Vec2.sub(cp, ball.pos);
-      const am1 = this.am;
-      const am2 = ball.am;
-      const m1 = this.m;
-      const m2 = ball.m;
-      const k = (this.k + ball.k) / 2;
-      const fc = (this.fc + ball.fc) / 2;
-
       // Create collision space basis
-      const n = r2.copy;// normal/perpendicular
+      const n = Vec2.sub(cp, ball.pos);// normal/perpendicular
       n.setMag(-1);
-
-      // Effective velocities in the collision point
-      const v1InCP = this.velInPlace(cp);
-      const v2InCP = ball.velInPlace(cp);
-      // Relative velocity in collision point
-      const vRelInCP = Vec2.sub(v2InCP, v1InCP);
-
-      // Calculate impulse
-      let impulse = (1 / m1) + (1 / m2);
-      impulse += Vec2.dot(
-        Vec2.crossScalarFirst(Vec2.cross(r1, n) / am1, r1), n,
-      );
-      impulse = -((1 + k) * Vec2.dot(vRelInCP, n)) / impulse;
-
-      // Calculate post-collision velocities
-      let u1 = Vec2.sub(v1, Vec2.mult(n, impulse / m1));
-      let u2 = Vec2.add(v2, Vec2.mult(n, impulse / m2));
-
-      // Calculate post-collision angular velocities
-      let pAng1 = ang1 - (impulse * Vec2.cross(r1, n)) / am1;
-      let pAng2 = ang2;
-
-      /**
-       * Now calculate the friction reaction
-       */
-      // Tangential direction
-      const t = vRelInCP.copy;
-      t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
-      t.setMag(1);
-
-      // Calculate max impulse
-      let maxImpulse = (1 / m1) + (1 / m2);
-      maxImpulse += Vec2.dot(
-        Vec2.crossScalarFirst(Vec2.cross(r1, t) / am1, r1), t,
-      );
-      maxImpulse += Vec2.dot(
-        Vec2.crossScalarFirst(Vec2.cross(r2, t) / am2, r2), t,
-      );
-      maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
-
-      // Friction impulse
-      let frictionImpulse = impulse * fc;
-      if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
-
-      // Calculate post-friction velocities
-      u1 = Vec2.sub(u1, Vec2.mult(t, frictionImpulse / m1));
-      u2 = Vec2.add(u2, Vec2.mult(t, frictionImpulse / m2));
-
-      // Calculate post-friction angular velocities
-      pAng1 -= (frictionImpulse * Vec2.cross(r1, t)) / am1;
-      pAng2 += (frictionImpulse * Vec2.cross(r2, t)) / am2;
-
-      // Store the new values in the ball and body
-      const b = ball;
-      this.vel = u1;
-      b.vel = u2;
-      this.ang = pAng1;
-      b.ang = pAng2;
+      // Calculate collsion response
+      collisionResponse(this, ball, cp, n);
     }
   }
 
@@ -572,7 +504,7 @@ class Body {
   static collide(b1, b2) {
     let matches = 0;
     let heading = 0;
-    let cp = new Vec2(0, 0);
+    const cp = new Vec2(0, 0);
     /** @type {Vec2[]} */
     const cps = [];
     let intersect = false;
@@ -664,82 +596,8 @@ class Body {
     const endVels2 = [];
 
     collisionPoints.forEach((collisionPoint) => {
-      // Deal with the change in velocity by the collision
-      const n = Vec2.fromAngle(heading);
-      cp = collisionPoint;
-
-      const v1 = b1.vel.copy;
-      const v2 = b2.vel.copy;
-      const ang1 = b1.ang;
-      const ang2 = b2.ang;
-      const r1 = Vec2.sub(cp, b1.pos);
-      const r2 = Vec2.sub(cp, b2.pos);
-      const am1 = b1.am;
-      const am2 = b2.am;
-      const m1 = b1.m;
-      const m2 = b2.m;
-      const k = (b1.k + b2.k) / 2;
-      const fc = (b1.fc + b2.fc) / 2;
-
-      // Effective velocities in the collision point
-      const v1InCP = b1.velInPlace(cp);
-      const v2InCP = b2.velInPlace(cp);
-      // Relative velocity in collision point
-      const vRelInCP = Vec2.sub(v2InCP, v1InCP);
-
-      // Calculate impulse
-      let impulse = (1 / m1) + (1 / m2);
-      impulse += Vec2.dot(
-        Vec2.crossScalarFirst(Vec2.cross(r1, n) / am1, r1), n,
-      );
-      impulse += Vec2.dot(
-        Vec2.crossScalarFirst(Vec2.cross(r2, n) / am2, r2), n,
-      );
-      impulse = -((1 + k) * Vec2.dot(vRelInCP, n)) / impulse;
-
-      // Calculate post-collision velocities
-      let u1 = Vec2.sub(v1, Vec2.mult(n, impulse / m1));
-      let u2 = Vec2.add(v2, Vec2.mult(n, impulse / m2));
-
-      // Calculate post-collision angular velocities
-      let pAng1 = ang1 - (impulse * Vec2.cross(r1, n)) / am1;
-      let pAng2 = ang2 + (impulse * Vec2.cross(r2, n)) / am2;
-
-      /**
-       * Now calculate the friction reaction
-       */
-      // Tangential direction
-      const t = vRelInCP.copy;
-      t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
-      t.setMag(1);
-
-      // Calculate max impulse
-      let maxImpulse = (1 / m1) + (1 / m2);
-      maxImpulse += Vec2.dot(
-        Vec2.crossScalarFirst(Vec2.cross(r1, t) / am1, r1), t,
-      );
-      maxImpulse += Vec2.dot(
-        Vec2.crossScalarFirst(Vec2.cross(r2, t) / am2, r2), t,
-      );
-      maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
-
-      // Friction impulse
-      let frictionImpulse = impulse * fc;
-      if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
-
-      // Calculate post-friction velocities
-      u1 = Vec2.sub(u1, Vec2.mult(t, frictionImpulse / m1));
-      u2 = Vec2.add(u2, Vec2.mult(t, frictionImpulse / m2));
-
-      // Calculate post-friction angular velocities
-      pAng1 -= (frictionImpulse * Vec2.cross(r1, t)) / am1;
-      pAng2 += (frictionImpulse * Vec2.cross(r2, t)) / am2;
-
-      // Store the new values in the ball and body
-      body1.vel = u1;
-      body2.vel = u2;
-      body1.ang = pAng1;
-      body2.ang = pAng2;
+      // Calculate collision response
+      collisionResponse(b1, b2, collisionPoint, Vec2.fromAngle(heading));
 
       // Store calculated values and revert
       endAngs1.push(b1.ang);
@@ -825,59 +683,7 @@ class Body {
     // Deal with the change in velocity by the collision
     const n = Vec2.sub(collisionPoint, fbPos);
     n.setMag(1);
-    const cp = collisionPoint;
-    const v = this.vel.copy;
-    const { ang } = this;
-    const r = Vec2.sub(cp, this.pos);
-    const { am } = this;
-    const { m } = this;
-    const { k } = this;
-    const { fc } = this;
-
-    // Relative velocity in collision point
-    const vRelInCP = Vec2.mult(this.velInPlace(cp), -1);
-
-    // Calculate impulse
-    let impulse = (1 / m);
-    impulse += Vec2.dot(
-      Vec2.crossScalarFirst(Vec2.cross(r, n) / am, r), n,
-    );
-    impulse = -((1 + k) * Vec2.dot(vRelInCP, n)) / impulse;
-
-    // Calculate post-collision velocity
-    let u = Vec2.sub(v, Vec2.mult(n, impulse / m));
-
-    // Calculate post-collision angular velocity
-    let pAng = ang - (impulse * Vec2.cross(r, n)) / am;
-
-    /**
-     * Now calculate the friction reaction
-     */
-    // Tangential direction
-    const t = vRelInCP.copy;
-    t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
-    t.setMag(1);
-
-    // Calculate max impulse
-    let maxImpulse = (1 / m);
-    maxImpulse += Vec2.dot(
-      Vec2.crossScalarFirst(Vec2.cross(r, t) / am, r), t,
-    );
-    maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
-
-    // Friction impulse
-    let frictionImpulse = impulse * fc;
-    if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
-
-    // Calculate post-friction velocity
-    u = Vec2.sub(u, Vec2.mult(t, frictionImpulse / m));
-
-    // Calculate post-friction angular velocity
-    pAng -= (frictionImpulse * Vec2.cross(r, t)) / am;
-
-    // Store the new values in the body
-    this.vel = u;
-    this.ang = pAng;
+    collisionResponseWithWall(this, collisionPoint, n);
   }
 
   /**
@@ -895,7 +701,6 @@ class Body {
 
     const { sides } = this;
 
-    const debugData = [];
     /** @type {Vec2[]} */
     const collisionPoints = [];
     sides.forEach((bodySide) => {
@@ -920,30 +725,17 @@ class Body {
       const normal = Vec2.sub(collisionPoints[0], collisionPoints[1]);
       normal.rotate(Math.PI / 2);
 
-      let r = Vec2.sub(collisionPoints[0], this.pos);
+      const r = Vec2.sub(collisionPoints[0], this.pos);
       if (Vec2.dot(normal, r) > 0) normal.mult(-1);
       normal.setMag(1);
       if (Vec2.dot(normal, Vec2.sub(this.pos, wall.center)) < 0) {
         normal.mult(-1);
       }
 
-      debugData.push(new LineSegment(collisionPoints[0], collisionPoints[1]));
-      debugData.push(
-        new LineSegment(
-          collisionPoints[0],
-          Vec2.add(collisionPoints[0], Vec2.mult(normal, 20)),
-        ),
-      );
-      debugData.push(
-        new LineSegment(
-          collisionPoints[1],
-          Vec2.add(collisionPoints[1], Vec2.mult(normal, 20)),
-        ),
-      );
       /** @type {number[]} */
       let moveAmounts = [];
 
-      let cp = collisionPoints[0];
+      const cp = collisionPoints[0];
       wall.points.forEach((p) => {
         const pointVec = Vec2.sub(p, cp);
         const dist = Vec2.dot(pointVec, normal);
@@ -976,66 +768,11 @@ class Body {
       }
 
       collisionPoints.forEach((collisionPoint) => {
-        // Deal with the change in velocity by the collision
-        const n = normal;
-        n.setMag(1);
-        cp = collisionPoint;
-        const v = this.vel.copy;
-        const { ang } = this;
-        r = Vec2.sub(cp, this.pos);
-        const { am } = this;
-        const { m } = this;
-        const { k } = this;
-        const { fc } = this;
-
-        // Relative velocity in collision point
-        const vRelInCP = Vec2.mult(this.velInPlace(cp), -1);
-
-        // Calculate impulse
-        let impulse = (1 / m);
-        impulse += Vec2.dot(
-          Vec2.crossScalarFirst(Vec2.cross(r, n) / am, r), n,
-        );
-        impulse = -((1 + k) * Vec2.dot(vRelInCP, n)) / impulse;
-
-        // Calculate post-collision velocity
-        let u = Vec2.sub(v, Vec2.mult(n, impulse / m));
-
-        // Calculate post-collision angular velocity
-        let pAng = ang - (impulse * Vec2.cross(r, n)) / am;
-
-        /**
-         * Now calculate the friction reaction
-         */
-        // Tangential direction
-        const t = vRelInCP.copy;
-        t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
-        t.setMag(1);
-
-        // Calculate max impulse
-        let maxImpulse = (1 / m);
-        maxImpulse += Vec2.dot(
-          Vec2.crossScalarFirst(Vec2.cross(r, t) / am, r), t,
-        );
-        maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
-
-        // Friction impulse
-        let frictionImpulse = impulse * fc;
-        if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
-
-        // Calculate post-friction velocity
-        u = Vec2.sub(u, Vec2.mult(t, frictionImpulse / m));
-
-        // Calculate post-friction angular velocity
-        pAng -= (frictionImpulse * Vec2.cross(r, t)) / am;
-
-        // Store the new values in the body
-        this.vel = u;
-        this.ang = pAng;
+        // Calculate post-collision velocities
+        collisionResponseWithWall(this, collisionPoint, normal);
 
         endVels.push(this.vel);
         this.vel = startingVel.copy;
-
         endAngs.push(this.ang);
         this.ang = startingAng;
       });
@@ -1096,7 +833,7 @@ class Body {
    * Calculates the effective velocity of the body object in a
    * given point from it's velocity and angular velocity
    *
-   * @param {Vec2} point The point to be taken a look at
+   * @param {Vec2 | import('./vec2').Vec2AsObject} point The point to be taken a look at
    * @returns {Vec2} The velocity of the Body in the given point
    */
   velInPlace(point) {

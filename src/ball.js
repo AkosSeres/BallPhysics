@@ -1,3 +1,4 @@
+import { collisionResponse } from './collision';
 import Vec2 from './vec2';
 
 /**
@@ -24,8 +25,8 @@ import Vec2 from './vec2';
  */
 class Ball {
   /**
-   * Crete a ball
-   * The mass of the ball is calculated from its radius
+   * Create a ball.
+   * The mass of the ball is calculated from its radius.
    *
    * @param {Vec2} pos The position of the center of the circle
    * @param {Vec2} vel The velocity of the circle
@@ -40,6 +41,7 @@ class Ball {
     this.r = r;
     this.fc = 0.4;
     this.amc = 2 / 5;
+    this.density = 1;
 
     this.rotation = 0;
 
@@ -67,7 +69,7 @@ class Ball {
    * @returns {number} The mass
    */
   get m() {
-    return this.r * this.r * Math.PI;
+    return this.density * this.r * this.r * Math.PI;
   }
 
   /**
@@ -178,75 +180,7 @@ class Ball {
     d.setMag(1);
     // Collision point
     const cp = Vec2.add(ball1.pos, Vec2.mult(d, ball1.r));
-
-    // Calculate collision response
-    const v1 = ball1.vel.copy;
-    const v2 = ball2.vel.copy;
-    const ang1 = ball1.ang;
-    const ang2 = ball2.ang;
-    const r1 = Vec2.sub(cp, ball1.pos);
-    const r2 = Vec2.sub(cp, ball2.pos);
-    const am1 = ball1.am;
-    const am2 = ball2.am;
-    const k = (ball1.k + ball2.k) / 2;
-    const fc = (ball1.fc + ball2.fc) / 2;
-
-    // Create collision space basis
-    const n = d.copy;// normal/perpendicular
-
-    // Effective velocities in the collision point
-    const v1InCP = ball1.velInPlace(cp);
-    const v2InCP = ball2.velInPlace(cp);
-    // Relative velocity in collision point
-    const vRelInCP = Vec2.sub(v2InCP, v1InCP);
-
-    // Calculate impulse
-    let impulse = (1 / m1) + (1 / m2);
-    impulse = (-(1 + k) * Vec2.dot(vRelInCP, n)) / impulse;
-
-    // Calculate post-collision velocities
-    let u1 = Vec2.sub(v1, Vec2.mult(n, impulse / m1));
-    let u2 = Vec2.add(v2, Vec2.mult(n, impulse / m2));
-
-    // Calculate post-collision angular velocities
-    let pAng1 = ang1 - (impulse * Vec2.cross(r1, n)) / am1;
-    let pAng2 = ang2;
-
-    /**
-     * Now calculate the friction reaction.
-     */
-    // Tangential direction
-    const t = vRelInCP.copy;
-    t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
-    t.setMag(1);
-
-    // Calculate max impulse
-    let maxImpulse = (1 / m1) + (1 / m2);
-    maxImpulse += Vec2.dot(
-      Vec2.crossScalarFirst(Vec2.cross(r1, t) / am1, r1), t,
-    );
-    maxImpulse += Vec2.dot(
-      Vec2.crossScalarFirst(Vec2.cross(r2, t) / am2, r2), t,
-    );
-    maxImpulse = -(0.5 * Vec2.dot(vRelInCP, t)) / maxImpulse;
-
-    // Friction impulse
-    let frictionImpulse = impulse * fc;
-    if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
-
-    // Calculate post-friction velocities
-    u1 = Vec2.sub(u1, Vec2.mult(t, frictionImpulse / m1));
-    u2 = Vec2.add(u2, Vec2.mult(t, frictionImpulse / m2));
-
-    // Calculate post-friction angular velocities
-    pAng1 -= (frictionImpulse * Vec2.cross(r1, t)) / am1;
-    pAng2 += (frictionImpulse * Vec2.cross(r2, t)) / am2;
-
-    // Store the new values in the balls
-    b1.vel = u1;
-    b2.vel = u2;
-    b1.ang = pAng1;
-    b2.ang = pAng2;
+    collisionResponse(ball1, ball2, cp, d);
   }
 
   /**
@@ -263,7 +197,7 @@ class Ball {
    * Calculates the effective velocity of the ball in a
    * given point from it's velocity and angular velocity
    *
-   * @param {Vec2} point The point to be taken a look at
+   * @param {Vec2 | import('./vec2').Vec2AsObject} point The point to be taken a look at
    * @returns {Vec2} The velocity of the Ball in the given point
    */
   velInPlace(point) {

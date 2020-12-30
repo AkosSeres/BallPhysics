@@ -53,10 +53,11 @@ class Stick extends Spring {
       if (this.rotationLocked) {
         const s = new Vec2(p2.x, p2.y);
         const r2 = Vec2.sub(p1.pos, s);
-        const am = r2.length * r2.length * p1.m + p1.am;
-        const ang = (p1.am * p1.ang + r2.length * p1.m * v.y) / am;
+        const len = r2.length;
+        const am = len * len * p1.m + p1.am;
+        const ang = (p1.am * p1.ang + len * p1.m * v.y) / am;
 
-        v.y = ang * r2.length;
+        v.y = ang * len;
 
         p1.ang = ang;
       }
@@ -87,19 +88,21 @@ class Stick extends Spring {
         s.div(p1.m + p2.m);
         const r1 = Vec2.sub(p1.pos, s);
         const r2 = Vec2.sub(p2.pos, s);
-        const am = r1.length * r1.length * p1.m
+        const len1 = r1.length;
+        const len2 = r2.length;
+        const am = len1 * len1 * p1.m
           + p1.am
-          + r2.length * r2.length * p2.m
+          + len2 * len2 * p2.m
           + p2.am;
-        const sv = ((v1.y - v2.y) * r2.length) / (r1.length + r2.length) + v2.y;
+        const sv = ((v1.y - v2.y) * len2) / (len1 + len2) + v2.y;
         const ang = (p1.am * p1.ang
           + p2.am * p2.ang
-          + r1.length * p1.m * (v1.y - sv)
-          - r2.length * p2.m * (v2.y - sv))
+          + len1 * p1.m * (v1.y - sv)
+          - len2 * p2.m * (v2.y - sv))
           / am;
 
-        v1.y = ang * r1.length + sv;
-        v2.y = -ang * r2.length + sv;
+        v1.y = ang * len1 + sv;
+        v2.y = -ang * len2 + sv;
 
         p1.ang = ang;
         p2.ang = ang;

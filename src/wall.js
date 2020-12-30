@@ -1,6 +1,7 @@
 import Vec2 from './vec2';
 import LineSegment from './linesegment';
 import Ball from './ball';
+import { collisionResponseWithWall } from './collision';
 
 /**
  * An object representation of the Wall class for easy conversion to JSON.
@@ -68,64 +69,41 @@ class Wall {
    * @param {Ball} ball The ball that is checked if it collides with the wall
    */
   collideWithBall(ball) {
-    let heading;
-    let rel;
+    /** @type {Vec2 | undefined} */
+    let cp;
+    /** @type {Vec2 | undefined} */
+    let n;
+    const b = ball;
 
-    this.points.forEach((point, idx) => {
-      let p = new Vec2(point.x, point.y);
-      p.x -= ball.pos.x;
-      p.y -= ball.pos.y;
-      p.mult(-1);
-      if (p.length <= ball.r) {
-        heading = p.heading;
-        rel = p.length;
+    const onSide = this.points.some((point, idx) => {
+      const bp = Vec2.sub(b.pos, point);
+      if (bp.sqlength <= ball.r * ball.r) {
+        cp = point;
+        n = bp;
       }
-      p = new Vec2(point.x, point.y);
-      const np = new Vec2(
-        this.points[(idx + 1) % this.points.length].x,
-        this.points[(idx + 1) % this.points.length].y,
-      );
-      const bp = new Vec2(ball.pos.x, ball.pos.y);
-      const side = new Vec2(np.x - p.x, np.y - p.y);
-      const h = side.heading;
-      p.rotate(-h + Math.PI);
-      np.rotate(-h + Math.PI);
-      bp.rotate(-h + Math.PI);
-      const d = bp.y - (p.y + np.y) / 2;
-      if (d >= -ball.r && d <= ball.r && bp.x >= np.x && bp.x <= p.x) {
-        heading = h - Math.PI / 2;
-        rel = d;
+      const np = this.points[(idx + 1) % this.points.length].copy;
+      const side = new Vec2(np.x - point.x, np.y - point.y);
+      const sideLenSq = side.sqlength;
+      side.setMag(1);
+      const normal = side.copy;
+      normal.rotate270();
+      const posOnLine = Vec2.dot(bp, side);
+      const d = Vec2.dot(bp, normal);
+      if (d >= -ball.r && d < ball.r && posOnLine >= 0
+        && posOnLine * posOnLine <= sideLenSq) {
+        cp = Vec2.add(point, Vec2.mult(side, posOnLine));
+        n = normal;
+        return true;
       }
+      return false;
     });
-
-    if (typeof heading !== 'undefined' && typeof rel !== 'undefined') {
-      const pos = new Vec2(ball.pos.x, ball.pos.y);
-      const vel = new Vec2(ball.vel.x, ball.vel.y);
-      pos.rotate(-heading + Math.PI / 2);
-      vel.rotate(-heading + Math.PI / 2);
-
-      if (vel.y > 0) return;
-      vel.y *= -ball.k;
-      pos.y += ball.r - rel;
-      const dvy = vel.y * (1 + ball.k);
-
-      let deltaAng = (Math.sign(vel.x + ball.ang * ball.r) * (dvy * ball.fc))
-        / (ball.amc * ball.r);
-      const maxDeltaAng = (vel.x + ball.ang * ball.r) / ball.r;
-
-      if (deltaAng / maxDeltaAng > 1) deltaAng = maxDeltaAng;
-      const b = ball;
-      b.ang -= deltaAng;
-
-      const dvx = (deltaAng * ball.am) / ball.r / ball.m;
-      vel.x -= dvx;
-
-      pos.rotate(heading - Math.PI / 2);
-      vel.rotate(heading - Math.PI / 2);
-      b.pos.x = pos.x;
-      b.pos.y = pos.y;
-      b.vel.x = vel.x;
-      b.vel.y = vel.y;
+    if (typeof n !== 'undefined') {
+      if (!onSide) n.setMag(1);
+      if (typeof cp !== 'undefined') {
+        n.mult(-1);
+        b.pos = Vec2.add(cp, Vec2.mult(n, -ball.r));
+        collisionResponseWithWall(b, cp, n);
+      }
     }
   }
 

@@ -9,7 +9,7 @@ interface EditorInterface {
   lastX: number;
   lastY: number;
   timeMultiplier: number;
-  choosed: AnyPhysicsObject;
+  choosed: AnyPhysicsObject|boolean;
   cnv: HTMLCanvasElement;
 }
 
