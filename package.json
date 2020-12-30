@@ -3,9 +3,11 @@
   "version": "1.6.0",
   "description": "2D rigid body physics engine to-be",
   "main": "./src/physics.js",
+  "type": "module",
   "scripts": {
-    "test": "jest --verbose ./tests",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --verbose ./tests",
     "lint": "eslint . --ext .ts,.js",
+    "docs": "./node_modules/.bin/jsdoc -c conf.json",
     "watch": "nodemon --ignore \"dest/*.*\" -e js,ts,css,html --exec npm run build",
     "build": "esbuild editor/src/index.ts --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16 --outfile=dest/main.js && cp editor/static/index.html dest/index.html"
   },
@@ -38,6 +40,8 @@
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.0.0",
     "jest": "^26.4.2",
+    "jsdoc-import-support": "^3.6.4",
+    "minami": "^1.2.3",
     "nodemon": "^2.0.6",
     "typescript": "^4.1.3"
   },

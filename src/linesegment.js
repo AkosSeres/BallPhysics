@@ -7,8 +7,8 @@ class LineSegment {
   /**
    * Create a segment
    *
-   * @param {Vec2} a_ Starting point
-   * @param {Vec2} b_ Ending point
+   * @param {Vec2|import('./vec2').Vec2AsObject} a_ Starting point
+   * @param {Vec2|import('./vec2').Vec2AsObject} b_ Ending point
    */
   constructor(a_, b_) {
     this.a = a_;
@@ -27,7 +27,7 @@ class LineSegment {
   /**
    * Get the distance between a point and the line segment
    *
-   * @param {Vec2} p The point as a vector
+   * @param {Vec2|import('./vec2').Vec2AsObject} p The point as a vector
    * @returns {number} The distance
    */
   distFromPoint(p) {

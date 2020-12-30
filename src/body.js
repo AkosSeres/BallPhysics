@@ -302,14 +302,23 @@ class Body {
     });
 
     if (this.isConcave) {
-      /** @type {(arr:number[], item:number)=>boolean} */
+      /**
+       * @param {number[]} arr Numbers
+       * @param {number} item Number to find
+       * @returns {boolean} Whether the number is in the array
+       */
       const includes = (arr, item) => {
         for (let i = 0; i < arr.length; i += 1) {
           if (arr[i] === item) return true;
         }
         return false;
       };
-      /** @type {(segment:LineSegment,pol:Vec2[],exceptions:number[])=>boolean} */
+      /**
+       * @param {LineSegment} segment Line segment to intersect with
+       * @param {Vec2[]} pol Polygon to intersect with
+       * @param {number[]} exceptions Exceptions
+       * @returns {boolean} Whether intersection is detected
+       */
       const intersectWithPoligon = (segment, pol, exceptions) => {
         for (let i = 0; i < pol.length; i += 1) {
           if (!includes(exceptions, i)) {

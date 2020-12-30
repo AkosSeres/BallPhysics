@@ -22,6 +22,17 @@ import { stickOrSpringFromObject, stickOrSpringToJSObject } from './stickspringh
  */
 
 /**
+ * A union type representing either a Stick or a Spring object.
+ *
+ * @typedef {(Spring|Stick)} StickOrSpring
+ */
+/**
+ * A union type representing either a StickAsObject or a SpringAsObject type.
+ *
+ * @typedef {import('./spring').SpringAsObject|import('./stick').StickAsObject}StickOrSpringAsObject
+ */
+
+/**
  * An object representation of the Phyisics class
  * to easily convert it to JSON.
  *
@@ -30,7 +41,7 @@ import { stickOrSpringFromObject, stickOrSpringToJSObject } from './stickspringh
  * @property {import('./wall').WallAsObject[]} bounds The world border walls
  * @property {import('./wall').WallAsObject[]} walls The walls in the world
  * @property {import('./body').BodyAsObject[]} bodies The bodies in the world
- * @property {(import('./spring').SpringAsObject | import('./stick').StickAsObject)[]} springs The
+ * @property {StickOrSpringAsObject[]} springs The
  * springs and sticks in the world
  * @property {import('./softball').SoftBallAsObject[]} softBalls The softballs in the world
  * @property {FixedBall[]} fixedBalls The fixedballs in the world
@@ -60,7 +71,7 @@ class Physics {
     /** @type {Wall[]} */
     this.bounds = [];
 
-    /** @type {(Spring|Stick)[]} */
+    /** @type {StickOrSpring[]} */
     this.springs = [];
 
     // Air friction has to be between 0 and 1
@@ -308,7 +319,6 @@ class Physics {
     ret.gravity = this.gravity;
 
     this.springs.forEach((spring) => {
-      /** @type {typeof Spring | typeof Stick} */
       const TypeOfSpring = spring instanceof Spring ? Spring : Stick;
       /** @type {Spring | Stick} */
       const copiedSpring = new TypeOfSpring(spring.length, spring.springConstant);
@@ -362,7 +372,14 @@ class Physics {
    */
   addBall(ball) {
     if (this.addBodyNotBall) {
-      /** @type {(pos:Vec2,r:number,resolution:number)=>Vec2[]} */
+      /**
+       * Creates a ball shape from a polygon
+       *
+       * @param {Vec2} pos Position
+       * @param {number} r Radius
+       * @param {number} resolution Resolution
+       * @returns {Vec2[]} Points
+       */
       const getPointsForBall = (pos, r, resolution) => {
         const points = [];
 
@@ -558,7 +575,15 @@ class Physics {
   setBounds(x, y, w, h) {
     this.bounds = [];
 
-    /** @type {(x_:number, y_:number, w_:number, h_:number)=>Wall} */
+    /**
+     * Creates a rectangle wall.
+     *
+     * @param {number} x_ The x coordinate
+     * @param {number} y_ The y coordinate
+     * @param {number} w_ The width
+     * @param {number} h_ The height
+     * @returns {Wall} The wall
+     */
     const getRectBody = (x_, y_, w_, h_) => {
       const points = [];
       points.push(new Vec2(x_ - w_ / 2, y_ - h_ / 2));
@@ -690,7 +715,12 @@ class Physics {
    * @returns {{type:("ball"|"body"|"spring"|""), num:number}} The data of the object
    */
   getItemDataFromId(id) {
-    /** @type {(b:(Ball|Body|Spring|Stick))=>boolean} */
+    /**
+     * Checks the ID of an element.
+     *
+     * @param {Ball|Body|Spring|Stick} b Entity with ID
+     * @returns {boolean} Tells if it checks.
+     */
     const filter = (b) => b.id === id;
 
     const balls = this.balls.filter(filter);

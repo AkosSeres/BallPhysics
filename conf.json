@@ -1,0 +1,35 @@
+{
+    "plugins": [],
+    "recurseDepth": 10,
+    "source": {
+        "include": [
+            "src"
+        ],
+        "exclude": [
+            "node_modules",
+            "dest",
+            "editor"
+        ],
+        "includePattern": ".+\\.(j|t)s(doc|x)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "opts": {
+        "template": "node_modules/minami",
+        "encoding": "utf8",
+        "destination": "./dest/docs",
+        "recurse": true,
+        "readme": "README.md"
+    },
+    "sourceType": "module",
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": [
+            "jsdoc",
+            "closure"
+        ]
+    },
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false
+    }
+}

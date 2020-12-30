@@ -112,15 +112,22 @@ class SoftBall {
         return false;
       })(poligons[0])
     ) {
-      /** @type {(arr:number[], item:number)=>boolean} */
-      const includes = (arr, item) => {
+      /**
+       * @param {number[]} arr Numbers
+       * @param {number} item Number to find
+       * @returns {boolean} Whether the number is in the array
+       */ const includes = (arr, item) => {
         for (let i = 0; i < arr.length; i += 1) {
           if (arr[i] === item) return true;
         }
         return false;
       };
-      /** @type {(segment:LineSegment,pol:import('./vec2').Vec2AsObject[],exc:number[])=>boolean} */
-      const intersectWithPoligon = (segment, pol, exc) => {
+      /**
+       * @param {LineSegment} segment Line segment to intersect with
+       * @param {Vec2[]} pol Polygon to intersect with
+       * @param {number[]} exc Exceptions
+       * @returns {boolean} Whether intersection is detected
+       */ const intersectWithPoligon = (segment, pol, exc) => {
         for (let i = 0; i < pol.length; i += 1) {
           if (!includes(exc, i)) {
             const side = new LineSegment(

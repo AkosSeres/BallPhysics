@@ -2,6 +2,8 @@ import Vec2 from './vec2';
 import LineSegment from './linesegment';
 import Line from './line';
 
+/** @typedef {(Vec2|import('./vec2').Vec2AsObject)} Vec2Like */
+
 /**
  * Class representing a mathematical polygon
  */
@@ -9,7 +11,8 @@ class Polygon {
   /**
    * Creates the polygon
    *
-   * @param {Vec2[]} points_ Array of the points for the polygon in order
+   * @param {Vec2Like[]} points_ Array of the
+   * points for the polygon in order
    */
   constructor(points_) {
     if (points_.length < 3) {
@@ -107,18 +110,19 @@ class Polygon {
   /**
    * Determines if a given point is inside the polygon or not
    *
-   * @param {Vec2} point The point to investigate
+   * @param {Vec2|import('./vec2').Vec2AsObject} point The point to investigate
    * @returns {boolean} If the point is inside or not
    */
   isPointInside(point) {
-    if (Vec2.dist(point, this.centerPoint) > this.boundRadius) return false;
+    const p = new Vec2(point.x, point.y);
+    if (Vec2.dist(p, this.centerPoint) > this.boundRadius) return false;
 
     // Find a point that is outside of the shape for sure
     const outsidePoint = this.centerPoint.copy;
     outsidePoint.add(Vec2.mult(new Vec2(1.1, 0.6), this.boundRadius));
 
     // Create a LineSegment between the points
-    const segment = new LineSegment(point, outsidePoint);
+    const segment = new LineSegment(p, outsidePoint);
 
     // Count the intersections
     let intersectionCount = 0;
@@ -180,7 +184,12 @@ class Polygon {
       > poly1.boundRadius + poly2.boundRadius) return undefined;
 
     // Determine intersection points
-    /** @typedef {Vec2 & {isIntersectionPoint?: boolean}} IntersectionPoint */
+    /**
+     * @typedef IntersectionPoint
+     * @property {number} x The x coordinate
+     * @property {number} y The y coordinate
+     * @property {boolean} [isIntersectionPoint] Indicates the intersection
+     */
     /** @typedef {{intersectionPoint:IntersectionPoint,sideNum1:number,sideNum2:number}} SectData */
     /** @type {SectData[]} */
     const sideIntersections = [];
@@ -203,16 +212,15 @@ class Polygon {
 
     if (sideIntersections.length === 0) {
       if (poly1.isPointInside(poly2.points[0])) {
-        return new Polygon(poly2.points.map((p) => p.copy));
+        return new Polygon(poly2.points.map((p) => Vec2.fromObject(p)));
       }
       if (poly2.isPointInside(poly1.points[0])) {
-        return new Polygon(poly1.points.map((p) => p.copy));
+        return new Polygon(poly1.points.map((p) => Vec2.fromObject(p)));
       }
     }
 
     // Put the intersection points into the copy of polygons
-    /** @type {Polygon & {points: IntersectionPoint[]}} */
-    const new1 = new Polygon(poly1.points.map((p) => p.copy));
+    const new1 = new Polygon(poly1.points);
     for (let i = new1.points.length - 1; i >= 0; i -= 1) {
       const intersectionsOnThis = sideIntersections.filter((it) => it.sideNum1 === i);
       if (intersectionsOnThis.length > 1) {
@@ -224,8 +232,7 @@ class Polygon {
           ...intersectionsOnThis.map((it) => it.intersectionPoint));
       }
     }
-    /** @type {Polygon & {points: IntersectionPoint[]}} */
-    const new2 = new Polygon(poly2.points.map((p) => p.copy));
+    const new2 = new Polygon(poly2.points);
     for (let i = new2.points.length - 1; i >= 0; i -= 1) {
       const intersectionsOnThis = sideIntersections.filter((it) => it.sideNum2 === i);
       if (intersectionsOnThis.length > 1) {
@@ -244,7 +251,7 @@ class Polygon {
       pointNum: 0,
     };
     for (let i = 0; i < new1.points.length; i += 1) {
-      if (new1.points[i].isIntersectionPoint) {
+      if ('isIntersectionPoint' in new1.points[i]) {
         currInv.pointNum = i;
         break;
       } else if (new2.isPointInside(new1.points[i])) {
@@ -258,8 +265,8 @@ class Polygon {
       const currentPoly = (currInv.polyNum === 1) ? new1 : new2;
       const otherPoly = (currInv.polyNum === 1) ? new2 : new1;
       finalPoints.push(
-        currentPoly.points[
-          currInv.pointNum % currentPoly.points.length].copy,
+        Vec2.fromObject(currentPoly.points[
+          currInv.pointNum % currentPoly.points.length]),
       );
       if (finalPoints.length > 2
         && finalPoints[0].x === finalPoints[finalPoints.length - 1].x
@@ -271,17 +278,17 @@ class Polygon {
         break;
       }
 
-      if (currentPoly.points[currInv.pointNum
-        % currentPoly.points.length].isIntersectionPoint) {
-        if (currentPoly.points[(currInv.pointNum + 1)
-          % currentPoly.points.length].isIntersectionPoint) {
+      if ('isIntersectionPoint' in currentPoly.points[currInv.pointNum
+        % currentPoly.points.length]) {
+        if ('isIntersectionPoint' in currentPoly.points[(currInv.pointNum + 1)
+          % currentPoly.points.length]) {
           currInv.pointNum += 1;
         } else if (otherPoly.isPointInside(
           currentPoly.points[(currInv.pointNum + 1)
           % currentPoly.points.length],
         )
-          && !currentPoly.points[(currInv.pointNum + 1)
-            % currentPoly.points.length].isIntersectionPoint) {
+          && !('isIntersectionPoint' in currentPoly.points[(currInv.pointNum + 1)
+            % currentPoly.points.length])) {
           currInv.pointNum += 1;
         } else {
           currInv.pointNum = otherPoly.points.indexOf(

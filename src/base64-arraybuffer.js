@@ -1,6 +1,7 @@
 /**
  * Gives back the base64 code table
- *
+ */
+/**
  * @type {string[]} The code table
  */
 export const codeTable = (
@@ -8,10 +9,9 @@ export const codeTable = (
 ).split('');
 
 /**
- * Converts the content of an ArrayBuffer to a base64 string
- *
  * @param {ArrayBuffer} arrayBuffer The buffer
- * @returns {string} The base64 string
+ * @returns {string} The base64 string, converts the
+ * content of an ArrayBuffer to a base64 string
  */
 export const arrayBuffertoBase64 = (arrayBuffer) => {
   let base = '';

@@ -17,6 +17,8 @@ import Vec2 from './vec2';
  * @property {"spring"} type Indicates that the object is a spring
  */
 
+/** @typedef {Body|Ball} MovableObject */
+
 /**
  * Class representing a string
  * They act like springs in real life
@@ -35,7 +37,7 @@ class Spring {
     this.springConstant = springConstant;
     /** @type {boolean | {x:number, y:number}} */
     this.pinned = false;
-    /** @type {(Body|Ball)[]} */
+    /** @type {MovableObject[]} */
     this.objects = [];
     this.rotationLocked = false;
     this.id = `_${Math.random()

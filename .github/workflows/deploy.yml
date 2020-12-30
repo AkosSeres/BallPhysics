@@ -9,19 +9,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install and Build editor
+      - name: Install and Build editor and documentaion
         run: |
           npm install
           npm run build
-
-      - name: Build documentation
-        uses: andstor/jsdoc-action@v1
-        with:
-          source_dir: ./src
-          recurse: true
-          output_dir: ./dest/docs
-          template: minami
-          front_page: README.md
+          npm run docs
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@3.7.1
