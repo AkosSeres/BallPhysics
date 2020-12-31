@@ -70,6 +70,8 @@ class Editor implements EditorInterface {
 
   drawCollisions: boolean;
 
+  showAxes: boolean;
+
   constructor() {
     this.physics = new Physics();
     this.mouseX = 0;
@@ -89,6 +91,7 @@ class Editor implements EditorInterface {
     this.lastFrameTime = performance.now();
     this.choosed = false;
     this.drawCollisions = false;
+    this.showAxes = false;
 
     this.left = false;
     this.right = false;
@@ -421,6 +424,13 @@ class Editor implements EditorInterface {
         });
         ctx.stroke();
         ctx.fill();
+
+        element.axes.forEach((axe) => {
+          ctx.beginPath();
+          ctx.moveTo(element.pos.x, element.pos.y);
+          ctx.lineTo(element.pos.x + axe.x * 30, element.pos.y + axe.y * 30);
+          ctx.stroke();
+        });
 
         ctx.beginPath();
         ctx.arc(element.pos.x, element.pos.y, 1.5, 0, Math.PI * 2);

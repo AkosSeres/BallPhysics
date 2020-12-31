@@ -29,6 +29,9 @@ const WorldSettingsMode: Mode = {
       Creator.createCheckbox('Show collision data', editorRef.drawCollisions, (event) => {
         editorRef.drawCollisions = (<HTMLInputElement>event.target).checked;
       }),
+      Creator.createCheckbox('Show body axes', editorRef.showAxes, (event) => {
+        editorRef.showAxes = (<HTMLInputElement>event.target).checked;
+      }),
     ].forEach(element.appendChild.bind(element));
   },
 };

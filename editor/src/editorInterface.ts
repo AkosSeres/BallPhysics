@@ -12,6 +12,7 @@ interface EditorInterface {
   choosed: AnyPhysicsObject|boolean;
   cnv: HTMLCanvasElement;
   drawCollisions: boolean;
+  showAxes: boolean;
 }
 
 export default EditorInterface;
