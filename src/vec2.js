@@ -140,6 +140,17 @@ class Vec2 {
   }
 
   /**
+   * Returns the p-norm of the vector in Lp space.
+   *
+   * @param {number} p The p parameter
+   * @returns {number} The calculated p-norm
+   */
+  pNorm(p) {
+    if (p < 1) p = 1;
+    return (Math.abs(this.x ** p) + Math.abs(this.y ** p)) ** (1 / p);
+  }
+
+  /**
    * Set the length of the vector.
    *
    * @param {number} l - The new length value.
@@ -248,11 +259,24 @@ class Vec2 {
   /**
    * Create a unit vector from an angle.
    *
-   * @param {number} a - The angle.
-   * @returns {Vec2} The created vector.
+   * @param {number} a The angle
+   * @returns {Vec2} The created vector
    */
   static fromAngle(a) {
     return new Vec2(Math.cos(a), Math.sin(a));
+  }
+
+  /**
+   * Create a unit vector from an angle in a p-normed space.
+   *
+   * @param {number} a The angle
+   * @param {number} p The p parameter of the p-normed space
+   * @returns {Vec2} The created vector
+   */
+  static fromAnglePNorm(a, p) {
+    const unit = new Vec2(Math.cos(a), Math.sin(a));
+    unit.div(unit.pNorm(p));
+    return unit;
   }
 
   /**
