@@ -118,10 +118,10 @@ class Body {
         const v1 = this.defaultAxes[j];
         const v2 = this.defaultAxes[i];
         if (Vec2.dot(v1, v2) > maxCos) {
-          const newV = Vec2.add(v1, v2);
-          newV.normalize();
+          // const newV = Vec2.add(v1, v2);
+          // newV.normalize();
           this.defaultAxes.splice(j, 1);
-          this.defaultAxes[i] = newV;
+          this.defaultAxes[i] = v1;
         }
       }
     }
@@ -249,9 +249,6 @@ class Body {
 
         cp = ball.pos.copy;
         cp.add(Vec2.mult(Vec2.fromAngle(heading + Math.PI), d));
-
-        const a = Vec2.fromAngle(heading);
-        a.mult(-30);
       }
     });
 
