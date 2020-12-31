@@ -149,3 +149,95 @@ export function collisionResponseWithWall(object, contactPoint, normal) {
   b.vel = u;
   b.ang = pAng;
 }
+
+/**
+ * Used to descrive an interval.
+ *
+ * @class
+ * @param {number} min The lower bound
+ * @param {number} max The high bound
+ */
+export function MinMax(min, max) {
+  this.min = min;
+  this.max = max;
+}
+
+MinMax.prototype.size = function size() {
+  return this.max - this.min;
+};
+
+/**
+ * Returns the min and max of an array of numbers
+ *
+ * @param {number[]} arr Array of numbers
+ * @returns {MinMax} The min and max value
+ */
+export function minMaxOfArray(arr) {
+  return new MinMax(Math.min(...arr), Math.max(...arr));
+}
+
+/**
+ * Finds the overlap of two {@link MinMax}-es.
+ *
+ * @param {MinMax} interval1 The first MinMax
+ * @param {MinMax} interval2 The second MinMax
+ * @returns {MinMax} Their overlap
+ */
+export function findOverlap(interval1, interval2) {
+  return new MinMax(Math.max(interval1.min, interval2.min),
+    Math.min(interval1.max, interval2.max));
+}
+
+/**
+ * Detects the collision and returns collision normal.
+ *
+ * @param {Vec2[]} points1
+ * @param {Vec2[]} points2
+ * @param {Vec2[]} normals1
+ * @param {Vec2[]} normals2
+ * @returns {{normal:Vec2, overlap:number, index:number} | boolean}
+ */
+export function detectCollision(points1, points2, normals1, normals2) {
+  const coordinateSystems = [...normals1, ...normals2];
+  /**
+   * Return the max and min coordinates of the points in the given space.
+   *
+   * @param {Vec2} normal The vector to project with
+   * @returns {import('./collision').MinMax} The max and min values
+   */
+  const getMinMaxes1 = (normal) => minMaxOfArray(points1.map((p) => Vec2.dot(p, normal)));
+  /**
+   * Return the max and min coordinates of the points in the given space.
+   *
+   * @param {Vec2} normal The vector to project with
+   * @returns {import('./collision').MinMax} The max and min values
+   */
+  const getMinMaxes2 = (normal) => minMaxOfArray(points2.map((p) => Vec2.dot(p, normal)));
+  /** @type {MinMax[]} */
+  const overlaps = [];
+  if (coordinateSystems.some((s) => {
+    const currMinMax1 = getMinMaxes1(s);
+    const currMinMax2 = getMinMaxes2(s);
+    const overlap = findOverlap(currMinMax1, currMinMax2);
+    overlaps.push(overlap);
+    if (overlap.max < overlap.min) return true;
+    return false;
+  })) return false;
+
+  const overlapSizes = overlaps.map((overlap) => overlap.size());
+  let smallestOverlap = overlapSizes[0];
+  let index = 0;
+  for (let i = 1; i < overlapSizes.length; i += 1) {
+    if (smallestOverlap > overlapSizes[i]) {
+      smallestOverlap = overlapSizes[i];
+      index = i;
+    }
+  }
+
+  const n = coordinateSystems[index];
+  return {
+    normal: n,
+    overlap: smallestOverlap,
+    index,
+  };
+}

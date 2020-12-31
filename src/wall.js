@@ -1,7 +1,7 @@
 import Vec2 from './vec2';
 import LineSegment from './linesegment';
 import Ball from './ball';
-import { collisionResponseWithWall } from './collision';
+import { collisionResponseWithWall, MinMax, minMaxOfArray } from './collision';
 
 /**
  * An object representation of the Wall class for easy conversion to JSON.
@@ -39,6 +39,9 @@ class Wall {
     }
     this.boundRadius = 1;
     this.calculateCenterAndRadius();
+    this.boundsX = new MinMax(0, 0);
+    this.boundsY = new MinMax(0, 0);
+    this.calculateBoundingBox();
 
     sum1 += angle;
     sum2 += Math.PI * 2 - angle;
@@ -63,10 +66,16 @@ class Wall {
     this.points = temp;
   }
 
+  calculateBoundingBox() {
+    this.boundsX = minMaxOfArray(this.points.map((p) => p.x));
+    this.boundsY = minMaxOfArray(this.points.map((p) => p.y));
+  }
+
   /**
    * Function for collision detection and behavior between balls and walls
    *
    * @param {Ball} ball The ball that is checked if it collides with the wall
+   * @returns {import('./physics').CollisionData | undefined} The collision data
    */
   collideWithBall(ball) {
     /** @type {Vec2 | undefined} */
@@ -103,8 +112,23 @@ class Wall {
         n.mult(-1);
         b.pos = Vec2.add(cp, Vec2.mult(n, -ball.r));
         collisionResponseWithWall(b, cp, n);
+        return { cp, n };
       }
     }
+  }
+
+  /**
+   * Returns the normals of all the sides of the body's polygon.
+   *
+   * @returns {Vec2[]} The normals
+   */
+  get normals() {
+    return this.sides.map((s) => {
+      const v = Vec2.sub(s.b, s.a);
+      v.setMag(1);
+      v.rotate270();
+      return v;
+    });
   }
 
   /**

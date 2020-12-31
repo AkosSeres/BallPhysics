@@ -1,8 +1,11 @@
+/* eslint-disable consistent-return */
 import Vec2 from './vec2';
 import LineSegment from './linesegment';
 import Ball from './ball';
 import Wall from './wall';
-import { collisionResponse, collisionResponseWithWall } from './collision';
+import {
+  collisionResponse, collisionResponseWithWall, detectCollision, findOverlap, MinMax, minMaxOfArray,
+} from './collision';
 
 /**
  * An object representation of the Body class for easy conversion to JSON.
@@ -70,6 +73,9 @@ class Body {
     this.m = 1;
     this.am = 1;
     this.boundRadius = 1;
+    this.boundsX = new MinMax(0, 0);
+    this.boundsY = new MinMax(0, 0);
+    this.recalculateBoundingBox();
     this.calculatePosAndMass();
     this.lastPos = this.pos.copy;
     this.fc = 0.4;
@@ -138,6 +144,15 @@ class Body {
       p.x += x;
       p.y += y;
     });
+    this.boundsX.min += x;
+    this.boundsX.max += x;
+    this.boundsY.min += y;
+    this.boundsY.max += y;
+  }
+
+  recalculateBoundingBox() {
+    this.boundsX = minMaxOfArray(this.points.map((p) => p.x));
+    this.boundsY = minMaxOfArray(this.points.map((p) => p.y));
   }
 
   /**
@@ -145,6 +160,7 @@ class Body {
    * collision behavior between the body and ball
    *
    * @param {Ball} ball The ball to collide with the body
+   * @returns {import('./physics').CollisionData | undefined} The collision data
    */
   collideWithBall(ball) {
     let heading;
@@ -218,6 +234,7 @@ class Body {
       n.setMag(-1);
       // Calculate collsion response
       collisionResponse(this, ball, cp, n);
+      return { cp, n };
     }
   }
 
@@ -466,6 +483,7 @@ class Body {
       point.add(this.pos);
     });
     this.rotation += angle;
+    this.recalculateBoundingBox();
   }
 
   /**
@@ -498,300 +516,175 @@ class Body {
   /**
    * Does the collision algorithm between two bodies
    *
-   * @param {Body} b1 First body
-   * @param {Body} b2 Second body
+   * @param {Body} body1 First body
+   * @param {Body} body2 Second body
+   * @returns {import('./physics').CollisionData | undefined} The collision data
    */
-  static collide(b1, b2) {
-    let matches = 0;
-    let heading = 0;
-    const cp = new Vec2(0, 0);
-    /** @type {Vec2[]} */
-    const cps = [];
-    let intersect = false;
-    const body1 = b1;
-    const body2 = b2;
-    b1.points.forEach((p, idx) => {
-      const side1 = new LineSegment(
-        new Vec2(p.x, p.y),
-        new Vec2(
-          b1.points[(idx + 1) % b1.points.length].x,
-          b1.points[(idx + 1) % b1.points.length].y,
-        ),
-      );
-      b2.points.forEach((pp, idxx) => {
-        const side2 = new LineSegment(
-          new Vec2(pp.x, pp.y),
-          new Vec2(
-            b2.points[(idxx + 1) % b2.points.length].x,
-            b2.points[(idxx + 1) % b2.points.length].y,
-          ),
-        );
-        const sect = LineSegment.intersect(side1, side2);
-        if (sect instanceof Vec2) {
-          matches += 1;
-          cp.add(sect);
-          cps.push(sect);
-          intersect = true;
-        }
-      });
+  static collide(body1, body2) {
+    const b1 = body1;
+    const b2 = body2;
+
+    const coordinateSystems = b1.normals.concat(b2.normals);
+    const minMaxes1 = coordinateSystems.map(
+      (normal) => minMaxOfArray(b1.points.map((p) => Vec2.dot(p, normal))),
+    );
+    const minMaxes2 = coordinateSystems.map(
+      (normal) => minMaxOfArray(b2.points.map((p) => Vec2.dot(p, normal))),
+    );
+
+    const overlaps = coordinateSystems.map((s, i) => findOverlap(minMaxes1[i], minMaxes2[i]));
+    const overlapSizes = overlaps.map((overlap) => (overlap.max - overlap.min));
+    if (overlapSizes.some((size) => (size < 0))) return;
+
+    let smallestOverlap = Number.MAX_VALUE;
+    let index = 0;
+    overlapSizes.forEach((size, idx) => {
+      if (size < smallestOverlap) {
+        smallestOverlap = size;
+        index = idx;
+      }
     });
 
-    if (!intersect) return;
-    cp.div(matches);
+    /** @type {Body} */
+    let guest;
+    let owner;
+    const n = coordinateSystems[index];
+    if (Vec2.dot(Vec2.sub(b1.pos, b2.pos), n) > 0) n.mult(-1);
+    const toMove1 = Vec2.mult(n, -(smallestOverlap * b1.m) / (b1.m + b2.m));
+    const toMove2 = Vec2.mult(n, (smallestOverlap * b2.m) / (b1.m + b2.m));
 
-    for (let i = 0; i < Math.floor(matches / 2); i += 1) {
-      heading += Vec2.sub(cps[2 * i + 1], cps[2 * i]).heading;
-    }
-    heading /= matches / 2;
-    heading += Math.PI / 2;
-
-    const a = Vec2.fromAngle(heading);
-
-    const startAng1 = b1.ang;
-    const startVel1 = b1.vel.copy;
-    const startAng2 = b2.ang;
-    const startVel2 = b2.vel.copy;
-
-    let move1Min = 0;
-    let move1Max = 0;
-    let move2Min = 0;
-    let move2Max = 0;
-    b1.points.forEach((point) => {
-      move1Min = Math.min(
-        Vec2.dot(a, Vec2.sub(point, cp)),
-        move1Min,
-      );
-      move1Max = Math.max(
-        Vec2.dot(a, Vec2.sub(point, cp)),
-        move1Max,
-      );
-    });
-    b2.points.forEach((point) => {
-      move2Min = Math.min(
-        Vec2.dot(a, Vec2.sub(point, cp)),
-        move2Min,
-      );
-      move2Max = Math.max(
-        Vec2.dot(a, Vec2.sub(point, cp)),
-        move2Max,
-      );
-    });
-    if (Math.abs(move1Min - move2Max) < Math.abs(move2Min - move1Max)) {
-      b1.move(-a.x * move1Min, -a.y * move1Min);
-      b2.move(-a.x * move2Max, -a.y * move2Max);
+    if (index < b1.points.length) {
+      guest = b2;
+      owner = b1;
     } else {
-      b1.move(-a.x * move1Max, -a.y * move1Max);
-      b2.move(-a.x * move2Min, -a.y * move2Min);
+      guest = b1;
+      owner = b2;
     }
+    b1.move(toMove1.x, toMove1.y);
+    b2.move(toMove2.x, toMove2.y);
 
-    const collisionPoints = cps;
+    const d = Vec2.sub(guest.pos, owner.pos);
+    let projected;
+    if (Vec2.dot(d, n) >= 0) {
+      projected = guest.points.map((p) => Vec2.dot(p, n));
+    } else {
+      const negN = Vec2.mult(n, -1);
+      projected = guest.points.map((p) => Vec2.dot(p, negN));
+    }
+    const cp = guest.points[projected.indexOf(Math.min(...projected))];
+    const vel1InPos = b1.velInPlace(cp);
+    const vel2InPos = b2.velInPlace(cp);
+    if (Vec2.dot(vel1InPos, n) < Vec2.dot(vel2InPos, n)) return;
 
-    /** @type {number[]} */
-    const endAngs1 = [];
-    /** @type {number[]} */
-    const endAngs2 = [];
-    /** @type {Vec2[]} */
-    const endVels1 = [];
-    /** @type {Vec2[]} */
-    const endVels2 = [];
+    // Calculate collision response
+    n.mult(1);
+    collisionResponse(b1, b2, cp, n);
+    return { n, cp };
+  }
 
-    collisionPoints.forEach((collisionPoint) => {
-      // Calculate collision response
-      collisionResponse(b1, b2, collisionPoint, Vec2.fromAngle(heading));
-
-      // Store calculated values and revert
-      endAngs1.push(b1.ang);
-      endVels1.push(b1.vel);
-      endAngs2.push(b2.ang);
-      endVels2.push(b2.vel);
-
-      body1.ang = startAng1;
-      body1.vel = startVel1;
-      body2.ang = startAng2;
-      body2.vel = startVel2;
+  /**
+   * Returns the normals of all the sides of the body's polygon.
+   *
+   * @returns {Vec2[]} The normals
+   */
+  get normals() {
+    return this.sides.map((s) => {
+      const v = Vec2.sub(s.b, s.a);
+      v.setMag(1);
+      v.rotate270();
+      return v;
     });
-
-    if (endAngs1.length !== endVels1.length) return;
-    if (endAngs1.length === 0) return;
-    if (endVels1.length === 0) return;
-    if (endAngs2.length !== endVels2.length) return;
-    if (endAngs2.length === 0) return;
-    if (endVels2.length === 0) return;
-
-    body1.vel = endVels1.reduce((prev, curr) => Vec2.add(prev, curr));
-    body1.vel.div(endVels1.length);
-    body1.ang = endAngs1.reduce((prev, curr) => prev + curr);
-    body1.ang /= endAngs1.length;
-    body2.vel = endVels2.reduce((prev, curr) => Vec2.add(prev, curr));
-    body2.vel.div(endVels2.length);
-    body2.ang = endAngs2.reduce((prev, curr) => prev + curr);
-    body2.ang /= endAngs2.length;
   }
 
   /**
    * Detects and reacts to collision with a fixedBall
    *
    * @param {import('./physics').FixedBall} fixedBall The fixedBall to take the collision with
+   * @returns {import('./physics').CollisionData | undefined} The collision data
    */
   collideWithFixedBall(fixedBall) {
-    const fbPos = new Vec2(fixedBall.x, fixedBall.y);
-    let collisionPoint;
+    /** @type {Vec2 | undefined} */
+    let cp;
+    /** @type {Vec2 | undefined} */
+    let n;
+    const b = fixedBall;
 
-    if (Vec2.dist(fbPos, this.pos) > this.boundRadius + fixedBall.r) return;
-
-    // Detect collision with sides
-    this.sides.forEach((side) => {
-      const angle1 = Vec2.angle(Vec2.sub(side.a, side.b), Vec2.sub(fbPos, side.b));
-      const angle2 = Vec2.angle(Vec2.sub(side.b, side.a), Vec2.sub(fbPos, side.a));
-
-      if (angle1 < Math.PI / 2 && angle2 < Math.PI / 2) {
-        const d = side.distFromPoint(fbPos);
-        if (d <= fixedBall.r) {
-          let perp = Vec2.sub(side.a, side.b);
-          perp.rotate(Math.PI / 2);
-          perp.setMag(fixedBall.r * 2);
-          const negPerp = Vec2.mult(perp, -1);
-          const detectorSegment = new LineSegment(
-            Vec2.add(perp, fbPos),
-            Vec2.add(negPerp, fbPos),
-          );
-          collisionPoint = LineSegment.intersect(detectorSegment, side);
-          if (collisionPoint instanceof Vec2) {
-            perp = Vec2.sub(collisionPoint, fbPos);
-            perp.setMag(fixedBall.r - perp.length);
-            this.move(perp.x, perp.y);
-          }
-        }
+    const onSide = this.points.some((point, idx) => {
+      const bp = Vec2.sub(b, point);
+      if (bp.sqlength <= b.r * b.r) {
+        cp = point;
+        n = bp;
       }
+      const np = this.points[(idx + 1) % this.points.length].copy;
+      const side = new Vec2(np.x - point.x, np.y - point.y);
+      const sideLenSq = side.sqlength;
+      side.setMag(1);
+      const normal = side.copy;
+      normal.rotate270();
+      const posOnLine = Vec2.dot(bp, side);
+      const d = Vec2.dot(bp, normal);
+      if (d >= -b.r && d < b.r && posOnLine >= 0
+        && posOnLine * posOnLine <= sideLenSq) {
+        cp = Vec2.add(point, Vec2.mult(side, posOnLine));
+        n = normal;
+        return true;
+      }
+      return false;
     });
-
-    // Detect collison with points
-    if (!collisionPoint || collisionPoint === undefined) {
-      this.points.forEach((point) => {
-        if (Vec2.dist(point, fbPos) < fixedBall.r) {
-          const d = Vec2.sub(point, fbPos);
-          d.setMag(fixedBall.r - d.length);
-          this.move(d.x, d.y);
-          d.setMag(fixedBall.r);
-          collisionPoint = Vec2.add(fbPos, d);
-        }
-      });
+    if (typeof n !== 'undefined') {
+      if (!onSide) n.setMag(1);
+      if (typeof cp !== 'undefined') {
+        const toMoveAmount = Vec2.sub(cp, b).length - b.r;
+        const toMove = Vec2.mult(n, toMoveAmount);
+        this.move(toMove.x, toMove.y);
+        collisionResponseWithWall(this, cp, n);
+        return {cp, n};
+      }
     }
-
-    if (!collisionPoint || collisionPoint === undefined) return;
-
-    // Deal with the change in velocity by the collision
-    const n = Vec2.sub(collisionPoint, fbPos);
-    n.setMag(1);
-    collisionResponseWithWall(this, collisionPoint, n);
   }
 
   /**
-   * Does a collision with a wall
+   * Does a collision with a wall.
    *
    * @param {Wall} wall The wall to collide with
+   * @returns {import('./physics').CollisionData | undefined} Collision data
    */
   collideWithWall(wall) {
-    if (
-      this.boundRadius + wall.boundRadius
-      < Vec2.dist(this.pos, wall.center)
-    ) {
-      return;
-    }
+    const xOverlap = findOverlap(this.boundsX, wall.boundsX);
+    const yOverlap = findOverlap(this.boundsY, wall.boundsY);
+    if (xOverlap.size() <= 0 || yOverlap.size() <= 0) return;
 
-    const { sides } = this;
+    const data = detectCollision(this.points, wall.points, this.normals, wall.normals);
+    if (typeof data !== 'boolean') {
+      const { normal, overlap, index } = data;
+      if (Vec2.dot(Vec2.sub(this.pos, wall.center), normal) < 0) normal.mult(-1);
+      const toMove = Vec2.mult(normal, overlap);
+      /** @type {Wall|Body} */
+      let guest;
+      let d;
 
-    /** @type {Vec2[]} */
-    const collisionPoints = [];
-    sides.forEach((bodySide) => {
-      wall.sides.forEach((wallSide) => {
-        const collisionPoint = LineSegment.intersect(bodySide, wallSide);
-        if (collisionPoint instanceof Vec2) {
-          collisionPoints.push(collisionPoint);
-        }
-      });
-    });
-
-    const startingVel = this.vel.copy;
-    const startingAng = this.ang;
-
-    /** @type {Vec2[]} */
-    const endVels = [];
-    /** @type {number[]} */
-    const endAngs = [];
-
-    // Need to adjust the position of the Body
-    if (collisionPoints.length >= 2) {
-      const normal = Vec2.sub(collisionPoints[0], collisionPoints[1]);
-      normal.rotate(Math.PI / 2);
-
-      const r = Vec2.sub(collisionPoints[0], this.pos);
-      if (Vec2.dot(normal, r) > 0) normal.mult(-1);
-      normal.setMag(1);
-      if (Vec2.dot(normal, Vec2.sub(this.pos, wall.center)) < 0) {
-        normal.mult(-1);
+      if (index < this.points.length) {
+        guest = wall;
+        d = Vec2.sub(guest.center, this.pos);
+      } else {
+        guest = this;
+        d = Vec2.sub(this.pos, wall.center);
       }
+      this.move(toMove.x, toMove.y);
 
-      /** @type {number[]} */
-      let moveAmounts = [];
-
-      const cp = collisionPoints[0];
-      wall.points.forEach((p) => {
-        const pointVec = Vec2.sub(p, cp);
-        const dist = Vec2.dot(pointVec, normal);
-        if (dist > 0) {
-          moveAmounts.push(dist);
-        }
-      });
-
-      if (moveAmounts.length > 0) {
-        const moveVector = normal.copy;
-        moveVector.mult(Math.max(...moveAmounts));
-        this.move(moveVector.x, moveVector.y);
+      let projected;
+      if (Vec2.dot(d, normal) >= 0) {
+        projected = guest.points.map((p) => Vec2.dot(p, normal));
+      } else {
+        const negN = Vec2.mult(normal, -1);
+        projected = guest.points.map((p) => Vec2.dot(p, negN));
       }
+      const cp = guest.points[projected.indexOf(Math.min(...projected))];
+      const velInPos = this.velInPlace(cp);
+      if (Vec2.dot(velInPos, normal) > 0) return;
 
-      moveAmounts = [];
-      const midCp = Vec2.add(collisionPoints[0], collisionPoints[1]);
-      midCp.div(2);
-      if (this.containsPoint(midCp)) {
-        sides.forEach((side) => {
-          moveAmounts.push(side.distFromPoint(midCp));
-        });
-      }
-
-      if (moveAmounts.length > 0) {
-        const moveVector = normal.copy;
-        moveVector.mult(Math.min(...moveAmounts));
-        if (moveVector.length < this.boundRadius / 2) {
-          this.move(moveVector.x, moveVector.y);
-        }
-      }
-
-      collisionPoints.forEach((collisionPoint) => {
-        // Calculate post-collision velocities
-        collisionResponseWithWall(this, collisionPoint, normal);
-
-        endVels.push(this.vel);
-        this.vel = startingVel.copy;
-        endAngs.push(this.ang);
-        this.ang = startingAng;
-      });
-
-      if (endAngs.length !== endVels.length) return;
-      if (endAngs.length === 0) return;
-      if (endVels.length === 0) return;
-
-      this.vel = endVels.reduce((prev, curr) => Vec2.add(prev, curr));
-      this.vel.div(endVels.length);
-      this.ang = endAngs.reduce((prev, curr) => prev + curr);
-      this.ang /= endAngs.length;
-
-      if (!Number.isFinite(this.vel.x)
-        || !Number.isFinite(this.vel.y)
-        || !Number.isFinite(this.ang)) {
-        this.vel = startingVel;
-        this.ang = startingAng;
-      }
+      collisionResponseWithWall(this, cp, normal);
+      return { n: normal, cp };
     }
   }
 

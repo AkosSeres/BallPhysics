@@ -150,6 +150,7 @@ class Ball {
    *
    * @param {Ball} ball1 First ball
    * @param {Ball} ball2 Second ball
+   * @returns {import('./physics').CollisionData | undefined} The collision data
    */
   static collide(ball1, ball2) {
     if (!ball1.collided(ball2)) return;
@@ -181,6 +182,7 @@ class Ball {
     // Collision point
     const cp = Vec2.add(ball1.pos, Vec2.mult(d, ball1.r));
     collisionResponse(ball1, ball2, cp, d);
+    return { cp, n: d };
   }
 
   /**
