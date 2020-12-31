@@ -604,15 +604,18 @@ class Physics {
       x, y, pinPoint: true,
     };
     const v = new Vec2(x, y);
-    this.balls.forEach((ball) => {
-      if (ball.containsPoint(v)) ret = ball;
-    });
-    this.bodies.forEach((body) => {
-      if (body.containsPoint(v)) ret = body;
-    });
-    this.walls.forEach((wall) => {
-      if (wall.containsPoint(v)) ret = wall;
-    });
+    if (this.balls.some((ball) => {
+      if (ball.containsPoint(v)) { ret = ball; return true; }
+      return false;
+    })) return ret;
+    if (this.bodies.some((body) => {
+      if (body.containsPoint(v)) { ret = body; return true; }
+      return false;
+    })) return ret;
+    if (this.walls.some((wall) => {
+      if (wall.containsPoint(v)) { ret = wall; return true; }
+      return false;
+    })) return ret;
     this.fixedBalls.forEach((e) => {
       if (Vec2.dist(new Vec2(e.x, e.y), new Vec2(x, y)) <= e.r) ret = e;
     });

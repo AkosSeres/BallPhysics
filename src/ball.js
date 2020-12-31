@@ -182,6 +182,7 @@ class Ball {
     // Collision point
     const cp = Vec2.add(ball1.pos, Vec2.mult(d, ball1.r));
     collisionResponse(ball1, ball2, cp, d);
+    // eslint-disable-next-line consistent-return
     return { cp, n: d };
   }
 

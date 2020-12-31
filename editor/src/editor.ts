@@ -68,6 +68,8 @@ class Editor implements EditorInterface {
 
   sidebar: HTMLElement;
 
+  drawCollisions: boolean;
+
   constructor() {
     this.physics = new Physics();
     this.mouseX = 0;
@@ -86,6 +88,7 @@ class Editor implements EditorInterface {
     this.timeMultiplier = 1;
     this.lastFrameTime = performance.now();
     this.choosed = false;
+    this.drawCollisions = false;
 
     this.left = false;
     this.right = false;
@@ -189,8 +192,8 @@ class Editor implements EditorInterface {
     ctx.restore();
 
     if (this.physics.balls[0]) {
-      if (this.right) this.physics.balls[0].ang -= Math.PI * 100 * elapsedTime;
-      if (this.left) this.physics.balls[0].ang += Math.PI * 100 * elapsedTime;
+      if (this.left) this.physics.balls[0].ang -= Math.PI * 100 * elapsedTime;
+      if (this.right) this.physics.balls[0].ang += Math.PI * 100 * elapsedTime;
     }
 
     elapsedTime *= this.timeMultiplier;
@@ -513,15 +516,17 @@ class Editor implements EditorInterface {
       ctx.fillStyle = palette.pink;
       ctx.strokeStyle = palette.pink;
       ctx.lineWidth = 4;
-      this.physics.collisionData.forEach((cd) => {
-        ctx.beginPath();
-        ctx.moveTo(cd.cp.x, cd.cp.y);
-        ctx.lineTo(cd.cp.x + cd.n.x * 30, cd.cp.y + cd.n.y * 30);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(cd.cp.x, cd.cp.y, 4, 0, Math.PI * 2);
-        ctx.fill();
-      });
+      if (this.drawCollisions) {
+        this.physics.collisionData.forEach((cd) => {
+          ctx.beginPath();
+          ctx.moveTo(cd.cp.x, cd.cp.y);
+          ctx.lineTo(cd.cp.x + cd.n.x * 30, cd.cp.y + cd.n.y * 30);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(cd.cp.x, cd.cp.y, 4, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
     }
   };
 
@@ -611,6 +616,7 @@ class Editor implements EditorInterface {
       button.classList.add('fix-width');
       button.id = `${modeName}-btn`;
       button.textContent = modes[i].name;
+      modes[i].init?.(this);
       button.onclick = this.modeButtonClicked;
       if (buttonHolder) buttonHolder.appendChild(button);
     });

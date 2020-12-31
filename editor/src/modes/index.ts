@@ -8,8 +8,9 @@ import SoftSquareCreatorMode from './softsquarecreator';
 import SpringCreatorMode from './springcreator';
 import StickCreatorMode from './stickcreator';
 import WallDrawerMode from './walldrawer';
+import WorldSettingsMode from './worldsettings';
 
 export default [BallCreatorMode, RectangleMode, WallDrawerMode,
   StickCreatorMode, SpringCreatorMode, MoveMode, ElasticBallCreatorMode,
-  SoftSquareCreatorMode, DeleteMode, RectangleBodyMode,
+  SoftSquareCreatorMode, DeleteMode, RectangleBodyMode, WorldSettingsMode,
 ];

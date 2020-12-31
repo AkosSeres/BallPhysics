@@ -14,7 +14,8 @@ interface Mode {
   keyGotDownFunc?(editorApp: EditorInterface): void,
   activated?(editorApp: EditorInterface):void,
   deactivated?(editorApp: EditorInterface):void,
-  alwaysUpdate?(editorApp:EditorInterface, dt:number):void
+  alwaysUpdate?(editorApp:EditorInterface, dt:number):void,
+  init?(editorApp:EditorInterface):void,
 }
 
 export default Mode;

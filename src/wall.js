@@ -77,6 +77,7 @@ class Wall {
    * @param {Ball} ball The ball that is checked if it collides with the wall
    * @returns {import('./physics').CollisionData | undefined} The collision data
    */
+  // eslint-disable-next-line consistent-return
   collideWithBall(ball) {
     /** @type {Vec2 | undefined} */
     let cp;

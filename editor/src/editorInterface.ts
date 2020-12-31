@@ -11,6 +11,7 @@ interface EditorInterface {
   timeMultiplier: number;
   choosed: AnyPhysicsObject|boolean;
   cnv: HTMLCanvasElement;
+  drawCollisions: boolean;
 }
 
 export default EditorInterface;

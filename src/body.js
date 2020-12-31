@@ -638,7 +638,7 @@ class Body {
         const toMove = Vec2.mult(n, toMoveAmount);
         this.move(toMove.x, toMove.y);
         collisionResponseWithWall(this, cp, n);
-        return {cp, n};
+        return { cp, n };
       }
     }
   }
@@ -700,13 +700,12 @@ class Body {
       ...this.points.map((point) => Vec2.dist(point, p)),
     ) + 1;
 
-    const v = Vec2.fromAngle(0);
-    v.setMag(r);
+    const v = new Vec2(r, 0);
 
     const testerSegment = new LineSegment(p, Vec2.add(v, p));
 
     const filtered = sides
-      .filter((side) => LineSegment.intersect(side, testerSegment) !== undefined);
+      .filter((side) => LineSegment.intersect(side, testerSegment) instanceof Object);
     return filtered.length % 2 === 1;
   }
 
