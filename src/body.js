@@ -3,6 +3,7 @@ import Vec2 from './vec2';
 import LineSegment from './linesegment';
 import Ball from './ball';
 import Wall from './wall';
+import Line from './line';
 import {
   collisionResponse, collisionResponseWithWall, detectCollision, findOverlap, MinMax, minMaxOfArray,
 } from './collision';
@@ -462,7 +463,7 @@ class Body {
 
     // calculating the moment of inertia finally
     poligons.forEach((pol) => {
-      const a = Math.sqrt(
+      let a = Math.sqrt(
         ((pol[0].x - pol[1].x) ** 2) + ((pol[0].y - pol[1].y) ** 2),
       );
       const b = Math.sqrt(
@@ -471,21 +472,21 @@ class Body {
       const c = Math.sqrt(
         ((pol[2].x - pol[0].x) ** 2) + ((pol[2].y - pol[0].y) ** 2),
       );
-      const w = Math.max(a, b, c);
       const s = (a + b + c) / 2;
       const m = Math.sqrt(s * (s - a) * (s - b) * (s - c));
-      const h = (2 * m) / w;
-      const wpartial = Math.sqrt(Math.min(a, c, b) ** 2 - h * h);
-      let am = (h * w * (h * h + w * w)) / 24;
-      const d = Math.sqrt((h * h) / 36 + (Math.abs(wpartial - w / 2) / 3) ** 2);
-      am -= d * d * m;
+      const bLine = new Line(pol[1], pol[2]);
+      const h = bLine.distFromPoint(pol[0]);
+      const nVec = Vec2.sub(pol[2], pol[1]);
+      nVec.rotate90();
+      nVec.add(pol[1]);
+      const nLine = new Line(pol[1], nVec);
+      a = nLine.distFromPoint(pol[0]);
+      let am = ((b * b * b * h) - (b * b * h * a) + (b * h * a * a) + (b * h * h * h)) / 36;
       am
-        += new Vec2(
+        += ((new Vec2(
           (pol[0].x + pol[1].x + pol[2].x) / 3,
           (pol[0].y + pol[1].y + pol[2].y) / 3,
-        ).dist(this.pos)
-        ** 2
-        * m;
+        ).dist(this.pos) ** 2) * m);
       amSum += am;
     });
     this.am = amSum;

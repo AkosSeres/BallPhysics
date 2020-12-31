@@ -40,7 +40,7 @@ class Ball {
     this.lastPos = this.pos.copy;
     this.r = r;
     this.fc = 0.4;
-    this.amc = 2 / 5;
+    this.amc = 0.5;
     this.density = 1;
 
     this.rotation = 0;
