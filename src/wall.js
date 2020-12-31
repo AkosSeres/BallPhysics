@@ -3,6 +3,8 @@ import LineSegment from './linesegment';
 import Ball from './ball';
 import { collisionResponseWithWall, MinMax, minMaxOfArray } from './collision';
 
+const MAX_AXES = 15;
+
 /**
  * An object representation of the Wall class for easy conversion to JSON.
  *
@@ -42,6 +44,9 @@ class Wall {
     this.boundsX = new MinMax(0, 0);
     this.boundsY = new MinMax(0, 0);
     this.calculateBoundingBox();
+    /** @type {Vec2[]} */
+    this.axes = [];
+    this.calculateAxes();
 
     sum1 += angle;
     sum2 += Math.PI * 2 - angle;
@@ -66,9 +71,33 @@ class Wall {
     this.points = temp;
   }
 
+  /**
+   * Calculates the bounding box of the wall and stores it.
+   */
   calculateBoundingBox() {
     this.boundsX = minMaxOfArray(this.points.map((p) => p.x));
     this.boundsY = minMaxOfArray(this.points.map((p) => p.y));
+  }
+
+  /**
+   * Calculates the axes of the wall. Removes duplicates and too dense areas.
+   */
+  calculateAxes() {
+    const maxCos = Math.cos(Math.PI / MAX_AXES);
+
+    this.axes = this.normals.map((n) => new Vec2(n.x, Math.abs(n.y)));
+    for (let i = this.axes.length - 2; i >= 0; i -= 1) {
+      for (let j = this.axes.length - 1; j > i; j -= 1) {
+        const v1 = this.axes[j];
+        const v2 = this.axes[i];
+        if (Vec2.dot(v1, v2) > maxCos) {
+          const newV = Vec2.add(v1, v2);
+          newV.normalize();
+          this.axes.splice(j, 1);
+          this.axes[i] = newV;
+        }
+      }
+    }
   }
 
   /**

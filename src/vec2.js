@@ -31,6 +31,17 @@ class Vec2 {
   }
 
   /**
+   * Sets the coordinates to the given ones.
+   *
+   * @param {number} x The new x coordinate.
+   * @param {number} y The new y coordinate.
+   */
+  setCoordinates(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  /**
    * Get the length of the vector.
    *
    * @returns {number} The length.
@@ -139,16 +150,36 @@ class Vec2 {
   }
 
   /**
+   * Normalizes the vector.
+   */
+  normalize() {
+    if (this.length === 0) return;
+    this.div(this.length);
+  }
+
+  /**
    * Rotate the vector anticlockwise.
    *
    * @param {number} angle Rotation angle in radians
    */
   rotate(angle) {
-    const h = this.heading;
-    const v = Vec2.fromAngle(angle + h);
-    v.mult(this.length);
-    this.x = v.x;
-    this.y = v.y;
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+    this.setCoordinates(this.x * cosA - this.y * sinA, this.x * sinA + this.y * cosA);
+  }
+
+  /**
+   * Rotates all the vectors in a given array.
+   *
+   * @param {Vec2[]} vArr The array containing the vectors
+   * @param {number} angle The angle to rotate with
+   */
+  static rotateArr(vArr, angle) {
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+    vArr.forEach((v) => {
+      v.setCoordinates(v.x * cosA - v.y * sinA, v.x * sinA + v.y * cosA);
+    });
   }
 
   /**

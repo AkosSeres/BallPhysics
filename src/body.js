@@ -7,6 +7,8 @@ import {
   collisionResponse, collisionResponseWithWall, detectCollision, findOverlap, MinMax, minMaxOfArray,
 } from './collision';
 
+const MAX_AXES = 15;
+
 /**
  * An object representation of the Body class for easy conversion to JSON.
  *
@@ -75,8 +77,13 @@ class Body {
     this.boundRadius = 1;
     this.boundsX = new MinMax(0, 0);
     this.boundsY = new MinMax(0, 0);
+    /** @type {Vec2[]} */
+    this.defaultAxes = [];
+    /** @type {Vec2[]} */
+    this.axes = [];
     this.recalculateBoundingBox();
     this.calculatePosAndMass();
+    this.calculateAxes();
     this.lastPos = this.pos.copy;
     this.fc = 0.4;
 
@@ -99,7 +106,29 @@ class Body {
   }
 
   /**
-   * Gives the angular mass of the body measured in a given point
+   * Calculates the axes of the body. Removes duplicates and too dense areas.
+   */
+  calculateAxes() {
+    const maxCos = Math.cos(Math.PI / MAX_AXES);
+
+    this.defaultAxes = this.normals.map((n) => new Vec2(n.x, Math.abs(n.y)));
+    for (let i = this.defaultAxes.length - 2; i >= 0; i -= 1) {
+      for (let j = this.defaultAxes.length - 1; j > i; j -= 1) {
+        const v1 = this.defaultAxes[j];
+        const v2 = this.defaultAxes[i];
+        if (Vec2.dot(v1, v2) > maxCos) {
+          const newV = Vec2.add(v1, v2);
+          newV.normalize();
+          this.defaultAxes.splice(j, 1);
+          this.defaultAxes[i] = newV;
+        }
+      }
+    }
+    this.axes = this.defaultAxes.map((a) => a.copy);
+  }
+
+  /**
+   * Gives the angular mass of the body measured in a given point.
    *
    * @param {Vec2} point The point to measure the angular mass ins
    * @returns {number} The adjusted angular mass
@@ -189,9 +218,6 @@ class Body {
         );
 
         cp = new Vec2(point.x, point.y);
-
-        const a = Vec2.fromAngle(heading);
-        a.mult(-30);
       }
       p = new Vec2(point.x, point.y);
       const np = new Vec2(
@@ -484,6 +510,7 @@ class Body {
     });
     this.rotation += angle;
     this.recalculateBoundingBox();
+    Vec2.rotateArr(this.axes, angle);
   }
 
   /**
