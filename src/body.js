@@ -551,7 +551,7 @@ class Body {
     const b1 = body1;
     const b2 = body2;
 
-    const coordinateSystems = b1.normals.concat(b2.normals);
+    const coordinateSystems = [...b1.axes, ...b2.axes];
     const minMaxes1 = coordinateSystems.map(
       (normal) => minMaxOfArray(b1.points.map((p) => Vec2.dot(p, normal))),
     );
@@ -580,7 +580,7 @@ class Body {
     const toMove1 = Vec2.mult(n, -(smallestOverlap * b1.m) / (b1.m + b2.m));
     const toMove2 = Vec2.mult(n, (smallestOverlap * b2.m) / (b1.m + b2.m));
 
-    if (index < b1.points.length) {
+    if (index < b1.axes.length) {
       guest = b2;
       owner = b1;
     } else {
@@ -681,7 +681,7 @@ class Body {
     const yOverlap = findOverlap(this.boundsY, wall.boundsY);
     if (xOverlap.size() <= 0 || yOverlap.size() <= 0) return;
 
-    const data = detectCollision(this.points, wall.points, this.normals, wall.normals);
+    const data = detectCollision(this.points, wall.points, this.axes, wall.axes);
     if (typeof data !== 'boolean') {
       const { normal, overlap, index } = data;
       if (Vec2.dot(Vec2.sub(this.pos, wall.center), normal) < 0) normal.mult(-1);
@@ -690,7 +690,7 @@ class Body {
       let guest;
       let d;
 
-      if (index < this.points.length) {
+      if (index < this.axes.length) {
         guest = wall;
         d = Vec2.sub(guest.center, this.pos);
       } else {
