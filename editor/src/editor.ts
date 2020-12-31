@@ -425,12 +425,14 @@ class Editor implements EditorInterface {
         ctx.stroke();
         ctx.fill();
 
-        element.axes.forEach((axe) => {
-          ctx.beginPath();
-          ctx.moveTo(element.pos.x, element.pos.y);
-          ctx.lineTo(element.pos.x + axe.x * 30, element.pos.y + axe.y * 30);
-          ctx.stroke();
-        });
+        if (this.showAxes) {
+          element.axes.forEach((axe) => {
+            ctx.beginPath();
+            ctx.moveTo(element.pos.x, element.pos.y);
+            ctx.lineTo(element.pos.x + axe.x * 30, element.pos.y + axe.y * 30);
+            ctx.stroke();
+          });
+        }
 
         ctx.beginPath();
         ctx.arc(element.pos.x, element.pos.y, 1.5, 0, Math.PI * 2);
