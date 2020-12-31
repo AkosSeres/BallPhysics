@@ -8,7 +8,7 @@ let fc = 0.5;
 const element = document.createElement('div');
 
 const RectangleBodyMode: Mode = {
-  name: 'Rectangle body (experimental)',
+  name: 'Rectangle body',
   description: '',
   element,
   drawFunc(editorApp, dt) {
@@ -23,6 +23,9 @@ const RectangleBodyMode: Mode = {
   startInteractionFunc(editorApp) { },
   endInteractionFunc(editorApp) {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
+      const w = Math.abs(editorApp.mouseX - editorApp.lastX);
+      const h = Math.abs(editorApp.mouseY - editorApp.lastY);
+      if (w / h > 50 || h / w > 50 || h === 0 || w === 0) return;
       editorApp.physics.addRectBody(
         editorApp.lastX / 2 + editorApp.mouseX / 2,
         editorApp.lastY / 2 + editorApp.mouseY / 2,
