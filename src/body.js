@@ -576,7 +576,7 @@ class Body {
     /** @type {Body} */
     let guest;
     let owner;
-    const n = coordinateSystems[index];
+    const n = coordinateSystems[index].copy;
     if (Vec2.dot(Vec2.sub(b1.pos, b2.pos), n) > 0) n.mult(-1);
     const toMove1 = Vec2.mult(n, -(smallestOverlap * b1.m) / (b1.m + b2.m));
     const toMove2 = Vec2.mult(n, (smallestOverlap * b2.m) / (b1.m + b2.m));

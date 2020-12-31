@@ -234,7 +234,7 @@ export function detectCollision(points1, points2, normals1, normals2) {
     }
   }
 
-  const n = coordinateSystems[index];
+  const n = coordinateSystems[index].copy;
   return {
     normal: n,
     overlap: smallestOverlap,
