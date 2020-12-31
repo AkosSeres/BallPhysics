@@ -509,6 +509,19 @@ class Editor implements EditorInterface {
         }
       });
       ctx.restore();
+
+      ctx.fillStyle = palette.pink;
+      ctx.strokeStyle = palette.pink;
+      ctx.lineWidth = 4;
+      this.physics.collisionData.forEach((cd) => {
+        ctx.beginPath();
+        ctx.moveTo(cd.cp.x, cd.cp.y);
+        ctx.lineTo(cd.cp.x + cd.n.x * 30, cd.cp.y + cd.n.y * 30);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cd.cp.x, cd.cp.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
     }
   };
 

@@ -38,6 +38,9 @@ import { collisionResponseWithWall } from './collision';
  *
  * @typedef {import('./spring').SpringAsObject|import('./stick').StickAsObject}StickOrSpringAsObject
  */
+/**
+ * @typedef {{n: Vec2, cp: Vec2}} CollisionData
+ */
 
 /**
  * An object representation of the Phyisics class
@@ -90,6 +93,8 @@ class Physics {
 
     /** @type {boolean} */
     this.addBodyNotBall = false;
+    /** @type {CollisionData[]} */
+    this.collisionData = [];
   }
 
   /**
@@ -100,6 +105,8 @@ class Physics {
    * then the simulation is going to be more precise
    */
   update(t, precise) {
+    this.collisionData = [];
+
     // Do the simulation on the reversed system
     // if the simulation is in precise mode
     const clonedSystem = precise ? this.copy : new Physics();
@@ -144,13 +151,15 @@ class Physics {
           this.balls[i].layer !== this.balls[j].layer
           || (!this.balls[i].layer && !this.balls[j].layer)
         ) {
-          Ball.collide(this.balls[i], this.balls[j]);
+          const cd = Ball.collide(this.balls[i], this.balls[j]);
+          if (cd) this.collisionData.push(cd);
         }
       }
 
       // Collision with walls
       this.walls.forEach((wall) => {
-        wall.collideWithBall(this.balls[i]);
+        const cd = wall.collideWithBall(this.balls[i]);
+        if (cd) this.collisionData.push(cd);
       });
 
       // Collision with fixed balls
@@ -165,42 +174,49 @@ class Physics {
           ball.pos = Vec2.add(b, Vec2.mult(n, ball.r + b.r));
           n.mult(-1);
           collisionResponseWithWall(ball, b, n);
+          this.collisionData.push({ cp: Vec2.fromObject(b), n });
         }
       });
 
       // Bounce off the edges
       this.bounds.forEach((bound) => {
-        bound.collideWithBall(this.balls[i]);
+        const cd = bound.collideWithBall(this.balls[i]);
+        if (cd) this.collisionData.push(cd);
       });
     }
 
     for (let i = 0; i < this.bodies.length; i += 1) {
       this.balls.forEach((ball) => {
-        this.bodies[i].collideWithBall(ball);
+        const cd = this.bodies[i].collideWithBall(ball);
+        if (cd) this.collisionData.push(cd);
       });
 
       for (let j = i + 1; j < this.bodies.length; j += 1) {
-        Body.collide(this.bodies[i], this.bodies[j]);
+        const cd = Body.collide(this.bodies[i], this.bodies[j]);
+        if (cd) this.collisionData.push(cd);
       }
 
       // Body vs fixedBall collisions
       this.bodies.forEach((body) => {
         this.fixedBalls.forEach((fixedBall) => {
-          body.collideWithFixedBall(fixedBall);
+          const cd = body.collideWithFixedBall(fixedBall);
+          if (cd) this.collisionData.push(cd);
         });
       });
 
       // Body vs wall collisions
       this.bodies.forEach((body) => {
         this.walls.forEach((wall) => {
-          body.collideWithWall(wall);
+          const cd = body.collideWithWall(wall);
+          if (cd) this.collisionData.push(cd);
         });
       });
 
       // Body vs world boundary collision
       this.bodies.forEach((body) => {
         this.bounds.forEach((bound) => {
-          body.collideWithWall(bound);
+          const cd = body.collideWithWall(bound);
+          if (cd) this.collisionData.push(cd);
         });
       });
 
