@@ -1,5 +1,5 @@
 # BallsPhysics
-Physics simulation on balls and a sandbox editor for it!
+2D JavaScript physics engine and a sandbox editor for it!
 
 [Try out the editor!](https://akosseres.github.io/BallPhysics)
 
