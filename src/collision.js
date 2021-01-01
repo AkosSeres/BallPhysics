@@ -1,7 +1,4 @@
 import Vec2 from './vec2';
-import Body from './body';
-import LineSegment from './linesegment';
-import Line from './line';
 import Polygon from './polygon';
 
 /**
@@ -247,10 +244,16 @@ export function detectCollision(points1, points2, normals1, normals2) {
 }
 
 /**
+ * @callback supportFunction
+ * @param {Vec2} d The direction
+ * @returns {Vec2} The max point
+ */
+
+/**
  * Detect collision using the GJK algorithm.
  *
- * @param {Body} shape1 The first object
- * @param {Body} shape2 The second object
+ * @param {{pos: Vec2, support: supportFunction}} shape1 The first object
+ * @param {{pos: Vec2, support: supportFunction}} shape2 The second object
  * @returns {boolean} Does a collision appear
  */
 export function detectCollisionGJK(shape1, shape2) {

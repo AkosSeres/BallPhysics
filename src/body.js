@@ -137,7 +137,7 @@ class Body {
   support(d) {
     let maxVal = Number.NEGATIVE_INFINITY;
     /** @type {Vec2} */
-    let maxP;
+    let maxP = this.pos;
     this.points.forEach((p) => {
       const dot = Vec2.dot(d, p);
       if (dot > maxVal) {
