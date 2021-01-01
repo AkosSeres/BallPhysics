@@ -7,8 +7,8 @@ class LineSegment {
   /**
    * Create a segment
    *
-   * @param {Vec2|import('./vec2').Vec2AsObject} a_ Starting point
-   * @param {Vec2|import('./vec2').Vec2AsObject} b_ Ending point
+   * @param {Vec2} a_ Starting point
+   * @param {Vec2} b_ Ending point
    */
   constructor(a_, b_) {
     this.a = a_;
@@ -46,6 +46,20 @@ class LineSegment {
     if (alpha > Math.PI / 2) return b;
     if (betha > Math.PI / 2) return a;
     return m;
+  }
+
+  /**
+   * Returns the nearest point to the origin on the segment.
+   *
+   * @returns {Vec2} The nearest point to the origin
+   */
+  get nearestPointO() {
+    const v = Vec2.sub(this.b, this.a);
+    if (Vec2.dot(this.a, v) >= 0) return this.a.copy;
+    if (Vec2.dot(this.b, v) <= 0) return this.b.copy;
+    v.normalize();
+    const coord = -Vec2.dot(this.a, v);
+    return Vec2.add(this.a, Vec2.mult(v, coord));
   }
 
   /**

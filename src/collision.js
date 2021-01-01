@@ -1,4 +1,8 @@
 import Vec2 from './vec2';
+import Body from './body';
+import LineSegment from './linesegment';
+import Line from './line';
+import Polygon from './polygon';
 
 /**
  * Calculates the collsion response when any two physical objects
@@ -189,13 +193,13 @@ export function findOverlap(interval1, interval2) {
 }
 
 /**
- * Detects the collision and returns collision normal.
+ * Detects the collision and returns collision data.
  *
- * @param {Vec2[]} points1
- * @param {Vec2[]} points2
- * @param {Vec2[]} normals1
- * @param {Vec2[]} normals2
- * @returns {{normal:Vec2, overlap:number, index:number} | boolean}
+ * @param {Vec2[]} points1 The first shape
+ * @param {Vec2[]} points2 The other shape
+ * @param {Vec2[]} normals1 The axes of the first shape
+ * @param {Vec2[]} normals2 The axes of the other shape
+ * @returns {{normal:Vec2, overlap:number, index:number} | boolean} Collision data
  */
 export function detectCollision(points1, points2, normals1, normals2) {
   const coordinateSystems = [...normals1, ...normals2];
@@ -240,4 +244,35 @@ export function detectCollision(points1, points2, normals1, normals2) {
     overlap: smallestOverlap,
     index,
   };
+}
+
+/**
+ * Detect collision using the GJK algorithm.
+ *
+ * @param {Body} shape1 The first object
+ * @param {Body} shape2 The second object
+ * @returns {boolean} Does a collision appear
+ */
+export function detectCollisionGJK(shape1, shape2) {
+  const initial = Vec2.sub(shape2.pos, shape1.pos);
+  let sup1 = shape1.support(initial);
+  initial.mult(-1);
+  let sup2 = shape1.support(initial);
+  const points = [Vec2.sub(sup1, sup2)];
+  let D = Vec2.sub(sup2, sup1);
+
+  sup1 = shape1.support(D);
+  D.mult(-1);
+  sup2 = shape2.support(D);
+  if ((-Vec2.dot(Vec2.sub(sup1, sup2), D)) < 0) return false;
+  points.push(Vec2.sub(sup1, sup2));
+  if (points[0].length < points[1].length) D = Vec2.mult(points[0], -1);
+  else D = Vec2.mult(points[1], -1);
+  sup1 = shape1.support(D);
+  D.mult(-1);
+  sup2 = shape2.support(D);
+  if ((-Vec2.dot(Vec2.sub(sup1, sup2), D)) < 0) return false;
+  points.push(Vec2.sub(sup1, sup2));
+  const triangle = new Polygon(points);
+  return triangle.isPointInside(new Vec2(0, 0));
 }

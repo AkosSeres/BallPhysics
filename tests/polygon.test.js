@@ -96,7 +96,9 @@ test('flip pentagon points order if it is clockwise', () => {
 });
 
 test('flip points of clockwise order polygon', () => {
-  const points = [...Array(100).keys()].map((num) => Vec2.fromAngle(Math.PI * 2 * num / 100)).reverse();
+  const points = [...Array(100).keys()].map(
+    (num) => Vec2.fromAngle((Math.PI * 2 * num) / 100),
+  ).reverse();
 
   expect(new Polygon(points)).toEqual(new Polygon(points.reverse()));
 });

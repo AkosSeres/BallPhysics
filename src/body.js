@@ -129,6 +129,27 @@ class Body {
   }
 
   /**
+   * Support function for GJK. Returns the point with the biggest dot product with the given vec.
+   *
+   * @param {Vec2} d The direction
+   * @returns {Vec2} The found point.
+   */
+  support(d) {
+    let maxVal = Number.NEGATIVE_INFINITY;
+    /** @type {Vec2} */
+    let maxP;
+    this.points.forEach((p) => {
+      const dot = Vec2.dot(d, p);
+      if (dot > maxVal) {
+        maxVal = dot;
+        maxP = p;
+      }
+    });
+
+    return maxP.copy;
+  }
+
+  /**
    * Gives the angular mass of the body measured in a given point.
    *
    * @param {Vec2} point The point to measure the angular mass ins
