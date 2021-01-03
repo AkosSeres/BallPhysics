@@ -6,7 +6,7 @@ import Vec2 from '../../../src/vec2';
 import Body from '../../../src/body';
 
 let size = 35;
-let k = 0.2;
+let k = 0.5;
 let fc = 0.5;
 let roundness = 4;
 let res = 24;
@@ -75,10 +75,10 @@ const ShapeCreatorMode: Mode = {
   Creator.createSlider('Resolution', 12, 36, res, (event) => {
     res = (<HTMLInputElement>event.target).valueAsNumber;
   }, 1),
-  Creator.createSlider('Bounciness', 0.07, 0.3, k, (event) => {
+  Creator.createSlider('Bounciness', 0.0, 0.9, k, (event) => {
     k = (<HTMLInputElement>event.target).valueAsNumber;
   }, 0.02),
-  Creator.createSlider('Coefficient of friction', 0, 0.6, fc, (event) => {
+  Creator.createSlider('Coefficient of friction', 0, 2, fc, (event) => {
     fc = (<HTMLInputElement>event.target).valueAsNumber;
   }, 0.1),
 ].forEach(element.appendChild.bind(element));

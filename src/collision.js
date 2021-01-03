@@ -72,8 +72,8 @@ export function collisionResponse(object1, object2, contactPoint, normal) {
   maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
 
   // Friction impulse
-  let frictionImpulse = impulse * fc;
-  if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
+  let frictionImpulse = Math.sign(maxImpulse) * impulse * fc;
+  if (Math.abs(frictionImpulse) > Math.abs(maxImpulse)) frictionImpulse = maxImpulse;
 
   // Calculate post-friction velocities
   u1 = Vec2.sub(u1, Vec2.mult(t, frictionImpulse / m1));
@@ -137,8 +137,8 @@ export function collisionResponseWithWall(object, contactPoint, normal) {
   maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
 
   // Friction impulse
-  let frictionImpulse = impulse * b.fc;
-  if (frictionImpulse > maxImpulse) frictionImpulse = maxImpulse;
+  let frictionImpulse = Math.sign(maxImpulse) * impulse * b.fc;
+  if (Math.abs(frictionImpulse) > Math.abs(maxImpulse)) frictionImpulse = maxImpulse;
 
   // Calculate post-friction velocity
   u = Vec2.sub(u, Vec2.mult(t, frictionImpulse / m));
