@@ -53,7 +53,7 @@ const ShapeCreatorMode: Mode = {
   startInteractionFunc(editorApp) { },
   endInteractionFunc(editorApp) {
     const shape = generateUnitSquircle(res, roundness);
-    const mouseVec = new Vec2(editorApp.mouseX, editorApp.mouseY);
+    const mouseVec = new Vec2(editorApp.lastX, editorApp.lastY);
     shape.forEach((p) => { p.mult(size); p.add(mouseVec); });
 
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
