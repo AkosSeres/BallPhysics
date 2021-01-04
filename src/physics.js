@@ -8,7 +8,6 @@ import Polygon from './polygon';
 import Vec2 from './vec2';
 import Spring from './spring';
 import SoftBall from './softball';
-import { stickOrSpringFromObject, stickOrSpringToJSObject } from './stickspringhelpers';
 import { collisionResponseWithWall } from './collision';
 
 /**
@@ -22,6 +21,9 @@ import { collisionResponseWithWall } from './collision';
  * | PinPoint | Spring | Stick} AnyPhysicsObject
  */
 /**
+ * @typedef {{type: "ball" | "body" | "nothing", index: number}} ObjectIndentifier
+ */
+/**
  * Any object that has mass and can be moved freely in the world,
  * aka a {@link Body} or a {@link Ball}.
  *
@@ -32,6 +34,10 @@ import { collisionResponseWithWall } from './collision';
  * A union type representing either a Stick or a Spring object.
  *
  * @typedef {(Spring|Stick)} StickOrSpring
+ */
+/**
+ * @typedef {StickOrSpring[]} StickOrSpringArray
+ * @property {Function} toJSON Function for object serialisation
  */
 /**
  * A union type representing either a StickAsObject or a SpringAsObject type.
@@ -81,7 +87,7 @@ class Physics {
     /** @type {Wall[]} */
     this.bounds = [];
 
-    /** @type {StickOrSpring[]} */
+    /** @type {StickOrSpringArray} */
     this.springs = [];
 
     // Air friction has to be between 0 and 1
@@ -703,98 +709,141 @@ class Physics {
   }
 
   /**
-   * Finds the ball or body with the given id
+   * Finds the object in on of the arrays and returns it's identidier object.
    *
-   * @param {string} id The id of the object to find
-   * @returns {{type:("ball"|"body"|"spring"|""), num:number}} The data of the object
+   * @param {Ball | Body} obj The object to find.
+   * @returns {ObjectIndentifier} The indentifier object.
    */
-  getItemDataFromId(id) {
-    /**
-     * Checks the ID of an element.
-     *
-     * @param {Ball|Body|Spring|Stick} b Entity with ID
-     * @returns {boolean} Tells if it checks.
-     */
-    const filter = (b) => b.id === id;
-
-    const balls = this.balls.filter(filter);
-    if (balls.length >= 1) {
-      return { type: 'ball', num: this.balls.indexOf(balls[0]) };
+  getObjectIdentifier(obj) {
+    if (obj instanceof Ball) {
+      return {
+        type: 'ball',
+        index: this.balls.indexOf(obj),
+      };
     }
-
-    const bodies = this.bodies.filter(filter);
-    if (bodies.length >= 1) {
-      return { type: 'body', num: this.bodies.indexOf(bodies[0]) };
+    if (obj instanceof Body) {
+      return {
+        type: 'body',
+        index: this.bodies.indexOf(obj),
+      };
     }
-
-    const springs = this.springs.filter(filter);
-    if (springs.length >= 1) {
-      return { type: 'spring', num: this.springs.indexOf(springs[0]) };
-    }
-
-    return { type: '', num: -1 };
+    return {
+      type: 'nothing',
+      index: -1,
+    };
   }
 
   /**
-   * @returns {PhysicsAsObject} The physics world represented in a JS object
-   * Ready to be converted into JSON
+   * @returns {PhysicsAsObject} The world represented in a JS object
+   * Ready to be converted into JSON.
    */
-  toJSObject() {
-    const ret = {};
+  toJSON() {
+    /** @type {PhysicsAsObject} */
+    const retObj = {};
 
-    ret.balls = this.balls.map((b) => b.toJSObject());
-    ret.bounds = this.bounds.map((w) => w.toJSObject());
-    ret.walls = this.walls.map((w) => w.toJSObject());
-    ret.bodies = this.bodies.map((b) => b.toJSObject());
-    ret.springs = this.springs.map((s) => stickOrSpringToJSObject(s));
-    ret.softBalls = this.softBalls.map((s) => s.toJSObject());
+    retObj.airFriction = this.airFriction;
+    retObj.gravity = this.gravity.toJSON();
+    retObj.balls = this.balls.map((b) => b.toJSON());
+    retObj.bodies = this.bodies.map((b) => b.toJSON());
+    retObj.bounds = this.bounds.map((b) => b.toJSON());
+    retObj.fixedBalls = this.fixedBalls.map((fb) => ({ ...fb }));
+    retObj.walls = this.walls.map((w) => w.toJSON());
 
-    ret.fixedBalls = this.fixedBalls;
-    ret.airFriction = this.airFriction;
-    ret.gravity = this.gravity.toJSObject();
+    retObj.springs = this.springs.map((spring) => {
+      /** @type {import('./spring').SpringAsObject} */
+      const ret = {};
+      ret.length = spring.length;
+      ret.pinned = spring.pinned;
+      ret.rotationLocked = spring.rotationLocked;
+      ret.springConstant = spring.springConstant;
+      if (spring instanceof Spring) ret.type = 'spring';
+      // @ts-ignore
+      else if (spring instanceof Stick) ret.type = 'stick';
+      ret.objects = spring.objects.map((o) => this.getObjectIdentifier(o));
+      return ret;
+    });
+
+    retObj.softBalls = this.softBalls.map((sb) => {
+      /** @type {import('./softball').SoftBallAsObject} */
+      const ret = {};
+      ret.fc = sb.fc;
+      ret.points = sb.points.map((o) => this.getObjectIdentifier(o));
+      ret.pressure = sb.pressure;
+      ret.r = sb.r;
+      ret.resolution = sb.resolution;
+      ret.sides = sb.sides.map((side) => this.springs.indexOf(side));
+      return ret;
+    });
+
+    return retObj;
+  }
+
+  /**
+   * Creates a Spring or Stick from an object.
+   *
+   * @param {StickOrSpringAsObject} obj The object.
+   * @returns {StickOrSpring} The resulting Stick or Spring.
+   */
+  stickOrSpringFromObject(obj) {
+    /** @type {StickOrSpring} */
+    let ret = {};
+    if (obj.type === 'spring') {
+      ret = new Spring(obj.length, obj.springConstant);
+    } else if (obj.type === 'stick') {
+      ret = new Stick(obj.length);
+    }
+
+    ret.pinned = obj.pinned;
+    ret.rotationLocked = obj.rotationLocked;
+
+    ret.objects = obj.objects.map((o) => {
+      if (o.type === 'ball') return this.balls[o.index];
+      return this.bodies[o.index];
+    });
 
     return ret;
   }
 
   /**
-   * Creates a Physics class from the given object
+   * Creates a SoftBall from an object.
    *
-   * @param {PhysicsAsObject} obj The object to create the class from
-   * @returns {Physics} The Physics object
+   * @param {import('./softball').SoftBallAsObject} obj The object.
+   * @returns {SoftBall} The resulting SoftBall.
+   */
+  softBallFromObject(obj) {
+    /** @type {SoftBall} */
+    const ret = Object.create(SoftBall.prototype);
+
+    ret.fc = obj.fc;
+    ret.pressure = obj.pressure;
+    ret.resolution = obj.resolution;
+    ret.r = obj.r;
+
+    ret.points = obj.points.map((o) => this.balls[o.index]);
+
+    ret.sides = obj.sides.map((s) => this.springs[s]);
+
+    return ret;
+  }
+
+  /**
+   * Creates a new Physics instance from an object.
+   *
+   * @param {PhysicsAsObject} obj The object data.
+   * @returns {Physics} The created world.
    */
   static fromObject(obj) {
-    const newWorld = new Physics();
-
-    newWorld.balls = obj.balls.map((b) => Ball.fromObject(b));
-    newWorld.bounds = obj.bounds.map((b) => Wall.fromObject(b));
-    newWorld.walls = obj.walls.map((w) => Wall.fromObject(w));
-    newWorld.bodies = obj.bodies.map((b) => Body.fromObject(b));
-    newWorld.springs = obj.springs.map((s) => stickOrSpringFromObject(s, newWorld.balls));
-    newWorld.softBalls = obj.softBalls.map((s) => SoftBall.fromObject(s,
-      newWorld.balls, newWorld.springs));
-
-    newWorld.fixedBalls = obj.fixedBalls;
-    newWorld.airFriction = obj.airFriction;
-    newWorld.gravity = Vec2.fromObject(obj.gravity);
-
-    return newWorld;
-  }
-
-  /**
-   * @returns {string} The physics object in JSON format in a string
-   */
-  toJSON() {
-    return JSON.stringify(this.toJSObject());
-  }
-
-  /**
-   * Recreates the phyisics object from JSON
-   *
-   * @param {string} jsonString The JSON containing the physics object
-   * @returns {Physics} The created Physics object
-   */
-  static fromJSON(jsonString) {
-    return Physics.fromObject(JSON.parse(jsonString));
+    const ret = new Physics();
+    ret.balls = obj.balls.map((ballObj) => Ball.fromObject(ballObj));
+    ret.bounds = obj.bounds.map((boundObj) => Wall.fromObject(boundObj));
+    ret.walls = obj.walls.map((wallObj) => Wall.fromObject(wallObj));
+    ret.bodies = obj.bodies.map((bodyObj) => Body.fromObject(bodyObj));
+    ret.fixedBalls = obj.fixedBalls;
+    ret.airFriction = obj.airFriction;
+    ret.gravity = Vec2.fromObject(obj.gravity);
+    ret.springs = obj.springs.map((springObj) => ret.stickOrSpringFromObject(springObj));
+    ret.softBalls = obj.softBalls.map((sbObj) => ret.softBallFromObject(sbObj));
+    return ret;
   }
 }
 

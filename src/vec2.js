@@ -142,10 +142,11 @@ class Vec2 {
   /**
    * Returns the p-norm of the vector in Lp space.
    *
-   * @param {number} p The p parameter
+   * @param {number} par The p parameter
    * @returns {number} The calculated p-norm
    */
-  pNorm(p) {
+  pNorm(par) {
+    let p = par;
     if (p < 1) p = 1;
     return (Math.abs(this.x ** p) + Math.abs(this.y ** p)) ** (1 / p);
   }
@@ -395,7 +396,7 @@ class Vec2 {
    * @returns {Vec2AsObject} The vector represented in a JS object,
    * ready to be converted into JSON.
    */
-  toJSObject() {
+  toJSON() {
     return { x: this.x, y: this.y };
   }
 

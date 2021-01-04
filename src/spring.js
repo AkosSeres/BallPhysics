@@ -10,10 +10,9 @@ import Vec2 from './vec2';
  * @property {number} springConstant The stiffness of the spring
  * @property {boolean | {x:number, y:number}} pinned This property indicates whether
  * the spring is pinned or not
- * @property {string[]} objects The IDs of the attached objects
+ * @property {import('./physics').ObjectIndentifier[]} objects The indices of the attached objects
  * @property {boolean} rotationLocked The variable inticating whether or not
  * the attached objects are allowed to rotate freely
- * @property {string} id The ID of the Spring
  * @property {"spring"} type Indicates that the object is a spring
  */
 
@@ -38,9 +37,6 @@ class Spring {
     /** @type {import('./physics').PhysicalObject[]} */
     this.objects = [];
     this.rotationLocked = false;
-    this.id = `_${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
   }
 
   /**

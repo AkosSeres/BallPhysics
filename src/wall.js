@@ -212,7 +212,7 @@ class Wall {
    * @returns {WallAsObject} The Wall represented in a JS object
    * Ready to be converted into JSON
    */
-  toJSObject() {
+  toJSON() {
     const ret = {};
 
     ret.points = this.points.map((p) => ({

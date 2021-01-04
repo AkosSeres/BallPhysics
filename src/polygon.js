@@ -47,8 +47,8 @@ class Polygon {
   getSideSegment(i) {
     let num = i;
     if (num < 0) num += Math.abs(Math.floor(num)) * this.points.length;
-    return new LineSegment(this.points[(num + 1) % this.points.length],
-      this.points[num % this.points.length]);
+    return new LineSegment(Vec2.fromObject(this.points[(num + 1) % this.points.length]),
+      Vec2.fromObject(this.points[num % this.points.length]));
   }
 
   /**
@@ -60,8 +60,8 @@ class Polygon {
   getSideLine(i) {
     let num = i;
     if (num < 0) num += Math.abs(Math.floor(num)) * this.points.length;
-    return new Line(this.points[(num + 1) % this.points.length],
-      this.points[num % this.points.length]);
+    return new LineSegment(Vec2.fromObject(this.points[(num + 1) % this.points.length]),
+      Vec2.fromObject(this.points[num % this.points.length]));
   }
 
   /**

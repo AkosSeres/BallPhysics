@@ -22,7 +22,6 @@ const MAX_AXES = 15;
  * @property {number} ang The angular velocity
  * @property {number} k The coefficient of restitution (bounciness)
  * @property {import('./vec2').Vec2AsObject} vel The velocity
- * @property {string} id The ID of the body
  */
 
 /**
@@ -100,10 +99,6 @@ class Body {
 
     if (vel !== undefined) this.vel = vel.copy;
     else this.vel = new Vec2(0, 0);
-
-    this.id = `_${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
   }
 
   /**
@@ -834,21 +829,20 @@ class Body {
    * @returns {BodyAsObject} The Body represented in a JS object
    * Ready to be converted into JSON
    */
-  toJSObject() {
+  toJSON() {
     const ret = {};
 
     ret.points = this.points.map((p) => ({
       x: p.x,
       y: p.y,
     }));
-    ret.vel = this.vel.toJSObject();
+    ret.vel = this.vel.toJSON();
     ret.k = this.k;
     ret.ang = this.ang;
     ret.fc = this.fc;
-    ret.pos = this.pos.toJSObject();
-    ret.lastPos = this.lastPos.toJSObject();
+    ret.pos = this.pos.toJSON();
+    ret.lastPos = this.lastPos.toJSON();
     ret.rotation = this.rotation;
-    ret.id = this.id;
 
     return ret;
   }
@@ -868,7 +862,6 @@ class Body {
       obj.fc,
     );
 
-    ret.id = obj.id;
     ret.pos = Vec2.fromObject(obj.pos);
     ret.lastPos = Vec2.fromObject(obj.lastPos);
     ret.rotation = obj.rotation;

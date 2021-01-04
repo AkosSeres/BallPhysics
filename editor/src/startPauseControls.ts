@@ -18,7 +18,7 @@ interface HasPhysicsAndTime {
  * @param {HasPhysicsAndTime} editorApp The editor app to control
  */
 export default function timeController(editorApp: HasPhysicsAndTime): void {
-  startingState = editorApp.getPhysics().toJSObject();
+  startingState = editorApp.getPhysics().toJSON();
   inStartingState = true;
 
   const pauseBtn = document.getElementById('pause');
@@ -28,7 +28,7 @@ export default function timeController(editorApp: HasPhysicsAndTime): void {
       else {
         editorApp.setTimeMultiplier(1);
         if (inStartingState === true) {
-          startingState = editorApp.getPhysics().toJSObject();
+          startingState = editorApp.getPhysics().toJSON();
         }
         inStartingState = false;
       }
@@ -55,13 +55,14 @@ export default function timeController(editorApp: HasPhysicsAndTime): void {
       physics.softBalls = [];
       physics.springs = [];
       physics.bodies = [];
+      physics.fixedBalls = [];
     };
   }
 
   const startBtn = document.getElementById('set start');
   if (startBtn) {
     startBtn.onclick = () => {
-      startingState = editorApp.getPhysics().toJSObject();
+      startingState = editorApp.getPhysics().toJSON();
       inStartingState = true;
       editorApp.setTimeMultiplier(0);
     };

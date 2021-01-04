@@ -4,7 +4,6 @@ import Vec2 from './vec2';
 import Ball from './ball';
 import Stick from './stick';
 import LineSegment from './linesegment';
-import Spring from './spring';
 
 /**
  * An object representation of the SoftBall class for easy conversion to JSON.
@@ -14,8 +13,9 @@ import Spring from './spring';
  * @property {number} fc The friction coefficient
  * @property {number} r The original radius of the softball
  * @property {number} resolution The number of Balls used to construct the SoftBall
- * @property {string[]} points The IDs Balls' that make up the SoftBall
- * @property {string[]} sides The IDs of the sticks' holding the softball together
+ * @property {import('./physics').ObjectIndentifier[]} points The indices of the Balls'
+ * that make up the SoftBall
+ * @property {number[]} sides The indices of the sticks' holding the softball together
  */
 
 /**
@@ -63,9 +63,11 @@ class SoftBall {
           this.fc,
         ),
       );
+      // @ts-ignore
       this.points[this.points.length - 1].layer = layerNumber;
     }
 
+    /** @type {import('./physics').StickOrSpring[]} */
     this.sides = [];
     for (let i = 0; i < this.resolution; i += 1) {
       const side = new Stick(2 * this.r * Math.sin(Math.PI / this.resolution));
@@ -325,50 +327,6 @@ class SoftBall {
 
     const filt = sides.filter((side) => LineSegment.intersect(side, testerSegment) !== undefined);
     return filt.length % 2 === 1;
-  }
-
-  /**
-   * @returns {SoftBallAsObject} The SoftBall represented in a JS object
-   * Ready to be converted into JSON
-   */
-  toJSObject() {
-    const ret = {};
-
-    ret.pressure = this.pressure;
-    ret.fc = this.fc;
-    ret.r = this.r;
-    ret.resolution = this.resolution;
-    ret.points = this.points.map((p) => p.id);
-    ret.sides = this.sides.map((s) => s.id);
-
-    return ret;
-  }
-
-  /**
-   * Creates a SoftBall class from the given object
-   *
-   * @param {SoftBallAsObject} obj The object to create the class from
-   * @param {Ball[]} ballList An array of all the balls in the system
-   * @param {Spring[]} springList An array of all the springs in the system
-   * @returns {SoftBall} The SoftBall object
-   */
-  static fromObject(obj, ballList, springList) {
-    const ret = Object.create(SoftBall.prototype);
-
-    ret.pressure = obj.pressure;
-    ret.fc = obj.fc;
-    ret.resolution = obj.resolution;
-    ret.r = obj.r;
-    ret.points = obj.points.map((e) => {
-      const arr = ballList.filter((p) => e === p.id);
-      return arr[0];
-    });
-    ret.sides = obj.sides.map((e) => {
-      const arr = springList.filter((p) => e === p.id);
-      return arr[0];
-    });
-
-    return ret;
   }
 }
 

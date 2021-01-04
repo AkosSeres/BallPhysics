@@ -9,10 +9,9 @@ import Spring from './spring';
  * @property {number} springConstant Always 0 for sticks
  * @property {boolean | {x:number, y:number}} pinned This property indicates whether
  * the stick is pinned or not
- * @property {string[]} objects The IDs of the attached objects
+ * @property {import('./physics').ObjectIndentifier[]} objects The indices of the attached objects
  * @property {boolean} rotationLocked The variable inticating whether or not
  * the attached objects are allowed to rotate freely
- * @property {string} id The ID of the Stick
  * @property {"stick"} type Indicates that the object is a stick
  */
 

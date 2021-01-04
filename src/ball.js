@@ -14,7 +14,6 @@ import Vec2 from './vec2';
  * @property {number} ang The angular velocity
  * @property {number} k The coefficient of restitution (bounciness)
  * @property {import('./vec2').Vec2AsObject} vel The velocity
- * @property {string} id The ID of the ball
  * @property {string | number | undefined} layer The collision layer of the ball
  */
 
@@ -56,9 +55,6 @@ class Ball {
     if (vel !== undefined) this.vel = vel.copy;
     else this.vel = new Vec2(0, 0);
 
-    this.id = `_${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
     /** @type {string | number | undefined} */
     this.layer = undefined;
   }
@@ -265,11 +261,11 @@ class Ball {
    * @returns {BallAsObject} The ball represented in a JS object
    * Ready to be converted into JSON
    */
-  toJSObject() {
+  toJSON() {
     const ret = {};
 
-    ret.pos = this.pos.toJSObject();
-    ret.lastPos = this.lastPos.toJSObject();
+    ret.pos = this.pos.toJSON();
+    ret.lastPos = this.lastPos.toJSON();
     ret.r = this.r;
     ret.fc = this.fc;
     ret.amc = this.amc;
@@ -277,8 +273,7 @@ class Ball {
     ret.ang = this.ang;
     ret.fc = this.fc;
     ret.k = this.k;
-    ret.vel = this.vel.toJSObject();
-    ret.id = this.id;
+    ret.vel = this.vel.toJSON();
     if (typeof this.layer !== 'undefined') {
       ret.layer = this.layer;
     }
@@ -306,7 +301,6 @@ class Ball {
     ret.amc = obj.amc;
     ret.rotation = obj.rotation;
     ret.vel = Vec2.fromObject(obj.vel);
-    ret.id = obj.id;
     if (typeof obj.layer !== 'undefined') {
       ret.layer = obj.layer;
     }
