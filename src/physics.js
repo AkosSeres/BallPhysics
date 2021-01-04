@@ -42,8 +42,7 @@ import { collisionResponseWithWall } from './util/collision';
 /**
  * A union type representing either a StickAsObject or a SpringAsObject type.
  *
- * @typedef {import('./constraint/spring').SpringAsObject
- * |import('./constraint/stick').StickAsObject}StickOrSpringAsObject
+ * @typedef {import('./constraint/spring').SpringAsObject|import('./constraint/stick').StickAsObject}StickOrSpringAsObject
  */
 /**
  * @typedef {{n: Vec2, cp: Vec2}} CollisionData
