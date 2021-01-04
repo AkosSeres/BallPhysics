@@ -114,20 +114,6 @@ class Editor implements EditorInterface {
     document.addEventListener('keydown', this.keyGotDown, false);
     document.addEventListener('keyup', this.keyGotUp, false);
     window.addEventListener('resize', this.resizeCanvas, false);
-    this.cnv.addEventListener(
-      'mousedown',
-      () => {
-        this.mouseDown = true;
-      },
-      false,
-    );
-    this.cnv.addEventListener(
-      'mouseup',
-      () => {
-        this.mouseDown = false;
-      },
-      false,
-    );
 
     this.resizeCanvas();
 
@@ -229,6 +215,7 @@ class Editor implements EditorInterface {
     }
     this.lastX = this.mouseX;
     this.lastY = this.mouseY;
+    this.mouseDown = true;
 
     modes[this.mode].startInteractionFunc?.(this);
   };
@@ -249,6 +236,7 @@ class Editor implements EditorInterface {
 
     this.lastX = 0;
     this.lastY = 0;
+    this.mouseDown = false;
     this.choosed = false;
   };
 
