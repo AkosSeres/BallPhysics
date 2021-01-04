@@ -1,12 +1,12 @@
-import Vec2 from './vec2';
-import Polygon from './polygon';
+import Vec2 from '../math/vec2';
+import Polygon from '../math/polygon';
 
 /**
  * Calculates the collsion response when any two physical objects
  * collide with a given collision point and collision normal.
  *
- * @param {import('./physics').PhysicalObject} object1 The first object
- * @param {import('./physics').PhysicalObject} object2 The second object
+ * @param {import('../physics').PhysicalObject} object1 The first object
+ * @param {import('../physics').PhysicalObject} object2 The second object
  * @param {Vec2} contactPoint The collision point
  * @param {Vec2} normal The normal of the colliding surfaces
  */
@@ -94,8 +94,8 @@ export function collisionResponse(object1, object2, contactPoint, normal) {
  * Calculates the collsion response when a physical object
  * collides with an immovable object, like a {@link Wall} or {@link FixedBall}.
  *
- * @param {import('./physics').PhysicalObject} object The phyisical object
- * @param {Vec2 | import('./vec2').Vec2AsObject} contactPoint The collision point
+ * @param {import('../physics').PhysicalObject} object The phyisical object
+ * @param {Vec2 | import('../math/vec2').Vec2AsObject} contactPoint The collision point
  * @param {Vec2} normal The surface normal
  */
 export function collisionResponseWithWall(object, contactPoint, normal) {

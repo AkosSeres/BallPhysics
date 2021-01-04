@@ -1,19 +1,19 @@
-import { collisionResponse } from './collision';
-import Vec2 from './vec2';
+import { collisionResponse } from '../util/collision';
+import Vec2 from '../math/vec2';
 
 /**
  * An object representation of the Ball class for easy conversion to JSON.
  *
  * @typedef {object} BallAsObject
- * @property {import('./vec2').Vec2AsObject} pos The position
- * @property {import('./vec2').Vec2AsObject} lastPos The last position
+ * @property {import('../math/vec2').Vec2AsObject} pos The position
+ * @property {import('../math/vec2').Vec2AsObject} lastPos The last position
  * @property {number} r The radius of the ball
  * @property {number} fc The coefficient of friction
  * @property {number} amc Coefficient for the angular mass
  * @property {number} rotation The rotation of the ball
  * @property {number} ang The angular velocity
  * @property {number} k The coefficient of restitution (bounciness)
- * @property {import('./vec2').Vec2AsObject} vel The velocity
+ * @property {import('../math/vec2').Vec2AsObject} vel The velocity
  * @property {string | number | undefined} layer The collision layer of the ball
  */
 
@@ -146,7 +146,7 @@ class Ball {
    *
    * @param {Ball} ball1 First ball
    * @param {Ball} ball2 Second ball
-   * @returns {import('./physics').CollisionData | undefined} The collision data
+   * @returns {import('../physics').CollisionData | undefined} The collision data
    */
   static collide(ball1, ball2) {
     if (!ball1.collided(ball2)) return;
@@ -196,7 +196,7 @@ class Ball {
    * Calculates the effective velocity of the ball in a
    * given point from it's velocity and angular velocity
    *
-   * @param {Vec2 | import('./vec2').Vec2AsObject} point The point to be taken a look at
+   * @param {Vec2 | import('../math/vec2').Vec2AsObject} point The point to be taken a look at
    * @returns {Vec2} The velocity of the Ball in the given point
    */
   velInPlace(point) {

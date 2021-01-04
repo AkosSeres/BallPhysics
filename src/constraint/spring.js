@@ -1,6 +1,6 @@
-import Ball from './ball';
-import Body from './body';
-import Vec2 from './vec2';
+import Ball from '../entity/ball';
+import Body from '../entity/body';
+import Vec2 from '../math/vec2';
 
 /**
  * An object representation of the Spring class for easy conversion to JSON.
@@ -10,7 +10,7 @@ import Vec2 from './vec2';
  * @property {number} springConstant The stiffness of the spring
  * @property {boolean | {x:number, y:number}} pinned This property indicates whether
  * the spring is pinned or not
- * @property {import('./physics').ObjectIndentifier[]} objects The indices of the attached objects
+ * @property {import('../physics').ObjectIndentifier[]} objects The indices of the attached objects
  * @property {boolean} rotationLocked The variable inticating whether or not
  * the attached objects are allowed to rotate freely
  * @property {"spring"} type Indicates that the object is a spring
@@ -34,7 +34,7 @@ class Spring {
     this.springConstant = springConstant;
     /** @type {boolean | {x:number, y:number}} */
     this.pinned = false;
-    /** @type {import('./physics').PhysicalObject[]} */
+    /** @type {import('../physics').PhysicalObject[]} */
     this.objects = [];
     this.rotationLocked = false;
   }

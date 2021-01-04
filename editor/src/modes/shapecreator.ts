@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
 import * as Creator from '../elementCreator';
-import Vec2 from '../../../src/vec2';
-import Body from '../../../src/body';
+import Vec2 from '../../../src/math/vec2';
+import Body from '../../../src/entity/body';
 
 let size = 35;
 let k = 0.5;

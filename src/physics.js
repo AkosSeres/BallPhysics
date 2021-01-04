@@ -1,14 +1,14 @@
-import Ball from './ball';
-import LineSegment from './linesegment';
-import Body from './body';
-import Line from './line';
-import Wall from './wall';
-import Stick from './stick';
-import Polygon from './polygon';
-import Vec2 from './vec2';
-import Spring from './spring';
-import SoftBall from './softball';
-import { collisionResponseWithWall } from './collision';
+import Ball from './entity/ball';
+import LineSegment from './math/linesegment';
+import Body from './entity/body';
+import Line from './math/line';
+import Wall from './entity/wall';
+import Stick from './constraint/stick';
+import Polygon from './math/polygon';
+import Vec2 from './math/vec2';
+import Spring from './constraint/spring';
+import SoftBall from './entity/softball';
+import { collisionResponseWithWall } from './util/collision';
 
 /**
  * @typedef {{x:number, y:number, r:number}} FixedBall
@@ -42,7 +42,8 @@ import { collisionResponseWithWall } from './collision';
 /**
  * A union type representing either a StickAsObject or a SpringAsObject type.
  *
- * @typedef {import('./spring').SpringAsObject|import('./stick').StickAsObject}StickOrSpringAsObject
+ * @typedef {import('./constraint/spring').SpringAsObject
+ * |import('./constraint/stick').StickAsObject}StickOrSpringAsObject
  */
 /**
  * @typedef {{n: Vec2, cp: Vec2}} CollisionData
@@ -53,16 +54,17 @@ import { collisionResponseWithWall } from './collision';
  * to easily convert it to JSON.
  *
  * @typedef PhysicsAsObject
- * @property {import('./ball').BallAsObject[]} balls The balls in the world
- * @property {import('./wall').WallAsObject[]} bounds The world border walls
- * @property {import('./wall').WallAsObject[]} walls The walls in the world
- * @property {import('./body').BodyAsObject[]} bodies The bodies in the world
+ * @property {import('./entity/ball').BallAsObject[]} balls The balls in the world
+ * @property {import('./entity/wall').WallAsObject[]} bounds The world border walls
+ * @property {import('./entity/wall').WallAsObject[]} walls The walls in the world
+ * @property {import('./entity/body').BodyAsObject[]} bodies The bodies in the world
  * @property {StickOrSpringAsObject[]} springs The
  * springs and sticks in the world
- * @property {import('./softball').SoftBallAsObject[]} softBalls The softballs in the world
+ * @property {import('./entity/softball').SoftBallAsObject[]} softBalls The softballs in the world
  * @property {FixedBall[]} fixedBalls The fixedballs in the world
  * @property {number} airFriction The air friction in the world
- * @property {import('./vec2').Vec2AsObject} gravity The gravity vector as an object in the world
+ * @property {import('./math/vec2').Vec2AsObject} gravity The gravity
+ * vector as an object in the world
  */
 
 /**
@@ -750,7 +752,7 @@ class Physics {
     retObj.walls = this.walls.map((w) => w.toJSON());
 
     retObj.springs = this.springs.map((spring) => {
-      /** @type {import('./spring').SpringAsObject} */
+      /** @type {import('./constraint/spring').SpringAsObject} */
       const ret = {};
       ret.length = spring.length;
       ret.pinned = spring.pinned;
@@ -764,7 +766,7 @@ class Physics {
     });
 
     retObj.softBalls = this.softBalls.map((sb) => {
-      /** @type {import('./softball').SoftBallAsObject} */
+      /** @type {import('./entity/softball').SoftBallAsObject} */
       const ret = {};
       ret.fc = sb.fc;
       ret.points = sb.points.map((o) => this.getObjectIdentifier(o));
@@ -807,7 +809,7 @@ class Physics {
   /**
    * Creates a SoftBall from an object.
    *
-   * @param {import('./softball').SoftBallAsObject} obj The object.
+   * @param {import('./entity/softball').SoftBallAsObject} obj The object.
    * @returns {SoftBall} The resulting SoftBall.
    */
   softBallFromObject(obj) {

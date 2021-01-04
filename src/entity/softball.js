@@ -1,9 +1,9 @@
 /* eslint-disable no-continue */
 /* eslint-disable no-labels */
-import Vec2 from './vec2';
+import Vec2 from '../math/vec2';
 import Ball from './ball';
-import Stick from './stick';
-import LineSegment from './linesegment';
+import Stick from '../constraint/stick';
+import LineSegment from '../math/linesegment';
 
 /**
  * An object representation of the SoftBall class for easy conversion to JSON.
@@ -13,7 +13,7 @@ import LineSegment from './linesegment';
  * @property {number} fc The friction coefficient
  * @property {number} r The original radius of the softball
  * @property {number} resolution The number of Balls used to construct the SoftBall
- * @property {import('./physics').ObjectIndentifier[]} points The indices of the Balls'
+ * @property {import('../physics').ObjectIndentifier[]} points The indices of the Balls'
  * that make up the SoftBall
  * @property {number[]} sides The indices of the sticks' holding the softball together
  */
@@ -67,7 +67,7 @@ class SoftBall {
       this.points[this.points.length - 1].layer = layerNumber;
     }
 
-    /** @type {import('./physics').StickOrSpring[]} */
+    /** @type {import('../physics').StickOrSpring[]} */
     this.sides = [];
     for (let i = 0; i < this.resolution; i += 1) {
       const side = new Stick(2 * this.r * Math.sin(Math.PI / this.resolution));

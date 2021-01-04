@@ -1,7 +1,7 @@
-import Vec2 from './vec2';
-import LineSegment from './linesegment';
+import Vec2 from '../math/vec2';
+import LineSegment from '../math/linesegment';
 import Ball from './ball';
-import { collisionResponseWithWall, MinMax, minMaxOfArray } from './collision';
+import { collisionResponseWithWall, MinMax, minMaxOfArray } from '../util/collision';
 
 const MAX_AXES = 15;
 
@@ -9,7 +9,7 @@ const MAX_AXES = 15;
  * An object representation of the Wall class for easy conversion to JSON.
  *
  * @typedef {object} WallAsObject
- * @property {import('./vec2').Vec2AsObject[]} points Object prepresentation
+ * @property {import('../math/vec2').Vec2AsObject[]} points Object prepresentation
  * of the points of the wall
  */
 
@@ -104,7 +104,7 @@ class Wall {
    * Function for collision detection and behavior between balls and walls
    *
    * @param {Ball} ball The ball that is checked if it collides with the wall
-   * @returns {import('./physics').CollisionData | undefined} The collision data
+   * @returns {import('../physics').CollisionData | undefined} The collision data
    */
   // eslint-disable-next-line consistent-return
   collideWithBall(ball) {

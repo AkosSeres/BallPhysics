@@ -1,12 +1,12 @@
 /* eslint-disable consistent-return */
-import Vec2 from './vec2';
-import LineSegment from './linesegment';
+import Vec2 from '../math/vec2';
+import LineSegment from '../math/linesegment';
 import Ball from './ball';
 import Wall from './wall';
-import Line from './line';
+import Line from '../math/line';
 import {
   collisionResponse, collisionResponseWithWall, detectCollision, findOverlap, MinMax, minMaxOfArray,
-} from './collision';
+} from '../util/collision';
 
 const MAX_AXES = 15;
 
@@ -14,14 +14,14 @@ const MAX_AXES = 15;
  * An object representation of the Body class for easy conversion to JSON.
  *
  * @typedef {object} BodyAsObject
- * @property {import('./vec2').Vec2AsObject} pos The position
- * @property {import('./vec2').Vec2AsObject} lastPos The last position
- * @property {import('./vec2').Vec2AsObject[]} points The points of the body
+ * @property {import('../math/vec2').Vec2AsObject} pos The position
+ * @property {import('../math/vec2').Vec2AsObject} lastPos The last position
+ * @property {import('../math/vec2').Vec2AsObject[]} points The points of the body
  * @property {number} fc The coefficient of friction
  * @property {number} rotation The rotation of the body
  * @property {number} ang The angular velocity
  * @property {number} k The coefficient of restitution (bounciness)
- * @property {import('./vec2').Vec2AsObject} vel The velocity
+ * @property {import('../math/vec2').Vec2AsObject} vel The velocity
  */
 
 /**
@@ -206,7 +206,7 @@ class Body {
    * collision behavior between the body and ball
    *
    * @param {Ball} ball The ball to collide with the body
-   * @returns {import('./physics').CollisionData | undefined} The collision data
+   * @returns {import('../physics').CollisionData | undefined} The collision data
    */
   collideWithBall(ball) {
     let heading;
@@ -559,7 +559,7 @@ class Body {
    *
    * @param {Body} body1 First body
    * @param {Body} body2 Second body
-   * @returns {import('./physics').CollisionData | undefined} The collision data
+   * @returns {import('../physics').CollisionData | undefined} The collision data
    */
   static collide(body1, body2) {
     const b1 = body1;
@@ -640,8 +640,8 @@ class Body {
   /**
    * Detects and reacts to collision with a fixedBall
    *
-   * @param {import('./physics').FixedBall} fixedBall The fixedBall to take the collision with
-   * @returns {import('./physics').CollisionData | undefined} The collision data
+   * @param {import('../physics').FixedBall} fixedBall The fixedBall to take the collision with
+   * @returns {import('../physics').CollisionData | undefined} The collision data
    */
   collideWithFixedBall(fixedBall) {
     /** @type {Vec2 | undefined} */
@@ -688,7 +688,7 @@ class Body {
    * Does a collision with a wall.
    *
    * @param {Wall} wall The wall to collide with
-   * @returns {import('./physics').CollisionData | undefined} Collision data
+   * @returns {import('../physics').CollisionData | undefined} Collision data
    */
   collideWithWall(wall) {
     const xOverlap = findOverlap(this.boundsX, wall.boundsX);
@@ -766,7 +766,7 @@ class Body {
    * Calculates the effective velocity of the body object in a
    * given point from it's velocity and angular velocity
    *
-   * @param {Vec2 | import('./vec2').Vec2AsObject} point The point to be taken a look at
+   * @param {Vec2 | import('../math/vec2').Vec2AsObject} point The point to be taken a look at
    * @returns {Vec2} The velocity of the Body in the given point
    */
   velInPlace(point) {

@@ -1,4 +1,4 @@
-import Vec2 from './vec2';
+import Vec2 from '../math/vec2';
 import Spring from './spring';
 
 /**
@@ -9,7 +9,7 @@ import Spring from './spring';
  * @property {number} springConstant Always 0 for sticks
  * @property {boolean | {x:number, y:number}} pinned This property indicates whether
  * the stick is pinned or not
- * @property {import('./physics').ObjectIndentifier[]} objects The indices of the attached objects
+ * @property {import('../physics').ObjectIndentifier[]} objects The indices of the attached objects
  * @property {boolean} rotationLocked The variable inticating whether or not
  * the attached objects are allowed to rotate freely
  * @property {"stick"} type Indicates that the object is a stick
