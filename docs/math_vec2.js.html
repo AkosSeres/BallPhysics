@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Wall - Documentation</title>
+    <title>math/vec2.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,1234 +29,433 @@
 
 <div id="main">
     
-    <h1 class="page-title">Wall</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-        Wall
-        </h2>
-        
-            <div class="class-description">Class representing a wall.
-Walls are objects that are immovable and they are rigid.
-It can be convex or concave.</div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-<div class="section-method">
-
-    
-    <h2>Constructor</h2>
-    
-
-    <h4 class="name" id="Wall"><span class="type-signature"></span>new Wall<span class="signature">(_points)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Create a wall
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line27">line 27</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>_points</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Array.&lt;<a href="Vec2.html">Vec2</a>></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                Array of points that make up the wall
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="axes"><span class="type-signature"></span>axes<span class="type-signature"> :Array.&lt;<a href="Vec2.html">Vec2</a>></span></h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line48">line 48</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code>Array.&lt;<a href="Vec2.html">Vec2</a>></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="normals"><span class="type-signature"></span>normals<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Returns the normals of all the sides of the body's polygon.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line153">line 153</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="sides"><span class="type-signature"></span>sides<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Returns an array containing all the sides of the body
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line202">line 202</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".fromObject"><span class="type-signature">(static) </span>fromObject<span class="signature">(obj)</span><span class="type-signature"> &rarr; {<a href="Wall.html">Wall</a>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Creates a Wall class from the given object
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line230">line 230</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>obj</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="global.html#WallAsObject">WallAsObject</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The object to create the class from
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="Wall.html">Wall</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The Wall object
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateAxes"><span class="type-signature"></span>calculateAxes<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the axes of the wall. Removes duplicates and too dense areas.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line85">line 85</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateBoundingBox"><span class="type-signature"></span>calculateBoundingBox<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the bounding box of the wall and stores it.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line77">line 77</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateCenterAndRadius"><span class="type-signature"></span>calculateCenterAndRadius<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the center and the bound radius of the wall
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line188">line 188</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="collideWithBall"><span class="type-signature"></span>collideWithBall<span class="signature">(ball)</span><span class="type-signature"> &rarr; {<a href="global.html#CollisionData">CollisionData</a>|undefined}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Function for collision detection and behavior between balls and walls
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line108">line 108</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>ball</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Ball.html">Ball</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The ball that is checked if it collides with the wall
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="global.html#CollisionData">CollisionData</a></code></span>
-|
-
-<span class="param-type"><code>undefined</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The collision data
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="containsPoint"><span class="type-signature"></span>containsPoint<span class="signature">(p)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Returns true if the point is inside the body
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line168">line 168</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>p</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Vec2.html">Vec2</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The point
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The boolean value
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="toJSON"><span class="type-signature"></span>toJSON<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#WallAsObject">WallAsObject</a>}</span></h4>
-
-    
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line213">line 213</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="global.html#WallAsObject">WallAsObject</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The Wall represented in a JS object
-Ready to be converted into JSON
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">math/vec2.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// every angle is counterclockwise (anticlockwise)
+
+/**
+ * An object representation of the Vec2 class for easy conversion to JSON.
+ *
+ * @typedef {object} Vec2AsObject
+ * @property {number} x The x coordinate
+ * @property {number} y The y coordinate
+ */
+
+/** Class representing a 2d vector. */
+class Vec2 {
+  /**
+   * Create a vector.
+   *
+   * @param {number} x - The x value.
+   * @param {number} y - The y value.
+   */
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  /**
+   * Get a copy of the vector.
+   *
+   * @returns {Vec2} The copy.
+   */
+  get copy() {
+    return new Vec2(this.x, this.y);
+  }
+
+  /**
+   * Sets the coordinates to the given ones.
+   *
+   * @param {number} x The new x coordinate.
+   * @param {number} y The new y coordinate.
+   */
+  setCoordinates(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  /**
+   * Get the length of the vector.
+   *
+   * @returns {number} The length.
+   */
+  get length() {
+    return Math.sqrt(this.x * this.x + this.y * this.y);
+  }
+
+  /**
+   * Get the length of the vector squared.
+   *
+   * @returns {number} The length squared.
+   */
+  get sqlength() {
+    return this.x * this.x + this.y * this.y;
+  }
+
+  /**
+   * Get the heading of the vector compared to (1, 0).
+   *
+   * @returns {number} The angle between (1, 0)
+   * and the vector in anticlockwise direction.
+   */
+  get heading() {
+    if (this.x === 0 &amp;&amp; this.y === 0) return 0;
+    if (this.x === 0) return this.y > 0 ? Math.PI / 2 : 1.5 * Math.PI;
+    if (this.y === 0) return this.x > 0 ? 0 : Math.PI;
+    const v = Vec2.normalized(this);
+    if (this.x > 0 &amp;&amp; this.y > 0) return Math.asin(v.y);
+    if (this.x &lt; 0 &amp;&amp; this.y > 0) return Math.asin(-v.x) + Math.PI / 2;
+    if (this.x &lt; 0 &amp;&amp; this.y &lt; 0) return Math.asin(-v.y) + Math.PI;
+    if (this.x > 0 &amp;&amp; this.y &lt; 0) return Math.asin(v.x) + 1.5 * Math.PI;
+    return 0;
+  }
+
+  /**
+   * Adds another vector to the vector.
+   *
+   * @param {Vec2 | Vec2AsObject} a - The other vector.
+   */
+  add(a) {
+    this.x += a.x;
+    this.y += a.y;
+  }
+
+  /**
+   * Subtracts another vector from the vector.
+   *
+   * @param {Vec2 | Vec2AsObject} a - The other vector.
+   */
+  sub(a) {
+    this.x -= a.x;
+    this.y -= a.y;
+  }
+
+  /**
+   * Multiplies the vector by a scalar.
+   *
+   * @param {number} x - The scalar.
+   */
+  mult(x) {
+    this.x *= x;
+    this.y *= x;
+  }
+
+  /**
+   * Divides the vector by a scalar.
+   *
+   * @param {number} x - The scalar.
+   */
+  div(x) {
+    this.x /= x;
+    this.y /= x;
+  }
+
+  /**
+   * Linearry interpolates the vector into the other vector by scalar x.
+   *
+   * @param {Vec2 | Vec2AsObject} other - The other vector.
+   * @param {number} x - The scalar.
+   */
+  lerp(other, x) {
+    this.x += (other.x - this.x) * x;
+    this.y += (other.y - this.y) * x;
+  }
+
+  /**
+   * Get the distance between the vector and the other vector.
+   * Vectors are representing points here.
+   *
+   * @param {Vec2 | Vec2AsObject} other - The other vector.
+   * @returns {number} The distance between them.
+   */
+  dist(other) {
+    return new Vec2(this.x - other.x, this.y - other.y).length;
+  }
+
+  /**
+   * Returns the p-norm of the vector in Lp space.
+   *
+   * @param {number} par The p parameter
+   * @returns {number} The calculated p-norm
+   */
+  pNorm(par) {
+    let p = par;
+    if (p &lt; 1) p = 1;
+    return (Math.abs(this.x ** p) + Math.abs(this.y ** p)) ** (1 / p);
+  }
+
+  /**
+   * Set the length of the vector.
+   *
+   * @param {number} l - The new length value.
+   */
+  setMag(l) {
+    if (this.length === 0) return;
+    this.mult(l / this.length);
+  }
+
+  /**
+   * Normalizes the vector.
+   */
+  normalize() {
+    if (this.length === 0) return;
+    this.div(this.length);
+  }
+
+  /**
+   * Rotate the vector anticlockwise.
+   *
+   * @param {number} angle Rotation angle in radians
+   */
+  rotate(angle) {
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+    this.setCoordinates(this.x * cosA - this.y * sinA, this.x * sinA + this.y * cosA);
+  }
+
+  /**
+   * Rotates all the vectors in a given array.
+   *
+   * @param {Vec2[]} vArr The array containing the vectors
+   * @param {number} angle The angle to rotate with
+   */
+  static rotateArr(vArr, angle) {
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+    vArr.forEach((v) => {
+      v.setCoordinates(v.x * cosA - v.y * sinA, v.x * sinA + v.y * cosA);
+    });
+  }
+
+  /**
+   * Rotates the vector by 90 degrees
+   */
+  rotate90() {
+    const { x } = this;
+    this.x = -this.y;
+    this.y = x;
+  }
+
+  /**
+   * Rotates the vector by 270 degrees
+   */
+  rotate270() {
+    const { x } = this;
+    this.x = this.y;
+    this.y = -x;
+  }
+
+  // Static functions:
+  /**
+   * Add two vectors together.
+   *
+   * @param {Vec2 | Vec2AsObject} a - Vector.
+   * @param {Vec2 | Vec2AsObject} b - Other vector.
+   * @returns {Vec2} The sum of the vectors.
+   */
+  static add(a, b) {
+    return new Vec2(a.x + b.x, a.y + b.y);
+  }
+
+  /**
+   * Subtracts one vector from another.
+   *
+   * @param {Vec2 | Vec2AsObject} a - Vector.
+   * @param {Vec2 | Vec2AsObject} b - Other vector.
+   * @returns {Vec2} The subtraction of the vectors.
+   */
+  static sub(a, b) {
+    return new Vec2(a.x - b.x, a.y - b.y);
+  }
+
+  /**
+   * Multiply the vector by a scalar.
+   *
+   * @param {Vec2 | Vec2AsObject} v - Vector.
+   * @param {number} x - Scalar.
+   * @returns {Vec2} The multiplied vector.
+   */
+  static mult(v, x) {
+    return new Vec2(v.x * x, v.y * x);
+  }
+
+  /**
+   * Divide the vector by a scalar.
+   *
+   * @param {Vec2 | Vec2AsObject} v - Vector.
+   * @param {number} x - Scalar.
+   * @returns {Vec2} The divided vector.
+   */
+  static div(v, x) {
+    return new Vec2(v.x / x, v.y / x);
+  }
+
+  /**
+   * Create a unit vector from an angle.
+   *
+   * @param {number} a The angle
+   * @returns {Vec2} The created vector
+   */
+  static fromAngle(a) {
+    return new Vec2(Math.cos(a), Math.sin(a));
+  }
+
+  /**
+   * Create a unit vector from an angle in a p-normed space.
+   *
+   * @param {number} a The angle
+   * @param {number} p The p parameter of the p-normed space
+   * @returns {Vec2} The created vector
+   */
+  static fromAnglePNorm(a, p) {
+    const unit = new Vec2(Math.cos(a), Math.sin(a));
+    unit.div(unit.pNorm(p));
+    return unit;
+  }
+
+  /**
+   * Linearry interpolates a vector into another vector by scalar x.
+   *
+   * @param {Vec2 | Vec2AsObject} a - A vector.
+   * @param {Vec2 | Vec2AsObject} b - Other vector.
+   * @param {number} x - The scalar.
+   * @returns {Vec2} The created vector.
+   */
+  static lerp(a, b, x) {
+    return Vec2.add(a, Vec2.mult(Vec2.sub(b, a), x));
+  }
+
+  /**
+   * Get the distance between vectors.
+   *
+   * @param {Vec2 | Vec2AsObject} a - A vector.
+   * @param {Vec2 | Vec2AsObject} b - Other vector
+   * @returns {number} The distance between them.
+   */
+  static dist(a, b) {
+    return Vec2.sub(a, b).length;
+  }
+
+  /**
+   * Get the dot product of two vectors.
+   *
+   * @param {Vec2 | Vec2AsObject} a - A vector.
+   * @param {Vec2 | Vec2AsObject} b - Other vector
+   * @returns {number} The dot product of them.
+   */
+  static dot(a, b) {
+    return a.x * b.x + a.y * b.y;
+  }
+
+  /**
+   * Get the cross product of two vectors.
+   *
+   * @param {Vec2 | Vec2AsObject} a - A vector.
+   * @param {Vec2 | Vec2AsObject} b - Other vector
+   * @returns {number} The cross product of them.
+   */
+  static cross(a, b) {
+    return a.x * b.y - a.y * b.x;
+  }
+
+  /**
+   * Returns the cross product of a scalar and a 2D vector
+   * when the scalar goes first
+   *
+   * @param {number} s The scalar
+   * @param {Vec2 | Vec2AsObject} v The vector
+   * @returns {Vec2} The cross product
+   */
+  static crossScalarFirst(s, v) {
+    return new Vec2(-v.y * s, v.x * s);
+  }
+
+  /**
+   * Returns the cross product of a scalar and a 2D vector
+   * when the scalar goes second
+   *
+   * @param {Vec2 | Vec2AsObject} v The vector
+   * @param {number} s The scalar
+   * @returns {Vec2} The cross product
+   */
+  static crossScalarSecond(v, s) {
+    return new Vec2(v.y * s, -v.x * s);
+  }
+
+  /**
+   * Get the angle between two vectors.
+   *
+   * @param {Vec2} a - A vector.
+   * @param {Vec2} b - Other vector
+   * @returns {number} Angle between them.
+   */
+  static angle(a, b) {
+    return Math.acos(
+      Math.min(
+        Math.max(
+          Vec2.dot(a, b) / Math.sqrt(a.sqlength * b.sqlength), 1,
+        ), -1,
+      ),
+    );
+  }
+
+  /**
+   * Get the angle between two vectors but in the anticlockwise direction.
+   *
+   * @param {Vec2} a - A vector.
+   * @param {Vec2} b - Other vector
+   * @returns {number} Angle between them.
+   */
+  static angleACW(a, b) {
+    const ah = a.heading;
+    const bh = b.heading;
+    const angle = bh - ah;
+    return angle &lt; 0 ? 2 * Math.PI + angle : angle;
+  }
+
+  /**
+   * Get a vector with the same heading with the input vector
+   * but with length = 1.
+   *
+   * @param {Vec2} v A vector.
+   * @returns {Vec2} Vector with length = 1.
+   */
+  static normalized(v) {
+    const l = v.length;
+    return l === 0 ? v : new Vec2(v.x / l, v.y / l);
+  }
+
+  /**
+   * @returns {Vec2AsObject} The vector represented in a JS object,
+   * ready to be converted into JSON.
+   */
+  toJSON() {
+    return { x: this.x, y: this.y };
+  }
+
+  /**
+   * Creates a Vec2 class from the given object.
+   *
+   * @param {Vec2AsObject} obj The object to create the class from
+   * @returns {Vec2} The Vec2 object
+   */
+  static fromObject(obj) {
+    return new Vec2(obj.x, obj.y);
+  }
+}
+
+export default Vec2;
+</code></pre>
+        </article>
+    </section>
 
 
 

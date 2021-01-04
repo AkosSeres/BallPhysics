@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Wall - Documentation</title>
+    <title>math/linesegment.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,1234 +29,187 @@
 
 <div id="main">
     
-    <h1 class="page-title">Wall</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-        Wall
-        </h2>
-        
-            <div class="class-description">Class representing a wall.
-Walls are objects that are immovable and they are rigid.
-It can be convex or concave.</div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-<div class="section-method">
-
-    
-    <h2>Constructor</h2>
-    
-
-    <h4 class="name" id="Wall"><span class="type-signature"></span>new Wall<span class="signature">(_points)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Create a wall
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line27">line 27</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>_points</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Array.&lt;<a href="Vec2.html">Vec2</a>></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                Array of points that make up the wall
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="axes"><span class="type-signature"></span>axes<span class="type-signature"> :Array.&lt;<a href="Vec2.html">Vec2</a>></span></h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line48">line 48</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code>Array.&lt;<a href="Vec2.html">Vec2</a>></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="normals"><span class="type-signature"></span>normals<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Returns the normals of all the sides of the body's polygon.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line153">line 153</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="sides"><span class="type-signature"></span>sides<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Returns an array containing all the sides of the body
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line202">line 202</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".fromObject"><span class="type-signature">(static) </span>fromObject<span class="signature">(obj)</span><span class="type-signature"> &rarr; {<a href="Wall.html">Wall</a>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Creates a Wall class from the given object
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line230">line 230</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>obj</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="global.html#WallAsObject">WallAsObject</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The object to create the class from
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="Wall.html">Wall</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The Wall object
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateAxes"><span class="type-signature"></span>calculateAxes<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the axes of the wall. Removes duplicates and too dense areas.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line85">line 85</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateBoundingBox"><span class="type-signature"></span>calculateBoundingBox<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the bounding box of the wall and stores it.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line77">line 77</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateCenterAndRadius"><span class="type-signature"></span>calculateCenterAndRadius<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the center and the bound radius of the wall
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line188">line 188</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="collideWithBall"><span class="type-signature"></span>collideWithBall<span class="signature">(ball)</span><span class="type-signature"> &rarr; {<a href="global.html#CollisionData">CollisionData</a>|undefined}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Function for collision detection and behavior between balls and walls
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line108">line 108</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>ball</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Ball.html">Ball</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The ball that is checked if it collides with the wall
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="global.html#CollisionData">CollisionData</a></code></span>
-|
-
-<span class="param-type"><code>undefined</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The collision data
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="containsPoint"><span class="type-signature"></span>containsPoint<span class="signature">(p)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Returns true if the point is inside the body
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line168">line 168</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>p</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Vec2.html">Vec2</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The point
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The boolean value
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="toJSON"><span class="type-signature"></span>toJSON<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#WallAsObject">WallAsObject</a>}</span></h4>
-
-    
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line213">line 213</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="global.html#WallAsObject">WallAsObject</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The Wall represented in a JS object
-Ready to be converted into JSON
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">math/linesegment.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Vec2 from './vec2';
+
+/**
+ * Class representing a segment of a line
+ */
+class LineSegment {
+  /**
+   * Create a segment
+   *
+   * @param {Vec2} a_ Starting point
+   * @param {Vec2} b_ Ending point
+   */
+  constructor(a_, b_) {
+    this.a = a_;
+    this.b = b_;
+  }
+
+  /**
+   * Get the length of the segment
+   *
+   * @returns {number} The length
+   */
+  get length() {
+    return Vec2.dist(this.a, this.b);
+  }
+
+  /**
+   * Get the distance between a point and the line segment
+   *
+   * @param {Vec2|import('./vec2').Vec2AsObject} p The point as a vector
+   * @returns {number} The distance
+   */
+  distFromPoint(p) {
+    const e = Vec2.sub(this.a, this.b);
+    const A = Vec2.sub(p, this.b);
+    const B = Vec2.sub(p, this.a);
+    const a = A.length;
+    const b = B.length;
+    const c = e.length;
+    if (c === 0) return a;
+    const gamma = Vec2.angle(A, B);
+    const betha = Vec2.angle(A, e);
+    const alpha = Math.PI - gamma - betha;
+    const area = (Math.sin(alpha) * b * c) / 2;
+    const m = (2 * area) / c;
+    if (alpha > Math.PI / 2) return b;
+    if (betha > Math.PI / 2) return a;
+    return m;
+  }
+
+  /**
+   * Returns the nearest point to the origin on the segment.
+   *
+   * @returns {Vec2} The nearest point to the origin
+   */
+  get nearestPointO() {
+    const v = Vec2.sub(this.b, this.a);
+    if (Vec2.dot(this.a, v) >= 0) return this.a.copy;
+    if (Vec2.dot(this.b, v) &lt;= 0) return this.b.copy;
+    v.normalize();
+    const coord = -Vec2.dot(this.a, v);
+    return Vec2.add(this.a, Vec2.mult(v, coord));
+  }
+
+  /**
+   * Get if they intersect or not.
+   * If they intersect it returns the intersection point.
+   * If they do not it returns false.
+   *
+   * @param {LineSegment} segment1 A segment
+   * @param {LineSegment} segment2 Other segment
+   * @returns {Vec2 | boolean} Intersetion point
+   */
+  static intersect(segment1, segment2) {
+    const v1 = Vec2.sub(segment1.b, segment1.a);
+    const a1 = v1.y / v1.x;
+    const c1 = segment1.b.y - segment1.b.x * a1;
+
+    const v2 = Vec2.sub(segment2.b, segment2.a);
+    const a2 = v2.y / v2.x;
+    const c2 = segment2.b.y - segment2.b.x * a2;
+
+    if (v1.x === 0 &amp;&amp; v2.x !== 0) {
+      if (
+        (segment1.a.x >= segment2.a.x &amp;&amp; segment1.a.x &lt;= segment2.b.x)
+        || (segment1.a.x &lt;= segment2.a.x &amp;&amp; segment1.a.x >= segment2.b.x)
+      ) {
+        const h = a2 * segment1.a.x + c2;
+        if (
+          (h > segment1.a.y &amp;&amp; h &lt; segment1.b.y)
+          || (h &lt; segment1.a.y &amp;&amp; h > segment1.b.y)
+        ) {
+          return new Vec2(segment1.a.x, h);
+        }
+      }
+      return false;
+    }
+    if (v2.x === 0 &amp;&amp; v1.x !== 0) {
+      if (
+        (segment2.a.x >= segment1.a.x &amp;&amp; segment2.a.x &lt;= segment1.b.x)
+        || (segment2.a.x &lt;= segment1.a.x &amp;&amp; segment2.a.x >= segment1.b.x)
+      ) {
+        const h = a1 * segment2.a.x + c1;
+        if (
+          (h > segment2.a.y &amp;&amp; h &lt; segment2.b.y)
+          || (h &lt; segment2.a.y &amp;&amp; h > segment2.b.y)
+        ) {
+          return new Vec2(segment2.a.x, h);
+        }
+      }
+      return false;
+    }
+    if (v1.x === 0 &amp;&amp; v2.x === 0) {
+      if (segment1.a.x === segment2.a.x) {
+        let interval1;
+        if (segment1.a.y &lt; segment1.b.y) {
+          interval1 = [segment1.a.y, segment1.b.y];
+        } else {
+          interval1 = [segment1.b.y, segment1.a.y];
+        }
+        let interval2;
+        if (segment2.a.y &lt; segment2.b.y) {
+          interval2 = [segment2.a.y, segment2.b.y];
+        } else {
+          interval2 = [segment2.b.y, segment2.a.y];
+        }
+        const interval = [
+          interval1[0] > interval2[0] ? interval1[0] : interval2[0],
+          interval1[1] &lt; interval2[1] ? interval1[1] : interval2[1],
+        ];
+        if (interval[0] &lt;= interval[1]) {
+          return new Vec2(segment1.a.x, (interval[0] + interval[1]) / 2);
+        }
+      }
+      return false;
+    }
+
+    let interval1;
+    if (segment1.a.x &lt; segment1.b.x) {
+      interval1 = [segment1.a.x, segment1.b.x];
+    } else {
+      interval1 = [segment1.b.x, segment1.a.x];
+    }
+    let interval2;
+    if (segment2.a.x &lt; segment2.b.x) {
+      interval2 = [segment2.a.x, segment2.b.x];
+    } else {
+      interval2 = [segment2.b.x, segment2.a.x];
+    }
+    const interval = [
+      interval1[0] > interval2[0] ? interval1[0] : interval2[0],
+      interval1[1] &lt; interval2[1] ? interval1[1] : interval2[1],
+    ];
+    // If they are parralel the only time they intersect is when c1 == c2.
+    if (a1 === a2 &amp;&amp; c1 === c2 &amp;&amp; interval[0] &lt;= interval[1]) {
+      return new Vec2(
+        (interval[0] + interval[1]) / 2,
+        ((interval[0] + interval[1]) / 2) * a1 + c1,
+      );
+    }
+    const x = (c2 - c1) / (a1 - a2);
+    if (x >= interval[0] &amp;&amp; x &lt;= interval[1]) {
+      return new Vec2(x, x * a1 + c1);
+    } return false;
+  }
+}
+
+export default LineSegment;
+</code></pre>
+        </article>
+    </section>
 
 
 

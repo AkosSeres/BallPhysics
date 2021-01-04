@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Wall - Documentation</title>
+    <title>util/collision.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,1234 +29,300 @@
 
 <div id="main">
     
-    <h1 class="page-title">Wall</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-        Wall
-        </h2>
-        
-            <div class="class-description">Class representing a wall.
-Walls are objects that are immovable and they are rigid.
-It can be convex or concave.</div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-<div class="section-method">
-
-    
-    <h2>Constructor</h2>
-    
-
-    <h4 class="name" id="Wall"><span class="type-signature"></span>new Wall<span class="signature">(_points)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Create a wall
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line27">line 27</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>_points</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Array.&lt;<a href="Vec2.html">Vec2</a>></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                Array of points that make up the wall
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="axes"><span class="type-signature"></span>axes<span class="type-signature"> :Array.&lt;<a href="Vec2.html">Vec2</a>></span></h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line48">line 48</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code>Array.&lt;<a href="Vec2.html">Vec2</a>></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="normals"><span class="type-signature"></span>normals<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Returns the normals of all the sides of the body's polygon.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line153">line 153</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="sides"><span class="type-signature"></span>sides<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Returns an array containing all the sides of the body
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line202">line 202</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".fromObject"><span class="type-signature">(static) </span>fromObject<span class="signature">(obj)</span><span class="type-signature"> &rarr; {<a href="Wall.html">Wall</a>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Creates a Wall class from the given object
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line230">line 230</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>obj</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="global.html#WallAsObject">WallAsObject</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The object to create the class from
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="Wall.html">Wall</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The Wall object
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateAxes"><span class="type-signature"></span>calculateAxes<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the axes of the wall. Removes duplicates and too dense areas.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line85">line 85</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateBoundingBox"><span class="type-signature"></span>calculateBoundingBox<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the bounding box of the wall and stores it.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line77">line 77</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateCenterAndRadius"><span class="type-signature"></span>calculateCenterAndRadius<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the center and the bound radius of the wall
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line188">line 188</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="collideWithBall"><span class="type-signature"></span>collideWithBall<span class="signature">(ball)</span><span class="type-signature"> &rarr; {<a href="global.html#CollisionData">CollisionData</a>|undefined}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Function for collision detection and behavior between balls and walls
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line108">line 108</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>ball</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Ball.html">Ball</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The ball that is checked if it collides with the wall
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="global.html#CollisionData">CollisionData</a></code></span>
-|
-
-<span class="param-type"><code>undefined</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The collision data
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="containsPoint"><span class="type-signature"></span>containsPoint<span class="signature">(p)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Returns true if the point is inside the body
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line168">line 168</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>p</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Vec2.html">Vec2</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The point
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The boolean value
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="toJSON"><span class="type-signature"></span>toJSON<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#WallAsObject">WallAsObject</a>}</span></h4>
-
-    
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line213">line 213</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="global.html#WallAsObject">WallAsObject</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The Wall represented in a JS object
-Ready to be converted into JSON
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">util/collision.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Vec2 from '../math/vec2';
+import Polygon from '../math/polygon';
+
+/**
+ * Calculates the collsion response when any two physical objects
+ * collide with a given collision point and collision normal.
+ *
+ * @param {import('../physics').PhysicalObject} object1 The first object
+ * @param {import('../physics').PhysicalObject} object2 The second object
+ * @param {Vec2} contactPoint The collision point
+ * @param {Vec2} normal The normal of the colliding surfaces
+ */
+export function collisionResponse(object1, object2, contactPoint, normal) {
+  const n = normal;
+  const cp = contactPoint;
+  const b1 = object1;
+  const b2 = object2;
+
+  const v1 = b1.vel;
+  const v2 = b2.vel;
+  const ang1 = b1.ang;
+  const ang2 = b2.ang;
+  const r1 = Vec2.sub(cp, b1.pos);
+  const r2 = Vec2.sub(cp, b2.pos);
+  const am1 = b1.am;
+  const am2 = b2.am;
+  const m1 = b1.m;
+  const m2 = b2.m;
+  const k = (b1.k + b2.k) / 2;
+  const fc = (b1.fc + b2.fc) / 2;
+
+  // Effective velocities in the collision point
+  const v1InCP = b1.velInPlace(cp);
+  const v2InCP = b2.velInPlace(cp);
+  // Relative velocity in collision point
+  const vRelInCP = Vec2.sub(v2InCP, v1InCP);
+
+  // Calculate impulse
+  let impulse = (1 / m1) + (1 / m2);
+  impulse += Vec2.dot(
+    Vec2.crossScalarFirst(Vec2.cross(r1, n) / am1, r1), n,
+  );
+  impulse += Vec2.dot(
+    Vec2.crossScalarFirst(Vec2.cross(r2, n) / am2, r2), n,
+  );
+  impulse = -((1 + k) * Vec2.dot(vRelInCP, n)) / impulse;
+
+  // Calculate post-collision velocities
+  let u1 = Vec2.sub(v1, Vec2.mult(n, impulse / m1));
+  let u2 = Vec2.add(v2, Vec2.mult(n, impulse / m2));
+
+  // Calculate post-collision angular velocities
+  let pAng1 = ang1 - (impulse * Vec2.cross(r1, n)) / am1;
+  let pAng2 = ang2 + (impulse * Vec2.cross(r2, n)) / am2;
+
+  /**
+   * Now calculate the friction reaction
+   */
+  // Tangential direction
+  const t = vRelInCP.copy;
+  t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
+  t.setMag(1);
+
+  // Calculate max impulse
+  let maxImpulse = (1 / m1) + (1 / m2);
+  maxImpulse += Vec2.dot(
+    Vec2.crossScalarFirst(Vec2.cross(r1, t) / am1, r1), t,
+  );
+  maxImpulse += Vec2.dot(
+    Vec2.crossScalarFirst(Vec2.cross(r2, t) / am2, r2), t,
+  );
+  maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
+
+  // Friction impulse
+  let frictionImpulse = Math.sign(maxImpulse) * impulse * fc;
+  if (Math.abs(frictionImpulse) > Math.abs(maxImpulse)) frictionImpulse = maxImpulse;
+
+  // Calculate post-friction velocities
+  u1 = Vec2.sub(u1, Vec2.mult(t, frictionImpulse / m1));
+  u2 = Vec2.add(u2, Vec2.mult(t, frictionImpulse / m2));
+
+  // Calculate post-friction angular velocities
+  pAng1 -= (frictionImpulse * Vec2.cross(r1, t)) / am1;
+  pAng2 += (frictionImpulse * Vec2.cross(r2, t)) / am2;
+
+  // Store the new values in the objects
+  b1.vel = u1;
+  b2.vel = u2;
+  b1.ang = pAng1;
+  b2.ang = pAng2;
+}
+
+/**
+ * Calculates the collsion response when a physical object
+ * collides with an immovable object, like a {@link Wall} or {@link FixedBall}.
+ *
+ * @param {import('../physics').PhysicalObject} object The phyisical object
+ * @param {Vec2 | import('../math/vec2').Vec2AsObject} contactPoint The collision point
+ * @param {Vec2} normal The surface normal
+ */
+export function collisionResponseWithWall(object, contactPoint, normal) {
+  const cp = contactPoint;
+  const n = normal;
+  const b = object;
+  const r = Vec2.sub(cp, b.pos);
+  const { am, m } = b;
+
+  // Relative velocity in collision point
+  const vRelInCP = Vec2.mult(b.velInPlace(cp), -1);
+
+  // Calculate impulse
+  let impulse = (1 / m);
+  impulse += Vec2.dot(
+    Vec2.crossScalarFirst(Vec2.cross(r, n) / am, r), n,
+  );
+  impulse = -((1 + b.k) * Vec2.dot(vRelInCP, n)) / impulse;
+
+  // Calculate post-collision velocity
+  let u = Vec2.sub(b.vel, Vec2.mult(n, impulse / m));
+
+  // Calculate post-collision angular velocity
+  let pAng = b.ang - (impulse * Vec2.cross(r, n)) / am;
+
+  /**
+   * Now calculate the friction reaction
+   */
+  // Tangential direction
+  const t = vRelInCP.copy;
+  t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
+  t.setMag(1);
+
+  // Calculate max impulse
+  let maxImpulse = (1 / m);
+  maxImpulse += Vec2.dot(
+    Vec2.crossScalarFirst(Vec2.cross(r, t) / am, r), t,
+  );
+  maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
+
+  // Friction impulse
+  let frictionImpulse = Math.sign(maxImpulse) * impulse * b.fc;
+  if (Math.abs(frictionImpulse) > Math.abs(maxImpulse)) frictionImpulse = maxImpulse;
+
+  // Calculate post-friction velocity
+  u = Vec2.sub(u, Vec2.mult(t, frictionImpulse / m));
+
+  // Calculate post-friction angular velocity
+  pAng -= (frictionImpulse * Vec2.cross(r, t)) / am;
+
+  // Store the new values in the body
+  b.vel = u;
+  b.ang = pAng;
+}
+
+/**
+ * Used to descrive an interval.
+ *
+ * @class
+ * @param {number} min The lower bound
+ * @param {number} max The high bound
+ */
+export function MinMax(min, max) {
+  this.min = min;
+  this.max = max;
+}
+
+MinMax.prototype.size = function size() {
+  return this.max - this.min;
+};
+
+/**
+ * Returns the min and max of an array of numbers
+ *
+ * @param {number[]} arr Array of numbers
+ * @returns {MinMax} The min and max value
+ */
+export function minMaxOfArray(arr) {
+  return new MinMax(Math.min(...arr), Math.max(...arr));
+}
+
+/**
+ * Finds the overlap of two {@link MinMax}-es.
+ *
+ * @param {MinMax} interval1 The first MinMax
+ * @param {MinMax} interval2 The second MinMax
+ * @returns {MinMax} Their overlap
+ */
+export function findOverlap(interval1, interval2) {
+  return new MinMax(Math.max(interval1.min, interval2.min),
+    Math.min(interval1.max, interval2.max));
+}
+
+/**
+ * Detects the collision and returns collision data.
+ *
+ * @param {Vec2[]} points1 The first shape
+ * @param {Vec2[]} points2 The other shape
+ * @param {Vec2[]} normals1 The axes of the first shape
+ * @param {Vec2[]} normals2 The axes of the other shape
+ * @returns {{normal:Vec2, overlap:number, index:number} | boolean} Collision data
+ */
+export function detectCollision(points1, points2, normals1, normals2) {
+  const coordinateSystems = [...normals1, ...normals2];
+  /**
+   * Return the max and min coordinates of the points in the given space.
+   *
+   * @param {Vec2} normal The vector to project with
+   * @returns {import('./collision').MinMax} The max and min values
+   */
+  const getMinMaxes1 = (normal) => minMaxOfArray(points1.map((p) => Vec2.dot(p, normal)));
+  /**
+   * Return the max and min coordinates of the points in the given space.
+   *
+   * @param {Vec2} normal The vector to project with
+   * @returns {import('./collision').MinMax} The max and min values
+   */
+  const getMinMaxes2 = (normal) => minMaxOfArray(points2.map((p) => Vec2.dot(p, normal)));
+  /** @type {MinMax[]} */
+  const overlaps = [];
+  if (coordinateSystems.some((s) => {
+    const currMinMax1 = getMinMaxes1(s);
+    const currMinMax2 = getMinMaxes2(s);
+    const overlap = findOverlap(currMinMax1, currMinMax2);
+    overlaps.push(overlap);
+    if (overlap.max &lt; overlap.min) return true;
+    return false;
+  })) return false;
+
+  const overlapSizes = overlaps.map((overlap) => overlap.size());
+  let smallestOverlap = overlapSizes[0];
+  let index = 0;
+  for (let i = 1; i &lt; overlapSizes.length; i += 1) {
+    if (smallestOverlap > overlapSizes[i]) {
+      smallestOverlap = overlapSizes[i];
+      index = i;
+    }
+  }
+
+  const n = coordinateSystems[index].copy;
+  return {
+    normal: n,
+    overlap: smallestOverlap,
+    index,
+  };
+}
+
+/**
+ * @callback supportFunction
+ * @param {Vec2} d The direction
+ * @returns {Vec2} The max point
+ */
+
+/**
+ * Detect collision using the GJK algorithm.
+ *
+ * @param {{pos: Vec2, support: supportFunction}} shape1 The first object
+ * @param {{pos: Vec2, support: supportFunction}} shape2 The second object
+ * @returns {boolean} Does a collision appear
+ */
+export function detectCollisionGJK(shape1, shape2) {
+  const initial = Vec2.sub(shape2.pos, shape1.pos);
+  let sup1 = shape1.support(initial);
+  initial.mult(-1);
+  let sup2 = shape1.support(initial);
+  const points = [Vec2.sub(sup1, sup2)];
+  let D = Vec2.sub(sup2, sup1);
+
+  sup1 = shape1.support(D);
+  D.mult(-1);
+  sup2 = shape2.support(D);
+  if ((-Vec2.dot(Vec2.sub(sup1, sup2), D)) &lt; 0) return false;
+  points.push(Vec2.sub(sup1, sup2));
+  if (points[0].length &lt; points[1].length) D = Vec2.mult(points[0], -1);
+  else D = Vec2.mult(points[1], -1);
+  sup1 = shape1.support(D);
+  D.mult(-1);
+  sup2 = shape2.support(D);
+  if ((-Vec2.dot(Vec2.sub(sup1, sup2), D)) &lt; 0) return false;
+  points.push(Vec2.sub(sup1, sup2));
+  const triangle = new Polygon(points);
+  return triangle.isPointInside(new Vec2(0, 0));
+}
+</code></pre>
+        </article>
+    </section>
 
 
 

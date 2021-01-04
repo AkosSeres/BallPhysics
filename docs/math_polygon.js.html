@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Wall - Documentation</title>
+    <title>math/polygon.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,1234 +29,412 @@
 
 <div id="main">
     
-    <h1 class="page-title">Wall</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-        Wall
-        </h2>
-        
-            <div class="class-description">Class representing a wall.
-Walls are objects that are immovable and they are rigid.
-It can be convex or concave.</div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-<div class="section-method">
-
-    
-    <h2>Constructor</h2>
-    
-
-    <h4 class="name" id="Wall"><span class="type-signature"></span>new Wall<span class="signature">(_points)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Create a wall
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line27">line 27</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>_points</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Array.&lt;<a href="Vec2.html">Vec2</a>></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                Array of points that make up the wall
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="axes"><span class="type-signature"></span>axes<span class="type-signature"> :Array.&lt;<a href="Vec2.html">Vec2</a>></span></h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line48">line 48</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code>Array.&lt;<a href="Vec2.html">Vec2</a>></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="normals"><span class="type-signature"></span>normals<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Returns the normals of all the sides of the body's polygon.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line153">line 153</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="sides"><span class="type-signature"></span>sides<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Returns an array containing all the sides of the body
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line202">line 202</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".fromObject"><span class="type-signature">(static) </span>fromObject<span class="signature">(obj)</span><span class="type-signature"> &rarr; {<a href="Wall.html">Wall</a>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Creates a Wall class from the given object
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line230">line 230</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>obj</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="global.html#WallAsObject">WallAsObject</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The object to create the class from
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="Wall.html">Wall</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The Wall object
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateAxes"><span class="type-signature"></span>calculateAxes<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the axes of the wall. Removes duplicates and too dense areas.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line85">line 85</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateBoundingBox"><span class="type-signature"></span>calculateBoundingBox<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the bounding box of the wall and stores it.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line77">line 77</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateCenterAndRadius"><span class="type-signature"></span>calculateCenterAndRadius<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the center and the bound radius of the wall
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line188">line 188</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="collideWithBall"><span class="type-signature"></span>collideWithBall<span class="signature">(ball)</span><span class="type-signature"> &rarr; {<a href="global.html#CollisionData">CollisionData</a>|undefined}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Function for collision detection and behavior between balls and walls
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line108">line 108</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>ball</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Ball.html">Ball</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The ball that is checked if it collides with the wall
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="global.html#CollisionData">CollisionData</a></code></span>
-|
-
-<span class="param-type"><code>undefined</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The collision data
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="containsPoint"><span class="type-signature"></span>containsPoint<span class="signature">(p)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Returns true if the point is inside the body
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line168">line 168</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>p</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Vec2.html">Vec2</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The point
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The boolean value
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="toJSON"><span class="type-signature"></span>toJSON<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#WallAsObject">WallAsObject</a>}</span></h4>
-
-    
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line213">line 213</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="global.html#WallAsObject">WallAsObject</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The Wall represented in a JS object
-Ready to be converted into JSON
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">math/polygon.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Vec2 from './vec2';
+import LineSegment from './linesegment';
+import Line from './line';
+
+/** @typedef {(Vec2|import('./vec2').Vec2AsObject)} Vec2Like */
+
+/**
+ * Class representing a mathematical polygon
+ */
+class Polygon {
+  /**
+   * Creates the polygon
+   *
+   * @param {Vec2Like[]} points_ Array of the
+   * points for the polygon in order
+   */
+  constructor(points_) {
+    if (points_.length &lt; 3) {
+      throw new Error(
+        'Not enough points in polygon (minimum required: 3)',
+      );
+    }
+    this.points = points_;
+    this.makeAntiClockwise();
+  }
+
+  /**
+   * Returns the vector of the side with the given number
+   * The vector has the orientation of the order of the points
+   *
+   * @param {number} i The number of the side
+   * @returns {Vec2} The side vector
+   */
+  getSideVector(i) {
+    let num = i;
+    if (num &lt; 0) num += Math.abs(Math.floor(num)) * this.points.length;
+    return Vec2.sub(this.points[(num + 1) % this.points.length],
+      this.points[num % this.points.length]);
+  }
+
+  /**
+   * Returns the side with the given number as a LineSegment
+   *
+   * @param {number} i The number of the side
+   * @returns {LineSegment} The side line segment
+   */
+  getSideSegment(i) {
+    let num = i;
+    if (num &lt; 0) num += Math.abs(Math.floor(num)) * this.points.length;
+    return new LineSegment(Vec2.fromObject(this.points[(num + 1) % this.points.length]),
+      Vec2.fromObject(this.points[num % this.points.length]));
+  }
+
+  /**
+   * Returns the side with the given number as a Line
+   *
+   * @param {number} i The number of the side
+   * @returns {Line} The side line
+   */
+  getSideLine(i) {
+    let num = i;
+    if (num &lt; 0) num += Math.abs(Math.floor(num)) * this.points.length;
+    return new LineSegment(Vec2.fromObject(this.points[(num + 1) % this.points.length]),
+      Vec2.fromObject(this.points[num % this.points.length]));
+  }
+
+  /**
+   * @returns {number} The number of sides of the polygon
+   */
+  get sides() {
+    return this.points.length;
+  }
+
+  /**
+   * Turns the order of the points to anticlockwise,
+   * which is the standard in mathematics
+   */
+  makeAntiClockwise() {
+    let angleSum = 0;
+
+    for (let i = 1; i &lt;= this.sides; i += 1) {
+      const vec1 = this.getSideVector(i);
+      const vec2 = this.getSideVector(i - 1);
+      vec2.mult(-1);
+      angleSum += Vec2.angleACW(vec1, vec2);
+    }
+
+    if (this.sides === 3) {
+      if (angleSum > Math.PI * 1.5) this.reverseOrder();
+    } else if (this.sides === 4) {
+      if (Vec2.angleACW(this.getSideVector(1),
+        this.getSideVector(0)) >= Math.PI) {
+        this.reverseOrder();
+      }
+    } else if (this.sides > 4) {
+      const realAngle = angleSum - this.sides * Math.PI;
+      if (realAngle > 0) {
+        this.reverseOrder();
+      }
+    }
+  }
+
+  /**
+   * Reverses the order of points in the polygon
+   */
+  reverseOrder() {
+    this.points = this.points.reverse();
+  }
+
+  /**
+   * Determines if a given point is inside the polygon or not
+   *
+   * @param {Vec2|import('./vec2').Vec2AsObject} point The point to investigate
+   * @returns {boolean} If the point is inside or not
+   */
+  isPointInside(point) {
+    const p = new Vec2(point.x, point.y);
+    if (Vec2.dist(p, this.centerPoint) > this.boundRadius) return false;
+
+    // Find a point that is outside of the shape for sure
+    const outsidePoint = this.centerPoint.copy;
+    outsidePoint.add(Vec2.mult(new Vec2(1.1, 0.6), this.boundRadius));
+
+    // Create a LineSegment between the points
+    const segment = new LineSegment(p, outsidePoint);
+
+    // Count the intersections
+    let intersectionCount = 0;
+    [...Array(this.sides).keys()]
+      .map((number) => this.getSideSegment(number)).forEach((side) => {
+        if (LineSegment.intersect(side, segment)) intersectionCount += 1;
+      });
+
+    if (intersectionCount % 2 === 0) return false;
+    if (intersectionCount % 2 === 1) return true;
+    return false;
+  }
+
+  /**
+   * Returns the mathematical average of the point of the polygon
+   *
+   * @returns {Vec2} The center point
+   */
+  get centerPoint() {
+    const center = new Vec2(0, 0);
+    this.points.forEach((p) => {
+      center.add(p);
+    });
+    center.div(this.sides);
+    return center;
+  }
+
+  /**
+   * Returns the radius of the smallest possible
+   * circle containing the whole polygon centered
+   * around the polygon's centerPoint
+   * The circle's center is the centerPoint of the polygon
+   *
+   * @returns {number} The radius
+   */
+  get boundRadius() {
+    const center = this.centerPoint;
+    return Math.max(...this.points.map((p) => Vec2.dist(p, center)));
+  }
+
+  /**
+   * @returns {LineSegment[]} Array containing the sides of the polygon
+   */
+  get allSides() {
+    return [...Array(this.sides).keys()]
+      .map((number) => this.getSideSegment(number));
+  }
+
+  /**
+   * Determines the intersecting area of two polygons.
+   * Returns undefined if there is none.
+   *
+   * @param {Polygon} poly1 The first polygon
+   * @param {Polygon} poly2 The second polygon
+   * @returns {Polygon | undefined} The intersection area
+   */
+  static intersection(poly1, poly2) {
+    if (Vec2.dist(poly1.centerPoint, poly2.centerPoint)
+      > poly1.boundRadius + poly2.boundRadius) return undefined;
+
+    // Determine intersection points
+    /**
+     * @typedef IntersectionPoint
+     * @property {number} x The x coordinate
+     * @property {number} y The y coordinate
+     * @property {boolean} [isIntersectionPoint] Indicates the intersection
+     */
+    /** @typedef {{intersectionPoint:IntersectionPoint,sideNum1:number,sideNum2:number}} SectData */
+    /** @type {SectData[]} */
+    const sideIntersections = [];
+    const sides1 = poly1.allSides;
+    const sides2 = poly2.allSides;
+    sides1.forEach((side1, idx1) => {
+      sides2.forEach((side2, idx2) => {
+        /** @type {IntersectionPoint | boolean} */
+        const intersectionOfSides = LineSegment.intersect(side1, side2);
+        if (typeof intersectionOfSides === 'object' &amp;&amp; 'x' in intersectionOfSides) {
+          intersectionOfSides.isIntersectionPoint = true;
+          sideIntersections.push({
+            intersectionPoint: intersectionOfSides,
+            sideNum1: idx1,
+            sideNum2: idx2,
+          });
+        }
+      });
+    });
+
+    if (sideIntersections.length === 0) {
+      if (poly1.isPointInside(poly2.points[0])) {
+        return new Polygon(poly2.points.map((p) => Vec2.fromObject(p)));
+      }
+      if (poly2.isPointInside(poly1.points[0])) {
+        return new Polygon(poly1.points.map((p) => Vec2.fromObject(p)));
+      }
+    }
+
+    // Put the intersection points into the copy of polygons
+    const new1 = new Polygon(poly1.points);
+    for (let i = new1.points.length - 1; i >= 0; i -= 1) {
+      const intersectionsOnThis = sideIntersections.filter((it) => it.sideNum1 === i);
+      if (intersectionsOnThis.length > 1) {
+        intersectionsOnThis.sort((a, b) => Vec2.dist(new1.points[i], a.intersectionPoint)
+          - Vec2.dist(new1.points[i], b.intersectionPoint));
+      }
+      if (intersectionsOnThis.length > 0) {
+        new1.points.splice(i + 1, 0,
+          ...intersectionsOnThis.map((it) => it.intersectionPoint));
+      }
+    }
+    const new2 = new Polygon(poly2.points);
+    for (let i = new2.points.length - 1; i >= 0; i -= 1) {
+      const intersectionsOnThis = sideIntersections.filter((it) => it.sideNum2 === i);
+      if (intersectionsOnThis.length > 1) {
+        intersectionsOnThis.sort((a, b) => Vec2.dist(new2.points[i], a.intersectionPoint)
+          - Vec2.dist(new2.points[i], b.intersectionPoint));
+      }
+      if (intersectionsOnThis.length > 0) {
+        new2.points.splice(i + 1, 0,
+          ...intersectionsOnThis.map((it) => it.intersectionPoint));
+      }
+    }
+
+    // Find a starting point outside of the other poly
+    const currInv = {
+      polyNum: 1,
+      pointNum: 0,
+    };
+    for (let i = 0; i &lt; new1.points.length; i += 1) {
+      if ('isIntersectionPoint' in new1.points[i]) {
+        currInv.pointNum = i;
+        break;
+      } else if (new2.isPointInside(new1.points[i])) {
+        currInv.pointNum = i;
+        break;
+      }
+    }
+    const isDone = false;
+    const finalPoints = [];
+    while (!isDone) {
+      const currentPoly = (currInv.polyNum === 1) ? new1 : new2;
+      const otherPoly = (currInv.polyNum === 1) ? new2 : new1;
+      finalPoints.push(
+        Vec2.fromObject(currentPoly.points[
+          currInv.pointNum % currentPoly.points.length]),
+      );
+      if (finalPoints.length > 2
+        &amp;&amp; finalPoints[0].x === finalPoints[finalPoints.length - 1].x
+        &amp;&amp; finalPoints[0].y === finalPoints[finalPoints.length - 1].y) {
+        finalPoints.pop();
+        break;
+      }
+      if (finalPoints.length > new1.points.length + new2.points.length) {
+        break;
+      }
+
+      if ('isIntersectionPoint' in currentPoly.points[currInv.pointNum
+        % currentPoly.points.length]) {
+        if ('isIntersectionPoint' in currentPoly.points[(currInv.pointNum + 1)
+          % currentPoly.points.length]) {
+          currInv.pointNum += 1;
+        } else if (otherPoly.isPointInside(
+          currentPoly.points[(currInv.pointNum + 1)
+          % currentPoly.points.length],
+        )
+          &amp;&amp; !('isIntersectionPoint' in currentPoly.points[(currInv.pointNum + 1)
+            % currentPoly.points.length])) {
+          currInv.pointNum += 1;
+        } else {
+          currInv.pointNum = otherPoly.points.indexOf(
+            currentPoly.points[currInv.pointNum
+            % currentPoly.points.length],
+          ) + 1;
+          currInv.polyNum = (currInv.polyNum === 1) ? 2 : 1;
+        }
+      } else {
+        currInv.pointNum += 1;
+      }
+    }
+
+    return new Polygon(finalPoints);
+  }
+
+  /**
+   * Creates a regular polygon (circle) with
+   * the given center point and radius
+   *
+   * @param {number} radius The radius of the circle
+   * @param {Vec2} center The center of the circle
+   * @param {number} resolution The resolution of the circle
+   * @returns {Polygon} The created Polygon
+   */
+  static createCircle(radius, center, resolution = 25) {
+    const pts = [...Array(resolution).keys()].map((number) => {
+      const p = Vec2.fromAngle((2 * Math.PI * number) / resolution);
+      p.setMag(radius);
+      p.add(center);
+      return p;
+    });
+    return new Polygon(pts);
+  }
+
+  /**
+   * Creates a fracture diagram based on the given points
+   * Looks like a Voronoi diagram
+   *
+   * @param {Vec2[]} middlePoints Points of fractures
+   * @param {number} maxLength Max length of sides on the peripherals
+   * @returns {Polygon[]} The fractured shapes
+   */
+  static fracture(middlePoints, maxLength = 500) {
+    const shapes = middlePoints.map((p, i) => {
+      /** @type {Line[]} */
+      let lines = [];
+      for (let j = 0; j &lt; middlePoints.length; j += 1) {
+        if (i !== j) {
+          const otherPoint = middlePoints[j];
+          const avg = Vec2.div(Vec2.add(p, otherPoint), 2);
+          const e = Vec2.sub(p, otherPoint);
+          e.rotate(Math.PI / 2);
+
+          lines.push(new Line(avg, Vec2.add(e, avg)));
+        }
+      }
+
+      lines = lines.filter((line, idx) => {
+        const connectingSegment = new LineSegment(line.a, p);
+        for (let j = 0; j &lt; lines.length; j += 1) {
+          if (idx !== j) {
+            const sectP = Line.intersectWithLineSegment(lines[j], connectingSegment);
+            if (sectP) return false;
+          }
+        }
+        return true;
+      });
+
+      lines = lines.sort((a, b) => Vec2.sub(a.a, a.b).heading - Vec2.sub(b.a, b.b).heading);
+
+      const shape = lines.map((line, index) => {
+        /** @type {Vec2[]} */
+        let intersectPoints = [];
+        for (let j = 0; j &lt; lines.length; j += 1) {
+          if (index !== j) {
+            const newIntersection = Line.intersect(line, lines[j]);
+            if (newIntersection instanceof Vec2) intersectPoints.push(newIntersection);
+          }
+        }
+        const e = Vec2.sub(line.a, line.b);
+        intersectPoints = intersectPoints.filter((ip) => {
+          const v = Vec2.sub(ip, p);
+          e.setMag(1);
+          const dist = Vec2.dot(v, e);
+          return dist > 0;
+        });
+        if (intersectPoints.length === 0) {
+          intersectPoints.push(Vec2.add(Vec2.mult(e, maxLength * 1.2), line.a));
+        }
+        intersectPoints = intersectPoints.sort((a, b) => Vec2.dist(a, p) - Vec2.dist(b, p));
+        return intersectPoints[0];
+      });
+
+      return shape;
+    });
+
+    return shapes.filter((shape) => shape.length >= 3).map((shape) => new Polygon(shape));
+  }
+}
+
+export default Polygon;
+</code></pre>
+        </article>
+    </section>
 
 
 

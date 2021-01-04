@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Wall - Documentation</title>
+    <title>entity/softball.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,1234 +29,352 @@
 
 <div id="main">
     
-    <h1 class="page-title">Wall</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-        Wall
-        </h2>
-        
-            <div class="class-description">Class representing a wall.
-Walls are objects that are immovable and they are rigid.
-It can be convex or concave.</div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-<div class="section-method">
-
-    
-    <h2>Constructor</h2>
-    
-
-    <h4 class="name" id="Wall"><span class="type-signature"></span>new Wall<span class="signature">(_points)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Create a wall
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line27">line 27</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>_points</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Array.&lt;<a href="Vec2.html">Vec2</a>></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                Array of points that make up the wall
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="axes"><span class="type-signature"></span>axes<span class="type-signature"> :Array.&lt;<a href="Vec2.html">Vec2</a>></span></h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line48">line 48</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code>Array.&lt;<a href="Vec2.html">Vec2</a>></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="normals"><span class="type-signature"></span>normals<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Returns the normals of all the sides of the body's polygon.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line153">line 153</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="sides"><span class="type-signature"></span>sides<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Returns an array containing all the sides of the body
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line202">line 202</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".fromObject"><span class="type-signature">(static) </span>fromObject<span class="signature">(obj)</span><span class="type-signature"> &rarr; {<a href="Wall.html">Wall</a>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Creates a Wall class from the given object
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line230">line 230</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>obj</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="global.html#WallAsObject">WallAsObject</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The object to create the class from
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="Wall.html">Wall</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The Wall object
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateAxes"><span class="type-signature"></span>calculateAxes<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the axes of the wall. Removes duplicates and too dense areas.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line85">line 85</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateBoundingBox"><span class="type-signature"></span>calculateBoundingBox<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the bounding box of the wall and stores it.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line77">line 77</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="calculateCenterAndRadius"><span class="type-signature"></span>calculateCenterAndRadius<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Calculates the center and the bound radius of the wall
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line188">line 188</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="collideWithBall"><span class="type-signature"></span>collideWithBall<span class="signature">(ball)</span><span class="type-signature"> &rarr; {<a href="global.html#CollisionData">CollisionData</a>|undefined}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Function for collision detection and behavior between balls and walls
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line108">line 108</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>ball</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Ball.html">Ball</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The ball that is checked if it collides with the wall
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="global.html#CollisionData">CollisionData</a></code></span>
-|
-
-<span class="param-type"><code>undefined</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The collision data
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="containsPoint"><span class="type-signature"></span>containsPoint<span class="signature">(p)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Returns true if the point is inside the body
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line168">line 168</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>p</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Vec2.html">Vec2</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                The point
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The boolean value
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="toJSON"><span class="type-signature"></span>toJSON<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#WallAsObject">WallAsObject</a>}</span></h4>
-
-    
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="entity_wall.js.html">entity/wall.js</a>, <a href="entity_wall.js.html#line213">line 213</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="global.html#WallAsObject">WallAsObject</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    The Wall represented in a JS object
-Ready to be converted into JSON
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">entity/softball.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* eslint-disable no-continue */
+/* eslint-disable no-labels */
+import Vec2 from '../math/vec2';
+import Ball from './ball';
+import Stick from '../constraint/stick';
+import LineSegment from '../math/linesegment';
+
+/**
+ * An object representation of the SoftBall class for easy conversion to JSON.
+ *
+ * @typedef {object} SoftBallAsObject
+ * @property {number} pressure The pressure inside the softball
+ * @property {number} fc The friction coefficient
+ * @property {number} r The original radius of the softball
+ * @property {number} resolution The number of Balls used to construct the SoftBall
+ * @property {import('../physics').ObjectIndentifier[]} points The indices of the Balls'
+ * that make up the SoftBall
+ * @property {number[]} sides The indices of the sticks' holding the softball together
+ */
+
+/**
+ * Class representing a softbody object
+ * They work like a ball, with pressure inside
+ */
+class SoftBall {
+  /**
+   * Creates a SoftBall
+   *
+   * @param {Vec2} pos The starting position of the soft ball
+   * @param {number} r The radius of the soft ball
+   * @param {number} pressure The "hardness" of the soft ball
+   * @param {number} fc Friction coefficient
+   * @param {number} resolution The number of points that make up the ball
+   */
+  constructor(pos, r, pressure, fc, resolution) {
+    /** @type {Ball[]} */
+    this.points = [];
+
+    if (fc || fc === 0) this.fc = fc;
+    else this.fc = 0.4;
+
+    this.pressure = pressure;
+
+    if (!resolution) this.resolution = 30;
+    else this.resolution = resolution;
+
+    this.r = Math.abs(r);
+
+    const layerNumber = Math.random() * 1000000;
+
+    for (let i = 0; i &lt; this.resolution; i += 1) {
+      const newPos = new Vec2(pos.x, pos.y);
+      newPos.add(
+        Vec2.mult(Vec2.fromAngle((i / this.resolution) * Math.PI * 2), this.r),
+      );
+      this.points.push(
+        new Ball(
+          newPos,
+          new Vec2(0, 0),
+          this.r * Math.sin(Math.PI / this.resolution),
+          0,
+          0,
+          this.fc,
+        ),
+      );
+      // @ts-ignore
+      this.points[this.points.length - 1].layer = layerNumber;
+    }
+
+    /** @type {import('../physics').StickOrSpring[]} */
+    this.sides = [];
+    for (let i = 0; i &lt; this.resolution; i += 1) {
+      const side = new Stick(2 * this.r * Math.sin(Math.PI / this.resolution));
+      side.attachObject(this.points[i]);
+      side.attachObject(this.points[(i + 1) % this.resolution]);
+      if (i % 2 === 0) side.lockRotation();
+      this.sides.push(side);
+    }
+  }
+
+  /**
+   * Updates the pressure-based forces in the soft ball
+   *
+   * @param {SoftBall} softBall The soft ball to update
+   * @param {number} t Elapsed time
+   */
+  static updatePressureBasedForces(softBall, t) {
+    /** @type {Vec2[][]} */
+    const poligons = [];
+    poligons.push([]);
+    softBall.points.forEach((p) => {
+      poligons[0].push(new Vec2(p.pos.x, p.pos.y));
+    });
+
+    if (
+      ((pol) => {
+        let angle = Vec2.angleACW(
+          Vec2.sub(pol[1], pol[0]),
+          Vec2.sub(pol[pol.length - 1], pol[0]),
+        );
+        if (angle > Math.PI) return true;
+        for (let i = 1; i &lt; pol.length - 1; i += 1) {
+          angle = Vec2.angleACW(
+            Vec2.sub(pol[(i + 1) % pol.length], pol[i]),
+            Vec2.sub(pol[i - 1], pol[i]),
+          );
+          if (angle > Math.PI) return true;
+        }
+        angle = Vec2.angleACW(
+          Vec2.sub(pol[0], pol[pol.length - 1]),
+          Vec2.sub(pol[pol.length - 2], pol[pol.length - 1]),
+        );
+        if (angle > Math.PI) return true;
+        return false;
+      })(poligons[0])
+    ) {
+      /**
+       * @param {number[]} arr Numbers
+       * @param {number} item Number to find
+       * @returns {boolean} Whether the number is in the array
+       */ const includes = (arr, item) => {
+        for (let i = 0; i &lt; arr.length; i += 1) {
+          if (arr[i] === item) return true;
+        }
+        return false;
+      };
+      /**
+       * @param {LineSegment} segment Line segment to intersect with
+       * @param {Vec2[]} pol Polygon to intersect with
+       * @param {number[]} exc Exceptions
+       * @returns {boolean} Whether intersection is detected
+       */ const intersectWithPoligon = (segment, pol, exc) => {
+        for (let i = 0; i &lt; pol.length; i += 1) {
+          if (!includes(exc, i)) {
+            const side = new LineSegment(
+              new Vec2(pol[i].x, pol[i].y),
+              new Vec2(pol[(i + 1) % pol.length].x, pol[(i + 1) % pol.length].y),
+            );
+            if (LineSegment.intersect(segment, side)) return true;
+          }
+        }
+        return false;
+      };
+      let found = true;
+
+      // eslint-disable-next-line no-restricted-syntax
+      checkAllPoligons: while (found) {
+        found = false;
+        for (let i = 0; i &lt; poligons.length; i += 1) {
+          const pol = poligons[i];
+          let a = Vec2.sub(pol[1], pol[0]);
+          let b = Vec2.sub(pol[pol.length - 1], pol[0]);
+          let angle = Vec2.angleACW(a, b);
+          if (angle > Math.PI) {
+            found = true;
+            const j = 0;
+            let k = j + 2;
+            let newSide = new LineSegment(
+              new Vec2(pol[j].x, pol[j].y),
+              new Vec2(pol[k % pol.length].x, pol[k % pol.length].y),
+            );
+            let newSideHeading = new Vec2(
+              newSide.b.x - newSide.a.x,
+              newSide.b.y - newSide.a.y,
+            ).heading;
+            while (
+              !(a.heading > b.heading
+                ? (newSideHeading > a.heading
+                    &amp;&amp; newSideHeading &lt; 2 * Math.PI)
+                  || (newSideHeading > 0 &amp;&amp; newSideHeading &lt; b.heading)
+                : newSideHeading > a.heading &amp;&amp; newSideHeading &lt; b.heading)
+              || intersectWithPoligon(
+                new LineSegment(
+                  new Vec2(pol[j % pol.length].x, pol[j % pol.length].y),
+                  new Vec2(pol[k % pol.length].x, pol[k % pol.length].y),
+                ),
+                pol,
+                [
+                  (pol.length - 1) % pol.length,
+                  j % pol.length,
+                  (k - 1) % pol.length,
+                  k % pol.length,
+                ],
+              )
+            ) {
+              k += 1;
+              newSide = new LineSegment(
+                new Vec2(pol[j].x, pol[j].y),
+                new Vec2(pol[k % pol.length].x, pol[k % pol.length].y),
+              );
+              newSideHeading = new Vec2(
+                newSide.b.x - newSide.a.x,
+                newSide.b.y - newSide.a.y,
+              ).heading;
+            }
+            const pol1 = [];
+            const pol2 = [];
+            for (let l = j; l &lt;= k; l += 1) {
+              pol1.push(pol[l % pol.length]);
+            }
+            for (let l = k; l &lt;= j + pol.length; l += 1) {
+              pol2.push(pol[l % pol.length]);
+            }
+            poligons[i] = pol1;
+            poligons.push(pol2);
+            continue checkAllPoligons;
+          }
+          for (let j = 1; j &lt; pol.length; j += 1) {
+            a = Vec2.sub(pol[(j + 1) % pol.length], pol[j]);
+            b = Vec2.sub(pol[j - 1], pol[j]);
+            angle = Vec2.angleACW(a, b);
+            if (angle > Math.PI) {
+              found = true;
+              let k = j + 2;
+              let newSide = new LineSegment(
+                new Vec2(pol[j].x, pol[j].y),
+                new Vec2(pol[k % pol.length].x, pol[k % pol.length].y),
+              );
+              let newSideHeading = new Vec2(
+                newSide.b.x - newSide.a.x,
+                newSide.b.y - newSide.a.y,
+              ).heading;
+              while (
+                !(a.heading > b.heading
+                  ? (newSideHeading > a.heading
+                      &amp;&amp; newSideHeading &lt; 2 * Math.PI)
+                    || (newSideHeading > 0 &amp;&amp; newSideHeading &lt; b.heading)
+                  : newSideHeading > a.heading &amp;&amp; newSideHeading &lt; b.heading)
+                || intersectWithPoligon(newSide, pol, [
+                  (j - 1) % pol.length,
+                  j % pol.length,
+                  (k - 1) % pol.length,
+                  k % pol.length,
+                ])
+              ) {
+                k += 1;
+                newSide = new LineSegment(
+                  new Vec2(pol[j].x, pol[j].y),
+                  new Vec2(pol[k % pol.length].x, pol[k % pol.length].y),
+                );
+                newSideHeading = new Vec2(
+                  newSide.b.x - newSide.a.x,
+                  newSide.b.y - newSide.a.y,
+                ).heading;
+              }
+              const pol1 = [];
+              const pol2 = [];
+              for (let l = j; l &lt;= k; l += 1) {
+                pol1.push(pol[l % pol.length]);
+              }
+              for (let l = k; l &lt;= j + pol.length; l += 1) {
+                pol2.push(pol[l % pol.length]);
+              }
+              poligons[i] = pol1;
+              poligons.push(pol2);
+              continue checkAllPoligons;
+            }
+          }
+        }
+      }
+    }
+
+    for (let i = poligons.length - 1; i >= 0; i -= 1) {
+      const pol = poligons[i];
+      while (pol.length > 3) {
+        poligons.push([pol[0], pol[1], pol[2]]);
+        pol.splice(1, 1);
+      }
+    }
+
+    let mSum = 0;
+    poligons.forEach((pol) => {
+      const a = Math.sqrt(
+        ((pol[0].x - pol[1].x) ** 2) + ((pol[0].y - pol[1].y) ** 2),
+      );
+      const b = Math.sqrt(
+        ((pol[1].x - pol[2].x) ** 2) + ((pol[1].y - pol[2].y) ** 2),
+      );
+      const c = Math.sqrt(
+        ((pol[2].x - pol[0].x) ** 2) + ((pol[2].y - pol[0].y) ** 2),
+      );
+      const s = (a + b + c) / 2;
+      const m = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+      mSum += m;
+    });
+
+    const overPressure = softBall.pressure * ((softBall.r * softBall.r * Math.PI) / mSum)
+      - softBall.pressure;
+    softBall.sides.forEach((side) => {
+      const force = Vec2.sub(side.objects[0].pos, side.objects[1].pos);
+      force.mult(overPressure);
+      force.rotate(Math.PI / 2);
+      force.mult(t);
+      side.objects[0].vel.add(Vec2.div(force, side.objects[0].m));
+      side.objects[1].vel.add(Vec2.div(force, side.objects[1].m));
+    });
+  }
+
+  /**
+   * Returns an array containing all the sides of the body
+   *
+   * @returns {Array&lt;LineSegment>} The array of sides
+   */
+  get sideSegments() {
+    return this.points.map((element, index) => new LineSegment(
+      element.pos,
+      this.points[(index + 1) % this.points.length].pos,
+    ));
+  }
+
+  /**
+   *Returns true if the point is inside the body
+   *
+   * @param {Vec2} p The point
+   * @returns {boolean} The boolean value
+   */
+  containsPoint(p) {
+    const sides = this.sideSegments;
+    const r = Math.max(
+      ...this.points.map((point) => Vec2.dist(point.pos, p)),
+    ) + 1;
+
+    const v = Vec2.fromAngle(0);
+    v.setMag(r);
+
+    const testerSegment = new LineSegment(p, Vec2.add(v, p));
+
+    const filt = sides.filter((side) => LineSegment.intersect(side, testerSegment) !== undefined);
+    return filt.length % 2 === 1;
+  }
+}
+
+export default SoftBall;
+</code></pre>
+        </article>
+    </section>
 
 
 
