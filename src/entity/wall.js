@@ -90,11 +90,9 @@ class Wall {
       for (let j = this.axes.length - 1; j > i; j -= 1) {
         const v1 = this.axes[j];
         const v2 = this.axes[i];
-        if (Vec2.dot(v1, v2) > maxCos) {
-          const newV = Vec2.add(v1, v2);
-          newV.normalize();
+        if (Math.abs(Vec2.dot(v1, v2)) > maxCos) {
           this.axes.splice(j, 1);
-          this.axes[i] = newV;
+          this.axes[i] = v1;
         }
       }
     }
