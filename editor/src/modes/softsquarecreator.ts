@@ -63,17 +63,17 @@ const SoftSquareCreatorMode: Mode = {
 };
 
 [
-  Creator.createSlider('Size', 5, 100, size, (event) => {
-    size = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Size', 5, 100, size, (newSize) => {
+    size = newSize;
   }),
-  Creator.createSlider('Pressure', 0.4, 7, pressure, (event) => {
-    pressure = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Pressure', 0.4, 3, pressure, (newPressure) => {
+    pressure = newPressure;
   }, 0.1),
-  Creator.createSlider('Coefficient of friction', 0, 2, fc, (event) => {
-    fc = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Coefficient of friction', 0, 2, fc, (newFc) => {
+    fc = newFc;
   }, 0.1),
-  Creator.createSlider('Resolution', 16, 48, resolution, (event) => {
-    resolution = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Resolution', 16, 48, resolution, (newRes) => {
+    resolution = newRes;
   }, 8),
 ].forEach(element.appendChild.bind(element));
 

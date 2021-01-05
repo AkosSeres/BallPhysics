@@ -65,20 +65,20 @@ const ShapeCreatorMode: Mode = {
 };
 
 [
-  Creator.createSlider('Size', 5, 120, size, (event) => {
-    size = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Size', 5, 120, size, (newSize) => {
+    size = newSize;
   }),
-  Creator.createSlider('Roundness', 2, 7, 9 - roundness, (event) => {
-    roundness = 9 - (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Roundness', 2, 7, 9 - roundness, (newRoundnessFacto) => {
+    roundness = 9 - newRoundnessFacto;
   }, 1),
-  Creator.createSlider('Resolution', 12, 36, res, (event) => {
-    res = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Resolution', 12, 36, res, (newRes) => {
+    res = newRes;
   }, 1),
-  Creator.createSlider('Bounciness', 0.0, 0.9, k, (event) => {
-    k = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Bounciness', 0.0, 0.9, k, (newK) => {
+    k = newK;
   }, 0.02),
-  Creator.createSlider('Coefficient of friction', 0, 2, fc, (event) => {
-    fc = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Coefficient of friction', 0, 2, fc, (newFc) => {
+    fc = newFc;
   }, 0.1),
 ].forEach(element.appendChild.bind(element));
 

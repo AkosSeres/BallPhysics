@@ -1,21 +1,5 @@
-type EventHandlerFunction = (event: Event) => void;
-
-/**
- * Returns an HTML element with the title in it for putting it on top of the sidebar
- *
- * @param {string} title The text of the title
- * @returns {HTMLDivElement} The created element
- */
-export function createModeTitle(title: string): HTMLDivElement {
-  const el = document.createElement('div');
-  const h = document.createElement('h3');
-  h.innerText = title;
-  h.classList.add('modetitlemargin');
-  el.appendChild(h);
-  el.classList.add('mode-title');
-  el.classList.add('bg-blue');
-  return el;
-}
+type EventHandlerFunctionNum = (event: number) => void;
+type EventHandlerFunctionBool = (event: boolean) => void;
 
 /**
  * Returns an HTML element with the label in with a slider
@@ -25,13 +9,13 @@ export function createModeTitle(title: string): HTMLDivElement {
  * @param {number} min The minimum value of the slider input
  * @param {number} max The maximum value of the slider input
  * @param {number} defaultVal The initial value of the slider
- * @param {EventHandlerFunction} onchange The event handler function
+ * @param {EventHandlerFunctionNum} onchange The new value handler function
  * @param {number} step The stepping size of the slider (optional)
  * @returns {HTMLDivElement} The div containing the slider and the label
  */
 export function createSlider(
   label: string, min: number, max: number, defaultVal: number,
-  onchange: EventHandlerFunction, step = 1,
+  onchange: EventHandlerFunctionNum, step = 1,
 ): HTMLDivElement {
   // Create label
   const sizeSliderLabel = document.createElement('p');
@@ -46,7 +30,8 @@ export function createSlider(
   sizeSlider.value = defaultVal.toString();
   sizeSlider.classList.add('slider');
   sizeSlider.classList.add('fix-width');
-  sizeSlider.onchange = onchange;
+  sizeSlider.onchange = (event) => { onchange((<HTMLInputElement>event.target).valueAsNumber); };
+  sizeSlider.oninput = (event) => { onchange((<HTMLInputElement>event.target).valueAsNumber); };
 
   // Add them both to the container
   const container = document.createElement('div');
@@ -61,11 +46,11 @@ export function createSlider(
  *
  * @param {string} label The label next to the checkbox
  * @param {boolean} defaultVal The initial state of the checkbox
- * @param {EventHandlerFunction} onchange The event handler function
+ * @param {EventHandlerFunctionBool} onchange The new value handler function
  * @returns {HTMLDivElement} The div containing the checkbox and the label
  */
 export function createCheckbox(
-  label: string, defaultVal: boolean, onchange: (event: Event) => void,
+  label: string, defaultVal: boolean, onchange: (newBool: boolean) => void,
 ): HTMLDivElement {
   // Create label
   const name = label + Math.random().toString();
@@ -80,10 +65,17 @@ export function createCheckbox(
   checkbox.name = name;
   checkbox.value = defaultVal.toString();
   checkbox.classList.add('ch-box');
-  checkbox.onchange = onchange;
+  checkbox.onchange = (event) => { onchange((<HTMLInputElement>event.target).checked); };
+
+  // Make label clickable
+  checkboxLabel.onclick = () => {
+    checkbox.checked = !checkbox.checked;
+    onchange(checkbox.checked);
+  };
 
   // Add them both to the container
   const container = document.createElement('div');
+  container.classList.add('cursor-pointer');
   container.appendChild(checkbox);
   container.appendChild(checkboxLabel);
   return container;

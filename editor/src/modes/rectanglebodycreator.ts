@@ -40,11 +40,11 @@ const RectangleBodyMode: Mode = {
 };
 
 [
-  Creator.createSlider('Bounciness', 0, 0.6, k, (event) => {
-    k = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Bounciness', 0, 0.6, k, (newK) => {
+    k = newK;
   }, 0.02),
-  Creator.createSlider('Coefficient of friction', 0, 2, fc, (event) => {
-    fc = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Coefficient of friction', 0, 2, fc, (newFc) => {
+    fc = newFc;
   }, 0.1),
 ].forEach(element.appendChild.bind(element));
 

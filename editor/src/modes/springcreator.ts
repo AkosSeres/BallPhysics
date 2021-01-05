@@ -90,12 +90,12 @@ const SpringCreatorMode: Mode = {
 };
 
 [
-  Creator.createCheckbox('Rotation locked', lockRotation, (event) => {
-    lockRotation = (<HTMLInputElement>event.target).checked;
+  Creator.createCheckbox('Rotation locked', lockRotation, (newBool) => {
+    lockRotation = newBool;
   }),
-  Creator.createSlider('Spring stiffness', 2000, 100000, springConstant, (event) => {
-    springConstant = (<HTMLInputElement>event.target).valueAsNumber;
-  }, 50),
+  Creator.createSlider('Spring stiffness', 2000, 100000, springConstant, (newConst) => {
+    springConstant = newConst;
+  }, 200),
 ].forEach(element.appendChild.bind(element));
 
 export default SpringCreatorMode;

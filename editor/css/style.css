@@ -190,6 +190,10 @@ p {
     margin-left: 0em;
 }
 
+.cursor-pointer > * {
+    cursor: pointer;
+}
+
 /* For smaller laptops */
 @media (max-width: 1125px) {
     .big-button {

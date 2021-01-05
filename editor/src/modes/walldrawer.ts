@@ -33,8 +33,8 @@ const WallDrawerMode: Mode = {
 };
 
 [
-  Creator.createSlider('Size', 5, 70, size, (event) => {
-    size = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Size', 5, 70, size, (newSize) => {
+    size = newSize;
   }),
 ].forEach(element.appendChild.bind(element));
 

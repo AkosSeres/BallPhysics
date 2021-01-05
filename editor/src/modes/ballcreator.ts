@@ -61,14 +61,14 @@ const BallCreatorMode: Mode = {
 };
 
 [
-  Creator.createSlider('Size', 5, 120, size, (event) => {
-    size = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Size', 5, 120, size, (newSize) => {
+    size = newSize;
   }),
-  Creator.createSlider('Bounciness', 0, 1, k, (event) => {
-    k = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Bounciness', 0, 1, k, (newK) => {
+    k = newK;
   }, 0.02),
-  Creator.createSlider('Coefficient of friction', 0, 2, fc, (event) => {
-    fc = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Coefficient of friction', 0, 2, fc, (newFc) => {
+    fc = newFc;
   }, 0.1),
 ].forEach(element.appendChild.bind(element));
 

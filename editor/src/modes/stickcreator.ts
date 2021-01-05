@@ -83,8 +83,8 @@ const StickCreatorMode: Mode = {
 };
 
 [
-  Creator.createCheckbox('Rotation locked', lockRotation, (event) => {
-    lockRotation = (<HTMLInputElement>event.target).checked;
+  Creator.createCheckbox('Rotation locked', lockRotation, (newBool) => {
+    lockRotation = newBool;
   }),
 ].forEach(element.appendChild.bind(element));
 

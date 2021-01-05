@@ -61,17 +61,17 @@ const ElasticBallCreatorMode: Mode = {
 };
 
 [
-  Creator.createSlider('Size', 5, 60, size, (event) => {
-    size = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Size', 5, 60, size, (newSize) => {
+    size = newSize;
   }),
-  Creator.createSlider('Pressure', 500000, 3000000, pressure, (event) => {
-    pressure = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Pressure', 500000, 3000000, pressure, (newPressure) => {
+    pressure = newPressure;
   }, 4000),
-  Creator.createSlider('Coefficient of friction', 0, 2, fc, (event) => {
-    fc = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Coefficient of friction', 0, 2, fc, (newFc) => {
+    fc = newFc;
   }, 0.1),
-  Creator.createSlider('Resolution', 6, 24, resolution, (event) => {
-    resolution = (<HTMLInputElement>event.target).valueAsNumber;
+  Creator.createSlider('Resolution', 6, 24, resolution, (newResolution) => {
+    resolution = newResolution;
   }, 1),
 ].forEach(element.appendChild.bind(element));
 
