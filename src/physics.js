@@ -165,7 +165,6 @@ class Physics {
 
         const p = Vec2.sub(ball.pos, b);
         if (p.sqlength <= (ball.r + b.r) ** 2) {
-          // const cp = Vec2.fromObject(b);
           const n = p;
           n.setMag(1);
           ball.pos = Vec2.add(b, Vec2.mult(n, ball.r + b.r));

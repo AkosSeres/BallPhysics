@@ -89,12 +89,12 @@ class Body {
 
     this.rotation = 0;
 
-    if (ang) this.ang = ang;
+    if (Number.isFinite(ang)) this.ang = ang;
     else this.ang = 0;
 
     if (fc || fc === 0) this.fc = fc;
 
-    if (k) this.k = k;
+    if (Number.isFinite(k)) this.k = k;
     else this.k = 0.8;
 
     if (vel !== undefined) this.vel = vel.copy;
