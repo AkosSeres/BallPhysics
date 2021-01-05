@@ -256,36 +256,8 @@ class Physics {
    * @returns {Physics} The copy of this system
    */
   get copy() {
-    const ret = new Physics();
-    ret.balls = this.getCopyOfBalls();
-    ret.bodies = this.getCopyOfBodies();
-    ret.fixedBalls = this.fixedBalls;
-    ret.walls = this.walls;
-    ret.bounds = this.bounds;
-    ret.gravity = this.gravity;
-
-    this.springs.forEach((spring) => {
-      const TypeOfSpring = spring instanceof Spring ? Spring : Stick;
-      /** @type {Spring | Stick} */
-      const copiedSpring = new TypeOfSpring(spring.length, spring.springConstant);
-      copiedSpring.rotationLocked = spring.rotationLocked;
-      copiedSpring.pinned = spring.pinned;
-
-      spring.objects.forEach((obj) => {
-        let idx = -1;
-        if (obj instanceof Ball) idx = this.balls.indexOf(obj);
-        if (idx !== -1) copiedSpring.attachObject(ret.balls[idx]);
-        else {
-          idx = -1;
-          if (obj instanceof Body) idx = this.bodies.indexOf(obj);
-          if (idx !== -1) copiedSpring.attachObject(ret.bodies[idx]);
-        }
-      });
-
-      ret.springs.push(copiedSpring);
-    });
-
-    return ret;
+    const ret = this.toJSON();
+    return Physics.fromObject(ret);
   }
 
   /**
