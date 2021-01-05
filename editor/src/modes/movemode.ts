@@ -38,7 +38,6 @@ const MoveMode: Mode = {
 };
 
 [
-  Creator.createModeTitle(MoveMode.name),
 ].forEach(element.appendChild.bind(element));
 
 export default MoveMode;

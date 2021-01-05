@@ -61,7 +61,6 @@ const ElasticBallCreatorMode: Mode = {
 };
 
 [
-  Creator.createModeTitle(ElasticBallCreatorMode.name),
   Creator.createSlider('Size', 5, 60, size, (event) => {
     size = (<HTMLInputElement>event.target).valueAsNumber;
   }),

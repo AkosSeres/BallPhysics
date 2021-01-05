@@ -33,7 +33,6 @@ const RectangleMode: Mode = {
 };
 
 [
-  Creator.createModeTitle(RectangleMode.name),
 ].forEach(element.appendChild.bind(element));
 
 export default RectangleMode;

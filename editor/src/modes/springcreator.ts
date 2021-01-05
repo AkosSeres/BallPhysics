@@ -90,7 +90,6 @@ const SpringCreatorMode: Mode = {
 };
 
 [
-  Creator.createModeTitle(SpringCreatorMode.name),
   Creator.createCheckbox('Rotation locked', lockRotation, (event) => {
     lockRotation = (<HTMLInputElement>event.target).checked;
   }),

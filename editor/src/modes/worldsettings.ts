@@ -15,7 +15,6 @@ const WorldSettingsMode: Mode = {
   init(editorApp) {
     const editorRef = editorApp;
     [
-      Creator.createModeTitle(WorldSettingsMode.name),
       Creator.createSlider('Gravity', 0, 5000, editorRef.physics.gravity.y, (event) => {
         editorRef.physics.gravity.y = (<HTMLInputElement>event.target).valueAsNumber;
       }, 100),

@@ -65,7 +65,6 @@ const ShapeCreatorMode: Mode = {
 };
 
 [
-  Creator.createModeTitle(ShapeCreatorMode.name),
   Creator.createSlider('Size', 5, 120, size, (event) => {
     size = (<HTMLInputElement>event.target).valueAsNumber;
   }),

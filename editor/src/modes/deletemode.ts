@@ -11,7 +11,7 @@ const DeleteMode: Mode = {
   element,
   drawFunc(editorApp, dt) { },
   startInteractionFunc(editorApp) {
-    if (editorApp.choosed) {
+    if (editorApp.choosed && typeof editorApp.choosed !== 'boolean') {
       editorApp.physics.removeObjFromSystem(editorApp.choosed);
     }
   },
@@ -21,7 +21,6 @@ const DeleteMode: Mode = {
 };
 
 [
-  Creator.createModeTitle(DeleteMode.name),
 ].forEach(element.appendChild.bind(element));
 
 export default DeleteMode;

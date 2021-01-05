@@ -63,6 +63,7 @@ h4 {
     margin-top: 0px;
     margin-bottom: 0px;
     text-align: center;
+    grid-area: modetitleplace;
     border-bottom-left-radius: 1rem;
 }
 
@@ -113,7 +114,7 @@ canvas {
     grid-template-columns: 10rem auto 10rem;
     grid-template-rows: 2rem 1fr;
     grid-template-areas:
-        "header timebar sidebar"
+        "header timebar modetitleplace"
         "modes main sidebar";
     width: 100vw;
     height: 100vh;
@@ -215,7 +216,7 @@ p {
         grid-template-columns: 0rem auto 0rem;
         grid-template-rows: 2rem 1fr 7rem;
         grid-template-areas:
-            "header timebar sidebar"
+            "header timebar modetitleplace"
             "modes main sidebar"
             "rotate rotate rotate";
     }

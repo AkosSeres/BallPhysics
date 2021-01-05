@@ -68,6 +68,8 @@ class Editor implements EditorInterface {
 
   sidebar: HTMLElement;
 
+  modeTitleHolder: HTMLElement;
+
   drawCollisions: boolean;
 
   showAxes: boolean;
@@ -100,6 +102,7 @@ class Editor implements EditorInterface {
     this.cnv = <HTMLCanvasElement>document.getElementById('defaulCanvas0');
     this.canvasHolder = <HTMLElement>document.getElementById('canvas-holder');
     this.sidebar = <HTMLElement>document.getElementById('sidebar');
+    this.modeTitleHolder = <HTMLElement>document.getElementById('mode-title-text');
 
     this.physics.setBounds(0, 0, this.cnv.width, this.cnv.height);
     this.physics.setGravity(new Vec2(0, 1000));
@@ -600,6 +603,8 @@ class Editor implements EditorInterface {
 
     const newBtn = document.getElementById(`${modeNames[modeNum]}-btn`);
     if (newBtn) newBtn.classList.add('bg-pink-darker');
+    // And set new title
+    this.modeTitleHolder.innerText = modes[modeNum].name;
     this.mode = modeNum;
     this.sidebar.appendChild(modes[this.mode].element);
   };

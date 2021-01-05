@@ -61,7 +61,6 @@ const BallCreatorMode: Mode = {
 };
 
 [
-  Creator.createModeTitle(BallCreatorMode.name),
   Creator.createSlider('Size', 5, 120, size, (event) => {
     size = (<HTMLInputElement>event.target).valueAsNumber;
   }),

@@ -40,7 +40,6 @@ const RectangleBodyMode: Mode = {
 };
 
 [
-  Creator.createModeTitle(RectangleBodyMode.name),
   Creator.createSlider('Bounciness', 0, 0.6, k, (event) => {
     k = (<HTMLInputElement>event.target).valueAsNumber;
   }, 0.02),

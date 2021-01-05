@@ -63,7 +63,6 @@ const SoftSquareCreatorMode: Mode = {
 };
 
 [
-  Creator.createModeTitle(SoftSquareCreatorMode.name),
   Creator.createSlider('Size', 5, 100, size, (event) => {
     size = (<HTMLInputElement>event.target).valueAsNumber;
   }),

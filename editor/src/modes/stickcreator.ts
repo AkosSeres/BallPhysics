@@ -37,8 +37,8 @@ const StickCreatorMode: Mode = {
         };
       }
 
-      if (
-        editorApp.choosed === newChoosed
+      if (typeof editorApp.choosed === 'boolean'
+        || editorApp.choosed === newChoosed
         || (editorApp.choosed === undefined && newChoosed === undefined)
       ) {
         return;
@@ -83,7 +83,6 @@ const StickCreatorMode: Mode = {
 };
 
 [
-  Creator.createModeTitle(StickCreatorMode.name),
   Creator.createCheckbox('Rotation locked', lockRotation, (event) => {
     lockRotation = (<HTMLInputElement>event.target).checked;
   }),
