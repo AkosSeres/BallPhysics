@@ -67,4 +67,19 @@ export default function timeController(editorApp: HasPhysicsAndTime): void {
       editorApp.setTimeMultiplier(0);
     };
   }
+
+  let shouldResume = false;
+  // Stop time on focus loss and resume on focus
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (editorApp.getTimeMultiplier() !== 0) {
+        editorApp.setTimeMultiplier(0);
+        shouldResume = true;
+      } else {
+        shouldResume = false;
+      }
+    } else if (shouldResume) {
+      editorApp.setTimeMultiplier(1);
+    }
+  });
 }

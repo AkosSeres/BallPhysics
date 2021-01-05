@@ -167,6 +167,8 @@ class Editor implements EditorInterface {
       elapsedTime = 0;
     }
     elapsedTime /= 1000;
+    // Max it out at 24 fps equivalent
+    elapsedTime = Math.min(elapsedTime, 0.04166666666);
 
     const ctx = <CanvasRenderingContext2D> this.cnv.getContext('2d');
 
