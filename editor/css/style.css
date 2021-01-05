@@ -44,6 +44,7 @@ body {
     margin: 0;
     font-family: Helvetica, sans-serif;
     background-color: var(--whitey);
+    overflow: hidden;
 }
 
 h3,
@@ -131,6 +132,8 @@ canvas {
     text-decoration: none;
     display: inline-block;
     border-radius: 0.3em;
+    -webkit-transition: 0.2s;
+    transition: background-color 0.2s;
 }
 
 .big-button {
@@ -146,6 +149,9 @@ canvas {
     box-shadow: var(--blacky);
     margin-top: 0.5em;
     box-shadow: 5px 10px 18px #888888;
+    -webkit-transition: 0.2s;
+    transition: background-color 0.2s;
+    width: 75%;
 }
 
 .button:hover,
@@ -154,7 +160,7 @@ canvas {
 }
 
 .fix-width {
-    width: 75%;
+    width: 88%;
 }
 
 .rotate {
@@ -163,10 +169,33 @@ canvas {
 }
 
 .slider {
-    margin-left: 0px;
-    margin-right: 0px;
-    width: max-content;
-    display: block;
+    -webkit-appearance: none;
+    height: 0.6rem;
+    background: var(--pinky);
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: 0.2s;
+    transition: opacity 0.2s;
+    border-radius: 100vh;
+}
+.slider:hover {
+    opacity: 1;
+}
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 0.8rem;
+    height: 0.8rem;
+    background: var(--blues-hover);
+    cursor: pointer;
+    border-radius: 100vh;
+}
+.slider::-moz-range-thumb {
+    width: 0.8rem;
+    height: 0.8rem;
+    background: var(--blues-hover);
+    cursor: pointer;
+    border-radius: 100vh;
 }
 
 p {
@@ -211,6 +240,14 @@ p {
     .button {
         padding: 0.4em 0.5em;
         font-size: x-small;
+    }
+
+    .big-button{
+        width: 83%;
+    }
+
+    .fix-width{
+        width: 90%;
     }
 }
 

@@ -620,7 +620,6 @@ class Editor implements EditorInterface {
     modeNames.forEach((modeName, i) => {
       const button = document.createElement('div');
       button.classList.add('big-button');
-      button.classList.add('fix-width');
       button.id = `${modeName}-btn`;
       button.textContent = modes[i].name;
       modes[i].init?.(this);
