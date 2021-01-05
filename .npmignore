@@ -1,0 +1,6 @@
+tests
+.eslintignore
+.eslintrc
+conf.json
+.github
+editor
