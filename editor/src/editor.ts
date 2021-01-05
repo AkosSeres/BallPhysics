@@ -189,11 +189,11 @@ class Editor implements EditorInterface {
     }
 
     elapsedTime *= this.timeMultiplier;
-    this.physics.update(elapsedTime / 5, false);
-    this.physics.update(elapsedTime / 5, false);
-    this.physics.update(elapsedTime / 5, false);
-    this.physics.update(elapsedTime / 5, false);
-    this.physics.update(elapsedTime / 5, false);
+    this.physics.update(elapsedTime / 5);
+    this.physics.update(elapsedTime / 5);
+    this.physics.update(elapsedTime / 5);
+    this.physics.update(elapsedTime / 5);
+    this.physics.update(elapsedTime / 5);
 
     this.lastFrameTime = performance.now();
     requestAnimationFrame(this.drawFunction);

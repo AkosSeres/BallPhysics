@@ -109,20 +109,9 @@ class Physics {
    * Updates the world by a given amount of time
    *
    * @param {number} t Elapsed time
-   * @param {boolean} precise If this is true,
-   * then the simulation is going to be more precise
    */
-  update(t, precise) {
+  update(t) {
     this.collisionData = [];
-
-    // Do the simulation on the reversed system
-    // if the simulation is in precise mode
-    const clonedSystem = precise ? this.copy : new Physics();
-    if (precise) {
-      clonedSystem.bodies.reverse();
-      clonedSystem.balls.reverse();
-      clonedSystem.update(t, false);
-    }
 
     // At first move objets
     for (let i = 0; i < this.balls.length; i += 1) {
@@ -259,48 +248,6 @@ class Physics {
       ball.vel.mult((this.airFriction ** t));
       ball.ang *= (this.airFriction ** t);
     });
-
-    // Then take the average of this system and the other system
-    // if in precise mode
-    if (precise) {
-      clonedSystem.bodies.reverse();
-      clonedSystem.balls.reverse();
-
-      // Take the average of the balls
-      this.balls.forEach((ball, i) => {
-        ball.move(
-          (clonedSystem.balls[i].pos.x - ball.pos.x) * 0.5,
-          (clonedSystem.balls[i].pos.y - ball.pos.y) * 0.5,
-        );
-        ball.vel.add(
-          new Vec2(
-            (clonedSystem.balls[i].vel.x - ball.vel.x) * 0.5,
-            (clonedSystem.balls[i].vel.y - ball.vel.y) * 0.5,
-          ),
-        );
-        const b = ball;
-        b.rotation = (ball.rotation + clonedSystem.balls[i].rotation) / 2;
-        b.ang = (ball.ang + clonedSystem.balls[i].ang) / 2;
-      });
-
-      // Take the average of the bodies
-      this.bodies.forEach((body, i) => {
-        const other = clonedSystem.bodies[i];
-        body.move(
-          (other.pos.x - body.pos.x) * 0.5,
-          (other.pos.y - body.pos.y) * 0.5,
-        );
-        body.vel.add(
-          new Vec2(
-            (other.vel.x - body.vel.x) * 0.5,
-            (other.vel.y - body.vel.y) * 0.5,
-          ),
-        );
-        body.rotate((other.rotation - body.rotation) / 2);
-        const b = body;
-        b.ang = (body.ang + other.ang) / 2;
-      });
-    }
   }
 
   /**
