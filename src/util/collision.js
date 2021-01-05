@@ -60,6 +60,14 @@ export function collisionResponse(object1, object2, contactPoint, normal) {
   const t = vRelInCP.copy;
   t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
   t.setMag(1);
+  if ((Vec2.dot(n, t) ** 2) > 0.5) {
+    // No friction impulse is needed, return
+    b1.vel = u1;
+    b2.vel = u2;
+    b1.ang = pAng1;
+    b2.ang = pAng2;
+    return;
+  }
 
   // Calculate max impulse
   let maxImpulse = (1 / m1) + (1 / m2);
@@ -128,6 +136,12 @@ export function collisionResponseWithWall(object, contactPoint, normal) {
   const t = vRelInCP.copy;
   t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
   t.setMag(1);
+  if ((Vec2.dot(n, t) ** 2) > 0.5) {
+    // No friction impulse is needed, return
+    b.vel = u;
+    b.ang = pAng;
+    return;
+  }
 
   // Calculate max impulse
   let maxImpulse = (1 / m);
