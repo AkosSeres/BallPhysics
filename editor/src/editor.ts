@@ -16,8 +16,18 @@ const palette = {
   white: '#faf3dd',
   green: '#02c39a',
   pink: '#e58c8a',
-  blue: '#77b6ea',
+  blue: '#3db2f1',
   black: '#363732',
+  'Rich Black FOGRA 29': '#0e131f',
+  Independence: '#38405f',
+  'Independence 2': '#59546c',
+  'Roman Silver': '#8b939c',
+  'Imperial Red': '#ff0035',
+  Turquoise: '#5dd9c1',
+  'Hot Pink': '#fc6dab',
+  Beige: '#f2f3d9',
+  'Maximum Yellow Red': '#f5b841',
+  'Lavender Web': '#dcd6f7',
 };
 
 /**
@@ -173,7 +183,7 @@ class Editor implements EditorInterface {
     const ctx = <CanvasRenderingContext2D> this.cnv.getContext('2d');
 
     // paint the background
-    ctx.fillStyle = palette.black;
+    ctx.fillStyle = palette.Independence;
     ctx.fillRect(0, 0, this.cnv.width, this.cnv.height);
 
     ctx.save();
@@ -384,7 +394,7 @@ class Editor implements EditorInterface {
     const ctx = this.cnv.getContext('2d');
 
     if (ctx) {
-      ctx.fillStyle = palette.green;
+      ctx.fillStyle = palette.Turquoise;
       ctx.strokeStyle = 'black';
       for (let i = 0; i < this.physics.balls.length; i += 1) {
         const ball = this.physics.balls[i];
@@ -443,7 +453,7 @@ class Editor implements EditorInterface {
         });
         ctx.fill();
       };
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = palette.Beige;
       this.physics.walls.forEach(drawWall);
       this.physics.bounds.forEach(drawWall);
 
@@ -518,8 +528,8 @@ class Editor implements EditorInterface {
       });
       ctx.restore();
 
-      ctx.fillStyle = palette.pink;
-      ctx.strokeStyle = palette.pink;
+      ctx.fillStyle = palette['Maximum Yellow Red'];
+      ctx.strokeStyle = palette['Maximum Yellow Red'];
       ctx.lineWidth = 4;
       if (this.drawCollisions) {
         this.physics.collisionData.forEach((cd) => {
