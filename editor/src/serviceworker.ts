@@ -2,11 +2,11 @@
 const cName = 'editor-cache';
 const toCache = [
   '.',
-  '',
   './index.html',
   './index.css',
   './index.js',
   './manifest.json',
+  '',
 ];
 
 // @ts-ignore
