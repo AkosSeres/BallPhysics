@@ -9,8 +9,8 @@
     "lint": "eslint . --ext .ts,.js",
     "docs": "./node_modules/.bin/jsdoc -c conf.json",
     "watch": "nodemon --ignore \"dest/*.*\" -e js,ts,css,html --exec npm run dev",
-    "dev": "esbuild editor/src/index.ts --bundle --sourcemap=inline --platform=browser --target=es2020 --outfile=dest/main.js && cp editor/static/index.html dest/index.html",
-    "build": "esbuild editor/src/index.ts --bundle --minify --platform=browser --target=chrome58,firefox57,safari11,edge16 --outfile=dest/main.js && cp editor/static/index.html dest/index.html"
+    "dev": "esbuild editor/src/index.ts editor/src/serviceworker.ts --bundle --sourcemap=inline --platform=browser --target=es2020 --outdir=dest && cp -a editor/static/. dest/",
+    "build": "esbuild editor/src/index.ts editor/src/serviceworker.ts --bundle --minify --platform=browser --target=chrome58,firefox57,safari11,edge16 --outdir=dest && cp -a editor/static/. dest/"
   },
   "repository": {
     "type": "git",

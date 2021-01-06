@@ -121,7 +121,7 @@ class Editor implements EditorInterface {
     this.canvasHolder = <HTMLElement>document.getElementById('canvas-holder');
     this.sidebar = <HTMLElement>document.getElementById('sidebar');
     this.modeTitleHolder = <HTMLElement>document.getElementById('mode-title-text');
-    this.pauseBtn = document.getElementById('pause');
+    this.pauseBtn = <HTMLElement>document.getElementById('pause');
 
     this.setWorldSize({ width: 2000, height: 1000 });
     this.physics.setGravity(new Vec2(0, 1000));
@@ -133,7 +133,7 @@ class Editor implements EditorInterface {
     this.cnv.addEventListener('mousedown', this.startMouse, false);
     this.cnv.addEventListener('mouseup', this.endMouse, false);
     this.cnv.addEventListener('mousemove', this.handleMouseMovement, false);
-    this.cnv.addEventListener('wheel', this.handleMouseWheel, false);
+    this.cnv.addEventListener('wheel', this.handleMouseWheel, { passive: true });
     // @ts-ignore
     this.cnv.addEventListener('gesturestart', this.handleGestureStart, false);
     // @ts-ignore
