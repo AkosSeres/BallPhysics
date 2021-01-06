@@ -1,12 +1,12 @@
 /* eslint-disable no-restricted-globals */
 const cName = 'editor-cache';
 const toCache = [
-  '/',
-  '/index.css',
-  '/index.js',
-  '/manifest.webmanifest',
-  '/icon-192.png',
-  '/icon-512.png',
+  '.',
+  '',
+  './index.html',
+  './index.css',
+  './index.js',
+  './manifest.json',
 ];
 
 // @ts-ignore
