@@ -18,7 +18,8 @@
     "start_url": "./",
     "background_color": "#0e1320",
     "display": "standalone",
+    "orientation": "landscape",
     "scope": ".",
-    "theme_color": "#de6a68",
+    "theme_color": "#0e1320",
     "shortcuts": []
 }
