@@ -10,7 +10,7 @@ import Modes from './modes/index';
 import '../css/style.css';
 // Import color palette
 import palette from '../../src/util/colorpalette';
-import { Vec2AsObject } from '../../src/math/vec2';
+import {Vec2AsObject} from '../../src/math/vec2';
 
 const modes = Modes;
 const modeNames = modes.map((mode) => mode.name);
@@ -73,6 +73,10 @@ class Editor implements EditorInterface {
 
   touchCoords: {x: number, y: number}[];
 
+  gestureCoord: Vec2 | false;
+
+  gestureScale: number;
+
   constructor() {
     this.physics = new Physics();
     this.mouseX = 0;
@@ -90,6 +94,8 @@ class Editor implements EditorInterface {
     this.lastY = 0;
     this.touchIDs = [];
     this.touchCoords = [];
+    this.gestureCoord = false;
+    this.gestureScale = 1;
     this.timeMultiplier = 1;
     this.lastFrameTime = performance.now();
     this.choosed = false;
@@ -115,6 +121,10 @@ class Editor implements EditorInterface {
     this.cnv.addEventListener('mousedown', this.startMouse, false);
     this.cnv.addEventListener('mouseup', this.endMouse, false);
     this.cnv.addEventListener('mousemove', this.handleMouseMovement, false);
+    this.cnv.addEventListener('wheel', this.handleMouseWheel, false);
+    window.addEventListener('gesturestart', this.handleGestureStart, false);
+    window.addEventListener('gesturechange', this.handleGestureChange, false);
+    window.addEventListener('gestureend', this.handleGestureEnd, false);
     document.addEventListener('keydown', this.keyGotDown, false);
     document.addEventListener('keyup', this.keyGotUp, false);
     window.addEventListener('resize', this.resizeCanvas, false);
@@ -171,7 +181,7 @@ class Editor implements EditorInterface {
     // Max it out at 24 fps equivalent
     elapsedTime = Math.min(elapsedTime, 0.04166666666);
 
-    const ctx = <CanvasRenderingContext2D> this.cnv.getContext('2d');
+    const ctx = <CanvasRenderingContext2D>this.cnv.getContext('2d');
 
     // paint the background
     ctx.fillStyle = palette.Independence;
@@ -465,6 +475,41 @@ class Editor implements EditorInterface {
     this.mouseY = event.offsetY;
     this.mouseX = this.mouseX / this.scaling - this.viewOffsetX / this.scaling;
     this.mouseY = this.mouseY / this.scaling - this.viewOffsetY / this.scaling;
+  };
+
+  handleMouseWheel = (event: WheelEvent) => {
+    event.preventDefault();
+    const center = new Vec2(event.offsetX, event.offsetY);
+    let multiplier = 0.0005;
+    if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) multiplier /= 16;
+    const scalingFactor = 1 - event.deltaY * multiplier;
+    this.scaleAround(center, scalingFactor);
+  };
+
+  handleGestureStart = (event: MouseEvent) => {
+    event.preventDefault();
+    const cnvBounds = this.canvasHolder.getBoundingClientRect();
+    this.gestureCoord = new Vec2(event.clientX - cnvBounds.left, event.clientY - cnvBounds.top);
+    this.gestureScale = 1;
+  };
+
+  handleGestureChange = (event: MouseEvent & {scale: number}) => {
+    event.preventDefault();
+    const cnvBounds = this.canvasHolder.getBoundingClientRect();
+    const newCoords = new Vec2(event.clientX - cnvBounds.left, event.clientY - cnvBounds.top);
+    if (this.gestureCoord) {
+      const toMove = Vec2.sub(newCoords, this.gestureCoord);
+      const relativeScaling = event.scale / this.gestureScale;
+      this.scaleAround(newCoords, relativeScaling);
+      this.viewOffsetX += toMove.x * relativeScaling;
+      this.viewOffsetY += toMove.y * relativeScaling;
+    }
+    this.gestureScale = event.scale;
+  };
+
+  handleGestureEnd = (event: MouseEvent) => {
+    event.preventDefault();
+    this.gestureScale = 1;
   };
 
   /**
