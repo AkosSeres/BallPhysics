@@ -7,6 +7,7 @@ const toCache = [
   './index.js',
   './manifest.json',
   '',
+  '/BallPhysics/index.html',
 ];
 
 // @ts-ignore
