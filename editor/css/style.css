@@ -7,11 +7,10 @@
     --pinky: #e58c8aff;
     --pinky-hover: #de6a68;
     --pinky-darker: #da5a58;
-    --blues:#3db2f1;
+    --blues: #3db2f1;
     --blues-hover: #60aae6;
     --blacky: #363732ff;
     --blacky-hover: #2a2b27;
-
     --rich-black-fogra-29: hsla(222, 38%, 9%, 1);
     --independence: hsla(228, 26%, 30%, 1);
     --independence-2: hsla(252, 13%, 38%, 1);
@@ -51,7 +50,7 @@
     background-color: #dcd6f7;
     color: hsla(228, 26%, 30%, 1);
 }
-.bg-strong-red{
+.bg-strong-red {
     background-color: var(--imperial-red);
     color: white;
 }
@@ -188,6 +187,7 @@ canvas {
     display: none;
 }
 
+/* Slider design */
 .slider {
     -webkit-appearance: none;
     height: 0.6rem;
@@ -220,25 +220,60 @@ canvas {
     border-radius: 100vh;
 }
 
-p {
-    margin-top: 0.7em;
-    margin-bottom: 0.2em;
+.slider-label {
+    margin-top: 1em;
+    margin-bottom: 0.3em;
     padding-left: 0em;
     font-weight: bold;
 }
 
+/* Checkbox design */
 .checkbox-label {
-    margin-top: 0.7em;
-    margin-bottom: 0.2em;
-    margin-left: 0rem;
     font-weight: bold;
+    padding-right: 0.45em;
+    margin-top: 1.1em;
+    display: flex;
 }
-
 .ch-box {
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
+    display: none;
+}
+.checkbox-display {
+    width: 1.15em;
+    height: 1.15em;
+    display: block;
+    background-color: var(--roman-silver);
+    margin-bottom: 0.3em;
     margin-right: 0.3em;
     margin-left: 0em;
+    padding: 0;
+    position: relative;
+    border-radius: 0.2em;
+    top: 0.2em;
+    -webkit-transition: 0.2s;
+    transition: background-color 0.2s;
+    text-align: center;
+    float: left;
+}
+input[type="checkbox"]:checked ~ .checkbox-display {
+    background-color: var(--pinky-darker);
+}
+.checkbox-display:hover,
+.checkbox-label:hover > .checkbox-display {
+    background-color: var(--independence);
+}
+input[type="checkbox"]:checked ~ .checkbox-display > .checkmark {
+    transform: scale(1.2);
+}
+.checkmark {
+    width: 75%;
+    height: auto;
+    fill: white;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: scale(0);
+}
+.label-text {
+    margin-top: 0.2em;
+    flex: 1;
 }
 
 .cursor-pointer > * {

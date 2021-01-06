@@ -90,7 +90,7 @@ const SpringCreatorMode: Mode = {
 };
 
 [
-  Creator.createCheckbox('Rotation locked', lockRotation, (newBool) => {
+  Creator.createCheckbox('Rotation lock', lockRotation, (newBool) => {
     lockRotation = newBool;
   }),
   Creator.createSlider('Spring stiffness', 2000, 100000, springConstant, (newConst) => {
