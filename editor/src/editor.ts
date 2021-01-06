@@ -10,6 +10,7 @@ import Modes from './modes/index';
 import '../css/style.css';
 // Import color palette
 import palette from '../../src/util/colorpalette';
+import { Vec2AsObject } from '../../src/math/vec2';
 
 const modes = Modes;
 const modeNames = modes.map((mode) => mode.name);
@@ -68,6 +69,10 @@ class Editor implements EditorInterface {
 
   showAxes: boolean;
 
+  touchIDs: number[];
+
+  touchCoords: {x: number, y: number}[];
+
   constructor() {
     this.physics = new Physics();
     this.mouseX = 0;
@@ -83,6 +88,8 @@ class Editor implements EditorInterface {
     this.mode = 0;
     this.lastX = 0;
     this.lastY = 0;
+    this.touchIDs = [];
+    this.touchCoords = [];
     this.timeMultiplier = 1;
     this.lastFrameTime = performance.now();
     this.choosed = false;
@@ -231,8 +238,16 @@ class Editor implements EditorInterface {
 
     modes[this.mode].endInteractionFunc?.(this);
 
-    if (this.lastX === 0 && this.lastY === 0) return;
+    this.lastX = 0;
+    this.lastY = 0;
+    this.mouseDown = false;
+    this.choosed = false;
+  };
 
+  /**
+   * Discards an ongoing touch/move interaction by not calling the mode's function.
+   */
+  discardInteraction = () => {
     this.lastX = 0;
     this.lastY = 0;
     this.mouseDown = false;
@@ -301,6 +316,27 @@ class Editor implements EditorInterface {
   startTouch = (event: TouchEvent): boolean => {
     event.preventDefault();
     const cnvBounds = this.canvasHolder.getBoundingClientRect();
+    if (event.touches.length > 1) {
+      this.discardInteraction();
+      if (event.touches.length === 2) {
+        // Save touches
+        this.touchIDs.push(event.touches[0].identifier);
+        this.touchIDs.push(event.touches[1].identifier);
+        this.touchCoords.push(
+          new Vec2(event.touches[0].clientX - cnvBounds.left,
+            event.touches[0].clientY - cnvBounds.top),
+        );
+        this.touchCoords.push(
+          new Vec2(event.touches[1].clientX - cnvBounds.left,
+            event.touches[1].clientY - cnvBounds.top),
+        );
+      }
+      if (event.touches.length > 2) {
+        this.touchIDs = [];
+        this.touchCoords = [];
+      }
+      return false;
+    }
     this.startInteraction(
       event.changedTouches[0].clientX - cnvBounds.left,
       event.changedTouches[0].clientY - cnvBounds.top,
@@ -317,6 +353,10 @@ class Editor implements EditorInterface {
   endTouch = (event: TouchEvent): boolean => {
     event.preventDefault();
     const cnvBounds = this.canvasHolder.getBoundingClientRect();
+    if (event.touches.length <= 1) {
+      this.touchIDs = [];
+      this.touchCoords = [];
+    }
     this.endInteraction(
       event.changedTouches[0].clientX - cnvBounds.left,
       event.changedTouches[0].clientY - cnvBounds.top,
@@ -333,11 +373,64 @@ class Editor implements EditorInterface {
   moveTouch = (event: TouchEvent): boolean => {
     event.preventDefault();
     const cnvBounds = this.canvasHolder.getBoundingClientRect();
+    if (event.touches.length === 2) {
+      let touches = [];
+      if ((<Touch>event.touches.item(0)).identifier === this.touchIDs[0]) {
+        touches.push(<Touch>event.touches.item(0));
+        touches.push(<Touch>event.touches.item(1));
+      } else {
+        touches.push(<Touch>event.touches.item(1));
+        touches.push(<Touch>event.touches.item(0));
+      }
+      touches = touches.map((t) => new Vec2(t.clientX - cnvBounds.left, t.clientY - cnvBounds.top));
+      this.processMultiTouchGesture(this.touchCoords, touches);
+      this.touchCoords = touches;
+      return false;
+    }
+    if (event.touches.length > 2) return false;
     this.mouseX = event.changedTouches[0].clientX - cnvBounds.left;
     this.mouseY = event.changedTouches[0].clientY - cnvBounds.top;
     this.mouseX = this.mouseX / this.scaling - this.viewOffsetX / this.scaling;
     this.mouseY = this.mouseY / this.scaling - this.viewOffsetY / this.scaling;
     return false;
+  };
+
+  /**
+   * This function processes touch movement when two fingers are used on the canvas.
+   *
+   * @param {Vec2AsObject[]} oldCoords The coordinates of the last touch
+   * @param {Vec2AsObject[]} newCoords The coordinates of the new positions of the touches
+   */
+  processMultiTouchGesture = (oldCoords: Vec2AsObject[], newCoords: Vec2AsObject[]) => {
+    const oldCenter = Vec2.add(oldCoords[1], oldCoords[0]);
+    oldCenter.mult(0.5);
+    const newCenter = Vec2.add(newCoords[1], newCoords[0]);
+    newCenter.mult(0.5);
+    const oldLen = Vec2.dist(oldCoords[1], oldCoords[0]);
+    const newLen = Vec2.dist(newCoords[1], newCoords[0]);
+    const scalingFactor = Math.sqrt(newLen / oldLen);
+    const middleCenter = Vec2.add(oldCenter, newCenter);
+    middleCenter.mult(0.5);
+    const toMove = Vec2.sub(newCenter, oldCenter);
+    toMove.mult(scalingFactor);
+    this.scaleAround(middleCenter, scalingFactor);
+    this.viewOffsetX += toMove.x;
+    this.viewOffsetY += toMove.y;
+  };
+
+  /**
+   * Scales the view around a given point.
+   *
+   * @param {Vec2} center The center of the scaling. This point stays in the same place.
+   * @param {number} scalingFactor The scaling factor.
+   * This is the amount the screen is getting scaled.
+   */
+  scaleAround = (center: Vec2, scalingFactor: number) => {
+    this.viewOffsetX = center.x - ((center.x - this.viewOffsetX)
+      * scalingFactor);
+    this.viewOffsetY = center.y - ((center.y - this.viewOffsetY)
+      * scalingFactor);
+    this.scaling *= scalingFactor;
   };
 
   /**
@@ -373,6 +466,32 @@ class Editor implements EditorInterface {
     this.mouseX = this.mouseX / this.scaling - this.viewOffsetX / this.scaling;
     this.mouseY = this.mouseY / this.scaling - this.viewOffsetY / this.scaling;
   };
+
+  /**
+   * Transforms a point on the canvas to the space in the physiscs world.
+   *
+   * @param {{x:number, y:number}} p The point on the canvas
+   * @param {number} p.x The x coordinate
+   * @param {number} p.y The y coordinate
+   * @returns {Vec2} The point in the physics world
+   */
+  convertToPhysicsSpace = (p: {x: number, y: number}): Vec2 => new Vec2(
+    p.x / this.scaling - this.viewOffsetX / this.scaling,
+    p.y / this.scaling - this.viewOffsetY / this.scaling,
+  );
+
+  /**
+   * Transforms a point in the physics world to canvas coordinates.
+   *
+   * @param {{x:number, y:number}} p The point in the physics world
+   * @param {number} p.x The x coordinate
+   * @param {number} p.y The y coordinate
+   * @returns {Vec2} The point on the canvas
+   */
+  convertToCanvasSpace = (p: {x: number, y: number}): Vec2 => new Vec2(
+    p.x * this.scaling + this.viewOffsetX,
+    p.y * this.scaling + this.viewOffsetY,
+  );
 
   physicsDraw = (): void => {
     const ctx = this.cnv.getContext('2d');
