@@ -10,7 +10,7 @@ import Modes from './modes/index';
 import '../css/style.css';
 // Import color palette
 import palette from '../../src/util/colorpalette';
-import {Vec2AsObject} from '../../src/math/vec2';
+import { Vec2AsObject } from '../../src/math/vec2';
 
 const modes = Modes;
 const modeNames = modes.map((mode) => mode.name);
@@ -77,6 +77,8 @@ class Editor implements EditorInterface {
 
   gestureScale: number;
 
+  rightButtonDown: Vec2 | false;
+
   constructor() {
     this.physics = new Physics();
     this.mouseX = 0;
@@ -95,6 +97,7 @@ class Editor implements EditorInterface {
     this.touchIDs = [];
     this.touchCoords = [];
     this.gestureCoord = false;
+    this.rightButtonDown = false;
     this.gestureScale = 1;
     this.timeMultiplier = 1;
     this.lastFrameTime = performance.now();
@@ -122,9 +125,14 @@ class Editor implements EditorInterface {
     this.cnv.addEventListener('mouseup', this.endMouse, false);
     this.cnv.addEventListener('mousemove', this.handleMouseMovement, false);
     this.cnv.addEventListener('wheel', this.handleMouseWheel, false);
-    window.addEventListener('gesturestart', this.handleGestureStart, false);
-    window.addEventListener('gesturechange', this.handleGestureChange, false);
-    window.addEventListener('gestureend', this.handleGestureEnd, false);
+    // @ts-ignore
+    this.cnv.addEventListener('gesturestart', this.handleGestureStart, false);
+    // @ts-ignore
+    this.cnv.addEventListener('gesturechange', this.handleGestureChange, false);
+    // @ts-ignore
+    this.cnv.addEventListener('gestureend', this.handleGestureEnd, false);
+    // Disable context menu on the canvas
+    this.cnv.addEventListener('contextmenu', (event) => event.preventDefault());
     document.addEventListener('keydown', this.keyGotDown, false);
     document.addEventListener('keyup', this.keyGotUp, false);
     window.addEventListener('resize', this.resizeCanvas, false);
@@ -181,7 +189,7 @@ class Editor implements EditorInterface {
     // Max it out at 24 fps equivalent
     elapsedTime = Math.min(elapsedTime, 0.04166666666);
 
-    const ctx = <CanvasRenderingContext2D>this.cnv.getContext('2d');
+    const ctx = <CanvasRenderingContext2D> this.cnv.getContext('2d');
 
     // paint the background
     ctx.fillStyle = palette.Independence;
@@ -450,7 +458,11 @@ class Editor implements EditorInterface {
    * @returns {boolean} Returns false for preventing default browser behavior
    */
   startMouse = (event: MouseEvent): boolean => {
-    this.startInteraction(event.offsetX, event.offsetY);
+    if (event.button === 0) this.startInteraction(event.offsetX, event.offsetY);
+    if (event.button === 2) {
+      this.rightButtonDown = new Vec2(event.offsetX, event.offsetY);
+      this.cnv.style.cursor = 'all-scroll';
+    }
     return false;
   };
 
@@ -461,7 +473,11 @@ class Editor implements EditorInterface {
    * @returns {boolean} Returns false for preventing default browser behavior
    */
   endMouse = (event: MouseEvent): boolean => {
-    this.endInteraction(event.offsetX, event.offsetY);
+    if (event.button === 0) this.endInteraction(event.offsetX, event.offsetY);
+    if (event.button === 2) {
+      this.rightButtonDown = false;
+      this.cnv.style.cursor = 'default';
+    }
     return false;
   };
 
@@ -475,6 +491,13 @@ class Editor implements EditorInterface {
     this.mouseY = event.offsetY;
     this.mouseX = this.mouseX / this.scaling - this.viewOffsetX / this.scaling;
     this.mouseY = this.mouseY / this.scaling - this.viewOffsetY / this.scaling;
+    if (this.rightButtonDown) {
+      const newPos = new Vec2(event.offsetX, event.offsetY);
+      const toMove = Vec2.sub(newPos, this.rightButtonDown);
+      this.viewOffsetX += toMove.x;
+      this.viewOffsetY += toMove.y;
+      this.rightButtonDown = newPos;
+    }
   };
 
   handleMouseWheel = (event: WheelEvent) => {
