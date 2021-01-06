@@ -1,0 +1,1 @@
+(()=>{var n="editor-cache",i=["/","/index.css","/index.js","/manifest.webmanifest","/icon-192.png","/icon-512.png"];self.addEventListener("install",e=>{e.waitUntil(caches.open(n).then(t=>t.addAll(i)))});self.addEventListener("fetch",e=>{e.respondWith(caches.match(e.request).then(t=>t||fetch(e.request)))});})();
