@@ -9,10 +9,12 @@ interface EditorInterface {
   lastX: number;
   lastY: number;
   timeMultiplier: number;
-  choosed: AnyPhysicsObject|boolean;
+  choosed: AnyPhysicsObject | boolean;
   cnv: HTMLCanvasElement;
   drawCollisions: boolean;
   showAxes: boolean;
+  hasCeiling: () => boolean;
+  setCeiling: (c: boolean) => void;
 }
 
 export default EditorInterface;

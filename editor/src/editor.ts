@@ -79,6 +79,10 @@ class Editor implements EditorInterface {
 
   rightButtonDown: Vec2 | false;
 
+  private worldSize: {width: number, height: number};
+
+  private ceiling: boolean;
+
   constructor() {
     this.physics = new Physics();
     this.mouseX = 0;
@@ -104,6 +108,8 @@ class Editor implements EditorInterface {
     this.choosed = false;
     this.drawCollisions = false;
     this.showAxes = false;
+    this.worldSize = { width: 0, height: 0 };
+    this.ceiling = true;
 
     this.left = false;
     this.right = false;
@@ -114,7 +120,7 @@ class Editor implements EditorInterface {
     this.sidebar = <HTMLElement>document.getElementById('sidebar');
     this.modeTitleHolder = <HTMLElement>document.getElementById('mode-title-text');
 
-    this.physics.setBounds(0, 0, this.cnv.width, this.cnv.height);
+    this.setWorldSize({ width: 2000, height: 1000 });
     this.physics.setGravity(new Vec2(0, 1000));
     this.physics.setAirFriction(0.9);
 
@@ -164,8 +170,11 @@ class Editor implements EditorInterface {
     this.cnv.height = rect.height * dpr;
     this.cnv.style.width = `${rect.width}px`;
     this.cnv.style.height = `${rect.height}px`;
-    this.scaling = 1 / dpr;
-    this.physics.setBounds(0, 0, this.cnv.width, this.cnv.height);
+    this.scaling = this.cnv.height / this.worldSize.height;
+    this.scaling /= dpr;
+    this.scaling *= 0.9;
+    this.viewOffsetX = 0.01 * (this.cnv.width);
+    this.viewOffsetY = 0.03 * this.cnv.height;
     const ctx = this.cnv.getContext('2d');
     if (ctx) {
       ctx.scale(dpr, dpr);
@@ -715,6 +724,20 @@ class Editor implements EditorInterface {
       }
     }
   };
+
+  setWorldSize(sizes: {width: number, height: number}) {
+    this.physics.setBounds(0, 0, sizes.width, sizes.height);
+    this.worldSize = sizes;
+  }
+
+  hasCeiling() {
+    return this.ceiling;
+  }
+
+  setCeiling(c: boolean) {
+    this.physics.setBounds(0, 0, this.worldSize.width, this.worldSize.height, c);
+    this.ceiling = c;
+  }
 
   /**
    * Spawns a Newton cradle inside the given world at given size and

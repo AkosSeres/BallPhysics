@@ -24,6 +24,9 @@ const WorldSettingsMode: Mode = {
       Creator.createSlider('Air friction', 0, 0.99, 1 - editorRef.physics.airFriction, (newFric) => {
         editorRef.physics.setAirFriction(1 - newFric);
       }, 0.01),
+      Creator.createCheckbox('World ceiling', editorRef.hasCeiling(), (newBoolColl) => {
+        editorRef.setCeiling(newBoolColl);
+      }),
       Creator.createCheckbox('Show collision data', editorRef.drawCollisions, (newBoolColl) => {
         editorRef.drawCollisions = newBoolColl;
       }),

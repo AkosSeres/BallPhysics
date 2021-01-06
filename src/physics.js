@@ -487,8 +487,9 @@ class Physics {
    * @param {number} y y coordinate of the centre of the world
    * @param {number} w Width of the world
    * @param {number} h Height of the world
+   * @param {boolean} ceiling Whether the world has a ceiling or nor
    */
-  setBounds(x, y, w, h) {
+  setBounds(x, y, w, h, ceiling = true) {
     this.bounds = [];
 
     /**
@@ -511,8 +512,8 @@ class Physics {
 
     this.bounds.push(getRectBody(x - w, y, 2 * w, 4 * h));
     this.bounds.push(getRectBody(x + 2 * w, y, 2 * w, 4 * h));
-    this.bounds.push(getRectBody(x, y - h, 4 * w, h * 2));
-    this.bounds.push(getRectBody(x, y + 2 * h, 4 * w, 2 * h));
+    if (ceiling) this.bounds.push(getRectBody(x, y - h, 4 * w, h * 2));
+    this.bounds.push(getRectBody(x + w / 2, y + 2 * h, 5 * w, 2 * h));
   }
 
   /**
