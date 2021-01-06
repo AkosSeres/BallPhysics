@@ -31,10 +31,28 @@ const MoveMode: Mode = {
     pmouseX = editorApp.mouseX;
     pmouseY = editorApp.mouseY;
   },
-  startInteractionFunc(editorApp) { },
-  endInteractionFunc(editorApp) { },
-  keyGotUpFunc(editorApp) { },
-  keyGotDownFunc(editorApp) { },
+  startInteractionFunc(editorApp) {
+    const { choosed } = editorApp;
+    if (choosed instanceof Object && 'move' in choosed) {
+      const app = editorApp;
+      app.cnv.style.cursor = 'grabbing';
+    }
+  },
+  endInteractionFunc(editorApp) {
+    const { choosed } = editorApp;
+    if (choosed instanceof Object && 'move' in choosed) {
+      const app = editorApp;
+      app.cnv.style.cursor = 'grab';
+    }
+  },
+  activated(editorApp) {
+    const app = editorApp;
+    app.cnv.style.cursor = 'grab';
+  },
+  deactivated(editorApp) {
+    const app = editorApp;
+    app.cnv.style.cursor = 'default';
+  },
 };
 
 [

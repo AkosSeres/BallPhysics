@@ -784,6 +784,10 @@ class Editor implements EditorInterface {
     if (prevoiusBtn) prevoiusBtn.classList.remove('bg-pink-darker');
     this.sidebar.innerHTML = '';
 
+    // Run activation and deactivation functions
+    modes[this.mode].deactivated?.(this);
+    modes[modeNum].activated?.(this);
+
     const newBtn = document.getElementById(`${modeNames[modeNum]}-btn`);
     if (newBtn) newBtn.classList.add('bg-pink-darker');
     // And set new title
