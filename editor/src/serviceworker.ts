@@ -2,12 +2,11 @@
 const cName = 'editor-cache';
 const toCache = [
   '.',
-  './index.html',
-  './index.css',
-  './index.js',
-  './manifest.json',
+  'index.html',
+  'index.css',
+  'index.js',
+  'manifest.json',
   '',
-  '/BallPhysics/index.html',
 ];
 
 // @ts-ignore
