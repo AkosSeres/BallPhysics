@@ -65,6 +65,8 @@ class Editor implements EditorInterface {
 
   modeTitleHolder: HTMLElement;
 
+  pauseBtn: HTMLElement;
+
   drawCollisions: boolean;
 
   showAxes: boolean;
@@ -119,6 +121,7 @@ class Editor implements EditorInterface {
     this.canvasHolder = <HTMLElement>document.getElementById('canvas-holder');
     this.sidebar = <HTMLElement>document.getElementById('sidebar');
     this.modeTitleHolder = <HTMLElement>document.getElementById('mode-title-text');
+    this.pauseBtn = document.getElementById('pause');
 
     this.setWorldSize({ width: 2000, height: 1000 });
     this.physics.setGravity(new Vec2(0, 1000));
@@ -844,7 +847,11 @@ class Editor implements EditorInterface {
    * @param {number} x The new value of timeMultiplier
    */
   setTimeMultiplier = (x: number): void => {
-    if (Number.isFinite(x)) this.timeMultiplier = x;
+    if (Number.isFinite(x) && x >= 0) {
+      this.timeMultiplier = x;
+      if (x === 0) this.pauseBtn.classList.add('bg-pink-darker');
+      else this.pauseBtn.classList.remove('bg-pink-darker');
+    }
   };
 
   /**

@@ -2,12 +2,27 @@ import Physics, { PhysicsAsObject } from '../../src/physics';
 
 let startingState: PhysicsAsObject;
 let inStartingState: boolean;
+let startBtn: HTMLElement;
 
 interface HasPhysicsAndTime {
   getPhysics(): Physics,
   setPhysics(physics: Physics): void,
   getTimeMultiplier(): number,
   setTimeMultiplier(m: number): void
+}
+
+/**
+ * Sets the starting state boolean indicator and the color of the button.
+ *
+ * @param {boolean} st The new starting state indicator.
+ */
+function setStartingStateBool(st: boolean) {
+  inStartingState = st;
+  if (st) {
+    startBtn.classList.add('bg-pink-darker');
+  } else {
+    startBtn.classList.remove('bg-pink-darker');
+  }
 }
 
 /**
@@ -19,18 +34,20 @@ interface HasPhysicsAndTime {
  */
 export default function timeController(editorApp: HasPhysicsAndTime): void {
   startingState = editorApp.getPhysics().toJSON();
-  inStartingState = true;
+  startBtn = <HTMLElement>document.getElementById('set start');
+  setStartingStateBool(false);
 
   const pauseBtn = document.getElementById('pause');
   if (pauseBtn) {
     pauseBtn.onclick = () => {
-      if (editorApp.getTimeMultiplier() !== 0) editorApp.setTimeMultiplier(0);
-      else {
+      if (editorApp.getTimeMultiplier() !== 0) {
+        editorApp.setTimeMultiplier(0);
+      } else {
         editorApp.setTimeMultiplier(1);
         if (inStartingState === true) {
           startingState = editorApp.getPhysics().toJSON();
         }
-        inStartingState = false;
+        setStartingStateBool(false);
       }
     };
   }
@@ -40,14 +57,14 @@ export default function timeController(editorApp: HasPhysicsAndTime): void {
     revertBtn.onclick = () => {
       editorApp.setTimeMultiplier(0);
       editorApp.setPhysics(Physics.fromObject(startingState));
-      inStartingState = true;
+      setStartingStateBool(true);
     };
   }
 
   const clearBtn = document.getElementById('clear all');
   if (clearBtn) {
     clearBtn.onclick = () => {
-      inStartingState = true;
+      setStartingStateBool(true);
 
       const physics = editorApp.getPhysics();
       physics.balls = [];
@@ -59,11 +76,10 @@ export default function timeController(editorApp: HasPhysicsAndTime): void {
     };
   }
 
-  const startBtn = document.getElementById('set start');
   if (startBtn) {
     startBtn.onclick = () => {
       startingState = editorApp.getPhysics().toJSON();
-      inStartingState = true;
+      setStartingStateBool(true);
       editorApp.setTimeMultiplier(0);
     };
   }
