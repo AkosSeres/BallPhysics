@@ -20,6 +20,10 @@ const RectangleMode: Mode = {
   startInteractionFunc(editorApp) { },
   endInteractionFunc(editorApp) {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
+      // Return if the wall is too small
+      if (Math.abs(editorApp.lastX - editorApp.mouseX) < 5
+        && Math.abs(editorApp.lastY - editorApp.mouseY) < 5) return;
+
       editorApp.physics.addRectWall(
         editorApp.lastX / 2 + editorApp.mouseX / 2,
         editorApp.lastY / 2 + editorApp.mouseY / 2,
