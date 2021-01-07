@@ -3,9 +3,11 @@
 import Mode from '../modeInterface';
 import elementCreator from '../elementCreator';
 import '../components/range-slider';
+import { defaultBodyColor } from '../../../src/util/colorpalette';
 
 let k = 0.2;
 let fc = 0.5;
+let color = defaultBodyColor;
 const element = document.createElement('div');
 
 const RectangleBodyMode: Mode = {
@@ -32,7 +34,7 @@ const RectangleBodyMode: Mode = {
         editorApp.lastY / 2 + editorApp.mouseY / 2,
         2 * Math.abs(editorApp.lastX / 2 - editorApp.mouseX / 2),
         2 * Math.abs(editorApp.lastY / 2 - editorApp.mouseY / 2),
-        fc, k,
+        fc, k, color,
       );
     }
   },
@@ -47,6 +49,9 @@ element.append(
   <range-slider min={0} max={2} step={0.1} value={fc} onChange={(newFc: number) => { fc = newFc; }}>
     Coefficient of friction
   </range-slider>,
+  <color-picker value={color} onChange={(newColor: string) => { color = newColor; }}>
+    Color:
+  </color-picker>,
 );
 
 export default RectangleBodyMode;

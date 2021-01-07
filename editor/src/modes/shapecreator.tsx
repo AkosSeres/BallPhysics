@@ -5,12 +5,14 @@ import Vec2 from '../../../src/math/vec2';
 import Body from '../../../src/entity/body';
 import elementCreator from '../elementCreator';
 import '../components/range-slider';
+import { defaultBodyColor } from '../../../src/util/colorpalette';
 
 let size = 35;
 let k = 0.5;
 let fc = 0.5;
 let roundness = 4;
 let res = 24;
+let color = defaultBodyColor;
 const element = document.createElement('div');
 
 /**
@@ -60,6 +62,7 @@ const ShapeCreatorMode: Mode = {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       const newBody = new Body(shape, new Vec2(editorApp.lastX - editorApp.mouseX,
         editorApp.lastY - editorApp.mouseY), k, 0, fc);
+      newBody.style = color;
       editorApp.physics.addBody(newBody);
     }
   },
@@ -99,6 +102,9 @@ element.append(
   <range-slider min={0} max={2} step={0.1} value={fc} onChange={(newFc: number) => { fc = newFc; }}>
     Coefficient of friction
   </range-slider>,
+  <color-picker value={color} onChange={(newColor: string) => { color = newColor; }}>
+    Color:
+  </color-picker>,
 );
 
 export default ShapeCreatorMode;

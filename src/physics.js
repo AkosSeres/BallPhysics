@@ -9,6 +9,7 @@ import Vec2 from './math/vec2';
 import Spring from './constraint/spring';
 import SoftBall from './entity/softball';
 import { collisionResponseWithWall } from './util/collision';
+import { defaultBodyColor } from './util/colorpalette';
 
 /**
  * @typedef {{x:number, y:number, r:number}} FixedBall
@@ -435,14 +436,17 @@ class Physics {
    * @param {number} h height of the rectangular body
    * @param {number} fc friction coefficient of the body
    * @param {number} k coefficient of restitution of the body
+   * @param {string} style The style of the body
    */
-  addRectBody(x, y, w, h, fc, k) {
+  addRectBody(x, y, w, h, fc, k, style = defaultBodyColor) {
     const points = [];
     points.push(new Vec2(x - w / 2, y - h / 2));
     points.push(new Vec2(x + w / 2, y - h / 2));
     points.push(new Vec2(x + w / 2, y + h / 2));
     points.push(new Vec2(x - w / 2, y + h / 2));
-    this.bodies.push(new Body(points, new Vec2(0, 0), k, 0, fc));
+    const newBody = new Body(points, new Vec2(0, 0), k, 0, fc);
+    newBody.style = style;
+    this.bodies.push(newBody);
   }
 
   /**

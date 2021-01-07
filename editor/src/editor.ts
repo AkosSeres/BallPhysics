@@ -577,10 +577,11 @@ class Editor implements EditorInterface {
     const ctx = this.cnv.getContext('2d');
 
     if (ctx) {
-      ctx.fillStyle = palette.Turquoise;
       ctx.strokeStyle = 'black';
+      ctx.fillStyle = palette.Turquoise;
       for (let i = 0; i < this.physics.balls.length; i += 1) {
         const ball = this.physics.balls[i];
+        ctx.fillStyle = ball.style;
         ctx.beginPath();
         ctx.arc(
           ball.pos.x,
@@ -600,6 +601,7 @@ class Editor implements EditorInterface {
       }
 
       this.physics.bodies.forEach((element) => {
+        ctx.fillStyle = element.style;
         ctx.beginPath();
         ctx.moveTo(
           element.points[element.points.length - 1].x,

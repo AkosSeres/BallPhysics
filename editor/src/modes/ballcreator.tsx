@@ -5,10 +5,13 @@ import { Ball, Vec2 } from '../../../src/physics';
 import EditorInterface from '../editorInterface';
 import elementCreator from '../elementCreator';
 import '../components/range-slider';
+import '../components/color-picker';
+import { defaultBallColor } from '../../../src/util/colorpalette';
 
 let size = 35;
 let k = 0.5;
 let fc = 1.5;
+let color = defaultBallColor;
 const element = document.createElement('div');
 
 /**
@@ -43,6 +46,7 @@ const BallCreatorMode: Mode = {
           editorApp.lastY - editorApp.mouseY),
         size, k, 0, fc,
       );
+      newBall.style = color;
       if (
         Number.isFinite(newBall.pos.x)
         && Number.isFinite(newBall.pos.y)
@@ -71,6 +75,9 @@ element.append(
   <range-slider min={0} max={2} step={0.1} value={fc} onChange={(newFc: number) => { fc = newFc; }}>
     Coefficient of friction
   </range-slider>,
+  <color-picker value={color} onChange={(newColor: string) => { color = newColor; }}>
+    Color:
+  </color-picker>,
 );
 
 export default BallCreatorMode;
