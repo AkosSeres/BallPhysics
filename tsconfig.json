@@ -9,7 +9,9 @@
         "preserveConstEnums": true,
         "allowJs": true,
         "checkJs": true,
-        "outDir": "./dest"
+        "outDir": "./dest",
+        "jsx": "react",
+        "jsxFactory": "elementCreator"
     },
     "include": [
         "src/**/*",

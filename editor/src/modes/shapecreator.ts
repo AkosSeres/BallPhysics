@@ -30,7 +30,7 @@ const ShapeCreatorMode: Mode = {
   description: '',
   element,
   drawFunc(editorApp, dt) {
-    const ctx = <CanvasRenderingContext2D>editorApp.cnv.getContext('2d');
+    const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
     ctx.strokeStyle = 'black';
     const shape = generateUnitSquircle(res, roundness);
     shape.forEach((p) => p.mult(size));

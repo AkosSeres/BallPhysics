@@ -1,5 +1,5 @@
-type EventHandlerFunctionNum = (event: number) => void;
-type EventHandlerFunctionBool = (event: boolean) => void;
+type EventHandlerFunctionNum = (newNum: number) => void;
+type EventHandlerFunctionBool = (newBool: boolean) => void;
 
 /**
  * Returns an HTML element with the label in with a slider
@@ -31,8 +31,8 @@ export function createSlider(
   sizeSlider.value = defaultVal.toString();
   sizeSlider.classList.add('slider');
   sizeSlider.classList.add('fix-width');
-  sizeSlider.onchange = (event) => { onchange((<HTMLInputElement>event.target).valueAsNumber); };
-  sizeSlider.oninput = (event) => { onchange((<HTMLInputElement>event.target).valueAsNumber); };
+  sizeSlider.onchange = (event) => { onchange((event.target as HTMLInputElement).valueAsNumber); };
+  sizeSlider.oninput = (event) => { onchange((event.target as HTMLInputElement).valueAsNumber); };
 
   // Add them both to the container
   const container = document.createElement('div');
@@ -85,13 +85,55 @@ export function createCheckbox(
   checkboxLabel.appendChild(labelText);
 
   checkboxLabel.childNodes.forEach((node) => {
-    const cb = <HTMLInputElement>node;
+    const cb = node as HTMLInputElement;
     if (cb?.id === name) {
-      cb.onchange = (event) => { onchange((<HTMLInputElement>event.target).checked); };
+      cb.onchange = (event) => { onchange((event.target as HTMLInputElement).checked); };
     }
   });
 
   container.appendChild(checkboxLabel);
 
   return container;
+}
+
+/**
+ * Creates an html element from the given arguments, used in JSX.
+ *
+ * @param {string} type The type of the tag
+ * @param {object} attributes The attributes of the tag
+ * @param {any[]} content The contents of the html tag
+ * @returns {HTMLElement} The created element
+ */
+export default function elementCreator(type: string, attributes: {}, ...content: any[]):
+HTMLElement {
+  const el = document.createElement(type) as any;
+
+  if (attributes) {
+    Object.entries(attributes).forEach(([key, value]: [string, any]) => {
+      el[key] = value;
+    });
+  }
+
+  if (content) {
+    content.forEach((d) => {
+      if (typeof d === 'string') {
+        el.appendChild(document.createTextNode(d));
+      } else if (d instanceof HTMLElement) {
+        el.appendChild(d);
+      }
+    });
+  }
+
+  return el;
+}
+
+// Element types for type checking
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      div: any;
+      hline: any;
+      br: any;
+    }
+  }
 }

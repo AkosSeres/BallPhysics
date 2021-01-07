@@ -10,9 +10,12 @@
     "ecmaVersion": 2020
   },
   "plugins": [
-    "jsdoc"
+    "jsdoc",
+    "react"
   ],
   "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/style-prop-object": "off",
     "jsdoc/check-access": 1,
     "jsdoc/check-alignment": 1,
     "jsdoc/check-param-names": 1,
@@ -48,8 +51,13 @@
       ],
       "parser": "@typescript-eslint/parser",
       "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "react"
       ],
+      "rules": {
+        "react/react-in-jsx-scope": "off",
+        "react/style-prop-object": "off"
+      },
       "parserOptions": {
         "project": "./tsconfig.json"
       },
