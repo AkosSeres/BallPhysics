@@ -1,17 +1,21 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import * as Creator from '../elementCreator';
+import elementCreator from '../elementCreator';
+import '../components/range-slider';
 
+let k = 0.2;
+let fc = 0.5;
 const element = document.createElement('div');
 
-const RectangleMode: Mode = {
-  name: 'Rectangle wall',
+const RectangleBodyMode: Mode = {
+  name: 'Rectangle body',
   description: '',
   element,
   drawFunc(editorApp, dt) {
+    const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
+
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
-      const ctx = <CanvasRenderingContext2D>editorApp.cnv.getContext('2d');
       ctx.strokeStyle = 'black';
       ctx.strokeRect(editorApp.mouseX, editorApp.mouseY,
         editorApp.lastX - editorApp.mouseX, editorApp.lastY - editorApp.mouseY);
@@ -20,15 +24,15 @@ const RectangleMode: Mode = {
   startInteractionFunc(editorApp) { },
   endInteractionFunc(editorApp) {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
-      // Return if the wall is too small
-      if (Math.abs(editorApp.lastX - editorApp.mouseX) < 5
-        && Math.abs(editorApp.lastY - editorApp.mouseY) < 5) return;
-
-      editorApp.physics.addRectWall(
+      const w = Math.abs(editorApp.mouseX - editorApp.lastX);
+      const h = Math.abs(editorApp.mouseY - editorApp.lastY);
+      if (w / h > 50 || h / w > 50 || h === 0 || w === 0) return;
+      editorApp.physics.addRectBody(
         editorApp.lastX / 2 + editorApp.mouseX / 2,
         editorApp.lastY / 2 + editorApp.mouseY / 2,
         2 * Math.abs(editorApp.lastX / 2 - editorApp.mouseX / 2),
         2 * Math.abs(editorApp.lastY / 2 - editorApp.mouseY / 2),
+        fc, k,
       );
     }
   },
@@ -36,7 +40,13 @@ const RectangleMode: Mode = {
   keyGotDownFunc(editorApp) { },
 };
 
-[
-].forEach(element.appendChild.bind(element));
+element.append(
+  <range-slider min={0} max={0.6} step={0.02} value={k} onChange={(newK: number) => { k = newK; }}>
+    Bounciness
+  </range-slider>,
+  <range-slider min={0} max={2} step={0.1} value={fc} onChange={(newFc: number) => { fc = newFc; }}>
+    Coefficient of friction
+  </range-slider>,
+);
 
-export default RectangleMode;
+export default RectangleBodyMode;

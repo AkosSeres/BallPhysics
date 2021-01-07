@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import * as Creator from '../elementCreator';
 
 let pmouseX = 0;
 let pmouseY = 0;
@@ -54,8 +53,5 @@ const MoveMode: Mode = {
     app.cnv.style.cursor = 'default';
   },
 };
-
-[
-].forEach(element.appendChild.bind(element));
 
 export default MoveMode;

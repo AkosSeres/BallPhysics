@@ -1,19 +1,21 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import { Stick } from '../../../src/physics';
-import * as Creator from '../elementCreator';
+import { Spring } from '../../../src/physics';
+import elementCreator from '../elementCreator';
+import '../components/checkbox';
+import '../components/range-slider';
 
 let lockRotation = false;
-
+let springConstant = 10000;
 const element = document.createElement('div');
 
-const StickCreatorMode: Mode = {
-  name: 'Stick creator',
+const SpringCreatorMode: Mode = {
+  name: 'Spring creator',
   description: '',
   element,
   drawFunc(editorApp, dt) {
-    const ctx = <CanvasRenderingContext2D>editorApp.cnv.getContext('2d');
+    const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
 
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       ctx.strokeStyle = 'black';
@@ -28,7 +30,7 @@ const StickCreatorMode: Mode = {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       let newChoosed = editorApp.physics.getObjectAtCoordinates(editorApp.mouseX, editorApp.mouseY);
       let stick;
-      const Thing = Stick;
+      const Thing = Spring;
       if (!newChoosed) {
         newChoosed = {
           x: editorApp.mouseX,
@@ -37,36 +39,43 @@ const StickCreatorMode: Mode = {
         };
       }
 
-      if (typeof editorApp.choosed === 'boolean'
-        || editorApp.choosed === newChoosed
+      if (
+        editorApp.choosed === newChoosed
         || (editorApp.choosed === undefined && newChoosed === undefined)
       ) {
         return;
-      } if ('pinPoint' in editorApp.choosed && 'pinPoint' in newChoosed) return;
-      if ('pinPoint' in editorApp.choosed && 'pos' in newChoosed) {
+      } if (editorApp.choosed instanceof Object && newChoosed instanceof Object
+        && 'pinPoint' in editorApp.choosed && 'pinPoint' in newChoosed) return;
+      if (editorApp.choosed instanceof Object && newChoosed instanceof Object
+        && 'pinPoint' in editorApp.choosed && 'pos' in newChoosed) {
         stick = new Thing(
           Math.sqrt(
             ((editorApp.choosed.x - newChoosed.pos.x) ** 2)
             + ((editorApp.choosed.y - newChoosed.pos.y) ** 2),
           ),
+          springConstant,
         );
         stick.attachObject(newChoosed);
         stick.pinHere(editorApp.choosed.x, editorApp.choosed.y);
-      } else if ('pinPoint' in newChoosed && 'pos' in editorApp.choosed) {
+      } else if (newChoosed instanceof Object && editorApp.choosed instanceof Object
+         && 'pos' in editorApp.choosed && 'pinPoint' in newChoosed) {
         stick = new Thing(
           Math.sqrt(
             ((editorApp.choosed.pos.x - newChoosed.x) ** 2)
             + ((editorApp.choosed.pos.y - newChoosed.y) ** 2),
           ),
+          springConstant,
         );
         stick.attachObject(editorApp.choosed);
         stick.pinHere(newChoosed.x, newChoosed.y);
-      } else if ('pos' in editorApp.choosed && 'pos' in newChoosed) {
+      } else if (editorApp.choosed instanceof Object && newChoosed instanceof Object
+        && 'pos' in editorApp.choosed && 'pos' in newChoosed) {
         stick = new Thing(
           Math.sqrt(
             ((editorApp.choosed.pos.x - newChoosed.pos.x) ** 2)
             + ((editorApp.choosed.pos.y - newChoosed.pos.y) ** 2),
           ),
+          springConstant,
         );
         stick.attachObject(editorApp.choosed);
         stick.attachObject(newChoosed);
@@ -78,14 +87,21 @@ const StickCreatorMode: Mode = {
       }
     }
   },
-  keyGotUpFunc(editorApp) { },
-  keyGotDownFunc(editorApp) { },
 };
 
-[
-  Creator.createCheckbox('Rotation lock', lockRotation, (newBool) => {
-    lockRotation = newBool;
-  }),
-].forEach(element.appendChild.bind(element));
+element.append(
+  <check-box checked={lockRotation} onChange={(newBool: boolean) => { lockRotation = newBool; }}>
+    Lock rotation
+  </check-box>,
+  <range-slider
+    min={2000}
+    max={100000}
+    value={springConstant}
+    step={200}
+    onChange={(newConst:number) => { springConstant = newConst; }}
+  >
+    Spring stiffness
+  </range-slider>,
+);
 
-export default StickCreatorMode;
+export default SpringCreatorMode;

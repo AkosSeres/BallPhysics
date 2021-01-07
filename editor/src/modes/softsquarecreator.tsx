@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
 import { Ball, Vec2 } from '../../../src/physics';
-import * as Creator from '../elementCreator';
+import elementCreator from '../elementCreator';
+import '../components/range-slider';
 
 let size = 35;
 const k = 0.5;
@@ -16,7 +17,7 @@ const SoftSquareCreatorMode: Mode = {
   description: '',
   element,
   drawFunc(editorApp, dt: number): void {
-    const ctx = <CanvasRenderingContext2D>editorApp.cnv.getContext('2d');
+    const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
     ctx.strokeStyle = 'black';
 
     ctx.beginPath();
@@ -58,23 +59,45 @@ const SoftSquareCreatorMode: Mode = {
       }
     }
   },
-  keyGotUpFunc(editorApp): void { },
-  keyGotDownFunc(editorApp): void { },
 };
 
-[
-  Creator.createSlider('Size', 5, 100, size, (newSize) => {
-    size = newSize;
-  }),
-  Creator.createSlider('Pressure', 0.4, 3, pressure, (newPressure) => {
-    pressure = newPressure;
-  }, 0.1),
-  Creator.createSlider('Coefficient of friction', 0, 2, fc, (newFc) => {
-    fc = newFc;
-  }, 0.1),
-  Creator.createSlider('Resolution', 16, 48, resolution, (newRes) => {
-    resolution = newRes;
-  }, 8),
-].forEach(element.appendChild.bind(element));
+element.append(
+  <range-slider
+    min={5}
+    max={100}
+    step={1}
+    value={size}
+    onChange={(newS: number) => { size = newS; }}
+  >
+    Size
+  </range-slider>,
+  <range-slider
+    min={0.4}
+    max={3}
+    step={0.1}
+    value={pressure}
+    onChange={(newP: number) => { pressure = newP; }}
+  >
+    Pressure
+  </range-slider>,
+  <range-slider
+    min={0}
+    max={2}
+    step={0.1}
+    value={fc}
+    onChange={(newFc: number) => { fc = newFc; }}
+  >
+    Coefficient of friction
+  </range-slider>,
+  <range-slider
+    min={16}
+    max={48}
+    step={8}
+    value={resolution}
+    onChange={(newRes: number) => { resolution = newRes; }}
+  >
+    Resolution
+  </range-slider>,
+);
 
 export default SoftSquareCreatorMode;

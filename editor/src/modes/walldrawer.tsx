@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import * as Creator from '../elementCreator';
+import elementCreator from '../elementCreator';
+import '../components/range-slider';
 
 let size = 20;
 const element = document.createElement('div');
@@ -11,7 +12,7 @@ const WallDrawerMode: Mode = {
   description: '',
   element,
   drawFunc(editorApp, dt) {
-    const ctx = <CanvasRenderingContext2D>editorApp.cnv.getContext('2d');
+    const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
 
     ctx.strokeStyle = 'black';
     ctx.beginPath();
@@ -24,18 +25,12 @@ const WallDrawerMode: Mode = {
         size);
     }
   },
-  startInteractionFunc(editorApp) {
-  },
-  endInteractionFunc(editorApp) {
-  },
-  keyGotUpFunc(editorApp) { },
-  keyGotDownFunc(editorApp) { },
 };
 
-[
-  Creator.createSlider('Size', 5, 70, size, (newSize) => {
-    size = newSize;
-  }),
-].forEach(element.appendChild.bind(element));
+element.append(
+  <range-slider min={5} max={70} step={1} value={size} onChange={(nS:number) => { size = nS; }}>
+    Size
+  </range-slider>,
+);
 
 export default WallDrawerMode;

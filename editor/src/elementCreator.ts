@@ -131,9 +131,8 @@ HTMLElement {
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      div: any;
-      hline: any;
-      br: any;
+      [name: string]: any;
+      slider: any;
     }
   }
 }

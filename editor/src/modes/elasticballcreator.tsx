@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
 import { Ball, SoftBall, Vec2 } from '../../../src/physics';
-import * as Creator from '../elementCreator';
+import elementCreator from '../elementCreator';
+import '../components/range-slider';
 import EditorInterface from '../editorInterface';
 
 let size = 35;
@@ -17,7 +18,7 @@ const ElasticBallCreatorMode: Mode = {
   description: '',
   element,
   drawFunc(editorApp: EditorInterface, dt: number): void {
-    const ctx = <CanvasRenderingContext2D>editorApp.cnv.getContext('2d');
+    const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
     ctx.strokeStyle = 'black';
 
     ctx.beginPath();
@@ -56,23 +57,45 @@ const ElasticBallCreatorMode: Mode = {
       }
     }
   },
-  keyGotUpFunc(editorApp) { },
-  keyGotDownFunc(editorApp) { },
 };
 
-[
-  Creator.createSlider('Size', 5, 60, size, (newSize) => {
-    size = newSize;
-  }),
-  Creator.createSlider('Pressure', 500000, 3000000, pressure, (newPressure) => {
-    pressure = newPressure;
-  }, 4000),
-  Creator.createSlider('Coefficient of friction', 0, 2, fc, (newFc) => {
-    fc = newFc;
-  }, 0.1),
-  Creator.createSlider('Resolution', 6, 24, resolution, (newResolution) => {
-    resolution = newResolution;
-  }, 1),
-].forEach(element.appendChild.bind(element));
+element.append(
+  <range-slider
+    min={5}
+    max={60}
+    step={1}
+    value={size}
+    onChange={(nS: number) => { size = nS; }}
+  >
+    Size
+  </range-slider>,
+  <range-slider
+    min={500000}
+    max={3000000}
+    step={4000}
+    value={pressure}
+    onChange={(nP: number) => { pressure = nP; }}
+  >
+    Pressure
+  </range-slider>,
+  <range-slider
+    min={0}
+    max={2}
+    step={0.1}
+    value={fc}
+    onChange={(nFc: number) => { fc = nFc; }}
+  >
+    Coefficient of friction
+  </range-slider>,
+  <range-slider
+    min={6}
+    max={24}
+    step={1}
+    value={resolution}
+    onChange={(nR: number) => { resolution = nR; }}
+  >
+    Resolution
+  </range-slider>,
+);
 
 export default ElasticBallCreatorMode;

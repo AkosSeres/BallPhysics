@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import * as Creator from '../elementCreator';
 import Vec2 from '../../../src/math/vec2';
 import Body from '../../../src/entity/body';
+import elementCreator from '../elementCreator';
+import '../components/range-slider';
 
 let size = 35;
 let k = 0.5;
@@ -64,22 +65,40 @@ const ShapeCreatorMode: Mode = {
   },
 };
 
-[
-  Creator.createSlider('Size', 5, 120, size, (newSize) => {
-    size = newSize;
-  }),
-  Creator.createSlider('Roundness', 2, 7, 9 - roundness, (newRoundnessFacto) => {
-    roundness = 9 - newRoundnessFacto;
-  }, 1),
-  Creator.createSlider('Resolution', 12, 36, res, (newRes) => {
-    res = newRes;
-  }, 1),
-  Creator.createSlider('Bounciness', 0.0, 0.9, k, (newK) => {
-    k = newK;
-  }, 0.02),
-  Creator.createSlider('Coefficient of friction', 0, 2, fc, (newFc) => {
-    fc = newFc;
-  }, 0.1),
-].forEach(element.appendChild.bind(element));
+element.append(
+  <range-slider
+    min={5}
+    max={120}
+    step={1}
+    value={size}
+    onChange={(newSize: number) => { size = newSize; }}
+  >
+    Size
+  </range-slider>,
+  <range-slider
+    min={2}
+    max={7}
+    step={1}
+    value={9 - roundness}
+    onChange={(newRoun: number) => { roundness = 9 - newRoun; }}
+  >
+    Roundness
+  </range-slider>,
+  <range-slider
+    min={12}
+    max={36}
+    step={1}
+    value={res}
+    onChange={(newRes: number) => { res = newRes; }}
+  >
+    Resolution
+  </range-slider>,
+  <range-slider min={0} max={0.9} step={0.02} value={k} onChange={(newK: number) => { k = newK; }}>
+    Bounciness
+  </range-slider>,
+  <range-slider min={0} max={2} step={0.1} value={fc} onChange={(newFc: number) => { fc = newFc; }}>
+    Coefficient of friction
+  </range-slider>,
+);
 
 export default ShapeCreatorMode;

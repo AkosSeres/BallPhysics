@@ -2,8 +2,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
 import { Ball, Vec2 } from '../../../src/physics';
-import * as Creator from '../elementCreator';
 import EditorInterface from '../editorInterface';
+import elementCreator from '../elementCreator';
+import '../components/range-slider';
 
 let size = 35;
 let k = 0.5;
@@ -18,7 +19,7 @@ const BallCreatorMode: Mode = {
   description: '',
   element,
   drawFunc(editorApp: EditorInterface, _dt: number) {
-    const ctx = <CanvasRenderingContext2D>editorApp.cnv.getContext('2d');
+    const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
     ctx.strokeStyle = 'black';
 
     ctx.beginPath();
@@ -60,16 +61,16 @@ const BallCreatorMode: Mode = {
   keyGotDownFunc(editorApp) { },
 };
 
-[
-  Creator.createSlider('Size', 5, 120, size, (newSize) => {
-    size = newSize;
-  }),
-  Creator.createSlider('Bounciness', 0, 1, k, (newK) => {
-    k = newK;
-  }, 0.02),
-  Creator.createSlider('Coefficient of friction', 0, 2, fc, (newFc) => {
-    fc = newFc;
-  }, 0.1),
-].forEach(element.appendChild.bind(element));
+element.append(
+  <range-slider min={5} max={120} step={1} value={size} onChange={(nS:number) => { size = nS; }}>
+    Size
+  </range-slider>,
+  <range-slider min={0} max={1} step={0.02} value={k} onChange={(newK: number) => { k = newK; }}>
+    Bounciness
+  </range-slider>,
+  <range-slider min={0} max={2} step={0.1} value={fc} onChange={(newFc: number) => { fc = newFc; }}>
+    Coefficient of friction
+  </range-slider>,
+);
 
 export default BallCreatorMode;
