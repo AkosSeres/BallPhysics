@@ -55,6 +55,13 @@ style.innerHTML = `
     .cursor-pointer > * {
         cursor: pointer;
     }
+    /* For tablets */
+    @media (max-width: 768px) {
+      .checkbox-label {
+        margin-top: 0.6em;
+        font-size: small;
+      }
+    }
   </style>
 `;
 

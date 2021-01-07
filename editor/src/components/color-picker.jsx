@@ -20,6 +20,16 @@ style.innerHTML = `
         height: 1rem;
         cursor: pointer;
     }
+    /* For tablets */
+    @media (max-width: 768px) {
+      .picker-label {
+        margin-top: 0.6em;
+        font-size: small;
+      }
+      #colorWell {
+        height: 1em;
+      }
+    }
   </style>
 `;
 

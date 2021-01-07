@@ -14,6 +14,7 @@ style.innerHTML = `
       -webkit-transition: 0.2s;
       transition: opacity 0.2s;
       border-radius: 100vh;
+      width: 90%;
     }
     .slider:hover {
       opacity: 1;
@@ -42,6 +43,26 @@ style.innerHTML = `
       padding-left: 0em;
       font-weight: bold;
     }
+    /* For tablets */
+    @media (max-width: 768px) {
+      .slider-label {
+        font-weight: bold;
+        margin-top: 0.5em;
+        margin-bottom: 0rem;
+        font-size: small;
+      }
+      .slider {
+        height: 0.4rem;
+      }
+      .slider::-webkit-slider-thumb {
+        width: 0.55rem;
+        height: 0.55rem;
+      }
+      .slider::-moz-range-thumb {
+        width: 0.55rem;
+        height: 0.55rem;
+      }
+    }
   </style>
 `;
 
@@ -54,7 +75,7 @@ class RangeSlider extends HTMLElement {
     this.shadowRoot.appendChild(
       <div>
         <p className="slider-label"><slot /></p>
-        <input id="slider" type="range" className="slider fix-width" />
+        <input id="slider" type="range" className="slider" />
       </div>,
     );
   }
