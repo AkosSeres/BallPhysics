@@ -4,21 +4,21 @@
     "description": "A sandbox world editor and creator with the BallPhysics 2D physics engine.",
     "icons": [
         {
-            "src": "/icon-192.png",
+            "src": "icon-192.png",
             "type": "image/png",
             "sizes": "192x192",
             "purpose": "any maskable"
         },
         {
-            "src": "/icon-512.png",
+            "src": "icon-512.png",
             "type": "image/png",
             "sizes": "512x512"
         }
     ],
-    "start_url": "/?source=pwa",
+    "start_url": "",
     "background_color": "#0e1320",
     "display": "standalone",
-    "scope": "/",
+    "scope": "",
     "theme_color": "#de6a68",
     "shortcuts": []
 }
