@@ -7,6 +7,7 @@ import Line from '../math/line';
 import {
   collisionResponse, collisionResponseWithWall, detectCollision, findOverlap, MinMax, minMaxOfArray,
 } from '../util/collision';
+import { defaultBodyColor } from '../util/colorpalette';
 
 const MAX_AXES = 15;
 
@@ -22,6 +23,7 @@ const MAX_AXES = 15;
  * @property {number} ang The angular velocity
  * @property {number} k The coefficient of restitution (bounciness)
  * @property {import('../math/vec2').Vec2AsObject} vel The velocity
+ * @property {string} style The color or texture of the body
  */
 
 /**
@@ -99,6 +101,9 @@ class Body {
 
     if (vel !== undefined) this.vel = vel.copy;
     else this.vel = new Vec2(0, 0);
+
+    /** The style of the ball. Has to be a hex color or a texture pointer. */
+    this.style = defaultBodyColor;
   }
 
   /**
@@ -841,6 +846,7 @@ class Body {
     ret.pos = this.pos.toJSON();
     ret.lastPos = this.lastPos.toJSON();
     ret.rotation = this.rotation;
+    ret.style = this.style;
 
     return ret;
   }
@@ -863,6 +869,7 @@ class Body {
     ret.pos = Vec2.fromObject(obj.pos);
     ret.lastPos = Vec2.fromObject(obj.lastPos);
     ret.rotation = obj.rotation;
+    ret.style = obj.style;
 
     return ret;
   }

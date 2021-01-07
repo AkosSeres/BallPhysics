@@ -1,5 +1,6 @@
 import { collisionResponse } from '../util/collision';
 import Vec2 from '../math/vec2';
+import { defaultBallColor } from '../util/colorpalette';
 
 /**
  * An object representation of the Ball class for easy conversion to JSON.
@@ -15,6 +16,7 @@ import Vec2 from '../math/vec2';
  * @property {number} k The coefficient of restitution (bounciness)
  * @property {import('../math/vec2').Vec2AsObject} vel The velocity
  * @property {string | number | undefined} layer The collision layer of the ball
+ * @property {string} style The color or texture of the ball
  */
 
 /**
@@ -57,6 +59,9 @@ class Ball {
 
     /** @type {string | number | undefined} */
     this.layer = undefined;
+
+    /** The style of the ball. Has to be a hex color or a texture pointer. */
+    this.style = defaultBallColor;
   }
 
   /**
@@ -277,6 +282,7 @@ class Ball {
     if (typeof this.layer !== 'undefined') {
       ret.layer = this.layer;
     }
+    ret.style = this.style;
 
     return ret;
   }
@@ -304,6 +310,7 @@ class Ball {
     if (typeof obj.layer !== 'undefined') {
       ret.layer = obj.layer;
     }
+    ret.style = obj.style;
 
     return ret;
   }

@@ -17,3 +17,5 @@ const palette = {
 };
 
 export default palette;
+export const defaultBallColor = palette.Turquoise;
+export const defaultBodyColor = palette.Turquoise;
