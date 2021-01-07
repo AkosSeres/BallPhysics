@@ -15,10 +15,10 @@
             "sizes": "512x512"
         }
     ],
-    "start_url": "",
+    "start_url": "./",
     "background_color": "#0e1320",
     "display": "standalone",
-    "scope": "",
+    "scope": ".",
     "theme_color": "#de6a68",
     "shortcuts": []
 }
