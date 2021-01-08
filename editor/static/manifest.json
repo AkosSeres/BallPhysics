@@ -1,6 +1,6 @@
 {
     "short_name": "BallPhysics editor",
-    "name": "BallPhysics editor | 2D physics engine",
+    "name": "BallPhysics editor",
     "description": "A sandbox world editor and creator with the BallPhysics 2D physics engine.",
     "icons": [
         {
@@ -17,7 +17,7 @@
     ],
     "start_url": "./",
     "background_color": "#0e1320",
-    "display": "standalone",
+    "display": "fullscreen",
     "orientation": "landscape",
     "scope": ".",
     "theme_color": "#0e1320",
