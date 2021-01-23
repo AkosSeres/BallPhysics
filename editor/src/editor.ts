@@ -75,10 +75,6 @@ class Editor implements EditorInterface {
 
   touchCoords: {x: number, y: number}[];
 
-  gestureCoord: Vec2 | false;
-
-  gestureScale: number;
-
   rightButtonDown: Vec2 | false;
 
   private worldSize: {width: number, height: number};
@@ -102,9 +98,7 @@ class Editor implements EditorInterface {
     this.lastY = 0;
     this.touchIDs = [];
     this.touchCoords = [];
-    this.gestureCoord = false;
     this.rightButtonDown = false;
-    this.gestureScale = 1;
     this.timeMultiplier = 1;
     this.lastFrameTime = performance.now();
     this.choosed = false;
@@ -133,13 +127,7 @@ class Editor implements EditorInterface {
     this.cnv.addEventListener('mousedown', this.startMouse, false);
     this.cnv.addEventListener('mouseup', this.endMouse, false);
     this.cnv.addEventListener('mousemove', this.handleMouseMovement, false);
-    this.cnv.addEventListener('wheel', this.handleMouseWheel, { passive: true });
-    // @ts-ignore
-    this.cnv.addEventListener('gesturestart', this.handleGestureStart, false);
-    // @ts-ignore
-    this.cnv.addEventListener('gesturechange', this.handleGestureChange, false);
-    // @ts-ignore
-    this.cnv.addEventListener('gestureend', this.handleGestureEnd, false);
+    this.cnv.addEventListener('wheel', this.handleMouseWheel);
     // Disable context menu on the canvas
     this.cnv.addEventListener('contextmenu', (event) => event.preventDefault());
     document.addEventListener('keydown', this.keyGotDown, false);
@@ -151,7 +139,7 @@ class Editor implements EditorInterface {
     // Set up modes and link them to the buttons
     this.setupModes();
 
-    // startPauseControlsFunction(this);
+    startPauseControlsFunction(this);
 
     requestAnimationFrame(this.drawFunction);
   }
@@ -522,32 +510,6 @@ class Editor implements EditorInterface {
     if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) multiplier /= 16;
     const scalingFactor = 1 - event.deltaY * multiplier;
     this.scaleAround(center, scalingFactor);
-  };
-
-  handleGestureStart = (event: MouseEvent) => {
-    event.preventDefault();
-    const cnvBounds = this.canvasHolder.getBoundingClientRect();
-    this.gestureCoord = new Vec2(event.clientX - cnvBounds.left, event.clientY - cnvBounds.top);
-    this.gestureScale = 1;
-  };
-
-  handleGestureChange = (event: MouseEvent & {scale: number}) => {
-    event.preventDefault();
-    const cnvBounds = this.canvasHolder.getBoundingClientRect();
-    const newCoords = new Vec2(event.clientX - cnvBounds.left, event.clientY - cnvBounds.top);
-    if (this.gestureCoord) {
-      const toMove = Vec2.sub(newCoords, this.gestureCoord);
-      const relativeScaling = event.scale / this.gestureScale;
-      this.scaleAround(newCoords, relativeScaling);
-      this.viewOffsetX += toMove.x * relativeScaling;
-      this.viewOffsetY += toMove.y * relativeScaling;
-    }
-    this.gestureScale = event.scale;
-  };
-
-  handleGestureEnd = (event: MouseEvent) => {
-    event.preventDefault();
-    this.gestureScale = 1;
   };
 
   /**
