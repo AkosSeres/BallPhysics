@@ -241,9 +241,6 @@ export function resolveCollisions(bodies) {
     if (b.m === 0) continue;
     const cCount = Math.max(collisionCounts[i], 1);
 
-    const happened = moveAmountsY.filter((amount) => (amount > 0));
-    // if (happened.length > 0) console.log(happened);
-
     b.move(new Vec2(moveAmountsX[i] / cCount, moveAmountsY[i] / cCount));
     b.vel.add(new Vec2(dVelXs[i] / cCount, dVelYs[i] / cCount));
     b.ang += dAngs[i] / cCount;

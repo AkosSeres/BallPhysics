@@ -215,11 +215,11 @@ class Body {
     let cp;
     if (index < axes1.length) {
       const projected = b2.shape.points.map((p) => Vec2.dot(p, n));
-      cp = b2.shape.points[projected.indexOf(Math.min(...projected))];
-      if (b2.shape.r !== 0)cp.add(Vec2.mult(n, -b2.shape.r));
+      cp = b2.shape.points[projected.indexOf(Math.min(...projected))].copy;
+      if (b2.shape.r !== 0)cp.sub(Vec2.mult(n, b2.shape.r));
     } else {
       const projected = b1.shape.points.map((p) => Vec2.dot(p, n));
-      cp = b1.shape.points[projected.indexOf(Math.max(...projected))];
+      cp = b1.shape.points[projected.indexOf(Math.max(...projected))].copy;
       if (b1.shape.r !== 0)cp.add(Vec2.mult(n, b1.shape.r));
     }
     return {
