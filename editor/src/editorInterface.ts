@@ -1,4 +1,4 @@
-import Physics, { AnyPhysicsObject } from '../../src/physics';
+import Physics, { AnyPhysicsObject, PinPoint } from '../../src/physics';
 
 interface EditorInterface {
   physics: Physics;
@@ -9,7 +9,7 @@ interface EditorInterface {
   lastX: number;
   lastY: number;
   timeMultiplier: number;
-  choosed: AnyPhysicsObject | boolean;
+  choosed: AnyPhysicsObject | boolean | PinPoint;
   cnv: HTMLCanvasElement;
   drawCollisions: boolean;
   showAxes: boolean;

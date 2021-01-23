@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import { Spring } from '../../../src/physics';
+import { PinPoint, Spring } from '../../../src/physics';
 import elementCreator from '../elementCreator';
 import '../components/checkbox';
 import '../components/range-slider';
@@ -28,10 +28,12 @@ const SpringCreatorMode: Mode = {
   startInteractionFunc(editorApp) { },
   endInteractionFunc(editorApp) {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
+      /** @type {Body | boolean | PinPoint} */
       let newChoosed = editorApp.physics.getObjectAtCoordinates(editorApp.mouseX, editorApp.mouseY);
       let stick;
       const Thing = Spring;
-      if (!newChoosed) {
+      if (typeof newChoosed === 'boolean') {
+        /** @type {PinPoint} */
         newChoosed = {
           x: editorApp.mouseX,
           y: editorApp.mouseY,

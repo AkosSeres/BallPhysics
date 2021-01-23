@@ -27,10 +27,11 @@ const StickCreatorMode: Mode = {
   startInteractionFunc(editorApp) { },
   endInteractionFunc(editorApp) {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
+      /** @type {Body | boolean | PinPoint} */
       let newChoosed = editorApp.physics.getObjectAtCoordinates(editorApp.mouseX, editorApp.mouseY);
       let stick;
       const Thing = Stick;
-      if (!newChoosed) {
+      if (typeof newChoosed === 'boolean') {
         newChoosed = {
           x: editorApp.mouseX,
           y: editorApp.mouseY,

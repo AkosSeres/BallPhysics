@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import { Ball, Vec2 } from '../../../src/physics';
+import { Body, Shape, Vec2 } from '../../../src/physics';
 import EditorInterface from '../editorInterface';
 import elementCreator from '../elementCreator';
 import '../components/range-slider';
@@ -40,12 +40,11 @@ const BallCreatorMode: Mode = {
   startInteractionFunc(editorApp) { },
   endInteractionFunc(editorApp) {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
-      const newBall = new Ball(
-        new Vec2(editorApp.lastX, editorApp.lastY),
-        new Vec2(editorApp.lastX - editorApp.mouseX,
-          editorApp.lastY - editorApp.mouseY),
-        size, k, 0, fc,
+      const newBall = new Body(
+        Shape.Circle(size, new Vec2(editorApp.lastX, editorApp.lastY)), 1, k, fc,
       );
+      newBall.vel = new Vec2(editorApp.lastX - editorApp.mouseX,
+        editorApp.lastY - editorApp.mouseY);
       newBall.style = color;
       if (
         Number.isFinite(newBall.pos.x)
@@ -53,16 +52,14 @@ const BallCreatorMode: Mode = {
         && Number.isFinite(newBall.vel.x)
         && Number.isFinite(newBall.vel.y)
       ) {
-        editorApp.physics.addBall(newBall);
+        editorApp.physics.addBody(newBall);
       } else {
         newBall.vel.x = 0;
         newBall.vel.y = 0;
-        editorApp.physics.addBall(newBall);
+        editorApp.physics.addBody(newBall);
       }
     }
   },
-  keyGotUpFunc(editorApp) { },
-  keyGotDownFunc(editorApp) { },
 };
 
 element.append(

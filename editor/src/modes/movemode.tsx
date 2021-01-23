@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { Vec2 } from '../../../src/physics';
 import Mode from '../modeInterface';
 
 let pmouseX = 0;
@@ -14,10 +15,10 @@ const MoveMode: Mode = {
   drawFunc(editorApp, dt) {
     const { choosed } = editorApp;
     if (choosed instanceof Object && 'move' in choosed) {
-      choosed.move(
+      choosed.move(new Vec2(
         editorApp.mouseX - choosed.pos.x,
         editorApp.mouseY - choosed.pos.y,
-      );
+      ));
       if (dt === 0) {
         choosed.vel.x = 0;
         choosed.vel.y = 0;

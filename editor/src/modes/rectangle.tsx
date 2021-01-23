@@ -31,8 +31,6 @@ const RectangleMode: Mode = {
       );
     }
   },
-  keyGotUpFunc(editorApp) { },
-  keyGotDownFunc(editorApp) { },
 };
 
 export default RectangleMode;

@@ -1,5 +1,5 @@
 import Physics, {
-  Ball, Vec2, Spring, Stick, Wall, AnyPhysicsObject,
+  Vec2, Spring, Stick, Shape, AnyPhysicsObject, PinPoint, CollisionData, Body,
 } from '../../src/physics';
 import EditorInterface from './editorInterface';
 
@@ -51,7 +51,7 @@ class Editor implements EditorInterface {
 
   lastFrameTime: number;
 
-  choosed: (AnyPhysicsObject | boolean);
+  choosed: (AnyPhysicsObject | boolean | PinPoint);
 
   left: boolean;
 
@@ -85,6 +85,8 @@ class Editor implements EditorInterface {
 
   private ceiling: boolean;
 
+  collisionData: CollisionData[];
+
   constructor() {
     this.physics = new Physics();
     this.mouseX = 0;
@@ -108,10 +110,11 @@ class Editor implements EditorInterface {
     this.timeMultiplier = 1;
     this.lastFrameTime = performance.now();
     this.choosed = false;
-    this.drawCollisions = false;
+    this.drawCollisions = true;
     this.showAxes = false;
     this.worldSize = { width: 0, height: 0 };
     this.ceiling = true;
+    this.collisionData = [];
 
     this.left = false;
     this.right = false;
@@ -151,7 +154,7 @@ class Editor implements EditorInterface {
     // Set up modes and link them to the buttons
     this.setupModes();
 
-    startPauseControlsFunction(this);
+    // startPauseControlsFunction(this);
 
     requestAnimationFrame(this.drawFunction);
   }
@@ -216,17 +219,20 @@ class Editor implements EditorInterface {
 
     ctx.restore();
 
-    if (this.physics.balls[0]) {
-      if (this.left) this.physics.balls[0].ang -= Math.PI * 100 * elapsedTime;
-      if (this.right) this.physics.balls[0].ang += Math.PI * 100 * elapsedTime;
+    // Reset collision data
+    this.collisionData = [];
+
+    if (this.physics.bodies[0]) {
+      if (this.left) this.physics.bodies[0].ang -= Math.PI * 100 * elapsedTime;
+      if (this.right) this.physics.bodies[0].ang += Math.PI * 100 * elapsedTime;
     }
 
     elapsedTime *= this.timeMultiplier;
-    this.physics.update(elapsedTime / 5);
-    this.physics.update(elapsedTime / 5);
-    this.physics.update(elapsedTime / 5);
-    this.physics.update(elapsedTime / 5);
-    this.physics.update(elapsedTime / 5);
+    this.collisionData.push(...this.physics.update(elapsedTime / 5));
+    this.collisionData.push(...this.physics.update(elapsedTime / 5));
+    this.collisionData.push(...this.physics.update(elapsedTime / 5));
+    this.collisionData.push(...this.physics.update(elapsedTime / 5));
+    this.collisionData.push(...this.physics.update(elapsedTime / 5));
 
     this.lastFrameTime = performance.now();
     requestAnimationFrame(this.drawFunction);
@@ -242,7 +248,7 @@ class Editor implements EditorInterface {
     this.mouseX = x / this.scaling - this.viewOffsetX / this.scaling;
     this.mouseY = y / this.scaling - this.viewOffsetY / this.scaling;
     this.choosed = this.physics.getObjectAtCoordinates(this.mouseX, this.mouseY);
-    if (!this.choosed) {
+    if (!this.choosed && typeof this.choosed === 'boolean') {
       this.choosed = {
         x: this.mouseX,
         y: this.mouseY,
@@ -577,49 +583,54 @@ class Editor implements EditorInterface {
     const ctx = this.cnv.getContext('2d');
 
     if (ctx) {
-      ctx.strokeStyle = 'black';
-      ctx.fillStyle = palette.Turquoise;
-      for (let i = 0; i < this.physics.balls.length; i += 1) {
-        const ball = this.physics.balls[i];
-        ctx.fillStyle = ball.style;
-        ctx.beginPath();
-        ctx.arc(
-          ball.pos.x,
-          ball.pos.y,
-          ball.r,
-          0,
-          2 * Math.PI,
-        );
-        ctx.stroke();
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(ball.pos.x, ball.pos.y);
-        ctx.lineTo(ball.pos.x + ball.r * Math.cos(ball.rotation),
-          ball.pos.y + ball.r * Math.sin(ball.rotation));
-        ctx.stroke();
-      }
-
       this.physics.bodies.forEach((element) => {
         ctx.fillStyle = element.style;
-        ctx.beginPath();
-        ctx.moveTo(
-          element.points[element.points.length - 1].x,
-          element.points[element.points.length - 1].y,
-        );
-        element.points.forEach((p) => {
-          ctx.lineTo(p.x, p.y);
-        });
-        ctx.stroke();
-        ctx.fill();
+        ctx.strokeStyle = 'black';
+        if (element.m === 0) {
+          ctx.fillStyle = palette.Beige;
+          ctx.strokeStyle = palette.Beige;
+        }
+        if (element.shape.r !== 0) {
+          // Draw circle
+          const ball = element;
+          ctx.beginPath();
+          ctx.arc(
+            ball.pos.x,
+            ball.pos.y,
+            ball.shape.r,
+            0,
+            2 * Math.PI,
+          );
+          ctx.stroke();
+          ctx.fill();
 
-        if (this.showAxes) {
-          element.axes.forEach((axe) => {
-            ctx.beginPath();
-            ctx.moveTo(element.pos.x, element.pos.y);
-            ctx.lineTo(element.pos.x + axe.x * 30, element.pos.y + axe.y * 30);
-            ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(ball.pos.x, ball.pos.y);
+          ctx.lineTo(ball.pos.x + ball.shape.r * Math.cos(ball.rotation),
+            ball.pos.y + ball.shape.r * Math.sin(ball.rotation));
+          ctx.stroke();
+        } else {
+          // Draw polygon
+          ctx.beginPath();
+          ctx.moveTo(
+            element.shape.points[element.shape.points.length - 1].x,
+            element.shape.points[element.shape.points.length - 1].y,
+          );
+          element.shape.points.forEach((p) => {
+            ctx.lineTo(p.x, p.y);
           });
+          ctx.stroke();
+          ctx.fill();
+
+          if (this.showAxes) {
+            ctx.strokeStyle = 'black';
+            element.axes.forEach((axe) => {
+              ctx.beginPath();
+              ctx.moveTo(element.pos.x, element.pos.y);
+              ctx.lineTo(element.pos.x + axe.x * 30, element.pos.y + axe.y * 30);
+              ctx.stroke();
+            });
+          }
         }
 
         ctx.beginPath();
@@ -627,26 +638,6 @@ class Editor implements EditorInterface {
         ctx.stroke();
       });
 
-      const drawWall = (element: Wall) => {
-        ctx.beginPath();
-        ctx.moveTo(
-          element.points[element.points.length - 1].x,
-          element.points[element.points.length - 1].y,
-        );
-        element.points.forEach((p) => {
-          ctx.lineTo(p.x, p.y);
-        });
-        ctx.fill();
-      };
-      ctx.fillStyle = palette.Beige;
-      this.physics.walls.forEach(drawWall);
-      this.physics.bounds.forEach(drawWall);
-
-      this.physics.fixedBalls.forEach((b) => {
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.fill();
-      });
       ctx.save();
       ctx.lineWidth = 2;
       this.physics.springs.forEach((element) => {
@@ -717,7 +708,7 @@ class Editor implements EditorInterface {
       ctx.strokeStyle = palette['Maximum Yellow Red'];
       ctx.lineWidth = 4;
       if (this.drawCollisions) {
-        this.physics.collisionData.forEach((cd) => {
+        this.collisionData.forEach((cd) => {
           ctx.beginPath();
           ctx.moveTo(cd.cp.x, cd.cp.y);
           ctx.lineTo(cd.cp.x + cd.n.x * 30, cd.cp.y + cd.n.y * 30);
@@ -754,23 +745,21 @@ class Editor implements EditorInterface {
    * @param {Physics} phy The world to put it in
    */
   spawnNewtonsCradle = (x: number, y: number, scale: number, phy: Physics): void => {
+    /** @type {Body[]} */
     const balls = [];
     const defaultR = 25;
     const defaultStick = 250;
     const ballNumber = 8;
     balls.push(
-      new Ball(new Vec2(x, y), new Vec2(0, 0), scale * defaultR, 1, 0, 0),
+      new Body(Shape.Circle(scale * defaultR, new Vec2(x, y)), 1, 1, 0),
     );
     let count = 1;
     for (let i = 0; i < ballNumber - 1; i += 1) {
       balls.push(
-        new Ball(
-          new Vec2(x + count * scale * defaultR * 1.01 * 2, y),
-          new Vec2(0, 0),
-          scale * 25,
-          1,
-          0,
-          0,
+        new Body(
+          Shape.Circle(
+            scale * defaultR, new Vec2(x + count * scale * defaultR * 1.01 * 2, y),
+          ), 1, 1, 0,
         ),
       );
       count *= -1;
@@ -780,7 +769,7 @@ class Editor implements EditorInterface {
       }
     }
     balls.forEach((ball) => {
-      phy.addBall(ball);
+      phy.addBody(ball);
       const stick = new Stick(defaultStick);
       stick.attachObject(ball);
       stick.pinHere(ball.pos.x, ball.pos.y - defaultStick);
