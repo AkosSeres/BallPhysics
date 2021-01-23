@@ -402,7 +402,7 @@ class Physics {
 
     retObj.airFriction = this.airFriction;
     retObj.gravity = this.gravity.toJSON();
-    retObj.bodies = this.bodies.map((b) => b.toJSON());
+    retObj.bodies = this.bodies.map((b) => b.copy);
 
     retObj.springs = this.springs.map((spring) => {
       /** @type {import('./constraint/spring').SpringAsObject} */

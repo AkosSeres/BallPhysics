@@ -1,9 +1,29 @@
-import { findOverlap } from '../math/minmax';
+import { findOverlap, MinMax } from '../math/minmax';
 import Shape from '../math/shape';
 import Vec2 from '../math/vec2';
 import { defaultBodyColor } from '../util/colorpalette';
 
 const MAX_AXES = 15;
+
+/**
+ * @typedef BodyAsObject
+ * @property {import('../math/shape').ShapeAsObject} shape The shape of the body
+ * @property {number} k Coefficient of restitution
+ * @property {number} fc Coefficient of friction
+ * @property {number} m The mass of the body
+ * @property {import('../math/vec2').Vec2AsObject} pos The center of mass of the body
+ * @property {number} am The angular mass of the body
+ * @property {number} rotation The rotation of the body
+ * @property {number} ang The angular velocity of the body
+ * @property {import('../math/vec2').Vec2AsObject} vel The velocity of the body
+ * @property {string | number} [layer] The layer of the body
+ * @property {import('../math/vec2').Vec2AsObject[]} defaultAxes The axes of the body when
+ * it's rotation is 0
+ * @property {import('../math/vec2').Vec2AsObject[]} axes The axes of the body
+ * @property {{x:import('../math/minmax').MinMaxAsObject,y:import('../math/minmax').MinMaxAsObject}}
+ * boundingBox The bounding box of the body
+ * @property {string} style The style of the body
+ */
 
 /**
  * A class representing a body
@@ -227,6 +247,46 @@ class Body {
       overlap: smallestOverlap,
       contactPoint: cp,
     };
+  }
+
+  /**
+   * Converts an object to a Body.
+   *
+   * @param {BodyAsObject} obj The body represented as a JS object.
+   * @returns {Body} The created body.
+   */
+  static fromObject(obj) {
+    /** @type {Body} */
+    const ret = Object.create(Body.prototype);
+
+    ret.am = obj.am;
+    ret.ang = obj.ang;
+    ret.axes = obj.axes.map((a) => Vec2.fromObject(a));
+    ret.boundingBox = {
+      x: new MinMax(obj.boundingBox.x.min, obj.boundingBox.x.max),
+      y: new MinMax(obj.boundingBox.y.min, obj.boundingBox.y.max),
+    };
+    ret.defaultAxes = obj.defaultAxes.map((da) => Vec2.fromObject(da));
+    ret.fc = obj.fc;
+    ret.k = obj.k;
+    ret.layer = obj.layer;
+    ret.m = obj.m;
+    ret.pos = Vec2.fromObject(obj.pos);
+    ret.rotation = obj.rotation;
+    ret.shape = Shape.fromObject(obj.shape);
+    ret.style = obj.style;
+    ret.vel = Vec2.fromObject(obj.vel);
+
+    return ret;
+  }
+
+  /**
+   * Returns a copy of the body.
+   *
+   * @returns {Body} The clone.
+   */
+  get copy() {
+    return Body.fromObject(this);
   }
 }
 

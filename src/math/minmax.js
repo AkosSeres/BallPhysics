@@ -1,4 +1,8 @@
 /**
+ * @typedef {{min:number, max:number}} MinMaxAsObject
+ */
+
+/**
  * Used to descrive an interval.
  *
  * @class

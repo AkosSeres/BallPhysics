@@ -251,6 +251,18 @@ class Shape {
 
     return ret;
   }
+
+  /**
+   * Returns a copy of the shape.
+   *
+   * @returns {Shape} The clone.
+   */
+  get copy() {
+    const ret = new Shape();
+    ret.r = this.r;
+    ret.points = this.points.map((p) => p.copy);
+    return ret;
+  }
 }
 
 export default Shape;

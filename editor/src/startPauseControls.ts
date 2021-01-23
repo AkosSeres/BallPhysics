@@ -56,6 +56,7 @@ export default function timeController(editorApp: HasPhysicsAndTime): void {
   if (revertBtn) {
     revertBtn.onclick = () => {
       editorApp.setTimeMultiplier(0);
+      console.log(Physics.fromObject(startingState));
       editorApp.setPhysics(Physics.fromObject(startingState));
       setStartingStateBool(true);
     };
@@ -67,18 +68,15 @@ export default function timeController(editorApp: HasPhysicsAndTime): void {
       setStartingStateBool(true);
 
       const physics = editorApp.getPhysics();
-      physics.balls = [];
-      physics.walls = [];
-      physics.softBalls = [];
       physics.springs = [];
       physics.bodies = [];
-      physics.fixedBalls = [];
     };
   }
 
   if (startBtn) {
     startBtn.onclick = () => {
       startingState = editorApp.getPhysics().toJSON();
+      console.log(startingState);
       setStartingStateBool(true);
       editorApp.setTimeMultiplier(0);
     };
