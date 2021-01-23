@@ -1,14 +1,19 @@
 import Vec2 from '../math/vec2';
-import Polygon from '../math/polygon';
+import Body from './body';
+
+/**
+ * @typedef {{dVel: Vec2, dAng: number}} ChangeOfMotion
+ */
 
 /**
  * Calculates the collsion response when any two physical objects
  * collide with a given collision point and collision normal.
  *
- * @param {import('../physics').PhysicalObject} object1 The first object
- * @param {import('../physics').PhysicalObject} object2 The second object
+ * @param {Body} object1 The first object
+ * @param {Body} object2 The second object
  * @param {Vec2} contactPoint The collision point
  * @param {Vec2} normal The normal of the colliding surfaces
+ * @returns {ChangeOfMotion[]} The changes in the motion states
  */
 export function collisionResponse(object1, object2, contactPoint, normal) {
   const n = normal;
@@ -62,11 +67,10 @@ export function collisionResponse(object1, object2, contactPoint, normal) {
   t.setMag(1);
   if ((Vec2.dot(n, t) ** 2) > 0.5) {
     // No friction impulse is needed, return
-    b1.vel = u1;
-    b2.vel = u2;
-    b1.ang = pAng1;
-    b2.ang = pAng2;
-    return;
+    return [
+      { dVel: Vec2.sub(u1, b1.vel), dAng: pAng1 - b1.ang },
+      { dVel: Vec2.sub(u2, b2.vel), dAng: pAng2 - b2.ang },
+    ];
   }
 
   // Calculate max impulse
@@ -91,20 +95,20 @@ export function collisionResponse(object1, object2, contactPoint, normal) {
   pAng1 -= (frictionImpulse * Vec2.cross(r1, t)) / am1;
   pAng2 += (frictionImpulse * Vec2.cross(r2, t)) / am2;
 
-  // Store the new values in the objects
-  b1.vel = u1;
-  b2.vel = u2;
-  b1.ang = pAng1;
-  b2.ang = pAng2;
+  return [
+    { dVel: Vec2.sub(u1, b1.vel), dAng: pAng1 - b1.ang },
+    { dVel: Vec2.sub(u2, b2.vel), dAng: pAng2 - b2.ang },
+  ];
 }
 
 /**
  * Calculates the collsion response when a physical object
  * collides with an immovable object, like a {@link Wall} or {@link FixedBall}.
  *
- * @param {import('../physics').PhysicalObject} object The phyisical object
+ * @param {Body} object The phyisical object
  * @param {Vec2 | import('../math/vec2').Vec2AsObject} contactPoint The collision point
  * @param {Vec2} normal The surface normal
+ * @returns {ChangeOfMotion} The change of the motion state
  */
 export function collisionResponseWithWall(object, contactPoint, normal) {
   const cp = contactPoint;
@@ -140,7 +144,7 @@ export function collisionResponseWithWall(object, contactPoint, normal) {
     // No friction impulse is needed, return
     b.vel = u;
     b.ang = pAng;
-    return;
+    return { dVel: Vec2.sub(u, b.vel), dAng: pAng - b.ang };
   }
 
   // Calculate max impulse
@@ -160,136 +164,90 @@ export function collisionResponseWithWall(object, contactPoint, normal) {
   // Calculate post-friction angular velocity
   pAng -= (frictionImpulse * Vec2.cross(r, t)) / am;
 
-  // Store the new values in the body
-  b.vel = u;
-  b.ang = pAng;
+  return { dVel: Vec2.sub(u, b.vel), dAng: pAng - b.ang };
 }
 
 /**
- * Used to descrive an interval.
+ * Calculates and applies all collisions on the bodies in the array
  *
- * @class
- * @param {number} min The lower bound
- * @param {number} max The high bound
+ * @param {Body[]} bodies All bodies
+ * @returns {import('../physics').CollisionData[]} All the collsions that occured
  */
-export function MinMax(min, max) {
-  this.min = min;
-  this.max = max;
-}
+export function resolveCollisions(bodies) {
+  const collisions = [];
+  const bodyCount = bodies.length;
+  const moveAmountsX = Array(bodyCount).fill(0);
+  const moveAmountsY = Array(bodyCount).fill(0);
+  const collisionCounts = Array(bodyCount).fill(0);
+  const dVelXs = Array(bodyCount).fill(0);
+  const dVelYs = Array(bodyCount).fill(0);
+  const dAngs = Array(bodyCount).fill(0);
 
-MinMax.prototype.size = function size() {
-  return this.max - this.min;
-};
-
-/**
- * Returns the min and max of an array of numbers
- *
- * @param {number[]} arr Array of numbers
- * @returns {MinMax} The min and max value
- */
-export function minMaxOfArray(arr) {
-  return new MinMax(Math.min(...arr), Math.max(...arr));
-}
-
-/**
- * Finds the overlap of two {@link MinMax}-es.
- *
- * @param {MinMax} interval1 The first MinMax
- * @param {MinMax} interval2 The second MinMax
- * @returns {MinMax} Their overlap
- */
-export function findOverlap(interval1, interval2) {
-  return new MinMax(Math.max(interval1.min, interval2.min),
-    Math.min(interval1.max, interval2.max));
-}
-
-/**
- * Detects the collision and returns collision data.
- *
- * @param {Vec2[]} points1 The first shape
- * @param {Vec2[]} points2 The other shape
- * @param {Vec2[]} normals1 The axes of the first shape
- * @param {Vec2[]} normals2 The axes of the other shape
- * @returns {{normal:Vec2, overlap:number, index:number} | boolean} Collision data
- */
-export function detectCollision(points1, points2, normals1, normals2) {
-  const coordinateSystems = [...normals1, ...normals2];
-  /**
-   * Return the max and min coordinates of the points in the given space.
-   *
-   * @param {Vec2} normal The vector to project with
-   * @returns {import('./collision').MinMax} The max and min values
-   */
-  const getMinMaxes1 = (normal) => minMaxOfArray(points1.map((p) => Vec2.dot(p, normal)));
-  /**
-   * Return the max and min coordinates of the points in the given space.
-   *
-   * @param {Vec2} normal The vector to project with
-   * @returns {import('./collision').MinMax} The max and min values
-   */
-  const getMinMaxes2 = (normal) => minMaxOfArray(points2.map((p) => Vec2.dot(p, normal)));
-  /** @type {MinMax[]} */
-  const overlaps = [];
-  if (coordinateSystems.some((s) => {
-    const currMinMax1 = getMinMaxes1(s);
-    const currMinMax2 = getMinMaxes2(s);
-    const overlap = findOverlap(currMinMax1, currMinMax2);
-    overlaps.push(overlap);
-    if (overlap.max < overlap.min) return true;
-    return false;
-  })) return false;
-
-  const overlapSizes = overlaps.map((overlap) => overlap.size());
-  let smallestOverlap = overlapSizes[0];
-  let index = 0;
-  for (let i = 1; i < overlapSizes.length; i += 1) {
-    if (smallestOverlap > overlapSizes[i]) {
-      smallestOverlap = overlapSizes[i];
-      index = i;
+  for (let i = 0; i < bodyCount - 1; i += 1) {
+    for (let j = i + 1; j < bodyCount; j += 1) {
+      const b1 = bodies[i];
+      const b2 = bodies[j];
+      // eslint-disable-next-line no-continue
+      if (b1.m === 0 && b2.m === 0) continue;
+      const collDat = Body.detectCollision(b1, b2);
+      if (collDat && typeof collDat !== 'boolean') {
+        collisions.push({ n: collDat.normal, cp: collDat.contactPoint });
+        collisionCounts[i] += 1;
+        collisionCounts[j] += 1;
+        let toMove1 = -collDat.overlap;
+        let toMove2 = collDat.overlap;
+        if (b1.m === 0) {
+          toMove1 = 0;
+          const change1 = collisionResponseWithWall(
+            b2, collDat.contactPoint, Vec2.mult(collDat.normal, -1),
+          );
+          dVelXs[j] += change1.dVel.x;
+          dVelYs[j] += change1.dVel.y;
+          dAngs[j] += change1.dAng;
+        } else if (b2.m === 0) {
+          toMove2 = 0;
+          const change2 = collisionResponseWithWall(
+            b1, collDat.contactPoint, Vec2.mult(collDat.normal, 1),
+          );
+          dVelXs[i] += change2.dVel.x;
+          dVelYs[i] += change2.dVel.y;
+          dAngs[i] += change2.dAng;
+        } else {
+          toMove1 *= (b2.m / (b1.m + b2.m));
+          toMove2 *= (b1.m / (b1.m + b2.m));
+          const [change1, change2] = collisionResponse(
+            b1, b2, collDat.contactPoint, Vec2.mult(collDat.normal, 1),
+          );
+          dVelXs[i] += change1.dVel.x;
+          dVelYs[i] += change1.dVel.y;
+          dAngs[i] += change1.dAng;
+          dVelXs[j] += change2.dVel.x;
+          dVelYs[j] += change2.dVel.y;
+          dAngs[j] += change2.dAng;
+        }
+        const toMove1V = Vec2.mult(collDat.normal, toMove1);
+        const toMove2V = Vec2.mult(collDat.normal, toMove2);
+        moveAmountsX[i] += toMove1V.x;
+        moveAmountsX[j] += toMove2V.x;
+        moveAmountsY[i] += toMove1V.y;
+        moveAmountsY[j] += toMove2V.y;
+      }
     }
   }
 
-  const n = coordinateSystems[index].copy;
-  return {
-    normal: n,
-    overlap: smallestOverlap,
-    index,
-  };
-}
+  for (let i = 0; i < bodyCount; i += 1) {
+    const b = bodies[i];
+    // eslint-disable-next-line no-continue
+    if (b.m === 0) continue;
+    const cCount = Math.max(collisionCounts[i], 1);
 
-/**
- * @callback supportFunction
- * @param {Vec2} d The direction
- * @returns {Vec2} The max point
- */
+    const happened = moveAmountsY.filter((amount) => (amount > 0));
+    // if (happened.length > 0) console.log(happened);
 
-/**
- * Detect collision using the GJK algorithm.
- *
- * @param {{pos: Vec2, support: supportFunction}} shape1 The first object
- * @param {{pos: Vec2, support: supportFunction}} shape2 The second object
- * @returns {boolean} Does a collision appear
- */
-export function detectCollisionGJK(shape1, shape2) {
-  const initial = Vec2.sub(shape2.pos, shape1.pos);
-  let sup1 = shape1.support(initial);
-  initial.mult(-1);
-  let sup2 = shape1.support(initial);
-  const points = [Vec2.sub(sup1, sup2)];
-  let D = Vec2.sub(sup2, sup1);
+    b.move(new Vec2(moveAmountsX[i] / cCount, moveAmountsY[i] / cCount));
+    b.vel.add(new Vec2(dVelXs[i] / cCount, dVelYs[i] / cCount));
+    b.ang += dAngs[i] / cCount;
+  }
 
-  sup1 = shape1.support(D);
-  D.mult(-1);
-  sup2 = shape2.support(D);
-  if ((-Vec2.dot(Vec2.sub(sup1, sup2), D)) < 0) return false;
-  points.push(Vec2.sub(sup1, sup2));
-  if (points[0].length < points[1].length) D = Vec2.mult(points[0], -1);
-  else D = Vec2.mult(points[1], -1);
-  sup1 = shape1.support(D);
-  D.mult(-1);
-  sup2 = shape2.support(D);
-  if ((-Vec2.dot(Vec2.sub(sup1, sup2), D)) < 0) return false;
-  points.push(Vec2.sub(sup1, sup2));
-  const triangle = new Polygon(points);
-  return triangle.isPointInside(new Vec2(0, 0));
+  return collisions;
 }

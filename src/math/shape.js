@@ -1,9 +1,10 @@
 import Line from './line';
 import { MinMax, minMaxOfArray } from './minmax';
+import Polygon from './polygon';
 import Vec2 from './vec2';
 
 /**
- * @typedef {{center:import('./vec2').Vec2AsObject,area:number,secondArea:number}} GeometricalData
+ * @typedef {{center:Vec2,area:number,secondArea:number}} GeometricalData
  */
 
 /**
@@ -42,7 +43,7 @@ class Shape {
   static Polygon(points) {
     const ret = new Shape();
     if (points.length < 3) throw new Error('A polygon needs at least 3 points to be valid!');
-    ret.points = points.map((v) => Vec2.fromObject(v));
+    ret.points = new Polygon(points).points.map((p) => Vec2.fromObject(p));
     return ret;
   }
 
@@ -157,6 +158,79 @@ class Shape {
     ret.min -= this.r;
     ret.max += this.r;
     return ret;
+  }
+
+  /**
+   * Calculates and returns the range of the shape along the given direction.
+   *
+   * @param {Vec2} d The direction
+   * @returns {MinMax} The interval
+   */
+  getMinMaxInDirection(d) {
+    const ret = minMaxOfArray(this.points.map((p) => Vec2.dot(p, d)));
+    ret.min -= this.r;
+    ret.max += this.r;
+    return ret;
+  }
+
+  /**
+   * Moves the shape by a given vector
+   *
+   * @param {Vec2} v The displacement vector
+   */
+  move(v) {
+    this.points.forEach((p) => p.add(v));
+  }
+
+  /**
+   * Rotates the shape around a point.
+   *
+   * @param {Vec2} point The center of the rotation
+   * @param {number} angle The angle of the rotation
+   */
+  rotateAround(point, angle) {
+    this.points.forEach((p) => {
+      p.sub(point);
+    });
+    Vec2.rotateArr(this.points, angle);
+    this.points.forEach((p) => {
+      p.add(point);
+    });
+  }
+
+  /**
+   * Check if a point is inside a point or not.
+   *
+   * @param {Vec2} p The point to take a look at
+   * @returns {boolean} Tells if the body contains a point or not
+   */
+  containsPoint(p) {
+    if (this.r !== 0) return Vec2.sub(p, this.points[0]).sqlength <= (this.r * this.r);
+
+    const normals = this.points.map(
+      (point, i) => Vec2.sub(this.points[(i + 1) % this.points.length], point),
+    );
+    return normals.every((n, i) => (Vec2.cross(n, Vec2.sub(p, this.points[i])) >= 0));
+  }
+
+  /**
+   * Returns the closest point of the shape to the given point.
+   *
+   * @param {Vec2} p The point to calculate from
+   * @returns {Vec2} The closest point
+   */
+  getClosestPoint(p) {
+    const distanceSqs = this.points.map((pp) => Vec2.sub(pp, p).sqlength);
+    let smallestDist = distanceSqs[0];
+    let index = 0;
+    const arrLen = distanceSqs.length;
+    for (let i = 1; i < arrLen; i += 1) {
+      if (distanceSqs[i] < smallestDist) {
+        smallestDist = distanceSqs[i];
+        index = i;
+      }
+    }
+    return this.points[index].copy;
   }
 }
 
