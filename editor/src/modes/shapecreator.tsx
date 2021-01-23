@@ -6,6 +6,7 @@ import Body from '../../../src/entity/body';
 import elementCreator from '../elementCreator';
 import '../components/range-slider';
 import { defaultBodyColor } from '../../../src/util/colorpalette';
+import { Shape } from '../../../src/physics';
 
 let size = 35;
 let k = 0.5;
@@ -60,8 +61,9 @@ const ShapeCreatorMode: Mode = {
     shape.forEach((p) => { p.mult(size); p.add(mouseVec); });
 
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
-      const newBody = new Body(shape, new Vec2(editorApp.lastX - editorApp.mouseX,
-        editorApp.lastY - editorApp.mouseY), k, 0, fc);
+      const newBody = new Body(Shape.Polygon(shape), 1, k, fc);
+      newBody.vel = new Vec2(editorApp.lastX - editorApp.mouseX,
+        editorApp.lastY - editorApp.mouseY);
       newBody.style = color;
       editorApp.physics.addBody(newBody);
     }

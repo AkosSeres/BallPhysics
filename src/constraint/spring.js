@@ -1,4 +1,3 @@
-import Ball from '../entity/ball';
 import Body from '../entity/body';
 import Vec2 from '../math/vec2';
 
@@ -10,7 +9,7 @@ import Vec2 from '../math/vec2';
  * @property {number} springConstant The stiffness of the spring
  * @property {boolean | {x:number, y:number}} pinned This property indicates whether
  * the spring is pinned or not
- * @property {import('../physics').ObjectIndentifier[]} objects The indices of the attached objects
+ * @property {import('../physics').ObjectIdentifier[]} objects The indices of the attached objects
  * @property {boolean} rotationLocked The variable inticating whether or not
  * the attached objects are allowed to rotate freely
  * @property {"spring"} type Indicates that the object is a spring
@@ -34,7 +33,7 @@ class Spring {
     this.springConstant = springConstant;
     /** @type {boolean | {x:number, y:number}} */
     this.pinned = false;
-    /** @type {import('../physics').PhysicalObject[]} */
+    /** @type {Body[]} */
     this.objects = [];
     this.rotationLocked = false;
   }
@@ -63,7 +62,7 @@ class Spring {
   /**
    * Attaches one end of the spring to an object (eg. Ball)
    *
-   * @param {Body | Ball} object The object that the spring is getting attached to
+   * @param {Body} object The object that the spring is getting attached to
    */
   attachObject(object) {
     let ob = this.objects;

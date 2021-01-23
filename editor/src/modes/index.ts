@@ -1,6 +1,5 @@
 import BallCreatorMode from './ballcreator';
 import DeleteMode from './deletemode';
-import ElasticBallCreatorMode from './elasticballcreator';
 import MoveMode from './movemode';
 import RectangleMode from './rectangle';
 import RectangleBodyMode from './rectanglebodycreator';
@@ -12,7 +11,7 @@ import WallDrawerMode from './walldrawer';
 import WorldSettingsMode from './worldsettings';
 
 export default [BallCreatorMode, RectangleMode, WallDrawerMode,
-  StickCreatorMode, SpringCreatorMode, MoveMode, ElasticBallCreatorMode,
+  StickCreatorMode, SpringCreatorMode, MoveMode,
   SoftSquareCreatorMode, DeleteMode, RectangleBodyMode, WorldSettingsMode,
   ShapeCreatorMode,
 ];

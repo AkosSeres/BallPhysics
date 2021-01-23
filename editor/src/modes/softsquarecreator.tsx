@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import { Ball, Vec2 } from '../../../src/physics';
+import { Body, Vec2 } from '../../../src/physics';
 import elementCreator from '../elementCreator';
 import '../components/range-slider';
 
@@ -43,20 +43,9 @@ const SoftSquareCreatorMode: Mode = {
   startInteractionFunc(editorApp): void { },
   endInteractionFunc(editorApp): void {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
-      const newBall = new Ball(
-        new Vec2(editorApp.lastX, editorApp.lastY),
-        new Vec2(editorApp.lastX - editorApp.mouseX,
-          editorApp.lastY - editorApp.mouseY), size, k, 0, fc,
-      );
-      if (
-        Number.isFinite(newBall.pos.x)
-        && Number.isFinite(newBall.pos.y)
-        && Number.isFinite(newBall.vel.x)
-        && Number.isFinite(newBall.vel.y)
-      ) {
-        editorApp.physics.addSoftSquare(newBall.pos,
-          size * 2, fc, newBall.vel, resolution, pressure);
-      }
+      editorApp.physics.addSoftSquare(new Vec2(editorApp.lastX, editorApp.lastY),
+        size * 2, fc, new Vec2(editorApp.lastX - editorApp.mouseX,
+          editorApp.lastY - editorApp.mouseY), resolution, pressure);
     }
   },
 };
