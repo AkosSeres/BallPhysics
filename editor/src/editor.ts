@@ -108,7 +108,7 @@ class Editor implements EditorInterface {
     this.timeMultiplier = 1;
     this.lastFrameTime = performance.now();
     this.choosed = false;
-    this.drawCollisions = true;
+    this.drawCollisions = false;
     this.showAxes = false;
     this.worldSize = { width: 0, height: 0 };
     this.collisionData = [];
