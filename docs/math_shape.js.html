@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>math/linesegment.js - Documentation</title>
+    <title>math/shape.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">math/linesegment.js</h1>
+    <h1 class="page-title">math/shape.js</h1>
     
 
     
@@ -39,174 +39,243 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import Vec2 from './vec2';
+            <pre class="prettyprint source linenums"><code>import Line from './line';
+import { MinMax, minMaxOfArray } from './minmax';
+import Polygon from './polygon';
+import Vec2 from './vec2';
 
 /**
- * Class representing a segment of a line
+ * @typedef {{center:Vec2,area:number,secondArea:number}} GeometricalData
  */
-class LineSegment {
+
+/**
+ * A class representing a shape. It can be a circle or any convex polygon.
+ */
+class Shape {
   /**
-   * Create a segment
-   *
-   * @param {Vec2} a_ Starting point
-   * @param {Vec2} b_ Ending point
+   * Constructs a point shape.
    */
-  constructor(a_, b_) {
-    this.a = a_;
-    this.b = b_;
+  constructor() {
+    this.r = 0;
+    this.points = [new Vec2(0, 0)];
   }
 
   /**
-   * Get the length of the segment
+   * Create a circle shape.
    *
-   * @returns {number} The length
+   * @param {number} r The radius of the circle
+   * @param {Vec2} center The center of the circle
+   * @returns {Shape} The circle
    */
-  get length() {
-    return Vec2.dist(this.a, this.b);
+  static Circle(r, center) {
+    const ret = new Shape();
+    ret.r = Math.abs(r);
+    ret.points[0] = center;
+    return ret;
   }
 
   /**
-   * Get the distance between a point and the line segment
+   * Create a polygon shape. The given points are expected to be numbered in a
+   * counter-clockwise fashion and to make up a convex polygon.
    *
-   * @param {Vec2|import('./vec2').Vec2AsObject} p The point as a vector
-   * @returns {number} The distance
+   * @param {import('./vec2').Vec2AsObject[]} points The points of the polygon
+   * @returns {Shape} The polygon
    */
-  distFromPoint(p) {
-    const e = Vec2.sub(this.a, this.b);
-    const A = Vec2.sub(p, this.b);
-    const B = Vec2.sub(p, this.a);
-    const a = A.length;
-    const b = B.length;
-    const c = e.length;
-    if (c === 0) return a;
-    const gamma = Vec2.angle(A, B);
-    const betha = Vec2.angle(A, e);
-    const alpha = Math.PI - gamma - betha;
-    const area = (Math.sin(alpha) * b * c) / 2;
-    const m = (2 * area) / c;
-    if (alpha > Math.PI / 2) return b;
-    if (betha > Math.PI / 2) return a;
-    return m;
+  static Polygon(points) {
+    const ret = new Shape();
+    if (points.length &lt; 3) throw new Error('A polygon needs at least 3 points to be valid!');
+    ret.points = new Polygon(points).points.map((p) => Vec2.fromObject(p));
+    return ret;
   }
 
   /**
-   * Returns the nearest point to the origin on the segment.
+   * Calculates and returns the area, center of mass and the second moment of area of the shape.
    *
-   * @returns {Vec2} The nearest point to the origin
+   * @returns {GeometricalData} The calculated data
    */
-  get nearestPointO() {
-    const v = Vec2.sub(this.b, this.a);
-    if (Vec2.dot(this.a, v) >= 0) return this.a.copy;
-    if (Vec2.dot(this.b, v) &lt;= 0) return this.b.copy;
-    v.normalize();
-    const coord = -Vec2.dot(this.a, v);
-    return Vec2.add(this.a, Vec2.mult(v, coord));
-  }
+  getGeometricalData() {
+    const ret = {
+      center: this.points[0],
+      area: 0,
+      secondArea: 0,
+    };
 
-  /**
-   * Get if they intersect or not.
-   * If they intersect it returns the intersection point.
-   * If they do not it returns false.
-   *
-   * @param {LineSegment} segment1 A segment
-   * @param {LineSegment} segment2 Other segment
-   * @returns {Vec2 | boolean} Intersetion point
-   */
-  static intersect(segment1, segment2) {
-    const v1 = Vec2.sub(segment1.b, segment1.a);
-    const a1 = v1.y / v1.x;
-    const c1 = segment1.b.y - segment1.b.x * a1;
-
-    const v2 = Vec2.sub(segment2.b, segment2.a);
-    const a2 = v2.y / v2.x;
-    const c2 = segment2.b.y - segment2.b.x * a2;
-
-    if (v1.x === 0 &amp;&amp; v2.x !== 0) {
-      if (
-        (segment1.a.x >= segment2.a.x &amp;&amp; segment1.a.x &lt;= segment2.b.x)
-        || (segment1.a.x &lt;= segment2.a.x &amp;&amp; segment1.a.x >= segment2.b.x)
-      ) {
-        const h = a2 * segment1.a.x + c2;
-        if (
-          (h > segment1.a.y &amp;&amp; h &lt; segment1.b.y)
-          || (h &lt; segment1.a.y &amp;&amp; h > segment1.b.y)
-        ) {
-          return new Vec2(segment1.a.x, h);
-        }
-      }
-      return false;
-    }
-    if (v2.x === 0 &amp;&amp; v1.x !== 0) {
-      if (
-        (segment2.a.x >= segment1.a.x &amp;&amp; segment2.a.x &lt;= segment1.b.x)
-        || (segment2.a.x &lt;= segment1.a.x &amp;&amp; segment2.a.x >= segment1.b.x)
-      ) {
-        const h = a1 * segment2.a.x + c1;
-        if (
-          (h > segment2.a.y &amp;&amp; h &lt; segment2.b.y)
-          || (h &lt; segment2.a.y &amp;&amp; h > segment2.b.y)
-        ) {
-          return new Vec2(segment2.a.x, h);
-        }
-      }
-      return false;
-    }
-    if (v1.x === 0 &amp;&amp; v2.x === 0) {
-      if (segment1.a.x === segment2.a.x) {
-        let interval1;
-        if (segment1.a.y &lt; segment1.b.y) {
-          interval1 = [segment1.a.y, segment1.b.y];
-        } else {
-          interval1 = [segment1.b.y, segment1.a.y];
-        }
-        let interval2;
-        if (segment2.a.y &lt; segment2.b.y) {
-          interval2 = [segment2.a.y, segment2.b.y];
-        } else {
-          interval2 = [segment2.b.y, segment2.a.y];
-        }
-        const interval = [
-          interval1[0] > interval2[0] ? interval1[0] : interval2[0],
-          interval1[1] &lt; interval2[1] ? interval1[1] : interval2[1],
-        ];
-        if (interval[0] &lt;= interval[1]) {
-          return new Vec2(segment1.a.x, (interval[0] + interval[1]) / 2);
-        }
-      }
-      return false;
-    }
-
-    let interval1;
-    if (segment1.a.x &lt; segment1.b.x) {
-      interval1 = [segment1.a.x, segment1.b.x];
+    if (this.r !== 0) {
+      ret.area = this.r * this.r * Math.PI;
+      ret.secondArea = 0.5 * Math.PI * (this.r ** 4);
     } else {
-      interval1 = [segment1.b.x, segment1.a.x];
+      /**
+       * The shape divided into triangles
+       *
+       * @type {Vec2[][]}
+       */
+      const poligons = [];
+      for (let i = 2; i &lt; this.points.length; i += 1) {
+        poligons.push([
+          this.points[0],
+          this.points[i - 1],
+          this.points[i],
+        ]);
+      }
+
+      let mSum = 0;
+      let amSum = 0;
+      const pSum = new Vec2(0, 0);
+      poligons.forEach((pol) => {
+        const a = Math.sqrt(
+          ((pol[0].x - pol[1].x) ** 2) + ((pol[0].y - pol[1].y) ** 2),
+        );
+        const b = Math.sqrt(
+          ((pol[1].x - pol[2].x) ** 2) + ((pol[1].y - pol[2].y) ** 2),
+        );
+        const c = Math.sqrt(
+          ((pol[2].x - pol[0].x) ** 2) + ((pol[2].y - pol[0].y) ** 2),
+        );
+        const s = (a + b + c) / 2;
+        const m = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+        mSum += m;
+        pSum.x += (m * (pol[0].x + pol[1].x + pol[2].x)) / 3;
+        pSum.y += (m * (pol[0].y + pol[1].y + pol[2].y)) / 3;
+      });
+      pSum.div(mSum);
+      /** @type {Vec2} */
+      ret.center = pSum;
+      /** @type {number} */
+      ret.area = mSum;
+
+      // calculating the moment of inertia finally
+      poligons.forEach((pol) => {
+        let a = Math.sqrt(
+          ((pol[0].x - pol[1].x) ** 2) + ((pol[0].y - pol[1].y) ** 2),
+        );
+        const b = Math.sqrt(
+          ((pol[1].x - pol[2].x) ** 2) + ((pol[1].y - pol[2].y) ** 2),
+        );
+        const c = Math.sqrt(
+          ((pol[2].x - pol[0].x) ** 2) + ((pol[2].y - pol[0].y) ** 2),
+        );
+        const s = (a + b + c) / 2;
+        const m = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+        const bLine = new Line(pol[1], pol[2]);
+        const h = bLine.distFromPoint(pol[0]);
+        const nVec = Vec2.sub(pol[2], pol[1]);
+        nVec.rotate90();
+        nVec.add(pol[1]);
+        const nLine = new Line(pol[1], nVec);
+        a = nLine.distFromPoint(pol[0]);
+        let am = ((b * b * b * h) - (b * b * h * a) + (b * h * a * a) + (b * h * h * h)) / 36;
+        am
+                    += ((new Vec2(
+            (pol[0].x + pol[1].x + pol[2].x) / 3,
+            (pol[0].y + pol[1].y + pol[2].y) / 3,
+          ).dist(ret.center) ** 2) * m);
+        amSum += am;
+      });
+      ret.secondArea = amSum;
     }
-    let interval2;
-    if (segment2.a.x &lt; segment2.b.x) {
-      interval2 = [segment2.a.x, segment2.b.x];
-    } else {
-      interval2 = [segment2.b.x, segment2.a.x];
+
+    return ret;
+  }
+
+  /**
+   * Calculates and returns the range of the shape on the x direction.
+   *
+   * @returns {MinMax} The interval
+   */
+  getMinMaxX() {
+    const ret = minMaxOfArray(this.points.map((p) => p.x));
+    ret.min -= this.r;
+    ret.max += this.r;
+    return ret;
+  }
+
+  /**
+   * Calculates and returns the range of the shape along the y direction.
+   *
+   * @returns {MinMax} The interval
+   */
+  getMinMaxY() {
+    const ret = minMaxOfArray(this.points.map((p) => p.y));
+    ret.min -= this.r;
+    ret.max += this.r;
+    return ret;
+  }
+
+  /**
+   * Calculates and returns the range of the shape along the given direction.
+   *
+   * @param {Vec2} d The direction
+   * @returns {MinMax} The interval
+   */
+  getMinMaxInDirection(d) {
+    const ret = minMaxOfArray(this.points.map((p) => Vec2.dot(p, d)));
+    ret.min -= this.r;
+    ret.max += this.r;
+    return ret;
+  }
+
+  /**
+   * Moves the shape by a given vector
+   *
+   * @param {Vec2} v The displacement vector
+   */
+  move(v) {
+    this.points.forEach((p) => p.add(v));
+  }
+
+  /**
+   * Rotates the shape around a point.
+   *
+   * @param {Vec2} point The center of the rotation
+   * @param {number} angle The angle of the rotation
+   */
+  rotateAround(point, angle) {
+    this.points.forEach((p) => {
+      p.sub(point);
+    });
+    Vec2.rotateArr(this.points, angle);
+    this.points.forEach((p) => {
+      p.add(point);
+    });
+  }
+
+  /**
+   * Check if a point is inside a point or not.
+   *
+   * @param {Vec2} p The point to take a look at
+   * @returns {boolean} Tells if the body contains a point or not
+   */
+  containsPoint(p) {
+    if (this.r !== 0) return Vec2.sub(p, this.points[0]).sqlength &lt;= (this.r * this.r);
+
+    const normals = this.points.map(
+      (point, i) => Vec2.sub(this.points[(i + 1) % this.points.length], point),
+    );
+    return normals.every((n, i) => (Vec2.cross(n, Vec2.sub(p, this.points[i])) >= 0));
+  }
+
+  /**
+   * Returns the closest point of the shape to the given point.
+   *
+   * @param {Vec2} p The point to calculate from
+   * @returns {Vec2} The closest point
+   */
+  getClosestPoint(p) {
+    const distanceSqs = this.points.map((pp) => Vec2.sub(pp, p).sqlength);
+    let smallestDist = distanceSqs[0];
+    let index = 0;
+    const arrLen = distanceSqs.length;
+    for (let i = 1; i &lt; arrLen; i += 1) {
+      if (distanceSqs[i] &lt; smallestDist) {
+        smallestDist = distanceSqs[i];
+        index = i;
+      }
     }
-    const interval = [
-      interval1[0] > interval2[0] ? interval1[0] : interval2[0],
-      interval1[1] &lt; interval2[1] ? interval1[1] : interval2[1],
-    ];
-    // If they are parralel the only time they intersect is when c1 == c2.
-    if (a1 === a2 &amp;&amp; c1 === c2 &amp;&amp; interval[0] &lt;= interval[1]) {
-      return new Vec2(
-        (interval[0] + interval[1]) / 2,
-        ((interval[0] + interval[1]) / 2) * a1 + c1,
-      );
-    }
-    const x = (c2 - c1) / (a1 - a2);
-    if (x >= interval[0] &amp;&amp; x &lt;= interval[1]) {
-      return new Vec2(x, x * a1 + c1);
-    } return false;
+    return this.points[index].copy;
   }
 }
 
-export default LineSegment;
+export default Shape;
 </code></pre>
         </article>
     </section>

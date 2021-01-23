@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>math/linesegment.js - Documentation</title>
+    <title>entity/collision.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">math/linesegment.js</h1>
+    <h1 class="page-title">entity/collision.js</h1>
     
 
     
@@ -39,174 +39,259 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import Vec2 from './vec2';
+            <pre class="prettyprint source linenums"><code>import Vec2 from '../math/vec2';
+import Body from './body';
 
 /**
- * Class representing a segment of a line
+ * @typedef {{dVel: Vec2, dAng: number}} ChangeOfMotion
  */
-class LineSegment {
-  /**
-   * Create a segment
-   *
-   * @param {Vec2} a_ Starting point
-   * @param {Vec2} b_ Ending point
-   */
-  constructor(a_, b_) {
-    this.a = a_;
-    this.b = b_;
-  }
+
+/**
+ * Calculates the collsion response when any two physical objects
+ * collide with a given collision point and collision normal.
+ *
+ * @param {Body} object1 The first object
+ * @param {Body} object2 The second object
+ * @param {Vec2} contactPoint The collision point
+ * @param {Vec2} normal The normal of the colliding surfaces
+ * @returns {ChangeOfMotion[]} The changes in the motion states
+ */
+export function collisionResponse(object1, object2, contactPoint, normal) {
+  const n = normal;
+  const cp = contactPoint;
+  const b1 = object1;
+  const b2 = object2;
+
+  const v1 = b1.vel;
+  const v2 = b2.vel;
+  const ang1 = b1.ang;
+  const ang2 = b2.ang;
+  const r1 = Vec2.sub(cp, b1.pos);
+  const r2 = Vec2.sub(cp, b2.pos);
+  const am1 = b1.am;
+  const am2 = b2.am;
+  const m1 = b1.m;
+  const m2 = b2.m;
+  const k = (b1.k + b2.k) / 2;
+  const fc = (b1.fc + b2.fc) / 2;
+
+  // Effective velocities in the collision point
+  const v1InCP = b1.velInPlace(cp);
+  const v2InCP = b2.velInPlace(cp);
+  // Relative velocity in collision point
+  const vRelInCP = Vec2.sub(v2InCP, v1InCP);
+
+  // Calculate impulse
+  let impulse = (1 / m1) + (1 / m2);
+  impulse += Vec2.dot(
+    Vec2.crossScalarFirst(Vec2.cross(r1, n) / am1, r1), n,
+  );
+  impulse += Vec2.dot(
+    Vec2.crossScalarFirst(Vec2.cross(r2, n) / am2, r2), n,
+  );
+  impulse = -((1 + k) * Vec2.dot(vRelInCP, n)) / impulse;
+
+  // Calculate post-collision velocities
+  let u1 = Vec2.sub(v1, Vec2.mult(n, impulse / m1));
+  let u2 = Vec2.add(v2, Vec2.mult(n, impulse / m2));
+
+  // Calculate post-collision angular velocities
+  let pAng1 = ang1 - (impulse * Vec2.cross(r1, n)) / am1;
+  let pAng2 = ang2 + (impulse * Vec2.cross(r2, n)) / am2;
 
   /**
-   * Get the length of the segment
-   *
-   * @returns {number} The length
+   * Now calculate the friction reaction
    */
-  get length() {
-    return Vec2.dist(this.a, this.b);
-  }
-
-  /**
-   * Get the distance between a point and the line segment
-   *
-   * @param {Vec2|import('./vec2').Vec2AsObject} p The point as a vector
-   * @returns {number} The distance
-   */
-  distFromPoint(p) {
-    const e = Vec2.sub(this.a, this.b);
-    const A = Vec2.sub(p, this.b);
-    const B = Vec2.sub(p, this.a);
-    const a = A.length;
-    const b = B.length;
-    const c = e.length;
-    if (c === 0) return a;
-    const gamma = Vec2.angle(A, B);
-    const betha = Vec2.angle(A, e);
-    const alpha = Math.PI - gamma - betha;
-    const area = (Math.sin(alpha) * b * c) / 2;
-    const m = (2 * area) / c;
-    if (alpha > Math.PI / 2) return b;
-    if (betha > Math.PI / 2) return a;
-    return m;
-  }
-
-  /**
-   * Returns the nearest point to the origin on the segment.
-   *
-   * @returns {Vec2} The nearest point to the origin
-   */
-  get nearestPointO() {
-    const v = Vec2.sub(this.b, this.a);
-    if (Vec2.dot(this.a, v) >= 0) return this.a.copy;
-    if (Vec2.dot(this.b, v) &lt;= 0) return this.b.copy;
-    v.normalize();
-    const coord = -Vec2.dot(this.a, v);
-    return Vec2.add(this.a, Vec2.mult(v, coord));
-  }
-
-  /**
-   * Get if they intersect or not.
-   * If they intersect it returns the intersection point.
-   * If they do not it returns false.
-   *
-   * @param {LineSegment} segment1 A segment
-   * @param {LineSegment} segment2 Other segment
-   * @returns {Vec2 | boolean} Intersetion point
-   */
-  static intersect(segment1, segment2) {
-    const v1 = Vec2.sub(segment1.b, segment1.a);
-    const a1 = v1.y / v1.x;
-    const c1 = segment1.b.y - segment1.b.x * a1;
-
-    const v2 = Vec2.sub(segment2.b, segment2.a);
-    const a2 = v2.y / v2.x;
-    const c2 = segment2.b.y - segment2.b.x * a2;
-
-    if (v1.x === 0 &amp;&amp; v2.x !== 0) {
-      if (
-        (segment1.a.x >= segment2.a.x &amp;&amp; segment1.a.x &lt;= segment2.b.x)
-        || (segment1.a.x &lt;= segment2.a.x &amp;&amp; segment1.a.x >= segment2.b.x)
-      ) {
-        const h = a2 * segment1.a.x + c2;
-        if (
-          (h > segment1.a.y &amp;&amp; h &lt; segment1.b.y)
-          || (h &lt; segment1.a.y &amp;&amp; h > segment1.b.y)
-        ) {
-          return new Vec2(segment1.a.x, h);
-        }
-      }
-      return false;
-    }
-    if (v2.x === 0 &amp;&amp; v1.x !== 0) {
-      if (
-        (segment2.a.x >= segment1.a.x &amp;&amp; segment2.a.x &lt;= segment1.b.x)
-        || (segment2.a.x &lt;= segment1.a.x &amp;&amp; segment2.a.x >= segment1.b.x)
-      ) {
-        const h = a1 * segment2.a.x + c1;
-        if (
-          (h > segment2.a.y &amp;&amp; h &lt; segment2.b.y)
-          || (h &lt; segment2.a.y &amp;&amp; h > segment2.b.y)
-        ) {
-          return new Vec2(segment2.a.x, h);
-        }
-      }
-      return false;
-    }
-    if (v1.x === 0 &amp;&amp; v2.x === 0) {
-      if (segment1.a.x === segment2.a.x) {
-        let interval1;
-        if (segment1.a.y &lt; segment1.b.y) {
-          interval1 = [segment1.a.y, segment1.b.y];
-        } else {
-          interval1 = [segment1.b.y, segment1.a.y];
-        }
-        let interval2;
-        if (segment2.a.y &lt; segment2.b.y) {
-          interval2 = [segment2.a.y, segment2.b.y];
-        } else {
-          interval2 = [segment2.b.y, segment2.a.y];
-        }
-        const interval = [
-          interval1[0] > interval2[0] ? interval1[0] : interval2[0],
-          interval1[1] &lt; interval2[1] ? interval1[1] : interval2[1],
-        ];
-        if (interval[0] &lt;= interval[1]) {
-          return new Vec2(segment1.a.x, (interval[0] + interval[1]) / 2);
-        }
-      }
-      return false;
-    }
-
-    let interval1;
-    if (segment1.a.x &lt; segment1.b.x) {
-      interval1 = [segment1.a.x, segment1.b.x];
-    } else {
-      interval1 = [segment1.b.x, segment1.a.x];
-    }
-    let interval2;
-    if (segment2.a.x &lt; segment2.b.x) {
-      interval2 = [segment2.a.x, segment2.b.x];
-    } else {
-      interval2 = [segment2.b.x, segment2.a.x];
-    }
-    const interval = [
-      interval1[0] > interval2[0] ? interval1[0] : interval2[0],
-      interval1[1] &lt; interval2[1] ? interval1[1] : interval2[1],
+  // Tangential direction
+  const t = vRelInCP.copy;
+  t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
+  t.setMag(1);
+  if ((Vec2.dot(n, t) ** 2) > 0.5) {
+    // No friction impulse is needed, return
+    return [
+      { dVel: Vec2.sub(u1, b1.vel), dAng: pAng1 - b1.ang },
+      { dVel: Vec2.sub(u2, b2.vel), dAng: pAng2 - b2.ang },
     ];
-    // If they are parralel the only time they intersect is when c1 == c2.
-    if (a1 === a2 &amp;&amp; c1 === c2 &amp;&amp; interval[0] &lt;= interval[1]) {
-      return new Vec2(
-        (interval[0] + interval[1]) / 2,
-        ((interval[0] + interval[1]) / 2) * a1 + c1,
-      );
-    }
-    const x = (c2 - c1) / (a1 - a2);
-    if (x >= interval[0] &amp;&amp; x &lt;= interval[1]) {
-      return new Vec2(x, x * a1 + c1);
-    } return false;
   }
+
+  // Calculate max impulse
+  let maxImpulse = (1 / m1) + (1 / m2);
+  maxImpulse += Vec2.dot(
+    Vec2.crossScalarFirst(Vec2.cross(r1, t) / am1, r1), t,
+  );
+  maxImpulse += Vec2.dot(
+    Vec2.crossScalarFirst(Vec2.cross(r2, t) / am2, r2), t,
+  );
+  maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
+
+  // Friction impulse
+  let frictionImpulse = Math.sign(maxImpulse) * impulse * fc;
+  if (Math.abs(frictionImpulse) > Math.abs(maxImpulse)) frictionImpulse = maxImpulse;
+
+  // Calculate post-friction velocities
+  u1 = Vec2.sub(u1, Vec2.mult(t, frictionImpulse / m1));
+  u2 = Vec2.add(u2, Vec2.mult(t, frictionImpulse / m2));
+
+  // Calculate post-friction angular velocities
+  pAng1 -= (frictionImpulse * Vec2.cross(r1, t)) / am1;
+  pAng2 += (frictionImpulse * Vec2.cross(r2, t)) / am2;
+
+  return [
+    { dVel: Vec2.sub(u1, b1.vel), dAng: pAng1 - b1.ang },
+    { dVel: Vec2.sub(u2, b2.vel), dAng: pAng2 - b2.ang },
+  ];
 }
 
-export default LineSegment;
+/**
+ * Calculates the collsion response when a physical object
+ * collides with an immovable object, like a {@link Wall} or {@link FixedBall}.
+ *
+ * @param {Body} object The phyisical object
+ * @param {Vec2 | import('../math/vec2').Vec2AsObject} contactPoint The collision point
+ * @param {Vec2} normal The surface normal
+ * @returns {ChangeOfMotion} The change of the motion state
+ */
+export function collisionResponseWithWall(object, contactPoint, normal) {
+  const cp = contactPoint;
+  const n = normal;
+  const b = object;
+  const r = Vec2.sub(cp, b.pos);
+  const { am, m } = b;
+
+  // Relative velocity in collision point
+  const vRelInCP = Vec2.mult(b.velInPlace(cp), -1);
+
+  // Calculate impulse
+  let impulse = (1 / m);
+  impulse += Vec2.dot(
+    Vec2.crossScalarFirst(Vec2.cross(r, n) / am, r), n,
+  );
+  impulse = -((1 + b.k) * Vec2.dot(vRelInCP, n)) / impulse;
+
+  // Calculate post-collision velocity
+  let u = Vec2.sub(b.vel, Vec2.mult(n, impulse / m));
+
+  // Calculate post-collision angular velocity
+  let pAng = b.ang - (impulse * Vec2.cross(r, n)) / am;
+
+  /**
+   * Now calculate the friction reaction
+   */
+  // Tangential direction
+  const t = vRelInCP.copy;
+  t.sub(Vec2.mult(n, Vec2.dot(vRelInCP, n)));
+  t.setMag(1);
+  if ((Vec2.dot(n, t) ** 2) > 0.5) {
+    // No friction impulse is needed, return
+    b.vel = u;
+    b.ang = pAng;
+    return { dVel: Vec2.sub(u, b.vel), dAng: pAng - b.ang };
+  }
+
+  // Calculate max impulse
+  let maxImpulse = (1 / m);
+  maxImpulse += Vec2.dot(
+    Vec2.crossScalarFirst(Vec2.cross(r, t) / am, r), t,
+  );
+  maxImpulse = -Vec2.dot(vRelInCP, t) / maxImpulse;
+
+  // Friction impulse
+  let frictionImpulse = Math.sign(maxImpulse) * impulse * b.fc;
+  if (Math.abs(frictionImpulse) > Math.abs(maxImpulse)) frictionImpulse = maxImpulse;
+
+  // Calculate post-friction velocity
+  u = Vec2.sub(u, Vec2.mult(t, frictionImpulse / m));
+
+  // Calculate post-friction angular velocity
+  pAng -= (frictionImpulse * Vec2.cross(r, t)) / am;
+
+  return { dVel: Vec2.sub(u, b.vel), dAng: pAng - b.ang };
+}
+
+/**
+ * Calculates and applies all collisions on the bodies in the array
+ *
+ * @param {Body[]} bodies All bodies
+ * @returns {import('../physics').CollisionData[]} All the collsions that occured
+ */
+export function resolveCollisions(bodies) {
+  const collisions = [];
+  const bodyCount = bodies.length;
+  const moveAmountsX = Array(bodyCount).fill(0);
+  const moveAmountsY = Array(bodyCount).fill(0);
+  const collisionCounts = Array(bodyCount).fill(0);
+  const dVelXs = Array(bodyCount).fill(0);
+  const dVelYs = Array(bodyCount).fill(0);
+  const dAngs = Array(bodyCount).fill(0);
+
+  for (let i = 0; i &lt; bodyCount - 1; i += 1) {
+    for (let j = i + 1; j &lt; bodyCount; j += 1) {
+      const b1 = bodies[i];
+      const b2 = bodies[j];
+      // eslint-disable-next-line no-continue
+      if (b1.m === 0 &amp;&amp; b2.m === 0) continue;
+      const collDat = Body.detectCollision(b1, b2);
+      if (collDat &amp;&amp; typeof collDat !== 'boolean') {
+        collisions.push({ n: collDat.normal, cp: collDat.contactPoint });
+        collisionCounts[i] += 1;
+        collisionCounts[j] += 1;
+        let toMove1 = -collDat.overlap;
+        let toMove2 = collDat.overlap;
+        if (b1.m === 0) {
+          toMove1 = 0;
+          const change1 = collisionResponseWithWall(
+            b2, collDat.contactPoint, Vec2.mult(collDat.normal, -1),
+          );
+          dVelXs[j] += change1.dVel.x;
+          dVelYs[j] += change1.dVel.y;
+          dAngs[j] += change1.dAng;
+        } else if (b2.m === 0) {
+          toMove2 = 0;
+          const change2 = collisionResponseWithWall(
+            b1, collDat.contactPoint, Vec2.mult(collDat.normal, 1),
+          );
+          dVelXs[i] += change2.dVel.x;
+          dVelYs[i] += change2.dVel.y;
+          dAngs[i] += change2.dAng;
+        } else {
+          toMove1 *= (b2.m / (b1.m + b2.m));
+          toMove2 *= (b1.m / (b1.m + b2.m));
+          const [change1, change2] = collisionResponse(
+            b1, b2, collDat.contactPoint, Vec2.mult(collDat.normal, 1),
+          );
+          dVelXs[i] += change1.dVel.x;
+          dVelYs[i] += change1.dVel.y;
+          dAngs[i] += change1.dAng;
+          dVelXs[j] += change2.dVel.x;
+          dVelYs[j] += change2.dVel.y;
+          dAngs[j] += change2.dAng;
+        }
+        const toMove1V = Vec2.mult(collDat.normal, toMove1);
+        const toMove2V = Vec2.mult(collDat.normal, toMove2);
+        moveAmountsX[i] += toMove1V.x;
+        moveAmountsX[j] += toMove2V.x;
+        moveAmountsY[i] += toMove1V.y;
+        moveAmountsY[j] += toMove2V.y;
+      }
+    }
+  }
+
+  for (let i = 0; i &lt; bodyCount; i += 1) {
+    const b = bodies[i];
+    // eslint-disable-next-line no-continue
+    if (b.m === 0) continue;
+    const cCount = Math.max(collisionCounts[i], 1);
+
+    const happened = moveAmountsY.filter((amount) => (amount > 0));
+    // if (happened.length > 0) console.log(happened);
+
+    b.move(new Vec2(moveAmountsX[i] / cCount, moveAmountsY[i] / cCount));
+    b.vel.add(new Vec2(dVelXs[i] / cCount, dVelYs[i] / cCount));
+    b.ang += dAngs[i] / cCount;
+  }
+
+  return collisions;
+}
 </code></pre>
         </article>
     </section>

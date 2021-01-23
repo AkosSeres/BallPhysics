@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>math/linesegment.js - Documentation</title>
+    <title>math/minmax.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">math/linesegment.js</h1>
+    <h1 class="page-title">math/minmax.js</h1>
     
 
     
@@ -39,174 +39,43 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import Vec2 from './vec2';
-
-/**
- * Class representing a segment of a line
+            <pre class="prettyprint source linenums"><code>/**
+ * Used to descrive an interval.
+ *
+ * @class
+ * @param {number} min The lower bound
+ * @param {number} max The high bound
  */
-class LineSegment {
-  /**
-   * Create a segment
-   *
-   * @param {Vec2} a_ Starting point
-   * @param {Vec2} b_ Ending point
-   */
-  constructor(a_, b_) {
-    this.a = a_;
-    this.b = b_;
-  }
-
-  /**
-   * Get the length of the segment
-   *
-   * @returns {number} The length
-   */
-  get length() {
-    return Vec2.dist(this.a, this.b);
-  }
-
-  /**
-   * Get the distance between a point and the line segment
-   *
-   * @param {Vec2|import('./vec2').Vec2AsObject} p The point as a vector
-   * @returns {number} The distance
-   */
-  distFromPoint(p) {
-    const e = Vec2.sub(this.a, this.b);
-    const A = Vec2.sub(p, this.b);
-    const B = Vec2.sub(p, this.a);
-    const a = A.length;
-    const b = B.length;
-    const c = e.length;
-    if (c === 0) return a;
-    const gamma = Vec2.angle(A, B);
-    const betha = Vec2.angle(A, e);
-    const alpha = Math.PI - gamma - betha;
-    const area = (Math.sin(alpha) * b * c) / 2;
-    const m = (2 * area) / c;
-    if (alpha > Math.PI / 2) return b;
-    if (betha > Math.PI / 2) return a;
-    return m;
-  }
-
-  /**
-   * Returns the nearest point to the origin on the segment.
-   *
-   * @returns {Vec2} The nearest point to the origin
-   */
-  get nearestPointO() {
-    const v = Vec2.sub(this.b, this.a);
-    if (Vec2.dot(this.a, v) >= 0) return this.a.copy;
-    if (Vec2.dot(this.b, v) &lt;= 0) return this.b.copy;
-    v.normalize();
-    const coord = -Vec2.dot(this.a, v);
-    return Vec2.add(this.a, Vec2.mult(v, coord));
-  }
-
-  /**
-   * Get if they intersect or not.
-   * If they intersect it returns the intersection point.
-   * If they do not it returns false.
-   *
-   * @param {LineSegment} segment1 A segment
-   * @param {LineSegment} segment2 Other segment
-   * @returns {Vec2 | boolean} Intersetion point
-   */
-  static intersect(segment1, segment2) {
-    const v1 = Vec2.sub(segment1.b, segment1.a);
-    const a1 = v1.y / v1.x;
-    const c1 = segment1.b.y - segment1.b.x * a1;
-
-    const v2 = Vec2.sub(segment2.b, segment2.a);
-    const a2 = v2.y / v2.x;
-    const c2 = segment2.b.y - segment2.b.x * a2;
-
-    if (v1.x === 0 &amp;&amp; v2.x !== 0) {
-      if (
-        (segment1.a.x >= segment2.a.x &amp;&amp; segment1.a.x &lt;= segment2.b.x)
-        || (segment1.a.x &lt;= segment2.a.x &amp;&amp; segment1.a.x >= segment2.b.x)
-      ) {
-        const h = a2 * segment1.a.x + c2;
-        if (
-          (h > segment1.a.y &amp;&amp; h &lt; segment1.b.y)
-          || (h &lt; segment1.a.y &amp;&amp; h > segment1.b.y)
-        ) {
-          return new Vec2(segment1.a.x, h);
-        }
-      }
-      return false;
-    }
-    if (v2.x === 0 &amp;&amp; v1.x !== 0) {
-      if (
-        (segment2.a.x >= segment1.a.x &amp;&amp; segment2.a.x &lt;= segment1.b.x)
-        || (segment2.a.x &lt;= segment1.a.x &amp;&amp; segment2.a.x >= segment1.b.x)
-      ) {
-        const h = a1 * segment2.a.x + c1;
-        if (
-          (h > segment2.a.y &amp;&amp; h &lt; segment2.b.y)
-          || (h &lt; segment2.a.y &amp;&amp; h > segment2.b.y)
-        ) {
-          return new Vec2(segment2.a.x, h);
-        }
-      }
-      return false;
-    }
-    if (v1.x === 0 &amp;&amp; v2.x === 0) {
-      if (segment1.a.x === segment2.a.x) {
-        let interval1;
-        if (segment1.a.y &lt; segment1.b.y) {
-          interval1 = [segment1.a.y, segment1.b.y];
-        } else {
-          interval1 = [segment1.b.y, segment1.a.y];
-        }
-        let interval2;
-        if (segment2.a.y &lt; segment2.b.y) {
-          interval2 = [segment2.a.y, segment2.b.y];
-        } else {
-          interval2 = [segment2.b.y, segment2.a.y];
-        }
-        const interval = [
-          interval1[0] > interval2[0] ? interval1[0] : interval2[0],
-          interval1[1] &lt; interval2[1] ? interval1[1] : interval2[1],
-        ];
-        if (interval[0] &lt;= interval[1]) {
-          return new Vec2(segment1.a.x, (interval[0] + interval[1]) / 2);
-        }
-      }
-      return false;
-    }
-
-    let interval1;
-    if (segment1.a.x &lt; segment1.b.x) {
-      interval1 = [segment1.a.x, segment1.b.x];
-    } else {
-      interval1 = [segment1.b.x, segment1.a.x];
-    }
-    let interval2;
-    if (segment2.a.x &lt; segment2.b.x) {
-      interval2 = [segment2.a.x, segment2.b.x];
-    } else {
-      interval2 = [segment2.b.x, segment2.a.x];
-    }
-    const interval = [
-      interval1[0] > interval2[0] ? interval1[0] : interval2[0],
-      interval1[1] &lt; interval2[1] ? interval1[1] : interval2[1],
-    ];
-    // If they are parralel the only time they intersect is when c1 == c2.
-    if (a1 === a2 &amp;&amp; c1 === c2 &amp;&amp; interval[0] &lt;= interval[1]) {
-      return new Vec2(
-        (interval[0] + interval[1]) / 2,
-        ((interval[0] + interval[1]) / 2) * a1 + c1,
-      );
-    }
-    const x = (c2 - c1) / (a1 - a2);
-    if (x >= interval[0] &amp;&amp; x &lt;= interval[1]) {
-      return new Vec2(x, x * a1 + c1);
-    } return false;
-  }
+export function MinMax(min, max) {
+  this.min = min;
+  this.max = max;
 }
 
-export default LineSegment;
+MinMax.prototype.size = function size() {
+  return this.max - this.min;
+};
+
+/**
+ * Returns the min and max of an array of numbers
+ *
+ * @param {number[]} arr Array of numbers
+ * @returns {MinMax} The min and max value
+ */
+export function minMaxOfArray(arr) {
+  return new MinMax(Math.min(...arr), Math.max(...arr));
+}
+
+/**
+ * Finds the overlap of two {@link MinMax}-es.
+ *
+ * @param {MinMax} interval1 The first MinMax
+ * @param {MinMax} interval2 The second MinMax
+ * @returns {MinMax} Their overlap
+ */
+export function findOverlap(interval1, interval2) {
+  return new MinMax(Math.max(interval1.min, interval2.min),
+    Math.min(interval1.max, interval2.max));
+}
 </code></pre>
         </article>
     </section>
