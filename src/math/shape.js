@@ -8,6 +8,10 @@ import Vec2 from './vec2';
  */
 
 /**
+ * @typedef {{r:number, points:import('./vec2').Vec2AsObject[]}} ShapeAsObject
+ */
+
+/**
  * A class representing a shape. It can be a circle or any convex polygon.
  */
 class Shape {
@@ -231,6 +235,21 @@ class Shape {
       }
     }
     return this.points[index].copy;
+  }
+
+  /**
+   * Creates a Shape instance from a plain JS object.
+   *
+   * @param {ShapeAsObject} obj The shape as a plain JS object.
+   * @returns {Shape} The created Shape.
+   */
+  static fromObject(obj) {
+    const ret = new Shape();
+
+    ret.r = obj.r;
+    ret.points = obj.points.map((p) => Vec2.fromObject(p));
+
+    return ret;
   }
 }
 
