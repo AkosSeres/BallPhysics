@@ -191,6 +191,9 @@ export function resolveCollisions(bodies) {
       if (b1.m === 0 && b2.m === 0) continue;
       const collDat = Body.detectCollision(b1, b2);
       if (collDat && typeof collDat !== 'boolean') {
+        // Skip if moving away from each other
+        const vInPlace1 = Vec2.dot(b1.velInPlace(collDat.contactPoint), collDat.normal);
+        const vInPlace2 = Vec2.dot(b2.velInPlace(collDat.contactPoint), collDat.normal);
         collisions.push({ n: collDat.normal, cp: collDat.contactPoint });
         collisionCounts[i] += 1;
         collisionCounts[j] += 1;
@@ -218,12 +221,14 @@ export function resolveCollisions(bodies) {
           const [change1, change2] = collisionResponse(
             b1, b2, collDat.contactPoint, Vec2.mult(collDat.normal, 1),
           );
-          dVelXs[i] += change1.dVel.x;
-          dVelYs[i] += change1.dVel.y;
-          dAngs[i] += change1.dAng;
-          dVelXs[j] += change2.dVel.x;
-          dVelYs[j] += change2.dVel.y;
-          dAngs[j] += change2.dAng;
+          if (vInPlace1 >= vInPlace2) {
+            dVelXs[i] += change1.dVel.x;
+            dVelYs[i] += change1.dVel.y;
+            dAngs[i] += change1.dAng;
+            dVelXs[j] += change2.dVel.x;
+            dVelYs[j] += change2.dVel.y;
+            dAngs[j] += change2.dAng;
+          }
         }
         const toMove1V = Vec2.mult(collDat.normal, toMove1);
         const toMove2V = Vec2.mult(collDat.normal, toMove2);
