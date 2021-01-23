@@ -188,58 +188,70 @@ class Physics {
    * @param {number} pressure The 'pressure' of the soft square
    */
   addSoftSquare(pos, sideSize, fc, vel, resolution = 24, pressure = 1) {
-    /* const softSquare = new SoftBall(
-      pos,
-      Math.sqrt((sideSize * sideSize) / Math.PI),
-      pressure,
-      fc,
-      resolution,
-    );
+    /** @type {{sides: Stick[], points: Body[]}} */
+    const softSquare = {
+      sides: [],
+      points: [],
+    };
+    const r = Math.sqrt((sideSize * sideSize) / Math.PI);
+    softSquare.points = [...new Array(resolution).keys()]
+      .map((i) => ((2 * i * Math.PI) / resolution))
+      .map((angle) => Vec2.add(Vec2.mult(Vec2.fromAngle(angle), r), pos))
+      .map((p) => new Body(Shape.Circle((Math.PI * r) / (resolution), p), 1, 0.2, fc));
+
+    softSquare.sides = softSquare.points.map((p, i) => {
+      const newStick = new Stick(1);
+      newStick.attachObject(p);
+      newStick.attachObject(softSquare.points[(i + 1) % softSquare.points.length]);
+      if (i % 2 === 0)newStick.lockRotation();
+      return newStick;
+    });
+
     softSquare.sides.forEach((side) => {
       const s = side;
-      s.length = (0.96 * 4 * sideSize) / softSquare.resolution;
+      s.length = (0.96 * 4 * sideSize) / resolution;
     });
     softSquare.points.forEach((ball) => {
       const b = ball;
       b.vel = vel.copy;
     });
 
-    this.balls.push(...softSquare.points);
+    this.bodies.push(...softSquare.points);
     this.springs.push(...softSquare.sides);
 
     const springStrength = sideSize * sideSize * 200 * pressure;
 
     let bigStick = new Spring(
-      Math.sqrt(softSquare.r * softSquare.r * Math.PI),
+      Math.sqrt(r * r * Math.PI),
       springStrength / 2,
     );
     bigStick.attachObject(softSquare.points[0]);
-    bigStick.attachObject(softSquare.points[softSquare.resolution / 2]);
+    bigStick.attachObject(softSquare.points[resolution / 2]);
     this.springs.push(bigStick);
 
     bigStick = new Spring(
-      Math.sqrt(softSquare.r * softSquare.r * Math.PI),
+      Math.sqrt(r * r * Math.PI),
       springStrength / 2,
     );
-    bigStick.attachObject(softSquare.points[softSquare.resolution / 4]);
-    bigStick.attachObject(softSquare.points[(3 * softSquare.resolution) / 4]);
+    bigStick.attachObject(softSquare.points[resolution / 4]);
+    bigStick.attachObject(softSquare.points[(3 * resolution) / 4]);
     this.springs.push(bigStick);
 
     bigStick = new Spring(
-      Math.sqrt(2 * softSquare.r * softSquare.r * Math.PI),
+      Math.sqrt(2 * r * r * Math.PI),
       springStrength,
     );
-    bigStick.attachObject(softSquare.points[softSquare.resolution / 8]);
-    bigStick.attachObject(softSquare.points[(5 * softSquare.resolution) / 8]);
+    bigStick.attachObject(softSquare.points[resolution / 8]);
+    bigStick.attachObject(softSquare.points[(5 * resolution) / 8]);
     this.springs.push(bigStick);
 
     bigStick = new Spring(
-      Math.sqrt(2 * softSquare.r * softSquare.r * Math.PI),
+      Math.sqrt(2 * r * r * Math.PI),
       springStrength,
     );
-    bigStick.attachObject(softSquare.points[(3 * softSquare.resolution) / 8]);
-    bigStick.attachObject(softSquare.points[(7 * softSquare.resolution) / 8]);
-    this.springs.push(bigStick); */
+    bigStick.attachObject(softSquare.points[(3 * resolution) / 8]);
+    bigStick.attachObject(softSquare.points[(7 * resolution) / 8]);
+    this.springs.push(bigStick);
   }
 
   /**
