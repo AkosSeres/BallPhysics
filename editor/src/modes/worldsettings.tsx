@@ -45,12 +45,6 @@ const WorldSettingsMode: Mode = {
         Air friction
       </range-slider>,
       <check-box
-        checked={editorRef.hasCeiling()}
-        onChange={(nB:boolean) => { editorRef.setCeiling(nB); }}
-      >
-        World ceiling
-      </check-box>,
-      <check-box
         checked={editorRef.drawCollisions}
         onChange={(nB:boolean) => { editorRef.drawCollisions = nB; }}
       >

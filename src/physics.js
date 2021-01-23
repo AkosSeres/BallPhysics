@@ -310,11 +310,8 @@ class Physics {
    * @param {number} y y coordinate of the centre of the world
    * @param {number} w Width of the world
    * @param {number} h Height of the world
-   * @param {boolean} ceiling Whether the world has a ceiling or nor
    */
-  setBounds(x, y, w, h, ceiling = true) {
-    // this.bounds = [];
-
+  setBounds(x, y, w, h) {
     /**
      * Creates a rectangle wall.
      *
@@ -322,21 +319,21 @@ class Physics {
      * @param {number} y_ The y coordinate
      * @param {number} w_ The width
      * @param {number} h_ The height
-     * @returns {Wall} The wall
+     * @returns {Body} The wall body
      */
-    /* const getRectBody = (x_, y_, w_, h_) => {
+    const getRectBody = (x_, y_, w_, h_) => {
       const points = [];
       points.push(new Vec2(x_ - w_ / 2, y_ - h_ / 2));
       points.push(new Vec2(x_ + w_ / 2, y_ - h_ / 2));
       points.push(new Vec2(x_ + w_ / 2, y_ + h_ / 2));
       points.push(new Vec2(x_ - w_ / 2, y_ + h_ / 2));
-      return new Wall(points);
+      return new Body(Shape.Polygon(points), 0);
     };
 
-    this.bounds.push(getRectBody(x - w, y, 2 * w, 4 * h));
-    this.bounds.push(getRectBody(x + 2 * w, y, 2 * w, 4 * h));
-    if (ceiling) this.bounds.push(getRectBody(x, y - h, 4 * w, h * 2));
-    this.bounds.push(getRectBody(x + w / 2, y + 2 * h, 5 * w, 2 * h)); */
+    this.bodies[0] = (getRectBody(x - w, y, 2 * w, 4 * h));
+    this.bodies[1] = (getRectBody(x + 2 * w, y, 2 * w, 4 * h));
+    this.bodies[2] = (getRectBody(x, y - h, 4 * w, h * 2));
+    this.bodies[3] = (getRectBody(x + w / 2, y + 2 * h, 5 * w, 2 * h));
   }
 
   /**

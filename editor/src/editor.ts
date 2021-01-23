@@ -83,8 +83,6 @@ class Editor implements EditorInterface {
 
   private worldSize: {width: number, height: number};
 
-  private ceiling: boolean;
-
   collisionData: CollisionData[];
 
   constructor() {
@@ -113,7 +111,6 @@ class Editor implements EditorInterface {
     this.drawCollisions = true;
     this.showAxes = false;
     this.worldSize = { width: 0, height: 0 };
-    this.ceiling = true;
     this.collisionData = [];
 
     this.left = false;
@@ -721,18 +718,16 @@ class Editor implements EditorInterface {
     }
   };
 
+  /**
+   * Sets the size of the world.
+   *
+   * @param {{width: number, height: number}} sizes The size of the world.
+   * @param {number} sizes.width The width of the world.
+   * @param {number} sizes.height The height of the world.
+   */
   setWorldSize(sizes: {width: number, height: number}) {
     this.physics.setBounds(0, 0, sizes.width, sizes.height);
     this.worldSize = sizes;
-  }
-
-  hasCeiling() {
-    return this.ceiling;
-  }
-
-  setCeiling(c: boolean) {
-    this.physics.setBounds(0, 0, this.worldSize.width, this.worldSize.height, c);
-    this.ceiling = c;
   }
 
   /**

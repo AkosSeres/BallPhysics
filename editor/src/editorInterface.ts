@@ -13,8 +13,6 @@ interface EditorInterface {
   cnv: HTMLCanvasElement;
   drawCollisions: boolean;
   showAxes: boolean;
-  hasCeiling: () => boolean;
-  setCeiling: (c: boolean) => void;
 }
 
 export default EditorInterface;
