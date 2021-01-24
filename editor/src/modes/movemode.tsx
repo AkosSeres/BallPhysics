@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Vec2 } from '../../../src/physics';
+import { Body, Vec2 } from '../../../src/physics';
 import Mode from '../modeInterface';
 
 let pmouseX = 0;
@@ -14,7 +14,7 @@ const MoveMode: Mode = {
   element,
   drawFunc(editorApp, dt) {
     const { choosed } = editorApp;
-    if (choosed instanceof Object && 'move' in choosed) {
+    if (choosed instanceof Body) {
       choosed.move(new Vec2(
         editorApp.mouseX - choosed.pos.x,
         editorApp.mouseY - choosed.pos.y,
@@ -33,14 +33,14 @@ const MoveMode: Mode = {
   },
   startInteractionFunc(editorApp) {
     const { choosed } = editorApp;
-    if (choosed instanceof Object && 'move' in choosed) {
+    if (choosed instanceof Body) {
       const app = editorApp;
       app.cnv.style.cursor = 'grabbing';
     }
   },
   endInteractionFunc(editorApp) {
     const { choosed } = editorApp;
-    if (choosed instanceof Object && 'move' in choosed) {
+    if (choosed instanceof Body) {
       const app = editorApp;
       app.cnv.style.cursor = 'grab';
     }

@@ -33,7 +33,7 @@ class Shape {
   static Circle(r, center) {
     const ret = new Shape();
     ret.r = Math.abs(r);
-    ret.points[0] = center;
+    ret.points[0] = center.copy;
     return ret;
   }
 
@@ -58,7 +58,7 @@ class Shape {
    */
   getGeometricalData() {
     const ret = {
-      center: this.points[0],
+      center: this.points[0].copy,
       area: 0,
       secondArea: 0,
     };
