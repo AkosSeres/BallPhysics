@@ -183,6 +183,9 @@ export function resolveCollisions(bodies) {
   const dVelYs = Array(bodyCount).fill(0);
   const dAngs = Array(bodyCount).fill(0);
 
+  // Precalculate all minmaxes
+  bodies.forEach((b) => b.calculateMinMaxes());
+
   for (let i = 0; i < bodyCount - 1; i += 1) {
     for (let j = i + 1; j < bodyCount; j += 1) {
       const b1 = bodies[i];

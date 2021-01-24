@@ -63,6 +63,10 @@ class Body {
       y: this.shape.getMinMaxY(),
     };
 
+    /** @type {MinMax[]} */
+    this.minMaxes = [];
+    this.calculateMinMaxes();
+
     /** The style of the body. Has to be a hex color or a texture pointer. */
     this.style = defaultBodyColor;
   }
@@ -85,6 +89,13 @@ class Body {
       }
     }
     this.axes = this.defaultAxes.map((a) => a.copy);
+  }
+
+  /**
+   * Calculates the MinMax intervals in the body's axes' directions.
+   */
+  calculateMinMaxes() {
+    this.minMaxes = this.axes.map((axe) => this.shape.getMinMaxInDirection(axe));
   }
 
   /**
@@ -171,6 +182,7 @@ class Body {
 
   /**
    * Detects collsion between two bodies and returns the collision data.
+   * The algorithm expects a precalculated minMaxes array in each of the bodies.
    *
    * @param {Body} body1 The first body
    * @param {Body} body2 The second body
@@ -195,12 +207,14 @@ class Body {
       const axe = Vec2.sub(closest, b1.pos);
       axe.normalize();
       axes1 = [axe];
+      b1.minMaxes = [b1.shape.getMinMaxInDirection(axe)];
     }
     if (b2.shape.r !== 0) {
       const closest = b1.shape.getClosestPoint(b2.pos);
       const axe = Vec2.sub(closest, b2.pos);
       axe.normalize();
       axes2 = [axe];
+      b2.minMaxes = [b2.shape.getMinMaxInDirection(axe)];
     }
     const coordinateSystems = [...axes1, ...axes2];
     /**
@@ -219,9 +233,20 @@ class Body {
     const getMinMaxes2 = (normal) => b2.shape.getMinMaxInDirection(normal);
     /** @type {import('../math/minmax').MinMax[]} */
     const overlaps = [];
-    if (coordinateSystems.some((s) => {
-      const currMinMax1 = getMinMaxes1(s);
-      const currMinMax2 = getMinMaxes2(s);
+    if (coordinateSystems.some((s, i) => {
+      // Retrieve the MinMax from the precalculated ones if it is in there
+      let currMinMax1;
+      if (i < axes1.length) {
+        currMinMax1 = body1.minMaxes[i];
+      } else {
+        currMinMax1 = getMinMaxes1(s);
+      }
+      let currMinMax2;
+      if (i >= axes1.length) {
+        currMinMax2 = body2.minMaxes[i - axes1.length];
+      } else {
+        currMinMax2 = getMinMaxes2(s);
+      }
       const overlap = findOverlap(currMinMax1, currMinMax2);
       if (overlap.max < overlap.min) return true;
 
@@ -285,6 +310,8 @@ class Body {
     ret.shape = Shape.fromObject(obj.shape);
     ret.style = obj.style;
     ret.vel = Vec2.fromObject(obj.vel);
+    ret.minMaxes = [];
+    ret.calculateMinMaxes();
 
     return ret;
   }
