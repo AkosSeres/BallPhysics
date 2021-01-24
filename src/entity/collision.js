@@ -198,8 +198,6 @@ export function resolveCollisions(bodies) {
         const vInPlace1 = Vec2.dot(b1.velInPlace(collDat.contactPoint), collDat.normal);
         const vInPlace2 = Vec2.dot(b2.velInPlace(collDat.contactPoint), collDat.normal);
         collisions.push({ n: collDat.normal, cp: collDat.contactPoint });
-        collisionCounts[i] += 1;
-        collisionCounts[j] += 1;
         let toMove1 = -collDat.overlap;
         let toMove2 = collDat.overlap;
         if (b1.m === 0) {
@@ -210,6 +208,7 @@ export function resolveCollisions(bodies) {
           dVelXs[j] += change1.dVel.x;
           dVelYs[j] += change1.dVel.y;
           dAngs[j] += change1.dAng;
+          collisionCounts[j] += 1;
         } else if (b2.m === 0) {
           toMove2 = 0;
           const change2 = collisionResponseWithWall(
@@ -218,6 +217,7 @@ export function resolveCollisions(bodies) {
           dVelXs[i] += change2.dVel.x;
           dVelYs[i] += change2.dVel.y;
           dAngs[i] += change2.dAng;
+          collisionCounts[i] += 1;
         } else {
           toMove1 *= (b2.m / (b1.m + b2.m));
           toMove2 *= (b1.m / (b1.m + b2.m));
@@ -247,9 +247,10 @@ export function resolveCollisions(bodies) {
     const b = bodies[i];
     // eslint-disable-next-line no-continue
     if (b.m === 0) continue;
+    const cCount = Math.max(collisionCounts[i], 1);
     b.move(new Vec2(moveAmountsX[i], moveAmountsY[i]));
-    b.vel.add(new Vec2(dVelXs[i], dVelYs[i]));
-    b.ang += dAngs[i];
+    b.vel.add(new Vec2(dVelXs[i] / cCount, dVelYs[i] / cCount));
+    b.ang += dAngs[i] / cCount;
   }
 
   return collisions;

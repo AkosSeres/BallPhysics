@@ -302,7 +302,7 @@ class Physics {
    * @param {number} r radius of the fixed ball
    */
   addFixedBall(x, y, r) {
-    this.bodies.push(new Body(Shape.Circle(r, new Vec2(x, y)), 0, 0.5, 0.5));
+    this.bodies.push(new Body(Shape.Circle(r, new Vec2(x, y)), 0));
   }
 
   /**
