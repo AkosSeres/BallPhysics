@@ -247,11 +247,9 @@ export function resolveCollisions(bodies) {
     const b = bodies[i];
     // eslint-disable-next-line no-continue
     if (b.m === 0) continue;
-    const cCount = Math.max(collisionCounts[i], 1);
-
-    b.move(new Vec2(moveAmountsX[i] / cCount, moveAmountsY[i] / cCount));
-    b.vel.add(new Vec2(dVelXs[i] / cCount, dVelYs[i] / cCount));
-    b.ang += dAngs[i] / cCount;
+    b.move(new Vec2(moveAmountsX[i], moveAmountsY[i]));
+    b.vel.add(new Vec2(dVelXs[i], dVelYs[i]));
+    b.ang += dAngs[i];
   }
 
   return collisions;
