@@ -188,15 +188,15 @@ class Editor implements EditorInterface {
     const ctx = <CanvasRenderingContext2D> this.cnv.getContext('2d');
 
     // paint the background
-    ctx.fillStyle = palette.Independence;
+    ctx.fillStyle = palette.Beige;
     ctx.fillRect(0, 0, this.cnv.width, this.cnv.height);
 
     ctx.save();
     ctx.translate(this.viewOffsetX, this.viewOffsetY);
     ctx.scale(this.scaling, this.scaling);
 
-    modes[this.mode].drawFunc?.(this, elapsedTime * this.timeMultiplier);
     this.physicsDraw();
+    modes[this.mode].drawFunc?.(this, elapsedTime * this.timeMultiplier);
 
     ctx.restore();
 
@@ -519,6 +519,10 @@ class Editor implements EditorInterface {
     const ctx = this.cnv.getContext('2d');
 
     if (ctx) {
+      // Draw world background
+      ctx.fillStyle = palette.Independence;
+      ctx.fillRect(0, 0, this.worldSize.width, this.worldSize.height);
+
       this.physics.bodies.forEach((element) => {
         ctx.fillStyle = element.style;
         ctx.strokeStyle = 'black';
@@ -653,6 +657,7 @@ class Editor implements EditorInterface {
       // Draw collision data
       ctx.fillStyle = palette['Maximum Yellow Red'];
       ctx.strokeStyle = palette['Maximum Yellow Red'];
+      const old = ctx.lineWidth;
       ctx.lineWidth = 4;
       if (this.drawCollisions) {
         this.collisionData.forEach((cd) => {
@@ -665,6 +670,7 @@ class Editor implements EditorInterface {
           ctx.fill();
         });
       }
+      ctx.lineWidth = old;
     }
   };
 
