@@ -179,6 +179,15 @@ class Body {
   static detectCollision(body1, body2) {
     const b1 = body1;
     const b2 = body2;
+
+    // Check if their bounding boxes overlap and return if they do not
+    {
+      const xOverlap = findOverlap(b1.boundingBox.x, b2.boundingBox.x);
+      if (xOverlap.max < xOverlap.min) return false;
+      const yOverlap = findOverlap(b1.boundingBox.y, b2.boundingBox.y);
+      if (yOverlap.max < yOverlap.min) return false;
+    }
+
     let axes1 = body1.axes;
     let axes2 = body2.axes;
     if (b1.shape.r !== 0) {
