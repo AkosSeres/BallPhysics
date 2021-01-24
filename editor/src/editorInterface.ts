@@ -14,6 +14,8 @@ interface EditorInterface {
   drawCollisions: boolean;
   showAxes: boolean;
   showBoundingBoxes: boolean;
+  worldSize: {width: number, height: number};
+  setWorldSize: (sizes: {width: number, height: number})=>void;
 }
 
 export default EditorInterface;

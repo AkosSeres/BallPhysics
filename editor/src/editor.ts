@@ -73,7 +73,7 @@ class Editor implements EditorInterface {
 
   rightButtonDown: Vec2 | false;
 
-  private worldSize: {width: number, height: number};
+  worldSize: {width: number, height: number};
 
   collisionData: CollisionData[];
 

@@ -4,6 +4,7 @@ import Mode from '../modeInterface';
 import elementCreator from '../elementCreator';
 import '../components/checkbox';
 import '../components/range-slider';
+import '../components/range-slider-number';
 
 const element = document.createElement('div');
 
@@ -44,6 +45,28 @@ const WorldSettingsMode: Mode = {
       >
         Air friction
       </range-slider>,
+      <range-slider-number
+        min={700}
+        max={10000}
+        step={10}
+        value={editorRef.worldSize.width}
+        onChange={(nW:number) => {
+          editorRef.setWorldSize({ width: nW, height: editorRef.worldSize.height });
+        }}
+      >
+        World width
+      </range-slider-number>,
+      <range-slider-number
+        min={700}
+        max={5000}
+        step={10}
+        value={editorRef.worldSize.height}
+        onChange={(nH:number) => {
+          editorRef.setWorldSize({ width: editorRef.worldSize.width, height: nH });
+        }}
+      >
+        World height
+      </range-slider-number>,
       <check-box
         checked={editorRef.drawCollisions}
         onChange={(nB:boolean) => { editorRef.drawCollisions = nB; }}
