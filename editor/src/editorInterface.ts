@@ -13,6 +13,7 @@ interface EditorInterface {
   cnv: HTMLCanvasElement;
   drawCollisions: boolean;
   showAxes: boolean;
+  showBoundingBoxes: boolean;
 }
 
 export default EditorInterface;

@@ -56,6 +56,12 @@ const WorldSettingsMode: Mode = {
       >
         Show body axes
       </check-box>,
+      <check-box
+        checked={editorRef.showBoundingBoxes}
+        onChange={(nB: boolean) => { editorRef.showBoundingBoxes = nB; }}
+      >
+        Show boounding boxes
+      </check-box>,
     );
   },
 };
