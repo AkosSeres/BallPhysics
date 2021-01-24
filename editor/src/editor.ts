@@ -53,10 +53,6 @@ class Editor implements EditorInterface {
 
   choosed: (AnyPhysicsObject | boolean | PinPoint);
 
-  left: boolean;
-
-  right: boolean;
-
   cnv: HTMLCanvasElement;
 
   canvasHolder: HTMLElement;
@@ -106,9 +102,6 @@ class Editor implements EditorInterface {
     this.showAxes = false;
     this.worldSize = { width: 0, height: 0 };
     this.collisionData = [];
-
-    this.left = false;
-    this.right = false;
 
     // A fully loaded window is provided
     this.cnv = <HTMLCanvasElement>document.getElementById('defaulCanvas0');
@@ -207,11 +200,6 @@ class Editor implements EditorInterface {
     // Reset collision data
     this.collisionData = [];
 
-    if (this.physics.bodies[0]) {
-      if (this.left) this.physics.bodies[0].ang -= Math.PI * 100 * elapsedTime;
-      if (this.right) this.physics.bodies[0].ang += Math.PI * 100 * elapsedTime;
-    }
-
     elapsedTime *= this.timeMultiplier;
     this.collisionData.push(...this.physics.update(elapsedTime / 5));
     this.collisionData.push(...this.physics.update(elapsedTime / 5));
@@ -303,29 +291,15 @@ class Editor implements EditorInterface {
     if (keyCode === 'i') {
       this.viewOffsetY += 10;
     }
-    if (keyCode === 'ArrowRight') {
-      this.right = true;
-    }
-    if (keyCode === 'ArrowLeft') {
-      this.left = true;
-    }
   };
 
   /**
    * My keyboard event function for releasing a key
    *
-   * @param {KeyboardEvent} event The event containing data
+   * @param {KeyboardEvent} _event The event containing data
    */
-  keyGotUp = (event: KeyboardEvent): void => {
-    const keyCode = event.key;
-    // Right arrow
-    if (keyCode === 'ArrowRight') {
-      this.right = false;
-    }
-    // Left arrow
-    if (keyCode === 'ArrowLeft') {
-      this.left = false;
-    }
+  keyGotUp = (_event: KeyboardEvent): void => {
+    // const keyCode = event.key;
   };
 
   /**
