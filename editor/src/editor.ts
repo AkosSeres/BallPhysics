@@ -77,6 +77,8 @@ class Editor implements EditorInterface {
 
   collisionData: CollisionData[];
 
+  showBoundingBoxes: boolean;
+
   constructor() {
     this.physics = new Physics();
     this.mouseX = 0;
@@ -102,6 +104,7 @@ class Editor implements EditorInterface {
     this.showAxes = false;
     this.worldSize = { width: 0, height: 0 };
     this.collisionData = [];
+    this.showBoundingBoxes = false;
 
     // A fully loaded window is provided
     this.cnv = <HTMLCanvasElement>document.getElementById('defaulCanvas0');
@@ -637,6 +640,17 @@ class Editor implements EditorInterface {
       });
       ctx.restore();
 
+      // Draw bounding boxes
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      if (this.showBoundingBoxes) {
+        this.physics.bodies.forEach((b) => {
+          ctx.strokeRect(b.boundingBox.x.min, b.boundingBox.y.min,
+            b.boundingBox.x.max - b.boundingBox.x.min,
+            b.boundingBox.y.max - b.boundingBox.y.min);
+        });
+      }
+
+      // Draw collision data
       ctx.fillStyle = palette['Maximum Yellow Red'];
       ctx.strokeStyle = palette['Maximum Yellow Red'];
       ctx.lineWidth = 4;
