@@ -5,6 +5,8 @@ import { Body, Shape, Vec2 } from '../../../src/physics';
 import EditorInterface from '../editorInterface';
 import elementCreator from '../elementCreator';
 import '../components/color-picker';
+import '../components/range-slider-number';
+import '../components/checkbox';
 
 /** @type {Body | boolean} */
 let selection: Body | boolean = false;
@@ -69,7 +71,63 @@ const SelectMode: Mode = {
     element.innerHTML = '';
     selection = editorApp.physics.getObjectAtCoordinates(editorApp.mouseX, editorApp.mouseY);
     if (selection instanceof Body) {
+      const densitySlider = (
+        <range-slider-number
+          min={0.1}
+          max={25}
+          step={0.05}
+          value={Number.parseFloat(selection.density.toFixed(2))}
+          onChange={(newDens: number) => {
+            if (selection instanceof Body)selection.density = newDens;
+          }}
+        >
+          Density
+        </range-slider-number>
+      );
+      const fixedCheckbox = (
+        <check-box
+          checked={selection.m === 0}
+          onChange={(newBool: boolean) => {
+            if (selection instanceof Body) {
+              if (!newBool) {
+                densitySlider.enable();
+                selection.density = 1;
+                densitySlider.value = selection.density;
+              } else {
+                densitySlider.disable();
+                selection.density = 0;
+                selection.vel = new Vec2(0, 0);
+                selection.ang = 0;
+                densitySlider.value = 0;
+              }
+            }
+          }}
+        >
+          Fixed down
+        </check-box>
+      );
+
       element.append(
+        fixedCheckbox,
+        densitySlider,
+        <range-slider-number
+          min={0}
+          max={0.98}
+          step={0.02}
+          value={selection.k}
+          onChange={(newK: number) => { if (selection instanceof Body)selection.k = newK; }}
+        >
+          Bounciness
+        </range-slider-number>,
+        <range-slider-number
+          min={0}
+          max={2}
+          step={0.1}
+          value={selection.fc}
+          onChange={(newFc: number) => { if (selection instanceof Body)selection.fc = newFc; }}
+        >
+          Coefficient of friction
+        </range-slider-number>,
         <color-picker
           value={selection.style}
           onChange={

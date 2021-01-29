@@ -174,6 +174,25 @@ class Body {
   }
 
   /**
+   * Calculates the density of the body.
+   *
+   * @returns {number} The density
+   */
+  get density() {
+    return this.m / this.shape.getGeometricalData().area;
+  }
+
+  /**
+   * Sets the new density of the shape
+   */
+  set density(newDensity) {
+    if (newDensity < 0 || !Number.isFinite(newDensity)) return;
+    const geomDat = this.shape.getGeometricalData();
+    this.m = geomDat.area * newDensity;
+    this.am = geomDat.secondArea * newDensity;
+  }
+
+  /**
    * Fixes the body making it into a wall.
    */
   fixDown() {

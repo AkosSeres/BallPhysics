@@ -25,6 +25,10 @@ style.innerHTML = `
       width: 90%;
       color: white;
     }
+    .disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
     .number:hover {
       opacity: 1;
     }
@@ -110,7 +114,7 @@ class RangeSliderNumber extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(style.content.cloneNode(true));
     this.shadowRoot.appendChild(
-      <div>
+      <div id="mainContainer">
         <p className="slider-label"><slot /></p>
         <input id="slider" type="range" className="slider" />
         <input id="number-input" type="number" className="number" />
@@ -150,6 +154,14 @@ class RangeSliderNumber extends HTMLElement {
 
   normalizeValue(val) {
     return Math.min(Math.max(this.minNum, val), this.maxNum);
+  }
+
+  disable() {
+    this.shadowRoot.querySelector('#mainContainer').classList.add('disabled');
+  }
+
+  enable() {
+    this.shadowRoot.querySelector('#mainContainer').classList.remove('disabled');
   }
 
   set onChange(onchangeFunc) {
