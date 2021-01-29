@@ -1,4 +1,5 @@
 import Line from './line';
+import LineSegment from './linesegment';
 import { MinMax, minMaxOfArray } from './minmax';
 import Polygon from './polygon';
 import Vec2 from './vec2';
@@ -211,10 +212,35 @@ class Shape {
   containsPoint(p) {
     if (this.r !== 0) return Vec2.sub(p, this.points[0]).sqlength <= (this.r * this.r);
 
+    if (this.points.length === 4) {
+      const outerP = new Vec2(this.getMinMaxX().max + 10, this.getMinMaxY().max + 10);
+      const segmentBetween = new LineSegment(p, outerP);
+      let intersections = 0;
+      this.sides.forEach((side) => {
+        if (LineSegment.intersect(side, segmentBetween))intersections += 1;
+      });
+      return (intersections % 2) === 1;
+    }
+
     const normals = this.points.map(
-      (point, i) => Vec2.sub(this.points[(i + 1) % this.points.length], point),
+      (point, i) => {
+        const v = Vec2.sub(this.points[(i + 1) % this.points.length], point);
+        v.rotate90();
+        return v;
+      },
     );
-    return normals.every((n, i) => (Vec2.cross(n, Vec2.sub(p, this.points[i])) >= 0));
+    return normals.every((n, i) => (Vec2.dot(n, Vec2.sub(p, this.points[i])) >= 0));
+  }
+
+  /**
+   * Returns the sides of the shape as linesegments.
+   *
+   * @returns {LineSegment[]} The sides
+   */
+  get sides() {
+    return this.points.map(
+      (p, i) => (new LineSegment(p, this.points[(i + 1) % this.points.length])),
+    );
   }
 
   /**
