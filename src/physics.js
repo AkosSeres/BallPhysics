@@ -6,7 +6,7 @@ import Vec2 from './math/vec2';
 import Spring from './constraint/spring';
 import Body from './entity/body';
 import { resolveCollisions } from './entity/collision';
-import { defaultBodyColor } from './util/colorpalette';
+import palette, { defaultBodyColor } from './util/colorpalette';
 import Shape from './math/shape';
 
 /**
@@ -301,6 +301,7 @@ class Physics {
    */
   addFixedBall(x, y, r) {
     this.bodies.push(new Body(Shape.Circle(r, new Vec2(x, y)), 0));
+    this.bodies[this.bodies.length - 1].style = palette.Beige;
   }
 
   /**
@@ -344,6 +345,7 @@ class Physics {
     this.bodies[1] = (getRectBody(x + 2 * w, y, 2 * w, 4 * h));
     this.bodies[2] = (getRectBody(x, y - h, 4 * w, h * 2));
     this.bodies[3] = (getRectBody(x + w / 2, y + 2 * h, 5 * w, 2 * h));
+    for (let i = 0; i < 4; i += 1) this.bodies[i].style = palette.Beige;
   }
 
   /**

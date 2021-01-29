@@ -527,8 +527,7 @@ class Editor implements EditorInterface {
         ctx.fillStyle = element.style;
         ctx.strokeStyle = 'black';
         if (element.m === 0) {
-          ctx.fillStyle = palette.Beige;
-          ctx.strokeStyle = palette.Beige;
+          ctx.strokeStyle = '#00000000';
         }
         if (element.shape.r !== 0) {
           // Draw circle
@@ -544,11 +543,13 @@ class Editor implements EditorInterface {
           ctx.stroke();
           ctx.fill();
 
-          ctx.beginPath();
-          ctx.moveTo(ball.pos.x, ball.pos.y);
-          ctx.lineTo(ball.pos.x + ball.shape.r * Math.cos(ball.rotation),
-            ball.pos.y + ball.shape.r * Math.sin(ball.rotation));
-          ctx.stroke();
+          if (element.m !== 0) {
+            ctx.beginPath();
+            ctx.moveTo(ball.pos.x, ball.pos.y);
+            ctx.lineTo(ball.pos.x + ball.shape.r * Math.cos(ball.rotation),
+              ball.pos.y + ball.shape.r * Math.sin(ball.rotation));
+            ctx.stroke();
+          }
         } else {
           // Draw polygon
           ctx.beginPath();
@@ -573,9 +574,11 @@ class Editor implements EditorInterface {
           }
         }
 
-        ctx.beginPath();
-        ctx.arc(element.pos.x, element.pos.y, 1.5, 0, Math.PI * 2);
-        ctx.stroke();
+        if (element.m !== 0) {
+          ctx.beginPath();
+          ctx.arc(element.pos.x, element.pos.y, 1.5, 0, Math.PI * 2);
+          ctx.stroke();
+        }
       });
 
       ctx.save();

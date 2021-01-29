@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import palette from '../../../src/util/colorpalette';
 import Mode from '../modeInterface';
 
 const element = document.createElement('div');
@@ -29,6 +30,8 @@ const RectangleMode: Mode = {
         2 * Math.abs(editorApp.lastX / 2 - editorApp.mouseX / 2),
         2 * Math.abs(editorApp.lastY / 2 - editorApp.mouseY / 2),
       );
+      const editor = editorApp;
+      editor.physics.bodies[editor.physics.bodies.length - 1].style = palette.Beige;
     }
   },
 };
