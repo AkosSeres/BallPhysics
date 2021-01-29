@@ -6,3 +6,5 @@
 Controls:
 * use the buttons on the side to switch between modes
 * use the mouse or touch to interact
+* pinch zoom or use two fingers to move the camera on mobile
+* hold right mouse button to move camera and use mouse wheel to zoom
