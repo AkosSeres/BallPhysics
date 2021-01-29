@@ -9,8 +9,9 @@ import SpringCreatorMode from './springcreator';
 import StickCreatorMode from './stickcreator';
 import WallDrawerMode from './walldrawer';
 import WorldSettingsMode from './worldsettings';
+import SelectMode from './selectmode';
 
-export default [BallCreatorMode, RectangleMode, WallDrawerMode,
+export default [BallCreatorMode, SelectMode, RectangleMode, WallDrawerMode,
   StickCreatorMode, SpringCreatorMode, MoveMode,
   SoftSquareCreatorMode, DeleteMode, RectangleBodyMode, WorldSettingsMode,
   ShapeCreatorMode,

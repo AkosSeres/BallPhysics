@@ -130,8 +130,6 @@ class Physics {
       body.ang *= (this.airFriction ** t);
     });
 
-    // if (this.bodies.length > 0)console.log(this.bodies[0].pos.y);
-
     return collisionData;
   }
 
