@@ -17,6 +17,8 @@ const element = document.createElement('div');
 /** @type {Function} */
 let updateFunc: Function;
 
+const resizerElement = document.getElementById('elementResizer');
+
 /**
  * This mode is for placing down balls in the world
  */
@@ -99,10 +101,12 @@ const SelectMode: Mode = {
             if (selection instanceof Body) {
               if (!newBool) {
                 densitySlider.enable();
+                resizerElement?.classList?.add?.('resizerHide');
                 selection.density = 1;
                 densitySlider.value = selection.density;
               } else {
                 densitySlider.disable();
+                resizerElement?.classList?.remove?.('resizerHide');
                 selection.density = 0;
                 selection.vel = new Vec2(0, 0);
                 selection.ang = 0;
@@ -141,6 +145,10 @@ const SelectMode: Mode = {
         </angle-display>
       );
 
+      // Show resizer if mass is 0
+      if (selection.m === 0)resizerElement?.classList?.remove?.('resizerHide');
+      else resizerElement?.classList?.add?.('resizerHide');
+
       // Set update function for calling later
       updateFunc = () => {
         if (!(selection instanceof Body)) return;
@@ -148,6 +156,18 @@ const SelectMode: Mode = {
         if (yDisplay.value != selection.pos.y)yDisplay.value = selection.pos.y.toFixed(2);
         if (massDisplay.value != selection.m)massDisplay.value = selection.m.toFixed(2);
         rotationDisplay.value = selection.rotation.toFixed(2);
+
+        // Set position of resizer
+        if (resizerElement) {
+          let pos = { x: selection.boundingBox.x.min, y: selection.boundingBox.y.min };
+          let posMax = { x: selection.boundingBox.x.max, y: selection.boundingBox.y.max };
+          pos = editorApp.convertToCanvasSpace(pos);
+          posMax = editorApp.convertToCanvasSpace(posMax);
+          resizerElement.style.left = `${pos.x}px`;
+          resizerElement.style.top = `${pos.y}px`;
+          resizerElement.style.width = `${posMax.x - pos.x}px`;
+          resizerElement.style.height = `${posMax.y - pos.y}px`;
+        }
       };
 
       element.append(
@@ -187,6 +207,7 @@ const SelectMode: Mode = {
       );
     } else {
       updateFunc = () => {};
+      resizerElement?.classList?.add?.('resizerHide');
     }
   },
   endInteractionFunc(editorApp) {
@@ -195,6 +216,7 @@ const SelectMode: Mode = {
     selection = false;
     updateFunc = () => {};
     element.innerHTML = '';
+    resizerElement?.classList?.add?.('resizerHide');
   },
 };
 

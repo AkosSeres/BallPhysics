@@ -109,6 +109,7 @@ h4 {
     padding: 0px;
     margin: 0px;
     overflow: hidden;
+    position: relative;
 }
 canvas {
     border-top-left-radius: 1rem;
@@ -184,6 +185,22 @@ canvas {
 
 .rotate {
     grid-area: rotate;
+    display: none;
+}
+
+#elementResizer {
+    position: absolute;
+    background-color: #00000066;
+    color: #000000;
+    border: 1px solid black;
+    width: 10px;
+    height: 10px;
+    left: 100px;
+    top: 10px;
+    cursor: move;
+}
+
+.resizerHide {
     display: none;
 }
 

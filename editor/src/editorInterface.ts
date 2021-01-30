@@ -1,4 +1,4 @@
-import Physics, { AnyPhysicsObject, PinPoint } from '../../src/physics';
+import Physics, { AnyPhysicsObject, PinPoint, Vec2 } from '../../src/physics';
 
 interface EditorInterface {
   physics: Physics;
@@ -15,7 +15,9 @@ interface EditorInterface {
   showAxes: boolean;
   showBoundingBoxes: boolean;
   worldSize: {width: number, height: number};
-  setWorldSize: (sizes: {width: number, height: number})=>void;
+  setWorldSize: (sizes: {width: number, height: number}) => void;
+  convertToCanvasSpace: (p: {x: number, y: number}) => Vec2;
+  convertToPhysicsSpace: (p: {x: number, y: number}) => Vec2;
 }
 
 export default EditorInterface;
