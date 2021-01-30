@@ -354,14 +354,15 @@ class Physics {
    *
    * @param {number} x x coordinate
    * @param {number} y y coordinate
+   * @param {number} minIndex The minimum index of the body to search from
    * @returns {Body | boolean} The found object
    */
-  getObjectAtCoordinates(x, y) {
+  getObjectAtCoordinates(x, y, minIndex = 0) {
     /** @type {Body | boolean} */
     let ret = false;
     const v = new Vec2(x, y);
-    this.bodies.some((body) => {
-      if (body.containsPoint(v)) { ret = body; return true; }
+    this.bodies.some((body, i) => {
+      if (body.containsPoint(v) && i >= minIndex) { ret = body; return true; }
       return false;
     });
     return ret;

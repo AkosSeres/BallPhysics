@@ -12,6 +12,11 @@ import '../components/number-display';
 import '../components/angle-display';
 import palette from '../../../src/util/colorpalette';
 
+const CORNER_RADIUS = 7;
+const SIDE_RADIUS = 6.5;
+const ROTATE_RADIUS = 8;
+const ROTATE_DIST = 25;
+
 /** @type {Body | boolean} */
 let selection: Body | boolean = false;
 const element = document.createElement('div');
@@ -19,6 +24,144 @@ const element = document.createElement('div');
 let updateFunc: Function;
 
 let startedInside = false;
+
+// Declare Command type
+type Command = 'move' | 'rotate' | 'resize-bl' | 'resize-br' | 'resize-tl' | 'resize-tr' | 'resize-t' | 'resize-b' | 'resize-l' | 'resize-r' | 'none';
+
+/**
+ * @param {EditorInterface} editor The interface for the editor
+ * @returns {Body | boolean} The found body at the pointer's coordinates
+ */
+function currentChosen(editor: EditorInterface) {
+  return editor.physics.getObjectAtCoordinates(editor.mouseX, editor.mouseY, 4);
+}
+
+/**
+ * @param {EditorInterface} editorApp The editor
+ * @returns {Command} The command to start doing
+ */
+function findCommand(editorApp: EditorInterface) {
+  if (selection instanceof Body) {
+    const bb = selection.boundingBox;
+    const topLeft = new Vec2(bb.x.min, bb.y.min);
+    const topRight = new Vec2(bb.x.max, bb.y.min);
+    const bottomLeft = new Vec2(bb.x.min, bb.y.max);
+    const bottomRight = new Vec2(bb.x.max, bb.y.max);
+    const rotateBtn = Vec2.add(Vec2.lerp(topRight, topLeft, 0.5), new Vec2(0, -ROTATE_DIST));
+    const mouse = new Vec2(editorApp.mouseX, editorApp.mouseY);
+    if (Vec2.dist(rotateBtn, mouse) <= ROTATE_RADIUS) return 'rotate';
+    if (Vec2.dist(bottomLeft, mouse) <= CORNER_RADIUS) return 'resize-bl';
+    if (Vec2.dist(bottomRight, mouse) <= CORNER_RADIUS) return 'resize-br';
+    if (Vec2.dist(topLeft, mouse) <= CORNER_RADIUS) return 'resize-tl';
+    if (Vec2.dist(topRight, mouse) <= CORNER_RADIUS) return 'resize-tr';
+    if (Vec2.dist(Vec2.lerp(topRight, topLeft, 0.5), mouse) <= SIDE_RADIUS) return 'resize-t';
+    if (Vec2.dist(Vec2.lerp(bottomRight, bottomLeft, 0.5), mouse) <= SIDE_RADIUS) return 'resize-b';
+    if (Vec2.dist(Vec2.lerp(topLeft, bottomLeft, 0.5), mouse) <= SIDE_RADIUS) return 'resize-l';
+    if (Vec2.dist(Vec2.lerp(topRight, bottomRight, 0.5), mouse) <= SIDE_RADIUS) return 'resize-r';
+    if (mouse.x >= topLeft.x && mouse.y >= topLeft.y
+      && mouse.x <= bottomRight.x && mouse.y <= bottomRight.y) return 'move';
+  } return 'none';
+}
+
+const cursors = {
+  none: 'default',
+  move: 'move',
+  rotate: 'url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAyklEQVQ4T6XST0qCQRjH8Y8JBnoCr9DGjXQBEbqDm6QQgvZeoX0bQVy7cRtBeIPcewi3bYLKeF6mmAZBeZvN8Pz5PvOb53ka/p4mHnGDVgp9YIVrvCdft5FxV3guCpXmBD1sfsAhXrKseOUVcV/ivKgwDvAMn1ngFosisVRTgQ+YpsQ7zA7IjX/fZ/4KfEMHX4jmlKePUeFcBrhPzi0ujjTnN/wv8JjUXMQO7fjWqc0JeIB1qvJUdxydOgtQjazOys1Dbg6GfeqS+wZwAS6Pac4meQAAAABJRU5ErkJggg==\') 6.5 6.5, auto',
+  'resize-bl': 'nesw-resize',
+  'resize-br': 'nwse-resize',
+  'resize-tl': 'nwse-resize',
+  'resize-tr': 'nesw-resize',
+  'resize-t': 'ns-resize',
+  'resize-b': 'ns-resize',
+  'resize-l': 'ew-resize',
+  'resize-r': 'ew-resize',
+};
+
+/**
+ * @param {CanvasRenderingContext2D} ctx The rendering context
+ * @param {EditorInterface} editor The editor
+ */
+function drawResizer(ctx: CanvasRenderingContext2D, editor: EditorInterface) {
+  if (selection instanceof Body) {
+    // Dashed rectangle and line to rotator dot
+    ctx.strokeStyle = palette['Roman Silver'];
+    ctx.setLineDash([5, 3.5]);
+    ctx.strokeRect(selection.boundingBox.x.min, selection.boundingBox.y.min,
+      selection.boundingBox.x.max - selection.boundingBox.x.min,
+      selection.boundingBox.y.max - selection.boundingBox.y.min);
+    ctx.beginPath();
+    ctx.moveTo(selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
+      selection.boundingBox.y.min);
+    ctx.lineTo(selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
+      selection.boundingBox.y.min - ROTATE_DIST);
+    ctx.stroke();
+
+    // Corner and side dots
+    ctx.fillStyle = palette.blue;
+    ctx.beginPath();
+    ctx.arc(
+      selection.boundingBox.x.min, selection.boundingBox.y.min, CORNER_RADIUS, 0, Math.PI * 2,
+    );
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(
+      selection.boundingBox.x.min, selection.boundingBox.y.max, CORNER_RADIUS, 0, Math.PI * 2,
+    );
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(
+      selection.boundingBox.x.max, selection.boundingBox.y.min, CORNER_RADIUS, 0, Math.PI * 2,
+    );
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(
+      selection.boundingBox.x.max, selection.boundingBox.y.max, CORNER_RADIUS, 0, Math.PI * 2,
+    );
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(
+      selection.boundingBox.x.min,
+      selection.boundingBox.y.min / 2 + selection.boundingBox.y.max / 2,
+      SIDE_RADIUS, 0, Math.PI * 2,
+    );
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(
+      selection.boundingBox.x.max,
+      selection.boundingBox.y.min / 2 + selection.boundingBox.y.max / 2,
+      SIDE_RADIUS, 0, Math.PI * 2,
+    );
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(
+      selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
+      selection.boundingBox.y.max,
+      SIDE_RADIUS, 0, Math.PI * 2,
+    );
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(
+      selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
+      selection.boundingBox.y.min,
+      SIDE_RADIUS, 0, Math.PI * 2,
+    );
+    ctx.fill();
+    // Circle of rotating
+    ctx.beginPath();
+    ctx.arc(
+      selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
+      selection.boundingBox.y.min - ROTATE_DIST,
+      ROTATE_RADIUS, 0, Math.PI * 2,
+    );
+    ctx.fill();
+
+    // Then set cursor
+    const command = findCommand(editor);
+    const newCursor = cursors[command];
+    const cnvStyle = editor.cnv.style;
+    if (cnvStyle.cursor !== newCursor)cnvStyle.cursor = newCursor;
+  }
+}
 
 /**
  * This mode is for placing down balls in the world
@@ -28,7 +171,7 @@ const SelectMode: Mode = {
   description: '',
   element,
   drawFunc(editorApp: EditorInterface, _dt: number) {
-    const atCoord = editorApp.physics.getObjectAtCoordinates(editorApp.mouseX, editorApp.mouseY);
+    const atCoord = currentChosen(editorApp);
     const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
     ctx.save();
     ctx.strokeStyle = 'orange';
@@ -60,36 +203,7 @@ const SelectMode: Mode = {
 
       // Draw mover box if fixed
       if (selection.m === 0 || editorApp.timeMultiplier === 0) {
-        ctx.fillStyle = palette.blue;
-        ctx.beginPath();
-        ctx.arc(selection.boundingBox.x.min, selection.boundingBox.y.min, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(selection.boundingBox.x.min, selection.boundingBox.y.max, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(selection.boundingBox.x.max, selection.boundingBox.y.min, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(selection.boundingBox.x.max, selection.boundingBox.y.max, 5, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.strokeStyle = palette['Roman Silver'];
-        ctx.setLineDash([5, 3.5]);
-        ctx.strokeRect(selection.boundingBox.x.min, selection.boundingBox.y.min,
-          selection.boundingBox.x.max - selection.boundingBox.x.min,
-          selection.boundingBox.y.max - selection.boundingBox.y.min);
-
-        if (editorApp.mouseX >= selection.boundingBox.x.min
-          && editorApp.mouseX <= selection.boundingBox.x.max
-        && editorApp.mouseY >= selection.boundingBox.y.min
-        && editorApp.mouseY <= selection.boundingBox.y.max) {
-          const cnvStyle = editorApp.cnv.style;
-          if (cnvStyle.cursor !== 'move')cnvStyle.cursor = 'move';
-        } else {
-          const cnvStyle = editorApp.cnv.style;
-          if (cnvStyle.cursor !== 'default')cnvStyle.cursor = 'default';
-        }
+        drawResizer(ctx, editorApp);
       }
     } else {
       const cnvStyle = editorApp.cnv.style;
@@ -122,7 +236,7 @@ const SelectMode: Mode = {
   },
   startInteractionFunc(editorApp) {
     element.innerHTML = '';
-    const newSel = editorApp.physics.getObjectAtCoordinates(editorApp.mouseX, editorApp.mouseY);
+    const newSel = currentChosen(editorApp);
     if (typeof newSel !== 'boolean' && newSel !== selection) {
       startedInside = true;
     }
