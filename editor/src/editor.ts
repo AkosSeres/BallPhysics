@@ -232,6 +232,8 @@ class Editor implements EditorInterface {
   startInteraction = (x: number, y: number): void => {
     this.mouseX = x / this.scaling - this.viewOffsetX / this.scaling;
     this.mouseY = y / this.scaling - this.viewOffsetY / this.scaling;
+    this.oldMouseX = this.mouseX;
+    this.oldMouseY = this.mouseY;
     this.choosed = this.physics.getObjectAtCoordinates(this.mouseX, this.mouseY);
     if (!this.choosed && typeof this.choosed === 'boolean') {
       this.choosed = {

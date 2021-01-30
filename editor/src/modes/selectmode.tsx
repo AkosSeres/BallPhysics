@@ -24,9 +24,11 @@ const element = document.createElement('div');
 let updateFunc: Function;
 
 let startedInside = false;
+let startingRotation = 0;
 
 // Declare Command type
 type Command = 'move' | 'rotate' | 'resize-bl' | 'resize-br' | 'resize-tl' | 'resize-tr' | 'resize-t' | 'resize-b' | 'resize-l' | 'resize-r' | 'none';
+let currentCommand: Command = 'none';
 
 /**
  * @param {EditorInterface} editor The interface for the editor
@@ -40,7 +42,7 @@ function currentChosen(editor: EditorInterface) {
  * @param {EditorInterface} editorApp The editor
  * @returns {Command} The command to start doing
  */
-function findCommand(editorApp: EditorInterface) {
+function findCommand(editorApp: EditorInterface): Command {
   if (selection instanceof Body) {
     const bb = selection.boundingBox;
     const topLeft = new Vec2(bb.x.min, bb.y.min);
@@ -63,6 +65,35 @@ function findCommand(editorApp: EditorInterface) {
   } return 'none';
 }
 
+/**
+ * @param {Command} command The command to start
+ */
+function startCommand(command:Command) {
+  if (command === 'rotate' && selection instanceof Body) startingRotation = selection.rotation;
+}
+
+/**
+ * @param {EditorInterface} editor The editor
+ */
+function updateCommand(editor: EditorInterface) {
+  if (typeof selection === 'boolean') return;
+  const mouse = new Vec2(editor.mouseX, editor.mouseY);
+  const mouseOld = new Vec2(editor.oldMouseX, editor.oldMouseY);
+  const pastV = Vec2.sub(mouseOld, selection.pos);
+  const v = Vec2.sub(mouse, selection.pos);
+  switch (currentCommand) {
+    case 'move':
+      selection.move(new Vec2(editor.mouseX - editor.oldMouseX,
+        editor.mouseY - editor.oldMouseY));
+      break;
+    case 'rotate':
+      selection.rotate(v.heading - pastV.heading);
+      break;
+    default:
+      break;
+  }
+}
+
 const cursors = {
   none: 'default',
   move: 'move',
@@ -83,83 +114,101 @@ const cursors = {
  */
 function drawResizer(ctx: CanvasRenderingContext2D, editor: EditorInterface) {
   if (selection instanceof Body) {
+    if (currentCommand !== 'rotate') {
     // Dashed rectangle and line to rotator dot
-    ctx.strokeStyle = palette['Roman Silver'];
-    ctx.setLineDash([5, 3.5]);
-    ctx.strokeRect(selection.boundingBox.x.min, selection.boundingBox.y.min,
-      selection.boundingBox.x.max - selection.boundingBox.x.min,
-      selection.boundingBox.y.max - selection.boundingBox.y.min);
-    ctx.beginPath();
-    ctx.moveTo(selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
-      selection.boundingBox.y.min);
-    ctx.lineTo(selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
-      selection.boundingBox.y.min - ROTATE_DIST);
-    ctx.stroke();
+      ctx.strokeStyle = palette['Roman Silver'];
+      ctx.setLineDash([5, 3.5]);
+      ctx.strokeRect(selection.boundingBox.x.min, selection.boundingBox.y.min,
+        selection.boundingBox.x.max - selection.boundingBox.x.min,
+        selection.boundingBox.y.max - selection.boundingBox.y.min);
+      ctx.beginPath();
+      ctx.moveTo(selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
+        selection.boundingBox.y.min);
+      ctx.lineTo(selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
+        selection.boundingBox.y.min - ROTATE_DIST);
+      ctx.stroke();
 
-    // Corner and side dots
-    ctx.fillStyle = palette.blue;
-    ctx.beginPath();
-    ctx.arc(
-      selection.boundingBox.x.min, selection.boundingBox.y.min, CORNER_RADIUS, 0, Math.PI * 2,
-    );
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(
-      selection.boundingBox.x.min, selection.boundingBox.y.max, CORNER_RADIUS, 0, Math.PI * 2,
-    );
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(
-      selection.boundingBox.x.max, selection.boundingBox.y.min, CORNER_RADIUS, 0, Math.PI * 2,
-    );
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(
-      selection.boundingBox.x.max, selection.boundingBox.y.max, CORNER_RADIUS, 0, Math.PI * 2,
-    );
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(
-      selection.boundingBox.x.min,
-      selection.boundingBox.y.min / 2 + selection.boundingBox.y.max / 2,
-      SIDE_RADIUS, 0, Math.PI * 2,
-    );
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(
-      selection.boundingBox.x.max,
-      selection.boundingBox.y.min / 2 + selection.boundingBox.y.max / 2,
-      SIDE_RADIUS, 0, Math.PI * 2,
-    );
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(
-      selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
-      selection.boundingBox.y.max,
-      SIDE_RADIUS, 0, Math.PI * 2,
-    );
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(
-      selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
-      selection.boundingBox.y.min,
-      SIDE_RADIUS, 0, Math.PI * 2,
-    );
-    ctx.fill();
-    // Circle of rotating
-    ctx.beginPath();
-    ctx.arc(
-      selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
-      selection.boundingBox.y.min - ROTATE_DIST,
-      ROTATE_RADIUS, 0, Math.PI * 2,
-    );
-    ctx.fill();
+      // Corner and side dots
+      ctx.fillStyle = palette.blue;
+      ctx.beginPath();
+      ctx.arc(
+        selection.boundingBox.x.min, selection.boundingBox.y.min, CORNER_RADIUS, 0, Math.PI * 2,
+      );
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(
+        selection.boundingBox.x.min, selection.boundingBox.y.max, CORNER_RADIUS, 0, Math.PI * 2,
+      );
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(
+        selection.boundingBox.x.max, selection.boundingBox.y.min, CORNER_RADIUS, 0, Math.PI * 2,
+      );
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(
+        selection.boundingBox.x.max, selection.boundingBox.y.max, CORNER_RADIUS, 0, Math.PI * 2,
+      );
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(
+        selection.boundingBox.x.min,
+        selection.boundingBox.y.min / 2 + selection.boundingBox.y.max / 2,
+        SIDE_RADIUS, 0, Math.PI * 2,
+      );
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(
+        selection.boundingBox.x.max,
+        selection.boundingBox.y.min / 2 + selection.boundingBox.y.max / 2,
+        SIDE_RADIUS, 0, Math.PI * 2,
+      );
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(
+        selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
+        selection.boundingBox.y.max,
+        SIDE_RADIUS, 0, Math.PI * 2,
+      );
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(
+        selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
+        selection.boundingBox.y.min,
+        SIDE_RADIUS, 0, Math.PI * 2,
+      );
+      ctx.fill();
+      // Circle of rotating
+      ctx.beginPath();
+      ctx.arc(
+        selection.boundingBox.x.max / 2 + selection.boundingBox.x.min / 2,
+        selection.boundingBox.y.min - ROTATE_DIST,
+        ROTATE_RADIUS, 0, Math.PI * 2,
+      );
+      ctx.fill();
 
-    // Then set cursor
-    const command = findCommand(editor);
-    const newCursor = cursors[command];
-    const cnvStyle = editor.cnv.style;
-    if (cnvStyle.cursor !== newCursor)cnvStyle.cursor = newCursor;
+      // Then set cursor
+      const command = findCommand(editor);
+      const newCursor = cursors[command];
+      const cnvStyle = editor.cnv.style;
+      if (cnvStyle.cursor !== newCursor)cnvStyle.cursor = newCursor;
+    } else {
+      ctx.strokeStyle = palette['Roman Silver'];
+      ctx.setLineDash([5, 3.5]);
+      ctx.beginPath();
+      ctx.moveTo(selection.pos.x, selection.pos.y);
+      ctx.lineTo(editor.mouseX, editor.mouseY);
+      ctx.stroke();
+
+      ctx.fillStyle = palette.blue;
+      ctx.beginPath();
+      ctx.arc(
+        editor.mouseX,
+        editor.mouseY,
+        ROTATE_RADIUS, 0, Math.PI * 2,
+      );
+      ctx.fill();
+    }
   }
 }
 
@@ -195,14 +244,9 @@ const SelectMode: Mode = {
         ctx.stroke();
       }
 
-      // Move when dragged
-      if (editorApp.mouseDown && editorApp.cnv.style.cursor === 'move' && !startedInside) {
-        selection.move(new Vec2(editorApp.mouseX - editorApp.oldMouseX,
-          editorApp.mouseY - editorApp.oldMouseY));
-      }
-
       // Draw mover box if fixed
       if (selection.m === 0 || editorApp.timeMultiplier === 0) {
+        updateCommand(editorApp);
         drawResizer(ctx, editorApp);
       }
     } else {
@@ -235,13 +279,14 @@ const SelectMode: Mode = {
     updateFunc?.();
   },
   startInteractionFunc(editorApp) {
-    element.innerHTML = '';
+    const command = findCommand(editorApp);
     const newSel = currentChosen(editorApp);
-    if (typeof newSel !== 'boolean' && newSel !== selection) {
+    if (typeof newSel !== 'boolean' && newSel !== selection && command === 'none') {
       startedInside = true;
     }
-    selection = newSel;
-    if (selection instanceof Body) {
+    if (newSel instanceof Body && selection !== newSel && command === 'none') {
+      element.innerHTML = '';
+      selection = newSel;
       const densitySlider = (
         <range-slider-number
           min={0.1}
@@ -350,12 +395,21 @@ const SelectMode: Mode = {
           Color:
         </color-picker>,
       );
-    } else {
+    } else if (typeof newSel === 'boolean' && command === 'none') {
+      selection = newSel;
       updateFunc = () => {};
+      element.innerHTML = '';
+    } else if (command !== 'none' && selection instanceof Body) {
+      // The selection has not changed and interaction has also started
+      if (selection.m === 0 || editorApp.timeMultiplier === 0) {
+        currentCommand = command;
+        startCommand(command);
+      } else currentCommand = 'none';
     }
   },
   endInteractionFunc(editorApp) {
     startedInside = false;
+    currentCommand = 'none';
   },
   deactivated() {
     selection = false;
