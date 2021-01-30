@@ -79,10 +79,16 @@ class Editor implements EditorInterface {
 
   showBoundingBoxes: boolean;
 
+  oldMouseX: number;
+
+  oldMouseY: number;
+
   constructor() {
     this.physics = new Physics();
     this.mouseX = 0;
     this.mouseY = 0;
+    this.oldMouseX = 0;
+    this.oldMouseY = 0;
     this.mouseDown = false;
     this.defaultSize = 30;
     this.k = 0.5;
@@ -212,6 +218,9 @@ class Editor implements EditorInterface {
 
     this.lastFrameTime = performance.now();
     requestAnimationFrame(this.drawFunction);
+
+    this.oldMouseX = this.mouseX;
+    this.oldMouseY = this.mouseY;
   };
 
   /**

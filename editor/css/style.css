@@ -188,22 +188,6 @@ canvas {
     display: none;
 }
 
-#elementResizer {
-    position: absolute;
-    background-color: #00000066;
-    color: #000000;
-    border: 1px solid black;
-    width: 10px;
-    height: 10px;
-    left: 100px;
-    top: 10px;
-    cursor: move;
-}
-
-.resizerHide {
-    display: none;
-}
-
 /* For smaller laptops */
 @media (max-width: 1125px) {
     .big-button {

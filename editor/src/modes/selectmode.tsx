@@ -10,6 +10,7 @@ import '../components/range-slider-number';
 import '../components/checkbox';
 import '../components/number-display';
 import '../components/angle-display';
+import palette from '../../../src/util/colorpalette';
 
 /** @type {Body | boolean} */
 let selection: Body | boolean = false;
@@ -17,7 +18,7 @@ const element = document.createElement('div');
 /** @type {Function} */
 let updateFunc: Function;
 
-const resizerElement = document.getElementById('elementResizer');
+let startedInside = false;
 
 /**
  * This mode is for placing down balls in the world
@@ -50,6 +51,49 @@ const SelectMode: Mode = {
         ctx.closePath();
         ctx.stroke();
       }
+
+      // Move when dragged
+      if (editorApp.mouseDown && editorApp.cnv.style.cursor === 'move' && !startedInside) {
+        selection.move(new Vec2(editorApp.mouseX - editorApp.oldMouseX,
+          editorApp.mouseY - editorApp.oldMouseY));
+      }
+
+      // Draw mover box if fixed
+      if (selection.m === 0 || editorApp.timeMultiplier === 0) {
+        ctx.fillStyle = palette.blue;
+        ctx.beginPath();
+        ctx.arc(selection.boundingBox.x.min, selection.boundingBox.y.min, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(selection.boundingBox.x.min, selection.boundingBox.y.max, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(selection.boundingBox.x.max, selection.boundingBox.y.min, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(selection.boundingBox.x.max, selection.boundingBox.y.max, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = palette['Roman Silver'];
+        ctx.setLineDash([5, 3.5]);
+        ctx.strokeRect(selection.boundingBox.x.min, selection.boundingBox.y.min,
+          selection.boundingBox.x.max - selection.boundingBox.x.min,
+          selection.boundingBox.y.max - selection.boundingBox.y.min);
+
+        if (editorApp.mouseX >= selection.boundingBox.x.min
+          && editorApp.mouseX <= selection.boundingBox.x.max
+        && editorApp.mouseY >= selection.boundingBox.y.min
+        && editorApp.mouseY <= selection.boundingBox.y.max) {
+          const cnvStyle = editorApp.cnv.style;
+          if (cnvStyle.cursor !== 'move')cnvStyle.cursor = 'move';
+        } else {
+          const cnvStyle = editorApp.cnv.style;
+          if (cnvStyle.cursor !== 'default')cnvStyle.cursor = 'default';
+        }
+      }
+    } else {
+      const cnvStyle = editorApp.cnv.style;
+      if (cnvStyle.cursor !== 'default')cnvStyle.cursor = 'default';
     }
 
     ctx.strokeStyle = 'yellow';
@@ -78,7 +122,11 @@ const SelectMode: Mode = {
   },
   startInteractionFunc(editorApp) {
     element.innerHTML = '';
-    selection = editorApp.physics.getObjectAtCoordinates(editorApp.mouseX, editorApp.mouseY);
+    const newSel = editorApp.physics.getObjectAtCoordinates(editorApp.mouseX, editorApp.mouseY);
+    if (typeof newSel !== 'boolean' && newSel !== selection) {
+      startedInside = true;
+    }
+    selection = newSel;
     if (selection instanceof Body) {
       const densitySlider = (
         <range-slider-number
@@ -94,6 +142,7 @@ const SelectMode: Mode = {
           Density
         </range-slider-number>
       );
+      if (selection.m === 0)densitySlider.disable();
       const fixedCheckbox = (
         <check-box
           checked={selection.m === 0}
@@ -101,12 +150,10 @@ const SelectMode: Mode = {
             if (selection instanceof Body) {
               if (!newBool) {
                 densitySlider.enable();
-                resizerElement?.classList?.add?.('resizerHide');
                 selection.density = 1;
                 densitySlider.value = selection.density;
               } else {
                 densitySlider.disable();
-                resizerElement?.classList?.remove?.('resizerHide');
                 selection.density = 0;
                 selection.vel = new Vec2(0, 0);
                 selection.ang = 0;
@@ -145,10 +192,6 @@ const SelectMode: Mode = {
         </angle-display>
       );
 
-      // Show resizer if mass is 0
-      if (selection.m === 0)resizerElement?.classList?.remove?.('resizerHide');
-      else resizerElement?.classList?.add?.('resizerHide');
-
       // Set update function for calling later
       updateFunc = () => {
         if (!(selection instanceof Body)) return;
@@ -156,18 +199,6 @@ const SelectMode: Mode = {
         if (yDisplay.value != selection.pos.y)yDisplay.value = selection.pos.y.toFixed(2);
         if (massDisplay.value != selection.m)massDisplay.value = selection.m.toFixed(2);
         rotationDisplay.value = selection.rotation.toFixed(2);
-
-        // Set position of resizer
-        if (resizerElement) {
-          let pos = { x: selection.boundingBox.x.min, y: selection.boundingBox.y.min };
-          let posMax = { x: selection.boundingBox.x.max, y: selection.boundingBox.y.max };
-          pos = editorApp.convertToCanvasSpace(pos);
-          posMax = editorApp.convertToCanvasSpace(posMax);
-          resizerElement.style.left = `${pos.x}px`;
-          resizerElement.style.top = `${pos.y}px`;
-          resizerElement.style.width = `${posMax.x - pos.x}px`;
-          resizerElement.style.height = `${posMax.y - pos.y}px`;
-        }
       };
 
       element.append(
@@ -207,16 +238,15 @@ const SelectMode: Mode = {
       );
     } else {
       updateFunc = () => {};
-      resizerElement?.classList?.add?.('resizerHide');
     }
   },
   endInteractionFunc(editorApp) {
+    startedInside = false;
   },
   deactivated() {
     selection = false;
     updateFunc = () => {};
     element.innerHTML = '';
-    resizerElement?.classList?.add?.('resizerHide');
   },
 };
 

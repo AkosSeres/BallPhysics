@@ -4,6 +4,8 @@ interface EditorInterface {
   physics: Physics;
   mouseX: number;
   mouseY: number;
+  oldMouseX: number;
+  oldMouseY: number;
   mouseDown: boolean;
   scaling: number;
   lastX: number;
