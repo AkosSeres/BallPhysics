@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
@@ -7,10 +8,14 @@ import elementCreator from '../elementCreator';
 import '../components/color-picker';
 import '../components/range-slider-number';
 import '../components/checkbox';
+import '../components/number-display';
+import '../components/angle-display';
 
 /** @type {Body | boolean} */
 let selection: Body | boolean = false;
 const element = document.createElement('div');
+/** @type {Function} */
+let updateFunc: Function;
 
 /**
  * This mode is for placing down balls in the world
@@ -66,6 +71,8 @@ const SelectMode: Mode = {
       }
     }
     ctx.restore();
+
+    updateFunc?.();
   },
   startInteractionFunc(editorApp) {
     element.innerHTML = '';
@@ -79,6 +86,7 @@ const SelectMode: Mode = {
           value={Number.parseFloat(selection.density.toFixed(2))}
           onChange={(newDens: number) => {
             if (selection instanceof Body)selection.density = newDens;
+            updateFunc?.();
           }}
         >
           Density
@@ -100,14 +108,54 @@ const SelectMode: Mode = {
                 selection.ang = 0;
                 densitySlider.value = 0;
               }
+              updateFunc?.();
             }
           }}
         >
           Fixed down
         </check-box>
       );
+      const typeDisplay = (
+        <number-display value={(selection.shape.r !== 0 ? 'circle' : 'polygon')}>
+          Type:&nbsp;
+        </number-display>
+      );
+      const massDisplay = (
+        <number-display value={selection.m.toFixed(2)}>
+          Mass:&nbsp;
+        </number-display>
+      );
+      const xDisplay = (
+        <number-display value={selection.pos.x.toFixed(2)}>
+          X coord:&nbsp;
+        </number-display>
+      );
+      const yDisplay = (
+        <number-display value={selection.pos.y.toFixed(2)}>
+          Y coord:&nbsp;
+        </number-display>
+      );
+      const rotationDisplay = (
+        <angle-display value={selection.rotation.toFixed(2)}>
+          Rotation:&nbsp;
+        </angle-display>
+      );
+
+      // Set update function for calling later
+      updateFunc = () => {
+        if (!(selection instanceof Body)) return;
+        if (xDisplay.value != selection.pos.x)xDisplay.value = selection.pos.x.toFixed(2);
+        if (yDisplay.value != selection.pos.y)yDisplay.value = selection.pos.y.toFixed(2);
+        if (massDisplay.value != selection.m)massDisplay.value = selection.m.toFixed(2);
+        rotationDisplay.value = selection.rotation.toFixed(2);
+      };
 
       element.append(
+        typeDisplay,
+        massDisplay,
+        rotationDisplay,
+        xDisplay,
+        yDisplay,
         fixedCheckbox,
         densitySlider,
         <range-slider-number
@@ -137,9 +185,16 @@ const SelectMode: Mode = {
           Color:
         </color-picker>,
       );
+    } else {
+      updateFunc = () => {};
     }
   },
   endInteractionFunc(editorApp) {
+  },
+  deactivated() {
+    selection = false;
+    updateFunc = () => {};
+    element.innerHTML = '';
   },
 };
 
