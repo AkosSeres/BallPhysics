@@ -31,7 +31,7 @@ let startingRotation = 0;
 let allScaling = 1;
 
 // Declare Command type
-type Command = 'move' | 'rotate' | 'resize-bl' | 'resize-br' | 'resize-tl' | 'resize-tr' | 'resize-t' | 'resize-b' | 'resize-l' | 'resize-r' | 'none';
+type Command = 'move' | 'rotate' | 'resize-bl' | 'resize-br' | 'resize-tl' | 'resize-tr' | 'resize-t' | 'resize-b' | 'resize-l' | 'resize-r' | 'move-spring0' | 'move-spring1' | 'none';
 let currentCommand: Command = 'none';
 
 /**
@@ -47,6 +47,7 @@ function currentChosen(editor: EditorInterface) {
  * @returns {Command} The command to start doing
  */
 function findCommand(editorApp: EditorInterface): Command {
+  if (editorApp.timeMultiplier !== 0) return 'none';
   if (selection instanceof Body) {
     const bb = selection.boundingBox;
     const topLeft = new Vec2(bb.x.min, bb.y.min);
@@ -66,6 +67,11 @@ function findCommand(editorApp: EditorInterface): Command {
     if (Vec2.dist(Vec2.lerp(topRight, bottomRight, 0.5), mouse) <= SIDE_RADIUS) return 'resize-r';
     if (mouse.x >= topLeft.x && mouse.y >= topLeft.y
       && mouse.x <= bottomRight.x && mouse.y <= bottomRight.y) return 'move';
+  } else if (typeof springSelection !== 'boolean') {
+    const ps = springSelection.points;
+    const mouse = new Vec2(editorApp.mouseX, editorApp.mouseY);
+    if (ps[0].dist(mouse) <= SPRING_RADIUS) return 'move-spring0';
+    if (ps[1].dist(mouse) <= SPRING_RADIUS) return 'move-spring1';
   } return 'none';
 }
 
@@ -95,96 +101,111 @@ function startCommand(command:Command) {
  * @param {EditorInterface} editor The editor
  */
 function updateCommand(editor: EditorInterface) {
-  if (typeof selection === 'boolean') return;
-  const mouse = new Vec2(editor.mouseX, editor.mouseY);
-  const mouseOld = new Vec2(editor.oldMouseX, editor.oldMouseY);
-  const pastV = Vec2.sub(mouseOld, selection.pos);
-  const v = Vec2.sub(mouse, selection.pos);
-  const bb = selection.boundingBox;
-  const topLeft = new Vec2(bb.x.min, bb.y.min);
-  const topRight = new Vec2(bb.x.max, bb.y.min);
-  const bottomLeft = new Vec2(bb.x.min, bb.y.max);
-  const bottomRight = new Vec2(bb.x.max, bb.y.max);
-  const top = Vec2.lerp(topLeft, topRight, 0.5);
-  const bottom = Vec2.lerp(bottomLeft, bottomRight, 0.5);
-  const right = Vec2.lerp(bottomRight, topRight, 0.5);
-  const left = Vec2.lerp(bottomLeft, topLeft, 0.5);
-  const startDir = Vec2.fromAngle(startingRotation);
-  let factor = 1;
-  switch (currentCommand) {
-    case 'move':
-      selection.move(new Vec2(editor.mouseX - editor.oldMouseX,
-        editor.mouseY - editor.oldMouseY));
-      break;
-    case 'rotate':
-      selection.rotate(v.heading - pastV.heading);
-      break;
-    case 'resize-bl':
-      factor = Vec2.dot(startDir, Vec2.sub(mouse, topRight))
+  if (typeof selection !== 'boolean') {
+    const mouse = new Vec2(editor.mouseX, editor.mouseY);
+    const mouseOld = new Vec2(editor.oldMouseX, editor.oldMouseY);
+    const pastV = Vec2.sub(mouseOld, selection.pos);
+    const v = Vec2.sub(mouse, selection.pos);
+    const bb = selection.boundingBox;
+    const topLeft = new Vec2(bb.x.min, bb.y.min);
+    const topRight = new Vec2(bb.x.max, bb.y.min);
+    const bottomLeft = new Vec2(bb.x.min, bb.y.max);
+    const bottomRight = new Vec2(bb.x.max, bb.y.max);
+    const top = Vec2.lerp(topLeft, topRight, 0.5);
+    const bottom = Vec2.lerp(bottomLeft, bottomRight, 0.5);
+    const right = Vec2.lerp(bottomRight, topRight, 0.5);
+    const left = Vec2.lerp(bottomLeft, topLeft, 0.5);
+    const startDir = Vec2.fromAngle(startingRotation);
+    let factor = 1;
+    switch (currentCommand) {
+      case 'move':
+        selection.move(new Vec2(editor.mouseX - editor.oldMouseX,
+          editor.mouseY - editor.oldMouseY));
+        break;
+      case 'rotate':
+        selection.rotate(v.heading - pastV.heading);
+        break;
+      case 'resize-bl':
+        factor = Vec2.dot(startDir, Vec2.sub(mouse, topRight))
       / Vec2.dot(startDir, Vec2.sub(mouseOld, topRight));
-      if (factor * allScaling >= 0.03) {
-        selection.scaleAround(topRight, factor);
-        allScaling *= factor;
-      } else currentCommand = 'none';
-      break;
-    case 'resize-br':
-      factor = Vec2.dot(startDir, Vec2.sub(mouse, topLeft))
+        if (factor * allScaling >= 0.03) {
+          selection.scaleAround(topRight, factor);
+          allScaling *= factor;
+        } else currentCommand = 'none';
+        break;
+      case 'resize-br':
+        factor = Vec2.dot(startDir, Vec2.sub(mouse, topLeft))
       / Vec2.dot(startDir, Vec2.sub(mouseOld, topLeft));
-      if (factor * allScaling >= 0.03) {
-        selection.scaleAround(topLeft, factor);
-        allScaling *= factor;
-      } else currentCommand = 'none';
-      break;
-    case 'resize-tl':
-      factor = Vec2.dot(startDir, Vec2.sub(mouse, bottomRight))
+        if (factor * allScaling >= 0.03) {
+          selection.scaleAround(topLeft, factor);
+          allScaling *= factor;
+        } else currentCommand = 'none';
+        break;
+      case 'resize-tl':
+        factor = Vec2.dot(startDir, Vec2.sub(mouse, bottomRight))
       / Vec2.dot(startDir, Vec2.sub(mouseOld, bottomRight));
-      if (factor * allScaling >= 0.03) {
-        selection.scaleAround(bottomRight, factor);
-        allScaling *= factor;
-      } else currentCommand = 'none';
-      break;
-    case 'resize-tr':
-      factor = Vec2.dot(startDir, Vec2.sub(mouse, bottomLeft))
+        if (factor * allScaling >= 0.03) {
+          selection.scaleAround(bottomRight, factor);
+          allScaling *= factor;
+        } else currentCommand = 'none';
+        break;
+      case 'resize-tr':
+        factor = Vec2.dot(startDir, Vec2.sub(mouse, bottomLeft))
       / Vec2.dot(startDir, Vec2.sub(mouseOld, bottomLeft));
-      if (factor * allScaling >= 0.03) {
-        selection.scaleAround(bottomLeft, factor);
-        allScaling *= factor;
-      } else currentCommand = 'none';
-      break;
-    case 'resize-t':
-      factor = Vec2.dot(startDir, Vec2.sub(mouse, bottom))
+        if (factor * allScaling >= 0.03) {
+          selection.scaleAround(bottomLeft, factor);
+          allScaling *= factor;
+        } else currentCommand = 'none';
+        break;
+      case 'resize-t':
+        factor = Vec2.dot(startDir, Vec2.sub(mouse, bottom))
       / Vec2.dot(startDir, Vec2.sub(mouseOld, bottom));
-      if (factor * allScaling >= 0.1) {
-        selection.scaleAroundY(bottom, factor);
-        allScaling *= factor;
-      } else currentCommand = 'none';
-      break;
-    case 'resize-b':
-      factor = Vec2.dot(startDir, Vec2.sub(mouse, top))
+        if (factor * allScaling >= 0.1) {
+          selection.scaleAroundY(bottom, factor);
+          allScaling *= factor;
+        } else currentCommand = 'none';
+        break;
+      case 'resize-b':
+        factor = Vec2.dot(startDir, Vec2.sub(mouse, top))
       / Vec2.dot(startDir, Vec2.sub(mouseOld, top));
-      if (factor * allScaling >= 0.1) {
-        selection.scaleAroundY(top, factor);
-        allScaling *= factor;
-      } else currentCommand = 'none';
-      break;
-    case 'resize-l':
-      factor = Vec2.dot(startDir, Vec2.sub(mouse, right))
+        if (factor * allScaling >= 0.1) {
+          selection.scaleAroundY(top, factor);
+          allScaling *= factor;
+        } else currentCommand = 'none';
+        break;
+      case 'resize-l':
+        factor = Vec2.dot(startDir, Vec2.sub(mouse, right))
       / Vec2.dot(startDir, Vec2.sub(mouseOld, right));
-      if (factor * allScaling >= 0.1) {
-        selection.scaleAroundX(right, factor);
-        allScaling *= factor;
-      } else currentCommand = 'none';
-      break;
-    case 'resize-r':
-      factor = Vec2.dot(startDir, Vec2.sub(mouse, left))
+        if (factor * allScaling >= 0.1) {
+          selection.scaleAroundX(right, factor);
+          allScaling *= factor;
+        } else currentCommand = 'none';
+        break;
+      case 'resize-r':
+        factor = Vec2.dot(startDir, Vec2.sub(mouse, left))
       / Vec2.dot(startDir, Vec2.sub(mouseOld, left));
-      if (factor * allScaling >= 0.1) {
-        selection.scaleAroundX(left, factor);
-        allScaling *= factor;
-      } else currentCommand = 'none';
-      break;
-    default:
-      break;
+        if (factor * allScaling >= 0.1) {
+          selection.scaleAroundX(left, factor);
+          allScaling *= factor;
+        } else currentCommand = 'none';
+        break;
+      default:
+        break;
+    }
+  } else if (typeof springSelection !== 'boolean') {
+    const mouse = new Vec2(editor.mouseX, editor.mouseY);
+    const mouseOld = new Vec2(editor.oldMouseX, editor.oldMouseY);
+    const dMouse = Vec2.sub(mouse, mouseOld);
+    switch (currentCommand) {
+      case 'move-spring0':
+        springSelection.updateAttachPoint0(mouse, SPRING_RADIUS);
+        break;
+      case 'move-spring1':
+        springSelection.updateAttachPoint1(mouse, SPRING_RADIUS);
+        break;
+      default:
+        break;
+    }
   }
 }
 
@@ -200,6 +221,8 @@ const cursors = {
   'resize-b': 'ns-resize',
   'resize-l': 'ew-resize',
   'resize-r': 'ew-resize',
+  'move-spring0': 'move',
+  'move-spring1': 'move',
 };
 
 /**
@@ -322,6 +345,28 @@ function drawResizer(ctx: CanvasRenderingContext2D, editor: EditorInterface) {
 }
 
 /**
+ * Draws the mover points on the selected spring.
+ *
+ * @param {CanvasRenderingContext2D} ctx The drawing context
+ * @param {EditorInterface} editor The editor
+ */
+function drawAttachPointMover(ctx: CanvasRenderingContext2D, editor: EditorInterface) {
+  if (typeof springSelection !== 'boolean') {
+    const ps = springSelection.points;
+    ctx.fillStyle = palette.blue;
+    ctx.beginPath();
+    ps.forEach((p) => { ctx.arc(p.x, p.y, SPRING_RADIUS, 0, Math.PI * 2); });
+    ctx.fill();
+
+    // Then set cursor
+    const command = findCommand(editor);
+    const newCursor = cursors[command];
+    const cnvStyle = editor.cnv.style;
+    if (cnvStyle.cursor !== newCursor)cnvStyle.cursor = newCursor;
+  }
+}
+
+/**
  * Handles the selection of a spring or stick.
  *
  * @param {EditorInterface} editor The editor
@@ -428,6 +473,14 @@ const SelectMode: Mode = {
       else if (springSelection instanceof Spring) {
         editorApp.renderer.renderSpring(springSelection, ctx);
       }
+
+      if (editorApp.timeMultiplier === 0) {
+        updateCommand(editorApp);
+        drawAttachPointMover(ctx, editorApp);
+      }
+    } else if (typeof selection === 'boolean') {
+      const cnvStyle = editorApp.cnv.style;
+      if (cnvStyle.cursor !== 'default')cnvStyle.cursor = 'default';
     }
 
     ctx.strokeStyle = 'yellow';
@@ -460,6 +513,11 @@ const SelectMode: Mode = {
   },
   startInteractionFunc(editorApp) {
     const command = findCommand(editorApp);
+    if (command !== 'none') {
+      currentCommand = command;
+      startCommand(command);
+      return;
+    } currentCommand = 'none';
     const newSel = currentChosen(editorApp);
     if (newSel instanceof Body && selection !== newSel && command === 'none') {
       element.innerHTML = '';
@@ -578,12 +636,6 @@ const SelectMode: Mode = {
       updateFunc = () => {};
       element.innerHTML = '';
       chooseSpring(editorApp);
-    } else if (command !== 'none' && selection instanceof Body) {
-      // The selection has not changed and interaction has also started
-      if (selection.m === 0 || editorApp.timeMultiplier === 0) {
-        currentCommand = command;
-        startCommand(command);
-      } else currentCommand = 'none';
     }
   },
   endInteractionFunc(editorApp) {

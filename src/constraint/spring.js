@@ -77,9 +77,9 @@ class Spring {
   attachObject(object, attachPoint = undefined) {
     let ob = this.objects;
     ob.push(object);
-    if (attachPoint) this.attachPoints.push(attachPoint);
-    else this.attachPoints.push(object.pos);
-    this.attachPositions.push(object.pos);
+    if (attachPoint) this.attachPoints.push(attachPoint.copy);
+    else this.attachPoints.push(object.pos.copy);
+    this.attachPositions.push(object.pos.copy);
     this.attachRotations.push(object.rotation);
     if (ob.length === 2) {
       this.pinned = false;
@@ -98,6 +98,41 @@ class Spring {
         this.attachRotations[this.attachRotations.length - 2],
         this.attachRotations[this.attachRotations.length - 1],
       ];
+    }
+  }
+
+  /**
+   * Updates the first attach point.
+   *
+   * @param {Vec2} newAttachPoint The new attach point to have on the first object
+   * @param {number} snapRadius The max radius where it snaps to the pos of the object
+   */
+  updateAttachPoint0(newAttachPoint, snapRadius = 0) {
+    this.attachPoints[0] = newAttachPoint.copy;
+    this.attachPositions[0] = this.objects[0].pos.copy;
+    this.attachRotations[0] = this.objects[0].rotation;
+    if (this.attachPoints[0].dist(this.attachPositions[0]) <= snapRadius) {
+      this.attachPoints[0] = this.attachPositions[0].copy;
+    }
+  }
+
+  /**
+   * Updates the seccond attach point.
+   *
+   * @param {Vec2} newAttachPoint The new attach point to have on the second object
+   * or on the pinpoint
+   * @param {number} snapRadius The max radius where it snaps to the pos of the object
+   */
+  updateAttachPoint1(newAttachPoint, snapRadius = 0) {
+    if (this.objects.length === 2) {
+      this.attachPoints[1] = newAttachPoint.copy;
+      this.attachPositions[1] = this.objects[1].pos.copy;
+      this.attachRotations[1] = this.objects[1].rotation;
+      if (this.attachPoints[1].dist(this.attachPositions[1]) <= snapRadius) {
+        this.attachPoints[1] = this.attachPositions[1].copy;
+      }
+    } else if (typeof this.pinned !== 'boolean') {
+      this.pinned = newAttachPoint.copy;
     }
   }
 

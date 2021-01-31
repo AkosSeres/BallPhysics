@@ -261,7 +261,7 @@ class Body {
   applyImpulse(contactPoint, impulse) {
     const r = Vec2.sub(contactPoint, this.pos);
     this.vel.add(Vec2.div(impulse, this.m));
-    this.ang -= Vec2.cross(r, impulse) / this.am;
+    this.ang += Vec2.cross(r, impulse) / this.am;
   }
 
   /**
