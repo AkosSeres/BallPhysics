@@ -31,21 +31,14 @@ class LineSegment {
    * @returns {number} The distance
    */
   distFromPoint(p) {
-    const e = Vec2.sub(this.a, this.b);
-    const A = Vec2.sub(p, this.b);
-    const B = Vec2.sub(p, this.a);
-    const a = A.length;
-    const b = B.length;
-    const c = e.length;
-    if (c === 0) return a;
-    const gamma = Vec2.angle(A, B);
-    const betha = Vec2.angle(A, e);
-    const alpha = Math.PI - gamma - betha;
-    const area = (Math.sin(alpha) * b * c) / 2;
-    const m = (2 * area) / c;
-    if (alpha > Math.PI / 2) return b;
-    if (betha > Math.PI / 2) return a;
-    return m;
+    const v = Vec2.sub(this.b, this.a);
+    const len = v.length;
+    v.normalize();
+    const rel = Vec2.sub(p, this.a);
+    const parralelCoord = Vec2.dot(v, rel);
+    const perpCoord = Vec2.cross(v, rel);
+    if (parralelCoord >= 0 && parralelCoord <= len) return Math.abs(perpCoord);
+    return Math.sqrt(Math.min(rel.sqlength, Vec2.sub(p, this.b).sqlength));
   }
 
   /**
