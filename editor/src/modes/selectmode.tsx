@@ -47,7 +47,7 @@ function currentChosen(editor: EditorInterface) {
  * @returns {Command} The command to start doing
  */
 function findCommand(editorApp: EditorInterface): Command {
-  if (editorApp.timeMultiplier !== 0) return 'none';
+  if (editorApp.timeMultiplier !== 0 && !(selection instanceof Body && selection.m === 0)) return 'none';
   if (selection instanceof Body) {
     const bb = selection.boundingBox;
     const topLeft = new Vec2(bb.x.min, bb.y.min);

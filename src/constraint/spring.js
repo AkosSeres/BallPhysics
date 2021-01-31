@@ -213,7 +213,7 @@ class Spring {
 
       const v = p1.vel;
       v.rotate(-dist.heading);
-      if (this.rotationLocked) {
+      if (this.rotationLocked && p1.m !== 0) {
         const s = new Vec2(p2.x, p2.y);
         const r2 = Vec2.sub(p1.pos, s);
         const len = r2.length;
@@ -242,7 +242,7 @@ class Spring {
       v1.rotate(-dist.heading);
       v2.rotate(-dist.heading);
 
-      if (this.rotationLocked) {
+      if (this.rotationLocked && p1.m !== 0 && p2.m !== 0) {
         const s = new Vec2(
           p1.pos.x * p1.m + p2.pos.x * p2.m,
           p1.pos.y * p1.m + p2.pos.y * p2.m,
