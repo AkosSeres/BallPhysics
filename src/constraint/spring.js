@@ -1,4 +1,5 @@
 import Body from '../entity/body';
+import LineSegment from '../math/linesegment';
 import Vec2 from '../math/vec2';
 
 /**
@@ -97,6 +98,9 @@ class Spring {
     this.rotationLocked = false;
   }
 
+  /**
+   * Arranges the rotations of the bodies to match the orientation when got locked.
+   */
   arrangeOrientations() {
     const a = this.objects[0].pos;
     const b = (typeof this.pinned === 'object') ? new Vec2(this.pinned.x, this.pinned.y) : this.objects[1].pos;
@@ -106,6 +110,17 @@ class Spring {
       const rotationGoal = this.initialOrientations[i] + dHeading;
       body.rotate(rotationGoal - body.rotation);
     });
+  }
+
+  /**
+   * Returns the spring as a LineSegment.
+   *
+   * @returns {LineSegment} The segment made from the spring
+   */
+  getAsSegment() {
+    const a = this.objects[0].pos;
+    const b = (typeof this.pinned === 'object') ? new Vec2(this.pinned.x, this.pinned.y) : this.objects[1].pos;
+    return new LineSegment(a, b);
   }
 
   /**

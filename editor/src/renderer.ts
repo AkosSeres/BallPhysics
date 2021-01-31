@@ -1,5 +1,7 @@
 /* eslint-disable class-methods-use-this */
-import { Spring, Stick, Vec2 } from '../../src/physics';
+import {
+  StickOrSpring, Vec2,
+} from '../../src/physics';
 
 class Renderer {
   textures: string[];
@@ -8,7 +10,7 @@ class Renderer {
     this.textures = [];
   }
 
-  renderSpring(spring: Spring, ctx: CanvasRenderingContext2D) {
+  renderSpring(spring: StickOrSpring, ctx: CanvasRenderingContext2D) {
     let x1;
     let y1;
     let x2;
@@ -54,7 +56,7 @@ class Renderer {
     }
   }
 
-  renderStick(stick: Stick, ctx: CanvasRenderingContext2D) {
+  renderStick(stick: StickOrSpring, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.moveTo(stick.objects[0].pos.x, stick.objects[0].pos.y);
     ctx.lineTo(

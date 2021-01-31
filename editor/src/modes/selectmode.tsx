@@ -2,7 +2,9 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import { Body, Shape, Vec2 } from '../../../src/physics';
+import {
+  Body, Shape, Spring, Stick, Vec2,
+} from '../../../src/physics';
 import EditorInterface from '../editorInterface';
 import elementCreator from '../elementCreator';
 import '../components/color-picker';
@@ -16,9 +18,11 @@ const CORNER_RADIUS = 7;
 const SIDE_RADIUS = 6.5;
 const ROTATE_RADIUS = 8;
 const ROTATE_DIST = 25;
+const SPRING_RADIUS = 7;
 
 /** @type {Body | boolean} */
 let selection: Body | boolean = false;
+let springSelection: Stick | Spring | boolean = false;
 const element = document.createElement('div');
 /** @type {Function} */
 let updateFunc: Function;
@@ -199,6 +203,21 @@ const cursors = {
 };
 
 /**
+ * Returns the current spring pointed at.
+ *
+ * @param {EditorInterface} editor The editor
+ * @returns {Stick | Spring | boolean} The found spring
+ */
+function getSpring(editor: EditorInterface) {
+  const mouse = new Vec2(editor.mouseX, editor.mouseY);
+  const foundSpring = editor.physics.springs.find(
+    (spring) => spring.getAsSegment().distFromPoint(mouse) <= SPRING_RADIUS,
+  );
+  if (typeof foundSpring === 'undefined') return false;
+  return foundSpring;
+}
+
+/**
  * @param {CanvasRenderingContext2D} ctx The rendering context
  * @param {EditorInterface} editor The editor
  */
@@ -303,6 +322,64 @@ function drawResizer(ctx: CanvasRenderingContext2D, editor: EditorInterface) {
 }
 
 /**
+ * Handles the selection of a spring or stick.
+ *
+ * @param {EditorInterface} editor The editor
+ */
+function chooseSpring(editor: EditorInterface) {
+  const newSelSpring = getSpring(editor);
+  if (typeof newSelSpring !== 'boolean') {
+    springSelection = newSelSpring;
+    const lengthDisplay = (
+      <number-display value={springSelection.getAsSegment().length.toFixed(1)}>
+        Length:&nbsp;
+      </number-display>
+    );
+    const initLengthInput = (
+      <range-slider-number
+        min={15}
+        max={Math.max(editor.worldSize.width, editor.worldSize.height)}
+        step={1}
+        value={springSelection.length.toFixed(1)}
+        onChange={(newLen: number) => {
+          if (typeof springSelection !== 'boolean')springSelection.length = newLen;
+        }}
+      >
+        Start length
+      </range-slider-number>
+    );
+
+    element.append(
+      <number-display value={springSelection instanceof Stick ? 'stick' : 'spring'}>
+        Type:&nbsp;
+      </number-display>,
+      lengthDisplay,
+      initLengthInput,
+      <check-box
+        checked={springSelection.rotationLocked}
+        onChange={(newB: boolean) => {
+          if (typeof springSelection === 'boolean') return;
+          if (newB) {
+            springSelection.lockRotation();
+          } else {
+            springSelection.unlockRotation();
+          }
+        }}
+      >
+        Locked
+      </check-box>,
+    );
+
+    updateFunc = () => {
+      if (typeof springSelection === 'boolean') return;
+      lengthDisplay.value = springSelection.getAsSegment().length.toFixed(1);
+    };
+  } else {
+    springSelection = false;
+  }
+}
+
+/**
  * This mode is for placing down balls in the world
  */
 const SelectMode: Mode = {
@@ -311,6 +388,7 @@ const SelectMode: Mode = {
   element,
   drawFunc(editorApp: EditorInterface, _dt: number) {
     const atCoord = currentChosen(editorApp);
+    const springAtCoord = getSpring(editorApp) as (Stick | Spring | boolean);
     const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
     ctx.save();
     ctx.strokeStyle = 'orange';
@@ -344,6 +422,14 @@ const SelectMode: Mode = {
       if (cnvStyle.cursor !== 'default')cnvStyle.cursor = 'default';
     }
 
+    if (typeof springSelection !== 'boolean') {
+      ctx.fillStyle = '#00000000';
+      if (springSelection instanceof Stick)editorApp.renderer.renderStick(springSelection, ctx);
+      else if (springSelection instanceof Spring) {
+        editorApp.renderer.renderSpring(springSelection, ctx);
+      }
+    }
+
     ctx.strokeStyle = 'yellow';
     ctx.setLineDash([3, 5]);
 
@@ -363,6 +449,10 @@ const SelectMode: Mode = {
         ctx.closePath();
         ctx.stroke();
       }
+    } else if (typeof springAtCoord !== 'boolean') {
+      ctx.fillStyle = '#00000000';
+      if (springAtCoord instanceof Stick)editorApp.renderer.renderStick(springAtCoord, ctx);
+      else editorApp.renderer.renderSpring(springAtCoord, ctx);
     }
     ctx.restore();
 
@@ -374,6 +464,7 @@ const SelectMode: Mode = {
     if (newSel instanceof Body && selection !== newSel && command === 'none') {
       element.innerHTML = '';
       selection = newSel;
+      springSelection = false;
       const densitySlider = (
         <range-slider-number
           min={0.1}
@@ -486,6 +577,7 @@ const SelectMode: Mode = {
       selection = newSel;
       updateFunc = () => {};
       element.innerHTML = '';
+      chooseSpring(editorApp);
     } else if (command !== 'none' && selection instanceof Body) {
       // The selection has not changed and interaction has also started
       if (selection.m === 0 || editorApp.timeMultiplier === 0) {
@@ -499,6 +591,7 @@ const SelectMode: Mode = {
   },
   deactivated() {
     selection = false;
+    springSelection = false;
     updateFunc = () => {};
     element.innerHTML = '';
   },
