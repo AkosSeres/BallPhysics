@@ -40,6 +40,8 @@ class Stick extends Spring {
    * @param {number} snapRadius The max radius where it snaps to the pos of the object
    */
   updateAttachPoint0(newAttachPoint, snapRadius = 0) {
+    const isLocked = this.rotationLocked;
+    if (isLocked) this.unlockRotation();
     this.attachPoints[0] = newAttachPoint.copy;
     this.attachPositions[0] = this.objects[0].pos.copy;
     this.attachRotations[0] = this.objects[0].rotation;
@@ -47,6 +49,7 @@ class Stick extends Spring {
       this.attachPoints[0] = this.attachPositions[0].copy;
     }
     this.length = this.getAsSegment().length;
+    if (isLocked) this.lockRotation();
   }
 
   /**
@@ -57,6 +60,8 @@ class Stick extends Spring {
    * @param {number} snapRadius The max radius where it snaps to the pos of the object
    */
   updateAttachPoint1(newAttachPoint, snapRadius = 0) {
+    const isLocked = this.rotationLocked;
+    if (isLocked) this.unlockRotation();
     if (this.objects.length === 2) {
       this.attachPoints[1] = newAttachPoint.copy;
       this.attachPositions[1] = this.objects[1].pos.copy;
@@ -68,6 +73,7 @@ class Stick extends Spring {
       this.pinned = newAttachPoint.copy;
     }
     this.length = this.getAsSegment().length;
+    if (isLocked) this.lockRotation();
   }
 
   /**

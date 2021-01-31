@@ -108,12 +108,15 @@ class Spring {
    * @param {number} snapRadius The max radius where it snaps to the pos of the object
    */
   updateAttachPoint0(newAttachPoint, snapRadius = 0) {
+    const isLocked = this.rotationLocked;
+    if (isLocked) this.unlockRotation();
     this.attachPoints[0] = newAttachPoint.copy;
     this.attachPositions[0] = this.objects[0].pos.copy;
     this.attachRotations[0] = this.objects[0].rotation;
     if (this.attachPoints[0].dist(this.attachPositions[0]) <= snapRadius) {
       this.attachPoints[0] = this.attachPositions[0].copy;
     }
+    if (isLocked) this.lockRotation();
   }
 
   /**
@@ -124,6 +127,8 @@ class Spring {
    * @param {number} snapRadius The max radius where it snaps to the pos of the object
    */
   updateAttachPoint1(newAttachPoint, snapRadius = 0) {
+    const isLocked = this.rotationLocked;
+    if (isLocked) this.unlockRotation();
     if (this.objects.length === 2) {
       this.attachPoints[1] = newAttachPoint.copy;
       this.attachPositions[1] = this.objects[1].pos.copy;
@@ -134,6 +139,7 @@ class Spring {
     } else if (typeof this.pinned !== 'boolean') {
       this.pinned = newAttachPoint.copy;
     }
+    if (isLocked) this.lockRotation();
   }
 
   /**
