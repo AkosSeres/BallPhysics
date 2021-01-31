@@ -79,6 +79,7 @@ class Stick extends Spring {
     let p2;
     if (this.pinned instanceof Object && 'x' in this.pinned && this.objects[0]) {
       [p2, p1] = [this.pinned, this.objects[0]];
+      if (p1.m === 0) return;
       const ps = this.points;
       let dist = new Vec2(ps[1].x - ps[0].x, ps[1].y - ps[0].y);
       dist.setMag(dist.length - this.length);
@@ -124,8 +125,22 @@ class Stick extends Spring {
       let dist = Vec2.sub(ps[0], ps[1]);
       const dl = this.length - dist.length;
       dist.setMag(1);
-      const move1 = Vec2.mult(dist, (dl * p2.m) / (p1.m + p2.m));
-      const move2 = Vec2.mult(dist, (-dl * p1.m) / (p1.m + p2.m));
+      const b1 = p1;
+      const b2 = p2;
+      const m1 = b1.m === 0 ? Infinity : b1.m;
+      const m2 = b2.m === 0 ? Infinity : b2.m;
+      let move1;
+      let move2;
+      if (m1 !== Infinity && m2 !== Infinity) {
+        move1 = Vec2.mult(dist, (dl * m2) / (m1 + m2));
+        move2 = Vec2.mult(dist, (-dl * m1) / (m1 + m2));
+      } else if (m1 === Infinity && m2 !== Infinity) {
+        move1 = new Vec2(0, 0);
+        move2 = Vec2.mult(dist, -dl);
+      } else if (m1 !== Infinity && m2 === Infinity) {
+        move2 = new Vec2(0, 0);
+        move1 = Vec2.mult(dist, dl);
+      } else return;
       p1.move(move1);
       p2.move(move2);
       ps = this.points;
@@ -134,16 +149,12 @@ class Stick extends Spring {
       const n = dist;
       const cp0 = ps[0];
       const cp1 = ps[1];
-      const b1 = p1;
-      const b2 = p2;
       const ang1 = b1.ang;
       const ang2 = b2.ang;
       const r1 = Vec2.sub(cp0, b1.pos);
       const r2 = Vec2.sub(cp1, b2.pos);
-      const am1 = b1.am;
-      const am2 = b2.am;
-      const m1 = b1.m;
-      const m2 = b2.m;
+      const am1 = b1.m === 0 ? Infinity : b1.am;
+      const am2 = b2.m === 0 ? Infinity : b2.am;
       // Effective velocities in the collision point
       const v1InCP = b1.velInPlace(cp0);
       const v2InCP = b2.velInPlace(cp1);
@@ -164,10 +175,13 @@ class Stick extends Spring {
       // Calculate post-collision angular velocities
       const pAng1 = ang1 - (impulse * Vec2.cross(r1, n)) / am1;
       const pAng2 = ang2 + (impulse * Vec2.cross(r2, n)) / am2;
-      p1.vel = u1;
-      p2.vel = u2;
-      p1.ang = pAng1;
-      p2.ang = pAng2;
+      if (p1.m !== 0) {
+        p1.vel = u1;
+        p1.ang = pAng1;
+      } if (p2.m !== 0) {
+        p2.vel = u2;
+        p2.ang = pAng2;
+      }
 
       const v1 = p1.vel;
       const v2 = p2.vel;
