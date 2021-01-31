@@ -11,6 +11,7 @@ import '../css/style.css';
 // Import color palette
 import palette from '../../src/util/colorpalette';
 import { Vec2AsObject } from '../../src/math/vec2';
+import Renderer from './renderer';
 
 const modes = Modes;
 const modeNames = modes.map((mode) => mode.name);
@@ -83,6 +84,8 @@ class Editor implements EditorInterface {
 
   oldMouseY: number;
 
+  renderer: Renderer;
+
   constructor() {
     this.physics = new Physics();
     this.mouseX = 0;
@@ -111,6 +114,7 @@ class Editor implements EditorInterface {
     this.worldSize = { width: 0, height: 0 };
     this.collisionData = [];
     this.showBoundingBoxes = false;
+    this.renderer = new Renderer();
 
     // A fully loaded window is provided
     this.cnv = <HTMLCanvasElement>document.getElementById('defaulCanvas0');
@@ -596,64 +600,13 @@ class Editor implements EditorInterface {
       ctx.lineWidth = 2;
       this.physics.springs.forEach((element) => {
         if (element instanceof Spring && !(element instanceof Stick)) {
-          let x1;
-          let y1;
-          let x2;
-          let y2;
-          if (element.pinned && typeof element.pinned === 'object') {
-            x1 = element.pinned.x;
-            y1 = element.pinned.y;
-            x2 = element.objects[0].pos.x;
-            y2 = element.objects[0].pos.y;
-          } else {
-            x1 = element.objects[0].pos.x;
-            y1 = element.objects[0].pos.y;
-            x2 = element.objects[1].pos.x;
-            y2 = element.objects[1].pos.y;
-          }
-          let v = new Vec2(x2 - x1, y2 - y1);
-          const c = v.copy;
-          v.rotate(Math.PI / 2);
-          v.setMag(5);
-          let last = new Vec2(x1, y1);
-          const num = Math.floor(element.length / 10);
-          for (let i = 1; i <= num; i += 1) {
-            ctx.strokeStyle = palette.blue;
-            ctx.fillStyle = palette.blue;
-            if (i === num) v = new Vec2(0, 0);
-            ctx.beginPath();
-            ctx.moveTo(last.x, last.y);
-            ctx.lineTo(x1 + (i / num) * c.x + v.x, y1 + (i / num) * c.y + v.y);
-            ctx.stroke();
-            last = new Vec2(x1 + (i / num) * c.x + v.x, y1 + (i / num) * c.y + v.y);
-            v.mult(-1);
-          }
+          ctx.strokeStyle = palette.blue;
+          ctx.fillStyle = palette.blue;
+          this.renderer.renderSpring(element, ctx);
         } else {
           ctx.strokeStyle = palette.blue;
           ctx.fillStyle = palette.blue;
-          ctx.beginPath();
-          ctx.moveTo(element.objects[0].pos.x, element.objects[0].pos.y);
-          ctx.lineTo(
-            (typeof element.pinned === 'object') ? element.pinned.x : element.objects[1].pos.x,
-            (typeof element.pinned === 'object') ? element.pinned.y : element.objects[1].pos.y,
-          );
-          ctx.stroke();
-        }
-        element.objects.forEach((o) => {
-          ctx.strokeStyle = 'black';
-          ctx.fillStyle = palette.blue;
-          ctx.beginPath();
-          ctx.arc(o.pos.x, o.pos.y, 2.5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.stroke();
-        });
-        if (typeof element.pinned === 'object') {
-          ctx.strokeStyle = 'black';
-          ctx.fillStyle = palette.blue;
-          ctx.beginPath();
-          ctx.arc(element.pinned.x, element.pinned.y, 3, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.stroke();
+          this.renderer.renderStick(element, ctx);
         }
       });
       ctx.restore();
