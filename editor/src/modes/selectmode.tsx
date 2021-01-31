@@ -23,7 +23,6 @@ const element = document.createElement('div');
 /** @type {Function} */
 let updateFunc: Function;
 
-let startedInside = false;
 let startingRotation = 0;
 let allScaling = 1;
 
@@ -372,9 +371,6 @@ const SelectMode: Mode = {
   startInteractionFunc(editorApp) {
     const command = findCommand(editorApp);
     const newSel = currentChosen(editorApp);
-    if (typeof newSel !== 'boolean' && newSel !== selection && command === 'none') {
-      startedInside = true;
-    }
     if (newSel instanceof Body && selection !== newSel && command === 'none') {
       element.innerHTML = '';
       selection = newSel;
@@ -499,7 +495,6 @@ const SelectMode: Mode = {
     }
   },
   endInteractionFunc(editorApp) {
-    startedInside = false;
     currentCommand = 'none';
   },
   deactivated() {

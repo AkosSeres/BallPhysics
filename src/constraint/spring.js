@@ -36,6 +36,8 @@ class Spring {
     /** @type {Body[]} */
     this.objects = [];
     this.rotationLocked = false;
+    this.initialHeading = 0;
+    this.initialOrientations = [0, 0];
   }
 
   /**
@@ -81,6 +83,10 @@ class Spring {
    */
   lockRotation() {
     this.rotationLocked = true;
+    this.initialOrientations = this.objects.map((body) => body.rotation);
+    const a = this.objects[0].pos;
+    const b = (typeof this.pinned === 'object') ? new Vec2(this.pinned.x, this.pinned.y) : this.objects[1].pos;
+    this.initialHeading = Vec2.sub(b, a).heading;
   }
 
   /**
@@ -91,12 +97,24 @@ class Spring {
     this.rotationLocked = false;
   }
 
+  arrangeOrientations() {
+    const a = this.objects[0].pos;
+    const b = (typeof this.pinned === 'object') ? new Vec2(this.pinned.x, this.pinned.y) : this.objects[1].pos;
+    const currentHeading = Vec2.sub(b, a).heading;
+    const dHeading = currentHeading - this.initialHeading;
+    this.objects.forEach((body, i) => {
+      const rotationGoal = this.initialOrientations[i] + dHeading;
+      body.rotate(rotationGoal - body.rotation);
+    });
+  }
+
   /**
    * Updates the spring bay the elapsed time
    *
    * @param {number} t Elapsed time
    */
   update(t) {
+    if (this.rotationLocked) this.arrangeOrientations();
     let p1;
     let p2;
     if (this.pinned instanceof Object && this.objects[0]) {

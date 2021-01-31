@@ -37,6 +37,7 @@ class Stick extends Spring {
    * Updates the stick trough an elapsed time
    */
   update() {
+    if (this.rotationLocked) this.arrangeOrientations();
     let p1;
     let p2;
     if (this.pinned instanceof Object && 'x' in this.pinned && this.objects[0]) {
