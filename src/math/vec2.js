@@ -170,6 +170,37 @@ class Vec2 {
   }
 
   /**
+   * Scales the vector around a given center by a given factor.
+   *
+   * @param {Vec2 | Vec2AsObject} center The center of the scaling transformation
+   * @param {number} scalingFactor The factor of the scaling
+   */
+  scaleAround(center, scalingFactor) {
+    this.x = center.x + ((this.x - center.x) * scalingFactor);
+    this.y = center.y + ((this.y - center.y) * scalingFactor);
+  }
+
+  /**
+   * Scales the vector around a given center by a given factor only on the X axis.
+   *
+   * @param {Vec2 | Vec2AsObject} center The center of the scaling transformation
+   * @param {number} scalingFactor The factor of the scaling
+   */
+  scaleAroundX(center, scalingFactor) {
+    this.x = center.x + ((this.x - center.x) * scalingFactor);
+  }
+
+  /**
+   * Scales the vector around a given center by a given factor only on the Y axis.
+   *
+   * @param {Vec2 | Vec2AsObject} center The center of the scaling transformation
+   * @param {number} scalingFactor The factor of the scaling
+   */
+  scaleAroundY(center, scalingFactor) {
+    this.y = center.y + ((this.y - center.y) * scalingFactor);
+  }
+
+  /**
    * Rotate the vector anticlockwise.
    *
    * @param {number} angle Rotation angle in radians

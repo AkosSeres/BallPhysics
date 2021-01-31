@@ -25,6 +25,7 @@ let updateFunc: Function;
 
 let startedInside = false;
 let startingRotation = 0;
+let allScaling = 1;
 
 // Declare Command type
 type Command = 'move' | 'rotate' | 'resize-bl' | 'resize-br' | 'resize-tl' | 'resize-tr' | 'resize-t' | 'resize-b' | 'resize-l' | 'resize-r' | 'none';
@@ -69,7 +70,22 @@ function findCommand(editorApp: EditorInterface): Command {
  * @param {Command} command The command to start
  */
 function startCommand(command:Command) {
-  if (command === 'rotate' && selection instanceof Body) startingRotation = selection.rotation;
+  if (!(selection instanceof Body)) return;
+  const bb = selection.boundingBox;
+  const topLeft = new Vec2(bb.x.min, bb.y.min);
+  const topRight = new Vec2(bb.x.max, bb.y.min);
+  const bottomLeft = new Vec2(bb.x.min, bb.y.max);
+  const bottomRight = new Vec2(bb.x.max, bb.y.max);
+  allScaling = 1;
+  if (command === 'rotate') startingRotation = selection.rotation;
+  if (command === 'resize-bl') startingRotation = Vec2.sub(bottomLeft, topRight).heading;
+  if (command === 'resize-br') startingRotation = Vec2.sub(bottomRight, topLeft).heading;
+  if (command === 'resize-tl') startingRotation = Vec2.sub(topLeft, bottomRight).heading;
+  if (command === 'resize-tr') startingRotation = Vec2.sub(topRight, bottomLeft).heading;
+  if (command === 'resize-t') startingRotation = new Vec2(0, -1).heading;
+  if (command === 'resize-b') startingRotation = new Vec2(0, 1).heading;
+  if (command === 'resize-l') startingRotation = new Vec2(-1, 0).heading;
+  if (command === 'resize-r') startingRotation = new Vec2(1, 0).heading;
 }
 
 /**
@@ -81,6 +97,17 @@ function updateCommand(editor: EditorInterface) {
   const mouseOld = new Vec2(editor.oldMouseX, editor.oldMouseY);
   const pastV = Vec2.sub(mouseOld, selection.pos);
   const v = Vec2.sub(mouse, selection.pos);
+  const bb = selection.boundingBox;
+  const topLeft = new Vec2(bb.x.min, bb.y.min);
+  const topRight = new Vec2(bb.x.max, bb.y.min);
+  const bottomLeft = new Vec2(bb.x.min, bb.y.max);
+  const bottomRight = new Vec2(bb.x.max, bb.y.max);
+  const top = Vec2.lerp(topLeft, topRight, 0.5);
+  const bottom = Vec2.lerp(bottomLeft, bottomRight, 0.5);
+  const right = Vec2.lerp(bottomRight, topRight, 0.5);
+  const left = Vec2.lerp(bottomLeft, topLeft, 0.5);
+  const startDir = Vec2.fromAngle(startingRotation);
+  let factor = 1;
   switch (currentCommand) {
     case 'move':
       selection.move(new Vec2(editor.mouseX - editor.oldMouseX,
@@ -88,6 +115,70 @@ function updateCommand(editor: EditorInterface) {
       break;
     case 'rotate':
       selection.rotate(v.heading - pastV.heading);
+      break;
+    case 'resize-bl':
+      factor = Vec2.dot(startDir, Vec2.sub(mouse, topRight))
+      / Vec2.dot(startDir, Vec2.sub(mouseOld, topRight));
+      if (factor * allScaling >= 0.03) {
+        selection.scaleAround(topRight, factor);
+        allScaling *= factor;
+      } else currentCommand = 'none';
+      break;
+    case 'resize-br':
+      factor = Vec2.dot(startDir, Vec2.sub(mouse, topLeft))
+      / Vec2.dot(startDir, Vec2.sub(mouseOld, topLeft));
+      if (factor * allScaling >= 0.03) {
+        selection.scaleAround(topLeft, factor);
+        allScaling *= factor;
+      } else currentCommand = 'none';
+      break;
+    case 'resize-tl':
+      factor = Vec2.dot(startDir, Vec2.sub(mouse, bottomRight))
+      / Vec2.dot(startDir, Vec2.sub(mouseOld, bottomRight));
+      if (factor * allScaling >= 0.03) {
+        selection.scaleAround(bottomRight, factor);
+        allScaling *= factor;
+      } else currentCommand = 'none';
+      break;
+    case 'resize-tr':
+      factor = Vec2.dot(startDir, Vec2.sub(mouse, bottomLeft))
+      / Vec2.dot(startDir, Vec2.sub(mouseOld, bottomLeft));
+      if (factor * allScaling >= 0.03) {
+        selection.scaleAround(bottomLeft, factor);
+        allScaling *= factor;
+      } else currentCommand = 'none';
+      break;
+    case 'resize-t':
+      factor = Vec2.dot(startDir, Vec2.sub(mouse, bottom))
+      / Vec2.dot(startDir, Vec2.sub(mouseOld, bottom));
+      if (factor * allScaling >= 0.1) {
+        selection.scaleAroundY(bottom, factor);
+        allScaling *= factor;
+      } else currentCommand = 'none';
+      break;
+    case 'resize-b':
+      factor = Vec2.dot(startDir, Vec2.sub(mouse, top))
+      / Vec2.dot(startDir, Vec2.sub(mouseOld, top));
+      if (factor * allScaling >= 0.1) {
+        selection.scaleAroundY(top, factor);
+        allScaling *= factor;
+      } else currentCommand = 'none';
+      break;
+    case 'resize-l':
+      factor = Vec2.dot(startDir, Vec2.sub(mouse, right))
+      / Vec2.dot(startDir, Vec2.sub(mouseOld, right));
+      if (factor * allScaling >= 0.1) {
+        selection.scaleAroundX(right, factor);
+        allScaling *= factor;
+      } else currentCommand = 'none';
+      break;
+    case 'resize-r':
+      factor = Vec2.dot(startDir, Vec2.sub(mouse, left))
+      / Vec2.dot(startDir, Vec2.sub(mouseOld, left));
+      if (factor * allScaling >= 0.1) {
+        selection.scaleAroundX(left, factor);
+        allScaling *= factor;
+      } else currentCommand = 'none';
       break;
     default:
       break;

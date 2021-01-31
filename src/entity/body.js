@@ -200,6 +200,59 @@ class Body {
   }
 
   /**
+   * Scales the body around a given point.
+   *
+   * @param {Vec2} center The center of the transformation
+   * @param {number} scalingFactor The factor of the scaling
+   */
+  scaleAround(center, scalingFactor) {
+    if (scalingFactor === 0) return;
+    this.pos.scaleAround(center, scalingFactor);
+    this.shape.points.forEach((p) => p.scaleAround(center, scalingFactor));
+    this.shape.r = Math.abs(this.shape.r * scalingFactor);
+    this.m *= (scalingFactor ** 2);
+    this.am *= (scalingFactor ** 4);
+  }
+
+  /**
+   * Scales the body around a given point only on the X axis.
+   *
+   * @param {Vec2} center The center of the transformation
+   * @param {number} scalingFactor The factor of the scaling
+   */
+  scaleAroundX(center, scalingFactor) {
+    if (scalingFactor === 0) return;
+    const { density } = this;
+    this.shape.points.forEach((p) => p.scaleAroundX(center, scalingFactor));
+    this.shape.r = Math.abs(this.shape.r * scalingFactor);
+    const geometryDat = this.shape.getGeometricalData();
+    this.m = geometryDat.area * density;
+    this.pos = geometryDat.center;
+    this.am = geometryDat.secondArea * density;
+    this.calculateAxes();
+    this.calculateMinMaxes();
+  }
+
+  /**
+   * Scales the body around a given point only on the Y axis.
+   *
+   * @param {Vec2} center The center of the transformation
+   * @param {number} scalingFactor The factor of the scaling
+   */
+  scaleAroundY(center, scalingFactor) {
+    if (scalingFactor === 0) return;
+    const { density } = this;
+    this.shape.points.forEach((p) => p.scaleAroundY(center, scalingFactor));
+    this.shape.r = Math.abs(this.shape.r * scalingFactor);
+    const geometryDat = this.shape.getGeometricalData();
+    this.m = geometryDat.area * density;
+    this.pos = geometryDat.center;
+    this.am = geometryDat.secondArea * density;
+    this.calculateAxes();
+    this.calculateMinMaxes();
+  }
+
+  /**
    * Detects collsion between two bodies and returns the collision data.
    * The algorithm expects a precalculated minMaxes array in each of the bodies.
    *
