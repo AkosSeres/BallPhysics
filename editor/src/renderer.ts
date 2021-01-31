@@ -11,21 +11,11 @@ class Renderer {
   }
 
   renderSpring(spring: StickOrSpring, ctx: CanvasRenderingContext2D) {
-    let x1;
-    let y1;
-    let x2;
-    let y2;
-    if (spring.pinned && typeof spring.pinned === 'object') {
-      x1 = spring.pinned.x;
-      y1 = spring.pinned.y;
-      x2 = spring.objects[0].pos.x;
-      y2 = spring.objects[0].pos.y;
-    } else {
-      x1 = spring.objects[0].pos.x;
-      y1 = spring.objects[0].pos.y;
-      x2 = spring.objects[1].pos.x;
-      y2 = spring.objects[1].pos.y;
-    }
+    const ps = spring.points;
+    const x1 = ps[0].x;
+    const y1 = ps[0].y;
+    const x2 = ps[1].x;
+    const y2 = ps[1].y;
     let v = new Vec2(x2 - x1, y2 - y1);
     const c = v.copy;
     v.rotate(Math.PI / 2);
@@ -42,41 +32,27 @@ class Renderer {
       v.mult(-1);
     }
     ctx.strokeStyle = 'black';
-    spring.objects.forEach((o) => {
+    spring.points.forEach((o) => {
       ctx.beginPath();
-      ctx.arc(o.pos.x, o.pos.y, 2.5, 0, Math.PI * 2);
+      ctx.arc(o.x, o.y, 2.5, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
     });
-    if (typeof spring.pinned === 'object') {
-      ctx.beginPath();
-      ctx.arc(spring.pinned.x, spring.pinned.y, 3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-    }
   }
 
   renderStick(stick: StickOrSpring, ctx: CanvasRenderingContext2D) {
+    const ps = stick.points;
     ctx.beginPath();
-    ctx.moveTo(stick.objects[0].pos.x, stick.objects[0].pos.y);
-    ctx.lineTo(
-      (typeof stick.pinned === 'object') ? stick.pinned.x : stick.objects[1].pos.x,
-      (typeof stick.pinned === 'object') ? stick.pinned.y : stick.objects[1].pos.y,
-    );
+    ctx.moveTo(ps[0].x, ps[0].y);
+    ctx.lineTo(ps[1].x, ps[1].y);
     ctx.stroke();
     ctx.strokeStyle = 'black';
-    stick.objects.forEach((o) => {
+    stick.points.forEach((o) => {
       ctx.beginPath();
-      ctx.arc(o.pos.x, o.pos.y, 2.5, 0, Math.PI * 2);
+      ctx.arc(o.x, o.y, 2.5, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
     });
-    if (typeof stick.pinned === 'object') {
-      ctx.beginPath();
-      ctx.arc(stick.pinned.x, stick.pinned.y, 3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-    }
   }
 }
 

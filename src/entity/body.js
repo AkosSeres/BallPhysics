@@ -253,6 +253,18 @@ class Body {
   }
 
   /**
+   * Applies and impulse on the body.
+   *
+   * @param {Vec2} contactPoint The point where the impulse applies
+   * @param {Vec2} impulse The vector of the impulse
+   */
+  applyImpulse(contactPoint, impulse) {
+    const r = Vec2.sub(contactPoint, this.pos);
+    this.vel.add(Vec2.div(impulse, this.m));
+    this.ang -= Vec2.cross(r, impulse) / this.am;
+  }
+
+  /**
    * Detects collsion between two bodies and returns the collision data.
    * The algorithm expects a precalculated minMaxes array in each of the bodies.
    *

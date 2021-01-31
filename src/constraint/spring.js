@@ -39,6 +39,12 @@ class Spring {
     this.rotationLocked = false;
     this.initialHeading = 0;
     this.initialOrientations = [0, 0];
+    /** @type {Vec2[]} */
+    this.attachPoints = [];
+    /** @type {number[]} */
+    this.attachRotations = [];
+    /** @type {Vec2[]} */
+    this.attachPositions = [];
   }
 
   /**
@@ -66,16 +72,48 @@ class Spring {
    * Attaches one end of the spring to an object (eg. Ball)
    *
    * @param {Body} object The object that the spring is getting attached to
+   * @param {Vec2 | undefined} attachPoint The point to attach the spring to on the body
    */
-  attachObject(object) {
+  attachObject(object, attachPoint = undefined) {
     let ob = this.objects;
     ob.push(object);
+    if (attachPoint) this.attachPoints.push(attachPoint);
+    else this.attachPoints.push(object.pos);
+    this.attachPositions.push(object.pos);
+    this.attachRotations.push(object.rotation);
     if (ob.length === 2) {
       this.pinned = false;
     }
     if (ob.length >= 3) {
       ob = [ob[ob.length - 2], ob[ob.length - 1]];
+      this.attachPoints = [
+        this.attachPoints[this.attachPoints.length - 2],
+        this.attachPoints[this.attachPoints.length - 1],
+      ];
+      this.attachPositions = [
+        this.attachPositions[this.attachPositions.length - 2],
+        this.attachPositions[this.attachPositions.length - 1],
+      ];
+      this.attachRotations = [
+        this.attachRotations[this.attachRotations.length - 2],
+        this.attachRotations[this.attachRotations.length - 1],
+      ];
     }
+  }
+
+  /**
+   * Returns the current absolute attach points of the spring.
+   *
+   * @returns {Vec2[]} The array of points
+   */
+  get points() {
+    const ps = this.objects.map((o, i) => {
+      const rStart = Vec2.sub(this.attachPoints[i], this.attachPositions[i]);
+      rStart.rotate(o.rotation - this.attachRotations[i]);
+      return Vec2.add(rStart, o.pos);
+    });
+    if (typeof this.pinned !== 'boolean') ps.push(Vec2.fromObject(this.pinned));
+    return ps;
   }
 
   /**
@@ -85,9 +123,8 @@ class Spring {
   lockRotation() {
     this.rotationLocked = true;
     this.initialOrientations = this.objects.map((body) => body.rotation);
-    const a = this.objects[0].pos;
-    const b = (typeof this.pinned === 'object') ? new Vec2(this.pinned.x, this.pinned.y) : this.objects[1].pos;
-    this.initialHeading = Vec2.sub(b, a).heading;
+    const ps = this.points;
+    this.initialHeading = Vec2.sub(ps[1], ps[0]).heading;
   }
 
   /**
@@ -102,9 +139,8 @@ class Spring {
    * Arranges the rotations of the bodies to match the orientation when got locked.
    */
   arrangeOrientations() {
-    const a = this.objects[0].pos;
-    const b = (typeof this.pinned === 'object') ? new Vec2(this.pinned.x, this.pinned.y) : this.objects[1].pos;
-    const currentHeading = Vec2.sub(b, a).heading;
+    const ps = this.points;
+    const currentHeading = Vec2.sub(ps[1], ps[0]).heading;
     const dHeading = currentHeading - this.initialHeading;
     this.objects.forEach((body, i) => {
       const rotationGoal = this.initialOrientations[i] + dHeading;
@@ -118,9 +154,8 @@ class Spring {
    * @returns {LineSegment} The segment made from the spring
    */
   getAsSegment() {
-    const a = this.objects[0].pos;
-    const b = (typeof this.pinned === 'object') ? new Vec2(this.pinned.x, this.pinned.y) : this.objects[1].pos;
-    return new LineSegment(a, b);
+    const ps = this.points;
+    return new LineSegment(ps[0], ps[1]);
   }
 
   /**
@@ -134,12 +169,12 @@ class Spring {
     let p2;
     if (this.pinned instanceof Object && this.objects[0]) {
       [p2, p1] = [this.pinned, this.objects[0]];
-      const dist = new Vec2(p2.x - p1.pos.x, p2.y - p1.pos.y);
+      const ps = this.points;
+      const dist = new Vec2(ps[1].x - ps[0].x, ps[1].y - ps[0].y);
       const dl = dist.length - this.length;
       dist.setMag(1);
-      dist.mult((dl * this.springConstant * t) / p1.m);
-      p1.vel.x += dist.x;
-      p1.vel.y += dist.y;
+      dist.mult((dl * this.springConstant * t));
+      p1.applyImpulse(ps[1], dist);
 
       const v = p1.vel;
       v.rotate(-dist.heading);
@@ -157,12 +192,14 @@ class Spring {
       v.rotate(dist.heading);
     } else if (this.objects[0] && this.objects[1]) {
       [p1, p2] = [this.objects[0], this.objects[1]];
-      let dist = Vec2.sub(p1.pos, p2.pos);
+      const ps = this.points;
+      let dist = Vec2.sub(ps[0], ps[1]);
       const dl = dist.length - this.length;
       dist.setMag(1);
       dist.mult(dl * this.springConstant * t);
-      p2.vel.add(Vec2.div(dist, p2.m));
-      p1.vel.add(Vec2.div(dist, -p1.m));
+      p2.applyImpulse(ps[1], dist);
+      dist.mult(-1);
+      p1.applyImpulse(ps[0], dist);
 
       dist = Vec2.sub(p1.pos, p2.pos);
       const v1 = p1.vel;
