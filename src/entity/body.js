@@ -259,6 +259,7 @@ class Body {
    * @param {Vec2} impulse The vector of the impulse
    */
   applyImpulse(contactPoint, impulse) {
+    if (this.m === 0) return;
     const r = Vec2.sub(contactPoint, this.pos);
     this.vel.add(Vec2.div(impulse, this.m));
     this.ang += Vec2.cross(r, impulse) / this.am;

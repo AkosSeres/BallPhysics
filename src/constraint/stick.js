@@ -34,6 +34,43 @@ class Stick extends Spring {
   }
 
   /**
+   * Updates the first attach point.
+   *
+   * @param {Vec2} newAttachPoint The new attach point to have on the first object
+   * @param {number} snapRadius The max radius where it snaps to the pos of the object
+   */
+  updateAttachPoint0(newAttachPoint, snapRadius = 0) {
+    this.attachPoints[0] = newAttachPoint.copy;
+    this.attachPositions[0] = this.objects[0].pos.copy;
+    this.attachRotations[0] = this.objects[0].rotation;
+    if (this.attachPoints[0].dist(this.attachPositions[0]) <= snapRadius) {
+      this.attachPoints[0] = this.attachPositions[0].copy;
+    }
+    this.length = this.getAsSegment().length;
+  }
+
+  /**
+   * Updates the second attach point.
+   *
+   * @param {Vec2} newAttachPoint The new attach point to have on the second object
+   * or on the pinpoint
+   * @param {number} snapRadius The max radius where it snaps to the pos of the object
+   */
+  updateAttachPoint1(newAttachPoint, snapRadius = 0) {
+    if (this.objects.length === 2) {
+      this.attachPoints[1] = newAttachPoint.copy;
+      this.attachPositions[1] = this.objects[1].pos.copy;
+      this.attachRotations[1] = this.objects[1].rotation;
+      if (this.attachPoints[1].dist(this.attachPositions[1]) <= snapRadius) {
+        this.attachPoints[1] = this.attachPositions[1].copy;
+      }
+    } else if (typeof this.pinned !== 'boolean') {
+      this.pinned = newAttachPoint.copy;
+    }
+    this.length = this.getAsSegment().length;
+  }
+
+  /**
    * Updates the stick trough an elapsed time
    */
   update() {
@@ -42,14 +79,33 @@ class Stick extends Spring {
     let p2;
     if (this.pinned instanceof Object && 'x' in this.pinned && this.objects[0]) {
       [p2, p1] = [this.pinned, this.objects[0]];
-      const dist = new Vec2(p2.x - p1.pos.x, p2.y - p1.pos.y);
-      dist.setMag(1);
-      dist.mult(-this.length);
-      p1.move(new Vec2(-p1.pos.x + p2.x + dist.x, -p1.pos.y + p2.y + dist.y));
+      const ps = this.points;
+      let dist = new Vec2(ps[1].x - ps[0].x, ps[1].y - ps[0].y);
+      dist.setMag(dist.length - this.length);
+      p1.move(dist);
+      dist = new Vec2(ps[1].x - ps[0].x, ps[1].y - ps[0].y);
+      dist.normalize();
+      const cp = ps[0];
+      const n = dist;
+      const b = p1;
+      const r = Vec2.sub(cp, b.pos);
+      // Relative velocity in collision point
+      const vRelInCP = Vec2.mult(b.velInPlace(cp), -1);
+      // Calculate impulse
+      let impulse = (1 / b.m);
+      impulse += Vec2.dot(
+        Vec2.crossScalarFirst(Vec2.cross(r, n) / b.am, r), n,
+      );
+      impulse = -(Vec2.dot(vRelInCP, n)) / impulse;
+      // Calculate post-collision velocity
+      const u = Vec2.sub(b.vel, Vec2.mult(n, impulse / b.m));
+      // Calculate post-collision angular velocity
+      const pAng = b.ang - (impulse * Vec2.cross(r, n)) / b.am;
+      p1.vel = u;
+      p1.ang = pAng;
 
       const v = p1.vel;
       v.rotate(-dist.heading);
-      v.x = 0;
       if (this.rotationLocked) {
         const s = new Vec2(p2.x, p2.y);
         const r2 = Vec2.sub(p1.pos, s);
@@ -61,35 +117,70 @@ class Stick extends Spring {
 
         p1.ang = ang;
       }
-
       v.rotate(dist.heading);
     } else if (this.objects[0] && this.objects[1]) {
       [p1, p2] = [this.objects[0], this.objects[1]];
-      const dist = Vec2.sub(p1.pos, p2.pos);
+      let ps = this.points;
+      let dist = Vec2.sub(ps[0], ps[1]);
       const dl = this.length - dist.length;
       dist.setMag(1);
       const move1 = Vec2.mult(dist, (dl * p2.m) / (p1.m + p2.m));
       const move2 = Vec2.mult(dist, (-dl * p1.m) / (p1.m + p2.m));
       p1.move(move1);
       p2.move(move2);
+      ps = this.points;
+      dist = Vec2.sub(ps[1], ps[0]);
+      dist.normalize();
+      const n = dist;
+      const cp0 = ps[0];
+      const cp1 = ps[1];
+      const b1 = p1;
+      const b2 = p2;
+      const ang1 = b1.ang;
+      const ang2 = b2.ang;
+      const r1 = Vec2.sub(cp0, b1.pos);
+      const r2 = Vec2.sub(cp1, b2.pos);
+      const am1 = b1.am;
+      const am2 = b2.am;
+      const m1 = b1.m;
+      const m2 = b2.m;
+      // Effective velocities in the collision point
+      const v1InCP = b1.velInPlace(cp0);
+      const v2InCP = b2.velInPlace(cp1);
+      // Relative velocity in collision point
+      const vRelInCP = Vec2.sub(v2InCP, v1InCP);
+      // Calculate impulse
+      let impulse = (1 / m1) + (1 / m2);
+      impulse += Vec2.dot(
+        Vec2.crossScalarFirst(Vec2.cross(r1, n) / am1, r1), n,
+      );
+      impulse += Vec2.dot(
+        Vec2.crossScalarFirst(Vec2.cross(r2, n) / am2, r2), n,
+      );
+      impulse = -(Vec2.dot(vRelInCP, n)) / impulse;
+      // Calculate post-collision velocities
+      const u1 = Vec2.sub(b1.vel, Vec2.mult(n, impulse / m1));
+      const u2 = Vec2.add(b2.vel, Vec2.mult(n, impulse / m2));
+      // Calculate post-collision angular velocities
+      const pAng1 = ang1 - (impulse * Vec2.cross(r1, n)) / am1;
+      const pAng2 = ang2 + (impulse * Vec2.cross(r2, n)) / am2;
+      p1.vel = u1;
+      p2.vel = u2;
+      p1.ang = pAng1;
+      p2.ang = pAng2;
 
       const v1 = p1.vel;
       const v2 = p2.vel;
       v1.rotate(-dist.heading);
       v2.rotate(-dist.heading);
-      v1.x = (p1.m * v1.x + p2.m * v2.x) / (p1.m + p2.m);
-      v2.x = v1.x;
-
       if (this.rotationLocked) {
         const s = new Vec2(
           p1.pos.x * p1.m + p2.pos.x * p2.m,
           p1.pos.y * p1.m + p2.pos.y * p2.m,
         );
         s.div(p1.m + p2.m);
-        const r1 = Vec2.sub(p1.pos, s);
-        const r2 = Vec2.sub(p2.pos, s);
-        const len1 = r1.length;
-        const len2 = r2.length;
+        const len1 = Vec2.sub(p1.pos, s).length;
+        const len2 = Vec2.sub(p2.pos, s).length;
         const am = len1 * len1 * p1.m
           + p1.am
           + len2 * len2 * p2.m

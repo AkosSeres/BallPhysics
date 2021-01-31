@@ -142,8 +142,6 @@ export function collisionResponseWithWall(object, contactPoint, normal) {
   t.setMag(1);
   if ((Vec2.dot(n, t) ** 2) > 0.5) {
     // No friction impulse is needed, return
-    b.vel = u;
-    b.ang = pAng;
     return { dVel: Vec2.sub(u, b.vel), dAng: pAng - b.ang };
   }
 
