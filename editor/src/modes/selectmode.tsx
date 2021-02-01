@@ -12,6 +12,7 @@ import '../components/range-slider-number';
 import '../components/checkbox';
 import '../components/number-display';
 import '../components/angle-display';
+import '../components/button-btn';
 import palette from '../../../src/util/colorpalette';
 
 const CORNER_RADIUS = 7;
@@ -439,12 +440,15 @@ function chooseSpring(editor: EditorInterface) {
         </range-slider-number>
       );
     } else stiffnessInput = <div />;
+    const angleDisplay = <angle-display value={0}>Orientation:&nbsp;</angle-display>;
+    angleDisplay.hideNumber();
 
     element.append(
       <number-display value={springSelection instanceof Stick ? 'stick' : 'spring'}>
         Type:&nbsp;
       </number-display>,
       lengthDisplay,
+      angleDisplay,
       initLengthInput,
       stiffnessInput,
       <check-box
@@ -460,11 +464,28 @@ function chooseSpring(editor: EditorInterface) {
       >
         Locked
       </check-box>,
+      <button-btn
+        bgColor={palette['Imperial Red']}
+        textColor="white"
+        onClick={() => {
+          if (typeof springSelection !== 'boolean') {
+            editor.physics.removeObjFromSystem(springSelection);
+            setBaseInterface();
+            updateFunc = () => {};
+            selection = false;
+            springSelection = false;
+          }
+        }}
+      >
+        Delete
+      </button-btn>,
     );
 
     updateFunc = () => {
       if (typeof springSelection === 'boolean') return;
       lengthDisplay.value = springSelection.getAsSegment().length.toFixed(1);
+      const segment = springSelection.getAsSegment();
+      angleDisplay.value = Vec2.sub(segment.b, segment.a).heading;
     };
   } else {
     springSelection = false;
@@ -670,6 +691,21 @@ const SelectMode: Mode = {
         >
           Color:
         </color-picker>,
+        <button-btn
+          bgColor={palette['Imperial Red']}
+          textColor="white"
+          onClick={() => {
+            if (typeof selection !== 'boolean') {
+              editorApp.physics.removeObjFromSystem(selection);
+              setBaseInterface();
+              updateFunc = () => {};
+              selection = false;
+              springSelection = false;
+            }
+          }}
+        >
+          Delete
+        </button-btn>,
       );
     } else if (typeof newSel === 'boolean' && command === 'none') {
       selection = newSel;

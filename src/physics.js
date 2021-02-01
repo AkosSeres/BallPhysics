@@ -387,7 +387,9 @@ class Physics {
     let idx = -1;
     if (obj instanceof Body) idx = this.bodies.indexOf(obj);
     if (idx !== -1) {
+      const springsToRemove = this.getSpringsWithBody(this.bodies[idx]);
       this.bodies.splice(idx, 1);
+      springsToRemove.forEach((s) => { this.removeObjFromSystem(s); });
       return;
     }
     if (obj instanceof Stick || obj instanceof Spring) idx = this.springs.indexOf(obj);

@@ -28,6 +28,9 @@ style.innerHTML = `
         border-bottom: 0.1em solid white;
         border-right: 0.2em solid black;
     }
+    .hidden {
+      display: none;
+    }
     /* For tablets */
     @media (max-width: 768px) {
       .number-label {
@@ -50,7 +53,7 @@ class AngleDisplay extends HTMLElement {
         <div id="indicatorContainer"><hr id="rotationIndicator" /></div>
         <span>&nbsp;</span>
         <span id="numberPlace" />
-        <span>&deg;</span>
+        <span id="symbolPlace">&deg;</span>
       </div>,
     );
   }
@@ -63,6 +66,16 @@ class AngleDisplay extends HTMLElement {
 
   get value() {
     return this.shadowRoot.querySelector('#numberPlace').innerText;
+  }
+
+  hideNumber() {
+    this.shadowRoot.querySelector('#numberPlace').classList.add('hidden');
+    this.shadowRoot.querySelector('#symbolPlace').classList.add('hidden');
+  }
+
+  showNumber() {
+    this.shadowRoot.querySelector('#numberPlace').classList.remove('hidden');
+    this.shadowRoot.querySelector('#symbolPlace').classList.remove('hidden');
   }
 }
 
