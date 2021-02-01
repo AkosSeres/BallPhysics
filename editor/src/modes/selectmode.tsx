@@ -423,6 +423,22 @@ function chooseSpring(editor: EditorInterface) {
         Start length
       </range-slider-number>
     );
+    let stiffnessInput;
+    if (springSelection instanceof Spring && !(springSelection instanceof Stick)) {
+      stiffnessInput = (
+        <range-slider-number
+          min={2000}
+          max={100000}
+          value={springSelection.springConstant}
+          step={200}
+          onChange={(newConst:number) => {
+            if (springSelection instanceof Spring) springSelection.springConstant = newConst;
+          }}
+        >
+          Spring stiffness
+        </range-slider-number>
+      );
+    } else stiffnessInput = <div />;
 
     element.append(
       <number-display value={springSelection instanceof Stick ? 'stick' : 'spring'}>
@@ -430,6 +446,7 @@ function chooseSpring(editor: EditorInterface) {
       </number-display>,
       lengthDisplay,
       initLengthInput,
+      stiffnessInput,
       <check-box
         checked={springSelection.rotationLocked}
         onChange={(newB: boolean) => {
