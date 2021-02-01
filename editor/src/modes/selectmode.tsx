@@ -30,6 +30,33 @@ let updateFunc: Function;
 let startingRotation = 0;
 let allScaling = 1;
 
+const currentChoosable = {
+  body: true,
+  spring: true,
+};
+
+/**
+ *
+ */
+function setBaseInterface() {
+  element.innerHTML = '';
+  element.append(
+    <number-display value="">Selectable types:</number-display>,
+    <check-box
+      checked={currentChoosable.body}
+      onChange={(nB:boolean) => { currentChoosable.body = nB; }}
+    >
+      Body
+    </check-box>,
+    <check-box
+      checked={currentChoosable.spring}
+      onChange={(nB:boolean) => { currentChoosable.spring = nB; }}
+    >
+      Stick/Spring
+    </check-box>,
+  );
+}
+
 // Declare Command type
 type Command = 'move' | 'rotate' | 'resize-bl' | 'resize-br' | 'resize-tl' | 'resize-tr' | 'resize-t' | 'resize-b' | 'resize-l' | 'resize-r' | 'move-spring0' | 'move-spring1' | 'none';
 let currentCommand: Command = 'none';
@@ -39,6 +66,7 @@ let currentCommand: Command = 'none';
  * @returns {Body | boolean} The found body at the pointer's coordinates
  */
 function currentChosen(editor: EditorInterface) {
+  if (!currentChoosable.body) return false;
   return editor.physics.getObjectAtCoordinates(editor.mouseX, editor.mouseY, 4);
 }
 
@@ -232,6 +260,7 @@ const cursors = {
  * @returns {Stick | Spring | boolean} The found spring
  */
 function getSpring(editor: EditorInterface) {
+  if (!currentChoosable.spring) return false;
   const mouse = new Vec2(editor.mouseX, editor.mouseY);
   const foundSpring = editor.physics.springs.find(
     (spring) => spring.getAsSegment().distFromPoint(mouse) <= SPRING_RADIUS,
@@ -374,6 +403,7 @@ function drawAttachPointMover(ctx: CanvasRenderingContext2D, editor: EditorInter
 function chooseSpring(editor: EditorInterface) {
   const newSelSpring = getSpring(editor);
   if (typeof newSelSpring !== 'boolean') {
+    element.innerHTML = '';
     springSelection = newSelSpring;
     const lengthDisplay = (
       <number-display value={springSelection.getAsSegment().length.toFixed(1)}>
@@ -421,6 +451,7 @@ function chooseSpring(editor: EditorInterface) {
     };
   } else {
     springSelection = false;
+    setBaseInterface();
   }
 }
 
@@ -626,7 +657,6 @@ const SelectMode: Mode = {
     } else if (typeof newSel === 'boolean' && command === 'none') {
       selection = newSel;
       updateFunc = () => {};
-      element.innerHTML = '';
       chooseSpring(editorApp);
     }
   },
@@ -637,7 +667,9 @@ const SelectMode: Mode = {
     selection = false;
     springSelection = false;
     updateFunc = () => {};
-    element.innerHTML = '';
+  },
+  activated() {
+    setBaseInterface();
   },
 };
 
