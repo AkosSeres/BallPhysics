@@ -314,6 +314,16 @@ class Physics {
   }
 
   /**
+   * Returns the springs that are attached to the body.
+   *
+   * @param {Body} body The body to search for
+   * @returns {StickOrSpring[]} The array of springs
+   */
+  getSpringsWithBody(body) {
+    return this.springs.filter((s) => s.objects.includes(body));
+  }
+
+  /**
    * Sets the size of the world (without this the world
    * does not have bounds)
    *

@@ -437,25 +437,24 @@ const SelectMode: Mode = {
     const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
     ctx.save();
     ctx.strokeStyle = 'orange';
+    ctx.fillStyle = '#00000000';
     ctx.setLineDash([]);
     ctx.lineWidth = 4;
 
     if (typeof selection !== 'boolean') {
-      if (selection.shape.r !== 0) {
-        // The chosen body is a circle
-        ctx.beginPath();
-        ctx.arc(selection.pos.x, selection.pos.y, selection.shape.r, 0, Math.PI * 2);
-        ctx.stroke();
-      } else {
-        // The body is a polygon
-        ctx.beginPath();
-        ctx.moveTo(selection.shape.points[0].x, selection.shape.points[0].y);
-        for (let i = 1; i < selection.shape.points.length; i += 1) {
-          ctx.lineTo(selection.shape.points[i].x, selection.shape.points[i].y);
+      editorApp.renderer.renderBody(selection, ctx);
+
+      // Highlight attached springs
+      ctx.globalAlpha = 0.6;
+      editorApp.physics.getSpringsWithBody(selection).forEach((s) => {
+        ctx.fillStyle = '#00000000';
+        ctx.strokeStyle = '#FFFFFF';
+        if (s instanceof Stick)editorApp.renderer.renderStick(s, ctx);
+        else if (s instanceof Spring) {
+          editorApp.renderer.renderSpring(s, ctx);
         }
-        ctx.closePath();
-        ctx.stroke();
-      }
+      });
+      ctx.globalAlpha = 1;
 
       // Draw mover box if fixed
       if (selection.m === 0 || editorApp.timeMultiplier === 0) {
@@ -464,7 +463,7 @@ const SelectMode: Mode = {
       }
     } else {
       const cnvStyle = editorApp.cnv.style;
-      if (cnvStyle.cursor !== 'default')cnvStyle.cursor = 'default';
+      if (cnvStyle.cursor !== 'default') cnvStyle.cursor = 'default';
     }
 
     if (typeof springSelection !== 'boolean') {
@@ -473,6 +472,12 @@ const SelectMode: Mode = {
       else if (springSelection instanceof Spring) {
         editorApp.renderer.renderSpring(springSelection, ctx);
       }
+
+      // Highlight attached bodies
+      ctx.globalAlpha = 0.6;
+      ctx.strokeStyle = '#FFFFFF';
+      springSelection.objects.forEach((b) => editorApp.renderer.renderBody(b, ctx));
+      ctx.globalAlpha = 1;
 
       if (editorApp.timeMultiplier === 0) {
         updateCommand(editorApp);
@@ -484,24 +489,11 @@ const SelectMode: Mode = {
     }
 
     ctx.strokeStyle = 'yellow';
+    ctx.fillStyle = '#00000000';
     ctx.setLineDash([3, 5]);
 
     if (typeof atCoord !== 'boolean') {
-      if (atCoord.shape.r !== 0) {
-        // The chosen body is a circle
-        ctx.beginPath();
-        ctx.arc(atCoord.pos.x, atCoord.pos.y, atCoord.shape.r, 0, Math.PI * 2);
-        ctx.stroke();
-      } else {
-        // The body is a polygon
-        ctx.beginPath();
-        ctx.moveTo(atCoord.shape.points[0].x, atCoord.shape.points[0].y);
-        for (let i = 1; i < atCoord.shape.points.length; i += 1) {
-          ctx.lineTo(atCoord.shape.points[i].x, atCoord.shape.points[i].y);
-        }
-        ctx.closePath();
-        ctx.stroke();
-      }
+      editorApp.renderer.renderBody(atCoord, ctx);
     } else if (typeof springAtCoord !== 'boolean') {
       ctx.fillStyle = '#00000000';
       if (springAtCoord instanceof Stick)editorApp.renderer.renderStick(springAtCoord, ctx);

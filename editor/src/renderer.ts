@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import {
+  Body,
   StickOrSpring, Vec2,
 } from '../../src/physics';
 
@@ -8,6 +9,26 @@ class Renderer {
 
   constructor() {
     this.textures = [];
+  }
+
+  renderBody(body: Body, ctx: CanvasRenderingContext2D) {
+    if (body.shape.r !== 0) {
+      // The chosen body is a circle
+      ctx.beginPath();
+      ctx.arc(body.pos.x, body.pos.y, body.shape.r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fill();
+    } else {
+      // The body is a polygon
+      ctx.beginPath();
+      ctx.moveTo(body.shape.points[0].x, body.shape.points[0].y);
+      for (let i = 1; i < body.shape.points.length; i += 1) {
+        ctx.lineTo(body.shape.points[i].x, body.shape.points[i].y);
+      }
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fill();
+    }
   }
 
   renderSpring(spring: StickOrSpring, ctx: CanvasRenderingContext2D) {
