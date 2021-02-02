@@ -15,6 +15,7 @@ import '../components/angle-display';
 import '../components/button-btn';
 import '../components/file-input';
 import '../components/apply-cancel';
+import '../components/drop-down';
 import palette from '../../../src/util/colorpalette';
 import { RepeatMode } from '../../../src/entity/body';
 
@@ -41,7 +42,7 @@ let textureScaling = 1;
 const texturePos = new Vec2(0, 0);
 let textureRotation = 0;
 /** @type {RepeatMode} */
-const textureRepeatMode: RepeatMode = 'repeat';
+let textureRepeatMode: RepeatMode = 'repeat';
 
 let startingRotation = 0;
 let allScaling = 1;
@@ -858,6 +859,19 @@ const SelectMode: Mode = {
       if (selection.texture !== 'none')textureRemoveBtn.show();
       else textureRemoveBtn.hide();
 
+      const possibleEntries = ['repeat', 'repeat-x', 'repeat-y', 'no-repeat'];
+      const textureModeDropDown = (
+        <drop-down
+          entries={possibleEntries}
+          value={textureRepeatMode}
+          onChoice={(chioce: RepeatMode) => {
+            if (possibleEntries.includes(chioce)) textureRepeatMode = chioce;
+          }}
+        >
+          &#x25BC;&nbsp;Texture repeat
+        </drop-down>
+      );
+
       // Set update function for calling later
       updateFunc = () => {
         if (!(selection instanceof Body)) return;
@@ -911,6 +925,7 @@ const SelectMode: Mode = {
           Color:
         </color-picker>,
         textureDisplay,
+        textureModeDropDown,
         fileInput,
         applyCancelBtn,
         textureRemoveBtn,

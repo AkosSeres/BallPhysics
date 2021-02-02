@@ -44,7 +44,9 @@ style.innerHTML = `
     }
     /* For tablets */
     @media (max-width: 768px) {
-
+      #inputLabel {
+        font-size: small;
+      }
     }
   </style>
 `;

@@ -18,7 +18,6 @@ style.innerHTML = `
         display: block;
         font-size: medium;
         border-radius: 0.4em;
-        box-shadow: var(--blacky);
         margin-top: 1em;
         box-shadow: 3px 3px 3px black;
         -webkit-transition: 0.2s;
