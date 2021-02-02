@@ -616,7 +616,7 @@ class Editor implements EditorInterface {
           offset.y,
         ]);
         matrix.rotateSelf(0, 0, ((trData.rotation + b.rotation) * 180) / Math.PI);
-        const texturedPattern = ctx.createPattern(b.texture, 'no-repeat') as CanvasPattern;
+        const texturedPattern = ctx.createPattern(b.texture, b.textureRepeat) as CanvasPattern;
         texturedPattern.setTransform(matrix);
         ctx.fillStyle = texturedPattern;
         ctx.strokeStyle = 'black';

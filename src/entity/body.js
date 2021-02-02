@@ -25,6 +25,8 @@ const MAX_AXES = 15;
  * @property {string} style The style of the body
  */
 
+/** @typedef {"repeat" | "no-repeat" | "repeat-x" | "repeat-y"} RepeatMode */
+
 /**
  * A class representing a body
  */
@@ -77,6 +79,8 @@ class Body {
       scale: 1,
       rotation: 0,
     };
+    /** @type {RepeatMode} */
+    this.textureRepeat = 'repeat';
   }
 
   /**

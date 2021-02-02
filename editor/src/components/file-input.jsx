@@ -28,7 +28,7 @@ style.innerHTML = `
       font-size: medium;
       border-radius: 0.4em;
       box-shadow: var(--blacky);
-      margin-top: 1em;
+      margin-top: 0.2em;
       box-shadow: 3px 3px 3px black;
       -webkit-transition: 0.2s;
       transition: opacity 0.2s;

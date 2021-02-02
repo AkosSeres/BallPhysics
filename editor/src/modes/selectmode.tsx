@@ -16,6 +16,7 @@ import '../components/button-btn';
 import '../components/file-input';
 import '../components/apply-cancel';
 import palette from '../../../src/util/colorpalette';
+import { RepeatMode } from '../../../src/entity/body';
 
 const CORNER_RADIUS = 7;
 const SIDE_RADIUS = 6.5;
@@ -39,6 +40,8 @@ let textureBitmapLoaded: ImageBitmap | boolean = false;
 let textureScaling = 1;
 const texturePos = new Vec2(0, 0);
 let textureRotation = 0;
+/** @type {RepeatMode} */
+const textureRepeatMode: RepeatMode = 'repeat';
 
 let startingRotation = 0;
 let allScaling = 1;
@@ -630,7 +633,7 @@ const SelectMode: Mode = {
       ctx.globalAlpha = 1;
 
       if (typeof textureBitmapLoaded !== 'boolean') {
-        const pattern = ctx.createPattern(textureBitmapLoaded, 'no-repeat') as CanvasPattern;
+        const pattern = ctx.createPattern(textureBitmapLoaded, textureRepeatMode) as CanvasPattern;
         textureRotation %= (Math.PI * 2);
 
         const matrix = new DOMMatrix([
@@ -785,6 +788,7 @@ const SelectMode: Mode = {
           Texture:&nbsp;
         </number-display>
       );
+
       const fileInput = (
         <file-input
           accept="image/*"
@@ -805,6 +809,8 @@ const SelectMode: Mode = {
                       textureScaling = scaling;
                       texturePos.x = selection.boundingBox.x.min;
                       texturePos.y = selection.boundingBox.y.min;
+                      textureRotation = 0;
+                      selection.texture = 'none';
                     } else textureBitmapLoaded = false;
                   });
                 };
@@ -814,9 +820,9 @@ const SelectMode: Mode = {
           }}
         >
           Select image
-
         </file-input>
       );
+
       const applyCancelBtn = (
         <apply-cancel
           visible
@@ -839,6 +845,19 @@ const SelectMode: Mode = {
         />
       );
 
+      const textureRemoveBtn = (
+        <button-btn
+          bgColor={palette['Imperial Red']}
+          textColor="white"
+          onClick={() => { if (typeof selection !== 'boolean')selection.texture = 'none'; }}
+        >
+          Remove texture
+        </button-btn>
+      );
+      textureRemoveBtn.smallMargin();
+      if (selection.texture !== 'none')textureRemoveBtn.show();
+      else textureRemoveBtn.hide();
+
       // Set update function for calling later
       updateFunc = () => {
         if (!(selection instanceof Body)) return;
@@ -852,6 +871,9 @@ const SelectMode: Mode = {
         if (typeof textureBitmapLoaded !== 'boolean') {
           applyCancelBtn.visible = true;
         } else applyCancelBtn.visible = false;
+        if (selection.texture !== 'none') {
+          if (textureRemoveBtn.hidden)textureRemoveBtn.show();
+        } else if (!textureRemoveBtn.hidden)textureRemoveBtn.hide();
       };
 
       element.append(
@@ -891,6 +913,7 @@ const SelectMode: Mode = {
         textureDisplay,
         fileInput,
         applyCancelBtn,
+        textureRemoveBtn,
         <button-btn
           bgColor={palette['Imperial Red']}
           textColor="white"

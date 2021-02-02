@@ -6,30 +6,43 @@ const style = document.createElement('template');
 style.innerHTML = `
   <style>
     .btn {
-        background-color: var(--independence);
         border: none;
         color: white;
-        padding-left: 0px;
-        padding-right: 0px;
+        padding-left: 0.2em;
+        padding-right: 0.2em;
         padding-top: 0.2em;
         padding-bottom: 0.2em;
         text-align: center;
         text-decoration: none;
-        display: inline-block;
         font-size: medium;
         border-radius: 0.4em;
         box-shadow: var(--blacky);
-        margin-top: 1em;
-        box-shadow: 3px 3px 3px black;
+        margin-top: 0.3em;
         -webkit-transition: 0.2s;
         transition: opacity 0.2s;
         opacity: 0.8;
+        flex-grow: 1;
+    }
+    #cancel {
+      background-color: var(--imperial-red);
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+    }
+    #apply {
+      background-color: var(--greeny-hover);
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
     }
     .btn:hover {
         opacity: 1;
     }
     #container {
         width: 90%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        box-shadow: 3px 3px 3px black;
+        cursor: pointer;
     }
     /* For tablets */
     @media (max-width: 768px) {
@@ -62,7 +75,7 @@ class ApplyCancel extends HTMLElement {
   set visible(visibility) {
     if (visibility) {
       const container = this.containerElement;
-      if (container.style.display !== 'block')container.style.display = 'block';
+      if (container.style.display !== 'flex')container.style.display = 'flex';
     } else {
       const container = this.containerElement;
       if (container.style.display !== 'none')container.style.display = 'none';

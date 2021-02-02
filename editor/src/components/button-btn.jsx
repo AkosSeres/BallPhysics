@@ -25,9 +25,13 @@ style.innerHTML = `
         transition: opacity 0.2s;
         width: 90%;
         opacity: 0.8;
+        cursor: pointer;
     }
     #btn:hover {
         opacity: 1;
+    }
+    .hidden {
+      display: none;
     }
     /* For tablets */
     @media (max-width: 768px) {
@@ -55,6 +59,7 @@ class ButtonBtn extends HTMLElement {
     this.shadowRoot.appendChild(
       <div id="btn"><slot /></div>,
     );
+    this.hidden = false;
   }
 
   set bgColor(c) {
@@ -71,6 +76,20 @@ class ButtonBtn extends HTMLElement {
 
   set onClick(clickFunc) {
     this.btn.onclick = clickFunc;
+  }
+
+  smallMargin() {
+    this.btn.style.marginTop = '0.2em';
+  }
+
+  hide() {
+    this.btn.classList.add('hidden');
+    this.hidden = true;
+  }
+
+  show() {
+    this.btn.classList.remove('hidden');
+    this.hidden = false;
   }
 }
 
