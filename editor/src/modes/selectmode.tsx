@@ -36,7 +36,7 @@ const element = document.createElement('div');
 let updateFunc: Function;
 /** @type {ImageBitmap | boolean} */
 let textureBitmapLoaded: ImageBitmap | boolean = false;
-const textureScaling = new Vec2(1, 1);
+let textureScaling = 1;
 const texturePos = new Vec2(0, 0);
 let textureRotation = 0;
 
@@ -74,7 +74,7 @@ function setBaseInterface() {
 // Declare Command type
 type Command = 'move' | 'rotate' | 'resize-bl' | 'resize-br' | 'resize-tl' | 'resize-tr'
 | 'resize-t' | 'resize-b' | 'resize-l' | 'resize-r' | 'move-spring0'
-| 'move-spring1' | 'move-texture' | 'rotate-texture' | 'scale-texture-x' | 'scale-texture-y'
+| 'move-spring1' | 'move-texture' | 'rotate-texture'
 | 'choose-texture' | 'scale-texture-xy' | 'none';
 let currentCommand: Command = 'none';
 
@@ -97,10 +97,6 @@ function findCommand(editorApp: EditorInterface): Command {
     if (texturePos.dist(mouse) <= TEXTURE_MOVE_RADIUS) return 'move-texture';
     if (new Vec2(texturePos.x, texturePos.y - TEXTURE_ROTATE_DISTANCE).dist(mouse)
     <= TEXTURE_ROTATE_RADIUS) return 'rotate-texture';
-    if (new Vec2(texturePos.x, texturePos.y + TEXTURE_SCALE_DISTANCE).dist(mouse)
-    <= TEXTURE_SCALE_RADIUS) return 'scale-texture-y';
-    if (new Vec2(texturePos.x + TEXTURE_SCALE_DISTANCE, texturePos.y).dist(mouse)
-    <= TEXTURE_SCALE_RADIUS) return 'scale-texture-x';
     if (new Vec2(texturePos.x + TEXTURE_SCALE_DISTANCE, texturePos.y + TEXTURE_SCALE_DISTANCE)
       .dist(mouse) <= TEXTURE_SCALE_RADIUS) return 'scale-texture-xy';
     return 'choose-texture';
@@ -275,15 +271,9 @@ function updateCommand(editor: EditorInterface) {
         texturePos.x = editor.mouseX;
         texturePos.y = editor.mouseY;
         break;
-      case 'scale-texture-x':
-        textureScaling.x *= (rel.x / relOld.x);
-        break;
-      case 'scale-texture-y':
-        textureScaling.y *= (rel.y / relOld.y);
-        break;
       case 'scale-texture-xy':
-        textureScaling.x *= (Vec2.dot(rel, vec11) / Vec2.dot(relOld, vec11));
-        textureScaling.y *= (Vec2.dot(rel, vec11) / Vec2.dot(relOld, vec11));
+        textureScaling *= (Vec2.dot(rel, vec11) / Vec2.dot(relOld, vec11));
+        textureScaling *= (Vec2.dot(rel, vec11) / Vec2.dot(relOld, vec11));
         break;
       case 'rotate-texture':
         textureRotation += (rel.heading - relOld.heading);
@@ -311,8 +301,6 @@ const cursors = {
   'move-spring1': 'move',
   'move-texture': 'move',
   'rotate-texture': rotateCursor,
-  'scale-texture-x': 'ew-resize',
-  'scale-texture-y': 'ns-resize',
   'scale-texture-xy': 'nwse-resize',
   'choose-texture': 'default',
 };
@@ -584,11 +572,7 @@ function drawTextureControls(ctx: CanvasRenderingContext2D, editor: EditorInterf
   }
   ctx.beginPath();
   ctx.moveTo(texturePos.x, texturePos.y - TEXTURE_ROTATE_DISTANCE);
-  ctx.lineTo(texturePos.x, texturePos.y + TEXTURE_SCALE_DISTANCE);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(texturePos.x, texturePos.y);
-  ctx.lineTo(texturePos.x + TEXTURE_SCALE_DISTANCE, texturePos.y);
+  ctx.lineTo(texturePos.x, texturePos.y);
   ctx.stroke();
   ctx.beginPath();
   ctx.moveTo(texturePos.x, texturePos.y);
@@ -604,16 +588,6 @@ function drawTextureControls(ctx: CanvasRenderingContext2D, editor: EditorInterf
   ctx.beginPath();
   ctx.arc(texturePos.x, texturePos.y - TEXTURE_ROTATE_DISTANCE,
     TEXTURE_ROTATE_RADIUS, 0, Math.PI * 2);
-  ctx.closePath();
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(texturePos.x, texturePos.y + TEXTURE_SCALE_DISTANCE,
-    TEXTURE_SCALE_RADIUS, 0, Math.PI * 2);
-  ctx.closePath();
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(texturePos.x + TEXTURE_SCALE_DISTANCE, texturePos.y,
-    TEXTURE_SCALE_RADIUS, 0, Math.PI * 2);
   ctx.closePath();
   ctx.fill();
   ctx.beginPath();
@@ -660,10 +634,10 @@ const SelectMode: Mode = {
         textureRotation %= (Math.PI * 2);
 
         const matrix = new DOMMatrix([
-          textureScaling.x,
+          textureScaling,
           0,
           0,
-          textureScaling.y,
+          textureScaling,
           texturePos.x,
           texturePos.y,
         ]);
@@ -828,8 +802,7 @@ const SelectMode: Mode = {
                       textureBitmapLoaded = bitmap;
                       const scaling = Math.max(selection.boundingBox.x.size() / bitmap.width,
                         selection.boundingBox.y.size() / bitmap.height);
-                      textureScaling.x = scaling;
-                      textureScaling.y = scaling;
+                      textureScaling = scaling;
                       texturePos.x = selection.boundingBox.x.min;
                       texturePos.y = selection.boundingBox.y.min;
                     } else textureBitmapLoaded = false;
@@ -853,7 +826,7 @@ const SelectMode: Mode = {
             const realtiveVec = Vec2.sub(texturePos, selection.pos);
             realtiveVec.rotate(-selection.rotation);
             selection.textureTransform = {
-              scale: textureScaling.copy,
+              scale: textureScaling,
               rotation: textureRotation - selection.rotation,
               offset: realtiveVec,
             };

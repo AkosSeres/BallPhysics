@@ -608,10 +608,10 @@ class Editor implements EditorInterface {
         offset.rotate(b.rotation);
         offset.add(b.pos);
         const matrix = new DOMMatrix([
-          trData.scale.x,
+          trData.scale,
           0,
           0,
-          trData.scale.y,
+          trData.scale,
           offset.x,
           offset.y,
         ]);
