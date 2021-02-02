@@ -576,6 +576,12 @@ class Editor implements EditorInterface {
           ctx.stroke();
           ctx.fill();
 
+          if (element.m !== 0) {
+            ctx.beginPath();
+            ctx.arc(element.pos.x, element.pos.y, 1.5, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+
           if (this.showAxes) {
             ctx.strokeStyle = 'black';
             element.axes.forEach((axe: Vec2) => {
@@ -585,12 +591,6 @@ class Editor implements EditorInterface {
               ctx.stroke();
             });
           }
-        }
-
-        if (element.m !== 0) {
-          ctx.beginPath();
-          ctx.arc(element.pos.x, element.pos.y, 1.5, 0, Math.PI * 2);
-          ctx.stroke();
         }
       };
 
@@ -619,7 +619,7 @@ class Editor implements EditorInterface {
         const texturedPattern = ctx.createPattern(b.texture, b.textureRepeat) as CanvasPattern;
         texturedPattern.setTransform(matrix);
         ctx.fillStyle = texturedPattern;
-        ctx.strokeStyle = 'black';
+        ctx.strokeStyle = '#00000000';
         bodyDrawCallback(b);
       });
 

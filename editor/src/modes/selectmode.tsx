@@ -838,6 +838,7 @@ const SelectMode: Mode = {
               offset: realtiveVec,
             };
             selection.texture = textureBitmapLoaded;
+            selection.textureRepeat = textureRepeatMode;
             textureBitmapLoaded = false;
           }}
           onCancel={() => {
@@ -860,15 +861,19 @@ const SelectMode: Mode = {
       else textureRemoveBtn.hide();
 
       const possibleEntries = ['repeat', 'repeat-x', 'repeat-y', 'no-repeat'];
+      textureRepeatMode = selection.textureRepeat;
       const textureModeDropDown = (
         <drop-down
           entries={possibleEntries}
           value={textureRepeatMode}
           onChoice={(chioce: RepeatMode) => {
-            if (possibleEntries.includes(chioce)) textureRepeatMode = chioce;
+            if (possibleEntries.includes(chioce)) {
+              textureRepeatMode = chioce;
+              if (typeof selection !== 'boolean')selection.textureRepeat = chioce;
+            }
           }}
         >
-          &#x25BC;&nbsp;Texture repeat
+          &#x25BC;&nbsp;Texture mode
         </drop-down>
       );
 
