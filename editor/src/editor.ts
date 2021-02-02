@@ -538,9 +538,7 @@ class Editor implements EditorInterface {
       ctx.fillStyle = palette.Independence;
       ctx.fillRect(0, 0, this.worldSize.width, this.worldSize.height);
 
-      this.physics.bodies.forEach((element) => {
-        ctx.fillStyle = element.style;
-        ctx.strokeStyle = 'black';
+      const bodyDrawCallback = (element: Body) => {
         if (element.m === 0) {
           ctx.strokeStyle = '#00000000';
         }
@@ -580,7 +578,7 @@ class Editor implements EditorInterface {
 
           if (this.showAxes) {
             ctx.strokeStyle = 'black';
-            element.axes.forEach((axe) => {
+            element.axes.forEach((axe: Vec2) => {
               ctx.beginPath();
               ctx.moveTo(element.pos.x, element.pos.y);
               ctx.lineTo(element.pos.x + axe.x * 30, element.pos.y + axe.y * 30);
@@ -594,6 +592,35 @@ class Editor implements EditorInterface {
           ctx.arc(element.pos.x, element.pos.y, 1.5, 0, Math.PI * 2);
           ctx.stroke();
         }
+      };
+
+      // Draw them with colors
+      this.physics.bodies.forEach((b) => {
+        ctx.fillStyle = b.style;
+        ctx.strokeStyle = 'black';
+        bodyDrawCallback(b);
+      });
+      // Draw with textures
+      this.physics.bodies.forEach((b) => {
+        if (b.texture === 'none') return;
+        const trData = b.textureTransform;
+        const offset = trData.offset.copy;
+        offset.rotate(b.rotation);
+        offset.add(b.pos);
+        const matrix = new DOMMatrix([
+          trData.scale.x,
+          0,
+          0,
+          trData.scale.y,
+          offset.x,
+          offset.y,
+        ]);
+        matrix.rotateSelf(0, 0, ((trData.rotation + b.rotation) * 180) / Math.PI);
+        const texturedPattern = ctx.createPattern(b.texture, 'no-repeat') as CanvasPattern;
+        texturedPattern.setTransform(matrix);
+        ctx.fillStyle = texturedPattern;
+        ctx.strokeStyle = 'black';
+        bodyDrawCallback(b);
       });
 
       ctx.save();

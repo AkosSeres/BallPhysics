@@ -14,6 +14,7 @@ import '../components/number-display';
 import '../components/angle-display';
 import '../components/button-btn';
 import '../components/file-input';
+import '../components/apply-cancel';
 import palette from '../../../src/util/colorpalette';
 
 const CORNER_RADIUS = 7;
@@ -73,7 +74,8 @@ function setBaseInterface() {
 // Declare Command type
 type Command = 'move' | 'rotate' | 'resize-bl' | 'resize-br' | 'resize-tl' | 'resize-tr'
 | 'resize-t' | 'resize-b' | 'resize-l' | 'resize-r' | 'move-spring0'
-| 'move-spring1' | 'move-texture' | 'rotate-texture' | 'scale-texture-x' | 'scale-texture-y' | 'scale-texture-xy' | 'none';
+| 'move-spring1' | 'move-texture' | 'rotate-texture' | 'scale-texture-x' | 'scale-texture-y'
+| 'choose-texture' | 'scale-texture-xy' | 'none';
 let currentCommand: Command = 'none';
 
 /**
@@ -101,7 +103,7 @@ function findCommand(editorApp: EditorInterface): Command {
     <= TEXTURE_SCALE_RADIUS) return 'scale-texture-x';
     if (new Vec2(texturePos.x + TEXTURE_SCALE_DISTANCE, texturePos.y + TEXTURE_SCALE_DISTANCE)
       .dist(mouse) <= TEXTURE_SCALE_RADIUS) return 'scale-texture-xy';
-    return 'none';
+    return 'choose-texture';
   }
   if (editorApp.timeMultiplier !== 0 && !(selection instanceof Body && selection.m === 0)) return 'none';
   if (selection instanceof Body) {
@@ -312,6 +314,7 @@ const cursors = {
   'scale-texture-x': 'ew-resize',
   'scale-texture-y': 'ns-resize',
   'scale-texture-xy': 'nwse-resize',
+  'choose-texture': 'default',
 };
 
 /**
@@ -560,6 +563,25 @@ function chooseSpring(editor: EditorInterface) {
 function drawTextureControls(ctx: CanvasRenderingContext2D, editor: EditorInterface) {
   ctx.strokeStyle = palette['Roman Silver'];
   ctx.setLineDash([5, 3.5]);
+  if (currentCommand === 'rotate-texture') {
+    const mouse = new Vec2(editor.mouseX, editor.mouseY);
+    ctx.beginPath();
+    ctx.moveTo(texturePos.x, texturePos.y);
+    ctx.lineTo(mouse.x, mouse.y);
+    ctx.stroke();
+
+    ctx.fillStyle = palette.blue;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.arc(texturePos.x, texturePos.y, TEXTURE_ROTATE_RADIUS, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(mouse.x, mouse.y, TEXTURE_ROTATE_RADIUS, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.fill();
+    return;
+  }
   ctx.beginPath();
   ctx.moveTo(texturePos.x, texturePos.y - TEXTURE_ROTATE_DISTANCE);
   ctx.lineTo(texturePos.x, texturePos.y + TEXTURE_SCALE_DISTANCE);
@@ -634,7 +656,7 @@ const SelectMode: Mode = {
       ctx.globalAlpha = 1;
 
       if (typeof textureBitmapLoaded !== 'boolean') {
-        const pattern = ctx.createPattern(textureBitmapLoaded, 'repeat') as CanvasPattern;
+        const pattern = ctx.createPattern(textureBitmapLoaded, 'no-repeat') as CanvasPattern;
         textureRotation %= (Math.PI * 2);
 
         const matrix = new DOMMatrix([
@@ -822,6 +844,27 @@ const SelectMode: Mode = {
 
         </file-input>
       );
+      const applyCancelBtn = (
+        <apply-cancel
+          visible
+          onApply={() => {
+            if (typeof selection === 'boolean') return;
+            if (typeof textureBitmapLoaded === 'boolean') return;
+            const realtiveVec = Vec2.sub(texturePos, selection.pos);
+            realtiveVec.rotate(-selection.rotation);
+            selection.textureTransform = {
+              scale: textureScaling.copy,
+              rotation: textureRotation - selection.rotation,
+              offset: realtiveVec,
+            };
+            selection.texture = textureBitmapLoaded;
+            textureBitmapLoaded = false;
+          }}
+          onCancel={() => {
+            textureBitmapLoaded = false;
+          }}
+        />
+      );
 
       // Set update function for calling later
       updateFunc = () => {
@@ -833,6 +876,9 @@ const SelectMode: Mode = {
         if (textureDisplay.value !== selection.texture) {
           textureDisplay.value = selection.texture === 'none' ? 'none' : 'set';
         }
+        if (typeof textureBitmapLoaded !== 'boolean') {
+          applyCancelBtn.visible = true;
+        } else applyCancelBtn.visible = false;
       };
 
       element.append(
@@ -871,6 +917,7 @@ const SelectMode: Mode = {
         </color-picker>,
         textureDisplay,
         fileInput,
+        applyCancelBtn,
         <button-btn
           bgColor={palette['Imperial Red']}
           textColor="white"

@@ -72,6 +72,11 @@ class Body {
     /** The texture of the body */
     /** @type {ImageBitmap | 'none'} */
     this.texture = 'none';
+    this.textureTransform = {
+      offset: new Vec2(0, 0),
+      scale: new Vec2(1, 1),
+      rotation: 0,
+    };
   }
 
   /**
