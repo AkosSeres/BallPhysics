@@ -86,6 +86,10 @@ class Editor implements EditorInterface {
 
   renderer: Renderer;
 
+  left: boolean;
+
+  right: boolean;
+
   constructor() {
     this.physics = new Physics();
     this.mouseX = 0;
@@ -115,6 +119,9 @@ class Editor implements EditorInterface {
     this.collisionData = [];
     this.showBoundingBoxes = false;
     this.renderer = new Renderer();
+
+    this.left = false;
+    this.right = false;
 
     // A fully loaded window is provided
     this.cnv = <HTMLCanvasElement>document.getElementById('defaulCanvas0');
@@ -214,6 +221,14 @@ class Editor implements EditorInterface {
     this.collisionData = [];
 
     elapsedTime *= this.timeMultiplier;
+
+    // Rotate first body if pressed down
+    const firstBody = this.physics.bodies.find((b) => b.m !== 0);
+    if (firstBody) {
+      if (this.right) firstBody.ang = Math.min(firstBody.ang + 300 * elapsedTime, 10);
+      if (this.left) firstBody.ang = Math.max(firstBody.ang - 300 * elapsedTime, -10);
+    }
+
     this.collisionData.push(...this.physics.update(elapsedTime / 5));
     this.collisionData.push(...this.physics.update(elapsedTime / 5));
     this.collisionData.push(...this.physics.update(elapsedTime / 5));
@@ -309,6 +324,8 @@ class Editor implements EditorInterface {
     if (keyCode === 'i') {
       this.viewOffsetY += 10;
     }
+    if (keyCode === 'ArrowRight') this.right = true;
+    if (keyCode === 'ArrowLeft') this.left = true;
   };
 
   /**
@@ -317,7 +334,9 @@ class Editor implements EditorInterface {
    * @param {KeyboardEvent} _event The event containing data
    */
   keyGotUp = (_event: KeyboardEvent): void => {
-    // const keyCode = event.key;
+    const keyCode = _event.key;
+    if (keyCode === 'ArrowRight') this.right = false;
+    if (keyCode === 'ArrowLeft') this.left = false;
   };
 
   /**
