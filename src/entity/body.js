@@ -69,6 +69,9 @@ class Body {
 
     /** The style of the body. Has to be a hex color or a texture pointer. */
     this.style = defaultBodyColor;
+    /** The texture of the body */
+    /** @type {ImageBitmap | 'none'} */
+    this.texture = 'none';
   }
 
   /**

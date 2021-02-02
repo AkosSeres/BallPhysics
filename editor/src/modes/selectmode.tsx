@@ -13,6 +13,7 @@ import '../components/checkbox';
 import '../components/number-display';
 import '../components/angle-display';
 import '../components/button-btn';
+import '../components/file-input';
 import palette from '../../../src/util/colorpalette';
 
 const CORNER_RADIUS = 7;
@@ -20,6 +21,11 @@ const SIDE_RADIUS = 6.5;
 const ROTATE_RADIUS = 8;
 const ROTATE_DIST = 25;
 const SPRING_RADIUS = 7;
+const TEXTURE_MOVE_RADIUS = 8;
+const TEXTURE_ROTATE_RADIUS = 7;
+const TEXTURE_SCALE_RADIUS = 7;
+const TEXTURE_ROTATE_DISTANCE = 23;
+const TEXTURE_SCALE_DISTANCE = 30;
 
 /** @type {Body | boolean} */
 let selection: Body | boolean = false;
@@ -27,6 +33,11 @@ let springSelection: Stick | Spring | boolean = false;
 const element = document.createElement('div');
 /** @type {Function} */
 let updateFunc: Function;
+/** @type {ImageBitmap | boolean} */
+let textureBitmapLoaded: ImageBitmap | boolean = false;
+const textureScaling = new Vec2(1, 1);
+const texturePos = new Vec2(0, 0);
+let textureRotation = 0;
 
 let startingRotation = 0;
 let allScaling = 1;
@@ -41,6 +52,7 @@ const currentChoosable = {
  */
 function setBaseInterface() {
   element.innerHTML = '';
+  textureBitmapLoaded = false;
   element.append(
     <number-display value="">Selectable types:</number-display>,
     <check-box
@@ -59,7 +71,9 @@ function setBaseInterface() {
 }
 
 // Declare Command type
-type Command = 'move' | 'rotate' | 'resize-bl' | 'resize-br' | 'resize-tl' | 'resize-tr' | 'resize-t' | 'resize-b' | 'resize-l' | 'resize-r' | 'move-spring0' | 'move-spring1' | 'none';
+type Command = 'move' | 'rotate' | 'resize-bl' | 'resize-br' | 'resize-tl' | 'resize-tr'
+| 'resize-t' | 'resize-b' | 'resize-l' | 'resize-r' | 'move-spring0'
+| 'move-spring1' | 'move-texture' | 'rotate-texture' | 'scale-texture-x' | 'scale-texture-y' | 'scale-texture-xy' | 'none';
 let currentCommand: Command = 'none';
 
 /**
@@ -76,6 +90,19 @@ function currentChosen(editor: EditorInterface) {
  * @returns {Command} The command to start doing
  */
 function findCommand(editorApp: EditorInterface): Command {
+  if (typeof textureBitmapLoaded !== 'boolean') {
+    const mouse = new Vec2(editorApp.mouseX, editorApp.mouseY);
+    if (texturePos.dist(mouse) <= TEXTURE_MOVE_RADIUS) return 'move-texture';
+    if (new Vec2(texturePos.x, texturePos.y - TEXTURE_ROTATE_DISTANCE).dist(mouse)
+    <= TEXTURE_ROTATE_RADIUS) return 'rotate-texture';
+    if (new Vec2(texturePos.x, texturePos.y + TEXTURE_SCALE_DISTANCE).dist(mouse)
+    <= TEXTURE_SCALE_RADIUS) return 'scale-texture-y';
+    if (new Vec2(texturePos.x + TEXTURE_SCALE_DISTANCE, texturePos.y).dist(mouse)
+    <= TEXTURE_SCALE_RADIUS) return 'scale-texture-x';
+    if (new Vec2(texturePos.x + TEXTURE_SCALE_DISTANCE, texturePos.y + TEXTURE_SCALE_DISTANCE)
+      .dist(mouse) <= TEXTURE_SCALE_RADIUS) return 'scale-texture-xy';
+    return 'none';
+  }
   if (editorApp.timeMultiplier !== 0 && !(selection instanceof Body && selection.m === 0)) return 'none';
   if (selection instanceof Body) {
     const bb = selection.boundingBox;
@@ -124,6 +151,7 @@ function startCommand(command:Command) {
   if (command === 'resize-b') startingRotation = new Vec2(0, 1).heading;
   if (command === 'resize-l') startingRotation = new Vec2(-1, 0).heading;
   if (command === 'resize-r') startingRotation = new Vec2(1, 0).heading;
+  if (command === 'rotate-texture')startingRotation = Math.PI;
 }
 
 /**
@@ -223,8 +251,6 @@ function updateCommand(editor: EditorInterface) {
     }
   } else if (typeof springSelection !== 'boolean') {
     const mouse = new Vec2(editor.mouseX, editor.mouseY);
-    const mouseOld = new Vec2(editor.oldMouseX, editor.oldMouseY);
-    const dMouse = Vec2.sub(mouse, mouseOld);
     switch (currentCommand) {
       case 'move-spring0':
         springSelection.updateAttachPoint0(mouse, SPRING_RADIUS);
@@ -236,12 +262,41 @@ function updateCommand(editor: EditorInterface) {
         break;
     }
   }
+  if (typeof textureBitmapLoaded !== 'boolean' && typeof selection !== 'boolean') {
+    const mouse = new Vec2(editor.mouseX, editor.mouseY);
+    const mouseOld = new Vec2(editor.oldMouseX, editor.oldMouseY);
+    const rel = Vec2.sub(mouse, texturePos);
+    const relOld = Vec2.sub(mouseOld, texturePos);
+    const vec11 = new Vec2(1, 1);
+    switch (currentCommand) {
+      case 'move-texture':
+        texturePos.x = editor.mouseX;
+        texturePos.y = editor.mouseY;
+        break;
+      case 'scale-texture-x':
+        textureScaling.x *= (rel.x / relOld.x);
+        break;
+      case 'scale-texture-y':
+        textureScaling.y *= (rel.y / relOld.y);
+        break;
+      case 'scale-texture-xy':
+        textureScaling.x *= (Vec2.dot(rel, vec11) / Vec2.dot(relOld, vec11));
+        textureScaling.y *= (Vec2.dot(rel, vec11) / Vec2.dot(relOld, vec11));
+        break;
+      case 'rotate-texture':
+        textureRotation += (rel.heading - relOld.heading);
+        break;
+      default:
+        break;
+    }
+  }
 }
 
+const rotateCursor = 'url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAyklEQVQ4T6XST0qCQRjH8Y8JBnoCr9DGjXQBEbqDm6QQgvZeoX0bQVy7cRtBeIPcewi3bYLKeF6mmAZBeZvN8Pz5PvOb53ka/p4mHnGDVgp9YIVrvCdft5FxV3guCpXmBD1sfsAhXrKseOUVcV/ivKgwDvAMn1ngFosisVRTgQ+YpsQ7zA7IjX/fZ/4KfEMHX4jmlKePUeFcBrhPzi0ujjTnN/wv8JjUXMQO7fjWqc0JeIB1qvJUdxydOgtQjazOys1Dbg6GfeqS+wZwAS6Pac4meQAAAABJRU5ErkJggg==\') 6.5 6.5, auto';
 const cursors = {
   none: 'default',
   move: 'move',
-  rotate: 'url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAyklEQVQ4T6XST0qCQRjH8Y8JBnoCr9DGjXQBEbqDm6QQgvZeoX0bQVy7cRtBeIPcewi3bYLKeF6mmAZBeZvN8Pz5PvOb53ka/p4mHnGDVgp9YIVrvCdft5FxV3guCpXmBD1sfsAhXrKseOUVcV/ivKgwDvAMn1ngFosisVRTgQ+YpsQ7zA7IjX/fZ/4KfEMHX4jmlKePUeFcBrhPzi0ujjTnN/wv8JjUXMQO7fjWqc0JeIB1qvJUdxydOgtQjazOys1Dbg6GfeqS+wZwAS6Pac4meQAAAABJRU5ErkJggg==\') 6.5 6.5, auto',
+  rotate: rotateCursor,
   'resize-bl': 'nesw-resize',
   'resize-br': 'nwse-resize',
   'resize-tl': 'nwse-resize',
@@ -252,6 +307,11 @@ const cursors = {
   'resize-r': 'ew-resize',
   'move-spring0': 'move',
   'move-spring1': 'move',
+  'move-texture': 'move',
+  'rotate-texture': rotateCursor,
+  'scale-texture-x': 'ew-resize',
+  'scale-texture-y': 'ns-resize',
+  'scale-texture-xy': 'nwse-resize',
 };
 
 /**
@@ -494,6 +554,54 @@ function chooseSpring(editor: EditorInterface) {
 }
 
 /**
+ * @param {CanvasRenderingContext2D} ctx The context to render to
+ * @param {EditorInterface} editor The editor
+ */
+function drawTextureControls(ctx: CanvasRenderingContext2D, editor: EditorInterface) {
+  ctx.strokeStyle = palette['Roman Silver'];
+  ctx.setLineDash([5, 3.5]);
+  ctx.beginPath();
+  ctx.moveTo(texturePos.x, texturePos.y - TEXTURE_ROTATE_DISTANCE);
+  ctx.lineTo(texturePos.x, texturePos.y + TEXTURE_SCALE_DISTANCE);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(texturePos.x, texturePos.y);
+  ctx.lineTo(texturePos.x + TEXTURE_SCALE_DISTANCE, texturePos.y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(texturePos.x, texturePos.y);
+  ctx.lineTo(texturePos.x + TEXTURE_SCALE_DISTANCE, texturePos.y + TEXTURE_SCALE_DISTANCE);
+  ctx.stroke();
+
+  ctx.setLineDash([]);
+  ctx.fillStyle = palette.blue;
+  ctx.beginPath();
+  ctx.arc(texturePos.x, texturePos.y, TEXTURE_MOVE_RADIUS, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(texturePos.x, texturePos.y - TEXTURE_ROTATE_DISTANCE,
+    TEXTURE_ROTATE_RADIUS, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(texturePos.x, texturePos.y + TEXTURE_SCALE_DISTANCE,
+    TEXTURE_SCALE_RADIUS, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(texturePos.x + TEXTURE_SCALE_DISTANCE, texturePos.y,
+    TEXTURE_SCALE_RADIUS, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(texturePos.x + TEXTURE_SCALE_DISTANCE, texturePos.y + TEXTURE_SCALE_DISTANCE,
+    TEXTURE_SCALE_RADIUS, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.fill();
+}
+
+/**
  * This mode is for placing down balls in the world
  */
 const SelectMode: Mode = {
@@ -525,8 +633,35 @@ const SelectMode: Mode = {
       });
       ctx.globalAlpha = 1;
 
-      // Draw mover box if fixed
-      if (selection.m === 0 || editorApp.timeMultiplier === 0) {
+      if (typeof textureBitmapLoaded !== 'boolean') {
+        const pattern = ctx.createPattern(textureBitmapLoaded, 'repeat') as CanvasPattern;
+        textureRotation %= (Math.PI * 2);
+
+        const matrix = new DOMMatrix([
+          textureScaling.x,
+          0,
+          0,
+          textureScaling.y,
+          texturePos.x,
+          texturePos.y,
+        ]);
+        matrix.rotateSelf(0, 0, (textureRotation * 180) / Math.PI);
+        pattern.setTransform(matrix);
+        ctx.fillStyle = pattern;
+        ctx.strokeStyle = '#00000000';
+        editorApp.renderer.renderBody(selection, ctx);
+
+        drawTextureControls(ctx, editorApp);
+
+        updateCommand(editorApp);
+
+        // Set cursor too
+        const command = findCommand(editorApp);
+        const newCursor = cursors[command];
+        const cnvStyle = editorApp.cnv.style;
+        if (cnvStyle.cursor !== newCursor)cnvStyle.cursor = newCursor;
+      } else if (selection.m === 0 || editorApp.timeMultiplier === 0) {
+        // Draw mover box if fixed
         updateCommand(editorApp);
         drawResizer(ctx, editorApp);
       }
@@ -647,6 +782,46 @@ const SelectMode: Mode = {
           Rotation:&nbsp;
         </angle-display>
       );
+      const textureDisplay = (
+        <number-display
+          value={selection.texture === 'none' ? 'none' : 'set'}
+        >
+          Texture:&nbsp;
+        </number-display>
+      );
+      const fileInput = (
+        <file-input
+          accept="image/*"
+          onFile={(newFile: File) => {
+            if (newFile.type.includes('image')) {
+              const fr = new FileReader();
+              fr.readAsDataURL(newFile);
+              fr.onload = () => {
+                if (typeof fr.result !== 'string') return;
+                const img = new Image();
+                img.onload = () => {
+                  createImageBitmap(img).then((bitmap) => {
+                    if (selection instanceof Body) {
+                      if (editorApp.timeMultiplier !== 0)document.getElementById('pause')?.click();
+                      textureBitmapLoaded = bitmap;
+                      const scaling = Math.max(selection.boundingBox.x.size() / bitmap.width,
+                        selection.boundingBox.y.size() / bitmap.height);
+                      textureScaling.x = scaling;
+                      textureScaling.y = scaling;
+                      texturePos.x = selection.boundingBox.x.min;
+                      texturePos.y = selection.boundingBox.y.min;
+                    } else textureBitmapLoaded = false;
+                  });
+                };
+                img.src = fr.result;
+              };
+            }
+          }}
+        >
+          Select image
+
+        </file-input>
+      );
 
       // Set update function for calling later
       updateFunc = () => {
@@ -655,6 +830,9 @@ const SelectMode: Mode = {
         if (yDisplay.value != selection.pos.y)yDisplay.value = selection.pos.y.toFixed(2);
         if (massDisplay.value != selection.m)massDisplay.value = selection.m.toFixed(2);
         rotationDisplay.value = selection.rotation.toFixed(2);
+        if (textureDisplay.value !== selection.texture) {
+          textureDisplay.value = selection.texture === 'none' ? 'none' : 'set';
+        }
       };
 
       element.append(
@@ -691,6 +869,8 @@ const SelectMode: Mode = {
         >
           Color:
         </color-picker>,
+        textureDisplay,
+        fileInput,
         <button-btn
           bgColor={palette['Imperial Red']}
           textColor="white"
