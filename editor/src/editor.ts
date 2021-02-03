@@ -253,7 +253,7 @@ class Editor implements EditorInterface {
     this.mouseY = y / this.scaling - this.viewOffsetY / this.scaling;
     this.oldMouseX = this.mouseX;
     this.oldMouseY = this.mouseY;
-    this.choosed = this.physics.getObjectAtCoordinates(this.mouseX, this.mouseY);
+    this.choosed = this.physics.getObjectAtCoordinates(this.mouseX, this.mouseY, 4);
     if (!this.choosed && typeof this.choosed === 'boolean') {
       this.choosed = {
         x: this.mouseX,
