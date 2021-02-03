@@ -60,7 +60,7 @@ body {
     margin: 0;
     font-family: Helvetica, sans-serif;
     background-color: var(--rich-black-fogra-29);
-    overflow: hidden;
+    overflow: auto;
 }
 
 h3,
