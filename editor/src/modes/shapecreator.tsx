@@ -1,112 +1,84 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
-import Vec2 from '../../../src/math/vec2';
-import Body from '../../../src/entity/body';
 import elementCreator from '../elementCreator';
-import '../components/range-slider';
-import { defaultBodyColor } from '../../../src/util/colorpalette';
-import { Shape } from '../../../src/physics';
+import palette from '../../../src/util/colorpalette';
+import EditorInterface from '../editorInterface';
+import '../components/hover-detector-btn';
+import '../components/space-height';
 
-let size = 35;
-let k = 0.5;
-let fc = 0.5;
-let roundness = 4;
-let res = 24;
-let color = defaultBodyColor;
+import BallCreator from './ballcreator';
+import RectangleWallCreator from './rectangle';
+import RectangleBodyCreator from './rectanglebodycreator';
+import SquircleCreator from './squirclecreator';
+import SoftSquareCreator from './softsquarecreator';
+import WallDrawer from './walldrawer';
+
+const CreatorModes = [
+  BallCreator,
+  RectangleBodyCreator,
+  RectangleWallCreator,
+  WallDrawer,
+  SquircleCreator,
+  SoftSquareCreator,
+];
+let currentMode: Mode = CreatorModes[0];
+
 const element = document.createElement('div');
+const container: HTMLDivElement = <div className="full-width" />;
+let editor: EditorInterface;
 
 /**
- * Returns an array of points resulting in a squircle with the given resolution.
- *
- * @param {number} resolution The wanted resolution
- * @param {number} p The p-norm parameter
- * @returns {Vec2[]} The points of the squircle
+ * @returns {number} The index of the current used mode
  */
-function generateUnitSquircle(resolution = 24, p = 4) {
-  return [
-    ...new Array(resolution).keys(),
-  ].map((i) => Vec2.fromAnglePNorm((Math.PI * 2 * i) / resolution, p));
+function currentIndex() {
+  return CreatorModes.indexOf(currentMode);
 }
 
+/**
+ * @param {number} indexOfChosen The index of the chosen mode
+ * @param {HTMLElement[]} buttonArray The array of buttons used to choose between the modes
+ */
+function setMode(indexOfChosen: number, buttonArray: any) {
+  const btnArr = buttonArray;
+  currentMode.deactivated?.(editor);
+  btnArr[currentIndex()].bgColor = palette.Independence;
+  btnArr[indexOfChosen].bgColor = palette.pinkDarker;
+  container.innerHTML = '';
+  container.appendChild(CreatorModes[indexOfChosen].element);
+  currentMode = CreatorModes[indexOfChosen];
+}
+
+const buttons = CreatorModes.map((mode, i) => (
+  <hover-detector-btn
+    onClick={() => { setMode(i, buttons); }}
+  >
+    {mode.name}
+  </hover-detector-btn>
+));
+
 const ShapeCreatorMode: Mode = {
-  name: 'Squircle creator',
+  name: 'Shapes',
   description: '',
   element,
   drawFunc(editorApp, dt) {
-    const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
-    ctx.strokeStyle = 'black';
-    const shape = generateUnitSquircle(res, roundness);
-    shape.forEach((p) => p.mult(size));
-
-    ctx.beginPath();
-    ctx.moveTo(editorApp.mouseX + shape[0].x, editorApp.mouseY + shape[0].y);
-    for (let i = 1; i < shape.length; i += 1) {
-      ctx.lineTo(editorApp.mouseX + shape[i].x, editorApp.mouseY + shape[i].y);
-    }
-    ctx.closePath();
-    ctx.stroke();
-
-    if (editorApp.mouseDown) {
-      ctx.beginPath();
-      ctx.moveTo(editorApp.mouseX, editorApp.mouseY);
-      ctx.lineTo(editorApp.lastX, editorApp.lastY);
-      ctx.stroke();
-    }
+    currentMode.drawFunc?.(editorApp, dt);
   },
-  startInteractionFunc(editorApp) { },
+  startInteractionFunc(editorApp) {
+      currentMode.startInteractionFunc?.(editorApp);
+  },
   endInteractionFunc(editorApp) {
-    const shape = generateUnitSquircle(res, roundness);
-    const mouseVec = new Vec2(editorApp.lastX, editorApp.lastY);
-    shape.forEach((p) => { p.mult(size); p.add(mouseVec); });
-
-    if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
-      const newBody = new Body(Shape.Polygon(shape), 1, k, fc);
-      newBody.vel = new Vec2(editorApp.lastX - editorApp.mouseX,
-        editorApp.lastY - editorApp.mouseY);
-      newBody.style = color;
-      editorApp.physics.addBody(newBody);
-    }
+    currentMode.endInteractionFunc?.(editorApp);
+  },
+  init(editorApp) {
+    editor = editorApp;
+    CreatorModes.forEach((mode) => mode.init?.(editorApp));
+    buttons.forEach((b, i) => {
+      if (i === 0) b.asUpper();
+      if (i === buttons.length - 1) b.asLast();
+    });
   },
 };
 
-element.append(
-  <range-slider
-    min={5}
-    max={120}
-    step={1}
-    value={size}
-    onChange={(newSize: number) => { size = newSize; }}
-  >
-    Size
-  </range-slider>,
-  <range-slider
-    min={2}
-    max={7}
-    step={1}
-    value={9 - roundness}
-    onChange={(newRoun: number) => { roundness = 9 - newRoun; }}
-  >
-    Roundness
-  </range-slider>,
-  <range-slider
-    min={12}
-    max={36}
-    step={1}
-    value={res}
-    onChange={(newRes: number) => { res = newRes; }}
-  >
-    Resolution
-  </range-slider>,
-  <range-slider min={0} max={0.9} step={0.02} value={k} onChange={(newK: number) => { k = newK; }}>
-    Bounciness
-  </range-slider>,
-  <range-slider min={0} max={2} step={0.1} value={fc} onChange={(newFc: number) => { fc = newFc; }}>
-    Coefficient of friction
-  </range-slider>,
-  <color-picker value={color} onChange={(newColor: string) => { color = newColor; }}>
-    Color:
-  </color-picker>,
-);
+element.append(<space-height height={1} />, ...buttons, container);
+setMode(0, buttons);
 
 export default ShapeCreatorMode;

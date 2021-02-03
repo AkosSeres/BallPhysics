@@ -18,7 +18,7 @@ const element = document.createElement('div');
  * This mode is for placing down balls in the world
  */
 const BallCreatorMode: Mode = {
-  name: 'Ball creator',
+  name: 'Ball',
   description: '',
   element,
   drawFunc(editorApp: EditorInterface, _dt: number) {

@@ -27,7 +27,7 @@ style.innerHTML = `
         border-radius: 0.4em;
         transition: background 0.2s ease, opacity 0.2s ease;
         text-align: center;
-        width: 90%;
+        width: 100%;
         opacity: 0.8;
     }
     div:hover {

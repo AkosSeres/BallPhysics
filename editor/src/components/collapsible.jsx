@@ -7,7 +7,7 @@ const style = document.createElement('template');
 style.innerHTML = `
   <style>
     .container {
-        width: 90%;
+        width: 100%;
         display: block;
         margin-top: 1.3em;
     }

@@ -19,7 +19,7 @@ style.innerHTML = `
         font-size: medium;
         margin: 0px;
         -webkit-transition: 0.2s;
-        transition: opacity 0.2s;
+        transition: opacity 0.2s, background-color 0.2s;
         width: 100%;
         opacity: 0.8;
         cursor: pointer;
@@ -40,9 +40,6 @@ style.innerHTML = `
     }
     /* For tablets */
     @media (max-width: 768px) {
-        #btn {
-            width: 100%;
-        }
     }
     /* For smaller laptops */
     @media (max-width: 1125px) {

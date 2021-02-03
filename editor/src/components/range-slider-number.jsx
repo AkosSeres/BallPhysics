@@ -22,7 +22,7 @@ style.innerHTML = `
       margin-left: 2px;
       margin-right: 2px;
       text-align: center;
-      width: 90%;
+      width: 100%;
       color: white;
     }
     .disabled {
@@ -50,7 +50,7 @@ style.innerHTML = `
       transition: opacity 0.2s;
       border-top-left-radius: 0.3rem;
       border-top-right-radius: 0.3rem;
-      width: 90%;
+      width: 100%;
       margin-bottom: 0px;
       display: block;
     }

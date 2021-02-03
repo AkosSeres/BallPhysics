@@ -37,7 +37,7 @@ style.innerHTML = `
         opacity: 1;
     }
     #container {
-        width: 90%;
+        width: 100%;
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;

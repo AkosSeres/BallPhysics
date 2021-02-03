@@ -13,7 +13,7 @@ let pressure = 1;
 const element = document.createElement('div');
 
 const SoftSquareCreatorMode: Mode = {
-  name: 'Soft square creator',
+  name: 'Soft square',
   description: '',
   element,
   drawFunc(editorApp, dt: number): void {

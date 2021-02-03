@@ -32,7 +32,7 @@ style.innerHTML = `
       box-shadow: 3px 3px 3px black;
       -webkit-transition: 0.2s;
       transition: opacity 0.2s;
-      width: 90%;
+      width: 100%;
       opacity: 0.8;
       cursor: pointer;
     }

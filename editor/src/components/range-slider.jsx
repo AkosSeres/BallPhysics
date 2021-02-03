@@ -14,7 +14,7 @@ style.innerHTML = `
       -webkit-transition: 0.2s;
       transition: opacity 0.2s;
       border-radius: 100vh;
-      width: 90%;
+      width: 100%;
     }
     .slider:hover {
       opacity: 1;
