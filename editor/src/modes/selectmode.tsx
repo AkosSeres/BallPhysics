@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-loop-func */
 /* eslint-disable eqeqeq */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Mode from '../modeInterface';
 import {
-  Body, Shape, Spring, Stick, Vec2,
+  Body, Spring, Stick, Vec2,
 } from '../../../src/physics';
 import EditorInterface from '../editorInterface';
 import elementCreator from '../elementCreator';
@@ -16,6 +17,8 @@ import '../components/button-btn';
 import '../components/file-input';
 import '../components/apply-cancel';
 import '../components/drop-down';
+import '../components/collapsible';
+import '../components/hover-detector-btn';
 import palette from '../../../src/util/colorpalette';
 import { RepeatMode } from '../../../src/entity/body';
 
@@ -29,10 +32,15 @@ const TEXTURE_ROTATE_RADIUS = 7;
 const TEXTURE_SCALE_RADIUS = 7;
 const TEXTURE_ROTATE_DISTANCE = 23;
 const TEXTURE_SCALE_DISTANCE = 30;
+const MIN_BODY_INDEX = 4;
 
 /** @type {Body | boolean} */
 let selection: Body | boolean = false;
+let nextToChoose: Body | boolean = false;
+let bodyToHighLight: Body | boolean = false;
 let springSelection: Stick | Spring | boolean = false;
+let nextSpring: Stick | Spring | boolean = false;
+let springToHighLight: Stick | Spring | boolean = false;
 const element = document.createElement('div');
 /** @type {Function} */
 let updateFunc: Function;
@@ -53,11 +61,70 @@ const currentChoosable = {
 };
 
 /**
- *
+ * @param {EditorInterface} editor The editor
  */
-function setBaseInterface() {
+function setBaseInterface(editor: EditorInterface) {
   element.innerHTML = '';
   textureBitmapLoaded = false;
+
+  const collapsible = (
+    <collapsible-element title="Bodies" closed />
+  );
+  const bodyButtons = [];
+  for (let i = MIN_BODY_INDEX; i < editor.physics.bodies.length; i += 1) {
+    const b = editor.physics.bodies[i];
+    const idx = i - MIN_BODY_INDEX;
+    const newItem = (
+      <hover-detector-btn
+        bgColor={palette.pinkDarker}
+      >
+        {`Body #${idx}`}
+      </hover-detector-btn>
+    );
+    newItem.onClick = () => {
+      nextToChoose = b;
+      bodyToHighLight = false;
+    };
+    newItem.onEnter = () => {
+      bodyToHighLight = b;
+    };
+    newItem.onLeave = () => {
+      if (bodyToHighLight === b)bodyToHighLight = false;
+    };
+    if (i === editor.physics.bodies.length - 1) newItem.asLast();
+    bodyButtons.push(newItem);
+  }
+  collapsible.append(...bodyButtons);
+
+  const collapsibleSprings = (
+    <collapsible-element title="Sticks/Springs" closed />
+  );
+  const springButtons = [];
+  for (let i = 0; i < editor.physics.springs.length; i += 1) {
+    const s = editor.physics.springs[i];
+    const name = (s instanceof Stick) ? 'Stick' : 'Spring';
+    const newItem = (
+      <hover-detector-btn
+        bgColor={palette.pinkDarker}
+      >
+        {`${name} #${i}`}
+      </hover-detector-btn>
+    );
+    newItem.onClick = () => {
+      nextSpring = s;
+      springToHighLight = false;
+    };
+    newItem.onEnter = () => {
+      springToHighLight = s;
+    };
+    newItem.onLeave = () => {
+      if (springToHighLight === s)springToHighLight = false;
+    };
+    if (i === editor.physics.bodies.length - 1) newItem.asLast();
+    springButtons.push(newItem);
+  }
+  collapsibleSprings.append(...springButtons);
+
   element.append(
     <number-display value="">Selectable types:</number-display>,
     <check-box
@@ -72,6 +139,8 @@ function setBaseInterface() {
     >
       Stick/Spring
     </check-box>,
+    collapsible,
+    collapsibleSprings,
   );
 }
 
@@ -87,6 +156,12 @@ let currentCommand: Command = 'none';
  * @returns {Body | boolean} The found body at the pointer's coordinates
  */
 function currentChosen(editor: EditorInterface) {
+  if (nextToChoose instanceof Body) {
+    const ret = nextToChoose;
+    nextToChoose = false;
+    return ret;
+  }
+  if (nextSpring instanceof Spring) return false;
   if (!currentChoosable.body) return false;
   return editor.physics.getObjectAtCoordinates(editor.mouseX, editor.mouseY, 4);
 }
@@ -96,6 +171,8 @@ function currentChosen(editor: EditorInterface) {
  * @returns {Command} The command to start doing
  */
 function findCommand(editorApp: EditorInterface): Command {
+  if (nextToChoose instanceof Body) return 'none';
+  if (nextSpring instanceof Spring) return 'none';
   if (typeof textureBitmapLoaded !== 'boolean') {
     const mouse = new Vec2(editorApp.mouseX, editorApp.mouseY);
     if (texturePos.dist(mouse) <= TEXTURE_MOVE_RADIUS) return 'move-texture';
@@ -324,6 +401,11 @@ const cursors = {
  * @returns {Stick | Spring | boolean} The found spring
  */
 function getSpring(editor: EditorInterface) {
+  if (nextSpring instanceof Spring) {
+    const ret = nextSpring;
+    nextSpring = false;
+    return ret;
+  }
   if (!currentChoosable.spring) return false;
   const mouse = new Vec2(editor.mouseX, editor.mouseY);
   const foundSpring = editor.physics.springs.find(
@@ -533,7 +615,7 @@ function chooseSpring(editor: EditorInterface) {
         onClick={() => {
           if (typeof springSelection !== 'boolean') {
             editor.physics.removeObjFromSystem(springSelection);
-            setBaseInterface();
+            setBaseInterface(editor);
             updateFunc = () => {};
             selection = false;
             springSelection = false;
@@ -552,7 +634,7 @@ function chooseSpring(editor: EditorInterface) {
     };
   } else {
     springSelection = false;
-    setBaseInterface();
+    setBaseInterface(editor);
   }
 }
 
@@ -617,6 +699,9 @@ const SelectMode: Mode = {
   description: '',
   element,
   drawFunc(editorApp: EditorInterface, _dt: number) {
+    if (nextToChoose instanceof Body) this.startInteractionFunc?.(editorApp);
+    if (nextSpring instanceof Spring) this.startInteractionFunc?.(editorApp);
+
     const atCoord = currentChosen(editorApp);
     const springAtCoord = getSpring(editorApp) as (Stick | Spring | boolean);
     const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
@@ -698,6 +783,21 @@ const SelectMode: Mode = {
     } else if (typeof selection === 'boolean') {
       const cnvStyle = editorApp.cnv.style;
       if (cnvStyle.cursor !== 'default')cnvStyle.cursor = 'default';
+    }
+
+    if (bodyToHighLight instanceof Body) {
+      ctx.strokeStyle = 'yellow';
+      ctx.fillStyle = '#00000000';
+      ctx.setLineDash([3, 5]);
+      editorApp.renderer.renderBody(bodyToHighLight, ctx);
+    }
+    if (springToHighLight instanceof Spring) {
+      ctx.strokeStyle = 'yellow';
+      ctx.fillStyle = '#00000000';
+      ctx.setLineDash([3, 5]);
+      if (springToHighLight instanceof Stick) {
+        editorApp.renderer.renderStick(springToHighLight, ctx);
+      } else editorApp.renderer.renderSpring(springToHighLight, ctx);
     }
 
     ctx.strokeStyle = 'yellow';
@@ -976,7 +1076,7 @@ const SelectMode: Mode = {
           onClick={() => {
             if (typeof selection !== 'boolean') {
               editorApp.physics.removeObjFromSystem(selection);
-              setBaseInterface();
+              setBaseInterface(editorApp);
               updateFunc = () => {};
               selection = false;
               springSelection = false;
@@ -1000,8 +1100,8 @@ const SelectMode: Mode = {
     springSelection = false;
     updateFunc = () => {};
   },
-  activated() {
-    setBaseInterface();
+  activated(editorApp) {
+    setBaseInterface(editorApp);
   },
 };
 
