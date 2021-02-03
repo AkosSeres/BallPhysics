@@ -225,8 +225,8 @@ class Editor implements EditorInterface {
     // Rotate first body if pressed down
     const firstBody = this.physics.bodies.find((b) => b.m !== 0);
     if (firstBody) {
-      if (this.right) firstBody.ang = Math.min(firstBody.ang + 300 * elapsedTime, 10);
-      if (this.left) firstBody.ang = Math.max(firstBody.ang - 300 * elapsedTime, -10);
+      if (this.right) firstBody.ang = Math.min(firstBody.ang + 300 * elapsedTime, 15);
+      if (this.left) firstBody.ang = Math.max(firstBody.ang - 300 * elapsedTime, -15);
     }
 
     this.collisionData.push(...this.physics.update(elapsedTime / 5));

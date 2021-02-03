@@ -189,6 +189,8 @@ function updateCommand(editor: EditorInterface) {
       / Vec2.dot(startDir, Vec2.sub(mouseOld, topRight));
         if (factor * allScaling >= 0.03) {
           selection.scaleAround(topRight, factor);
+          selection.textureTransform.offset.mult(factor);
+          selection.textureTransform.scale *= factor;
           allScaling *= factor;
         } else currentCommand = 'none';
         break;
@@ -197,6 +199,8 @@ function updateCommand(editor: EditorInterface) {
       / Vec2.dot(startDir, Vec2.sub(mouseOld, topLeft));
         if (factor * allScaling >= 0.03) {
           selection.scaleAround(topLeft, factor);
+          selection.textureTransform.offset.mult(factor);
+          selection.textureTransform.scale *= factor;
           allScaling *= factor;
         } else currentCommand = 'none';
         break;
@@ -205,6 +209,8 @@ function updateCommand(editor: EditorInterface) {
       / Vec2.dot(startDir, Vec2.sub(mouseOld, bottomRight));
         if (factor * allScaling >= 0.03) {
           selection.scaleAround(bottomRight, factor);
+          selection.textureTransform.offset.mult(factor);
+          selection.textureTransform.scale *= factor;
           allScaling *= factor;
         } else currentCommand = 'none';
         break;
@@ -213,6 +219,8 @@ function updateCommand(editor: EditorInterface) {
       / Vec2.dot(startDir, Vec2.sub(mouseOld, bottomLeft));
         if (factor * allScaling >= 0.03) {
           selection.scaleAround(bottomLeft, factor);
+          selection.textureTransform.offset.mult(factor);
+          selection.textureTransform.scale *= factor;
           allScaling *= factor;
         } else currentCommand = 'none';
         break;
@@ -847,6 +855,30 @@ const SelectMode: Mode = {
         />
       );
 
+      const editTextureBtn = (
+        <button-btn
+          textColor="white"
+          onClick={() => {
+            if (typeof selection !== 'boolean' && selection.texture !== 'none') {
+              textureBitmapLoaded = selection.texture;
+              selection.texture = 'none';
+              textureScaling = selection.textureTransform.scale;
+              textureRotation = selection.textureTransform.rotation + selection.rotation;
+              const pos = selection.textureTransform.offset.copy;
+              pos.rotate(selection.rotation);
+              pos.add(selection.pos);
+              texturePos.x = pos.x;
+              texturePos.y = pos.y;
+            }
+          }}
+        >
+          Edit texture
+        </button-btn>
+      );
+      editTextureBtn.smallMargin();
+      if (selection.texture !== 'none')editTextureBtn.show();
+      else editTextureBtn.hide();
+
       const textureRemoveBtn = (
         <button-btn
           bgColor={palette['Imperial Red']}
@@ -893,6 +925,9 @@ const SelectMode: Mode = {
         if (selection.texture !== 'none') {
           if (textureRemoveBtn.hidden)textureRemoveBtn.show();
         } else if (!textureRemoveBtn.hidden)textureRemoveBtn.hide();
+        if (selection.texture !== 'none') {
+          if (editTextureBtn.hidden)editTextureBtn.show();
+        } else if (!editTextureBtn.hidden)editTextureBtn.hide();
       };
 
       element.append(
@@ -933,6 +968,7 @@ const SelectMode: Mode = {
         textureModeDropDown,
         fileInput,
         applyCancelBtn,
+        editTextureBtn,
         textureRemoveBtn,
         <button-btn
           bgColor={palette['Imperial Red']}
