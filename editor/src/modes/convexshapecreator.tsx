@@ -6,52 +6,63 @@ import EditorInterface from '../editorInterface';
 import elementCreator from '../elementCreator';
 import '../components/range-slider';
 import '../components/color-picker';
-import { defaultBallColor } from '../../../src/util/colorpalette';
+import { defaultBodyColor } from '../../../src/util/colorpalette';
 
-let size = 35;
-let k = 0.5;
+const size = 45;
+let k = 0.2;
 let fc = 1.5;
-let color = defaultBallColor;
+let color = defaultBodyColor;
 const element = document.createElement('div');
+let pointSet: Vec2[] = [];
 
 /**
  * This mode is for placing down balls in the world
  */
-const BallCreatorMode: Mode = {
-  name: 'Ball',
+const ConvexShapeCreatorMode: Mode = {
+  name: 'Draw convex shape',
   description: '',
   element,
   drawFunc(editorApp: EditorInterface, _dt: number) {
     const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
     ctx.strokeStyle = 'black';
+    const mouse = new Vec2(editorApp.mouseX, editorApp.mouseY);
 
     if (editorApp.mouseDown) {
-      ctx.beginPath();
-      ctx.arc(editorApp.lastX, editorApp.lastY,
-        size, 0, 2 * Math.PI);
-      ctx.stroke();
-    } else {
-      ctx.beginPath();
-      ctx.arc(editorApp.mouseX, editorApp.mouseY,
-        size, 0, 2 * Math.PI);
-      ctx.stroke();
-    }
+      if (!pointSet.some((p) => (p.x === mouse.x && p.y === mouse.y)))pointSet.push(mouse);
 
-    if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
-      ctx.beginPath();
-      ctx.moveTo(editorApp.mouseX, editorApp.mouseY);
-      ctx.lineTo(editorApp.lastX, editorApp.lastY);
-      ctx.stroke();
+      if (pointSet.length > 3) {
+        const pointsShape = Shape.Polygon(pointSet);
+        pointSet = pointsShape.getConvexHull().points;
+      }
     }
+    ctx.beginPath();
+    pointSet.forEach((p, i) => {
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.closePath();
+    ctx.stroke();
   },
   startInteractionFunc(editorApp) { },
   endInteractionFunc(editorApp) {
+    if (pointSet.length > 3) {
+      const pointsShape = Shape.Polygon(pointSet);
+      pointSet = pointsShape.getConvexHull().points;
+    } else {
+      pointSet = [];
+      return;
+    }
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       const newBall = new Body(
-        Shape.Circle(size, new Vec2(editorApp.lastX, editorApp.lastY)), 1, k, fc,
+        Shape.Polygon(pointSet), 1, k, fc,
       );
-      newBall.vel = new Vec2(editorApp.lastX - editorApp.mouseX,
-        editorApp.lastY - editorApp.mouseY);
+      const directions = [
+        ...new Array(100).keys()].map((n) => Vec2.fromAngle((2 * Math.PI * n) / 100));
+      const sizes = directions.map((d) => newBall.shape.getMinMaxInDirection(d).size());
+      if ((Math.max(...sizes) / Math.min(...sizes)) > 15) {
+        pointSet = [];
+        return;
+      }
       newBall.style = color;
       if (
         Number.isFinite(newBall.pos.x)
@@ -66,14 +77,12 @@ const BallCreatorMode: Mode = {
         editorApp.physics.addBody(newBall);
       }
     }
+    pointSet = [];
   },
 };
 
 element.append(
-  <range-slider min={5} max={120} step={1} value={size} onChange={(nS:number) => { size = nS; }}>
-    Size
-  </range-slider>,
-  <range-slider min={0} max={1} step={0.02} value={k} onChange={(newK: number) => { k = newK; }}>
+  <range-slider min={0} max={0.35} step={0.02} value={k} onChange={(newK: number) => { k = newK; }}>
     Bounciness
   </range-slider>,
   <range-slider min={0} max={2} step={0.1} value={fc} onChange={(newFc: number) => { fc = newFc; }}>
@@ -84,4 +93,4 @@ element.append(
   </color-picker>,
 );
 
-export default BallCreatorMode;
+export default ConvexShapeCreatorMode;

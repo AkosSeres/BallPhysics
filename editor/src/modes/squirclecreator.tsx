@@ -39,13 +39,23 @@ const SquircleCreatorMode: Mode = {
     const shape = generateUnitSquircle(res, roundness);
     shape.forEach((p) => p.mult(size));
 
-    ctx.beginPath();
-    ctx.moveTo(editorApp.mouseX + shape[0].x, editorApp.mouseY + shape[0].y);
-    for (let i = 1; i < shape.length; i += 1) {
-      ctx.lineTo(editorApp.mouseX + shape[i].x, editorApp.mouseY + shape[i].y);
+    if (editorApp.mouseDown) {
+      ctx.beginPath();
+      ctx.moveTo(editorApp.lastX + shape[0].x, editorApp.lastY + shape[0].y);
+      for (let i = 1; i < shape.length; i += 1) {
+        ctx.lineTo(editorApp.lastX + shape[i].x, editorApp.lastY + shape[i].y);
+      }
+      ctx.closePath();
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(editorApp.mouseX + shape[0].x, editorApp.mouseY + shape[0].y);
+      for (let i = 1; i < shape.length; i += 1) {
+        ctx.lineTo(editorApp.mouseX + shape[i].x, editorApp.mouseY + shape[i].y);
+      }
+      ctx.closePath();
+      ctx.stroke();
     }
-    ctx.closePath();
-    ctx.stroke();
 
     if (editorApp.mouseDown) {
       ctx.beginPath();

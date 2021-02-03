@@ -20,18 +20,11 @@ const SoftSquareCreatorMode: Mode = {
     const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
     ctx.strokeStyle = 'black';
 
-    ctx.beginPath();
-    ctx.moveTo(editorApp.mouseX - size,
-      editorApp.mouseY - size);
-    ctx.lineTo(editorApp.mouseX + size,
-      editorApp.mouseY - size);
-    ctx.lineTo(editorApp.mouseX + size,
-      editorApp.mouseY + size);
-    ctx.lineTo(editorApp.mouseX - size,
-      editorApp.mouseY + size);
-    ctx.lineTo(editorApp.mouseX - size,
-      editorApp.mouseY - size);
-    ctx.stroke();
+    if (editorApp.mouseDown) {
+      ctx.strokeRect(editorApp.lastX - size, editorApp.lastY - size, size * 2, size * 2);
+    } else {
+      ctx.strokeRect(editorApp.mouseX - size, editorApp.mouseY - size, size * 2, size * 2);
+    }
 
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       ctx.beginPath();

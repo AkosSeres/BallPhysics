@@ -244,6 +244,45 @@ class Shape {
   }
 
   /**
+   * Returns the ith side of the shape.
+   *
+   * @param {number} i The index of the side wanted
+   * @returns {LineSegment} The side as a LineSegment
+   */
+  getSide(i) {
+    return new LineSegment(
+      this.points[i], this.points[(i + 1) % this.points.length],
+    );
+  }
+
+  /**
+   * Returns the ith side of the shape as a Line.
+   *
+   * @param {number} i The index of the side wanted
+   * @returns {Line} The side as a Line
+   */
+  getSideLine(i) {
+    return new Line(
+      this.points[i], this.points[(i + 1) % this.points.length],
+    );
+  }
+
+  /**
+   * Returns the ith normal of the shape.
+   *
+   * @param {number} i The index of the normal wanted
+   * @returns {Vec2} The side normal
+   */
+  getNormal(i) {
+    const n = Vec2.sub(
+      this.points[i], this.points[(i + 1) % this.points.length],
+    );
+    n.rotate90();
+    n.normalize();
+    return n;
+  }
+
+  /**
    * Returns the closest point of the shape to the given point.
    *
    * @param {Vec2} p The point to calculate from
@@ -261,6 +300,49 @@ class Shape {
       }
     }
     return this.points[index].copy;
+  }
+
+  /**
+   * Calculates and returns the convex hull of any set of points.
+   *
+   * @returns {Shape} The convex hull
+   */
+  getConvexHull() {
+    const initialPoints = this.points.map((p) => p);
+    let xMin = this.points[0];
+    let xMax = this.points[0];
+    this.points.forEach((p) => {
+      if (xMax.x < p.x)xMax = p;
+      if (xMin.x > p.x)xMin = p;
+    });
+    initialPoints.splice(initialPoints.indexOf(xMin), 1);
+    initialPoints.splice(initialPoints.indexOf(xMax), 1);
+    const hull = new Shape();
+    hull.points = [xMin, xMax];
+    for (let i = 0; i < hull.points.length; i += 1) {
+      if (initialPoints.length === 0) return hull;
+      const n = hull.getNormal(i);
+      const o = hull.points[i];
+      let maxP = initialPoints[0];
+      let maxVal = Vec2.dot(Vec2.sub(initialPoints[0], o), n);
+      initialPoints.forEach((p, j) => {
+        if (j === 0) return;
+        const val = Vec2.dot(Vec2.sub(p, o), n);
+        if (val > maxVal) {
+          maxVal = val;
+          maxP = p;
+        }
+      });
+      if (maxVal > 0) {
+        hull.points.splice(i + 1, 0, maxP);
+        initialPoints.splice(initialPoints.indexOf(maxP), 1);
+        for (let j = initialPoints.length - 1; j >= 0; j -= 1) {
+          if (hull.containsPoint(initialPoints[j]))initialPoints.splice(j, 1);
+        }
+        i -= 1;
+      }
+    }
+    return hull;
   }
 
   /**

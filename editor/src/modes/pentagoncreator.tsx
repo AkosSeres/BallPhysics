@@ -6,34 +6,62 @@ import EditorInterface from '../editorInterface';
 import elementCreator from '../elementCreator';
 import '../components/range-slider';
 import '../components/color-picker';
-import { defaultBallColor } from '../../../src/util/colorpalette';
+import { defaultBodyColor } from '../../../src/util/colorpalette';
 
-let size = 35;
-let k = 0.5;
+let size = 45;
+let k = 0.2;
 let fc = 1.5;
-let color = defaultBallColor;
+let color = defaultBodyColor;
 const element = document.createElement('div');
+
+/**
+ * Generates the shape shape.
+ *
+ * @param {Vec2} offset The offset for the center of the shape
+ * @returns {Shape} The wanted shape
+ */
+function generatePentagon(offset: Vec2) {
+  let os = offset;
+  if (offset === undefined) os = new Vec2(0, 0);
+  return Shape.Polygon([...new Array(5).keys()].map((n) => {
+    const angle = (2 * Math.PI * n) / 5;
+    const v = Vec2.fromAngle(angle);
+    v.rotate(-Math.PI / 10);
+    v.mult(size);
+    v.add(os);
+    return v;
+  }));
+}
 
 /**
  * This mode is for placing down balls in the world
  */
-const BallCreatorMode: Mode = {
-  name: 'Ball',
+const PentagonCreatorMode: Mode = {
+  name: 'Pentagon',
   description: '',
   element,
   drawFunc(editorApp: EditorInterface, _dt: number) {
     const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
     ctx.strokeStyle = 'black';
+    const mouse = new Vec2(editorApp.mouseX, editorApp.mouseY);
 
     if (editorApp.mouseDown) {
+      mouse.x = editorApp.lastX;
+      mouse.y = editorApp.lastY;
       ctx.beginPath();
-      ctx.arc(editorApp.lastX, editorApp.lastY,
-        size, 0, 2 * Math.PI);
+      generatePentagon(mouse).points.forEach((p, i) => {
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.closePath();
       ctx.stroke();
     } else {
       ctx.beginPath();
-      ctx.arc(editorApp.mouseX, editorApp.mouseY,
-        size, 0, 2 * Math.PI);
+      generatePentagon(mouse).points.forEach((p, i) => {
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.closePath();
       ctx.stroke();
     }
 
@@ -47,8 +75,9 @@ const BallCreatorMode: Mode = {
   startInteractionFunc(editorApp) { },
   endInteractionFunc(editorApp) {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
+      const mouse = new Vec2(editorApp.lastX, editorApp.lastY);
       const newBall = new Body(
-        Shape.Circle(size, new Vec2(editorApp.lastX, editorApp.lastY)), 1, k, fc,
+        generatePentagon(mouse), 1, k, fc,
       );
       newBall.vel = new Vec2(editorApp.lastX - editorApp.mouseX,
         editorApp.lastY - editorApp.mouseY);
@@ -84,4 +113,4 @@ element.append(
   </color-picker>,
 );
 
-export default BallCreatorMode;
+export default PentagonCreatorMode;

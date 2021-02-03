@@ -11,14 +11,26 @@ import RectangleBodyCreator from './rectanglebodycreator';
 import SquircleCreator from './squirclecreator';
 import SoftSquareCreator from './softsquarecreator';
 import WallDrawer from './walldrawer';
+import TriangleCreatorMode from './trianglecreator';
+import PentagonCreatorMode from './pentagoncreator';
+import HexagonCreatorMode from './hexagoncreator';
+import OctagonCreatorMode from './octagoncreator';
+import HalfCircleCreatorMode from './halfcirclecreator';
+import ConvexShapeCreatorMode from './convexshapecreator';
 
 const CreatorModes = [
   BallCreator,
   RectangleBodyCreator,
   RectangleWallCreator,
   WallDrawer,
+  ConvexShapeCreatorMode,
   SquircleCreator,
   SoftSquareCreator,
+  HalfCircleCreatorMode,
+  TriangleCreatorMode,
+  PentagonCreatorMode,
+  HexagonCreatorMode,
+  OctagonCreatorMode,
 ];
 let currentMode: Mode = CreatorModes[0];
 
