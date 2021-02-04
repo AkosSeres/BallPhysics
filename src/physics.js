@@ -159,6 +159,17 @@ class Physics {
   }
 
   /**
+   * Returns a layer that is still free to use.
+   *
+   * @returns {number} The free layer
+   */
+  getFreeLayer() {
+    const layers = new Set();
+    this.bodies.forEach((b) => { if (typeof b.layer === 'number')layers.add(b.layer); });
+    return Math.max(...layers) + 1;
+  }
+
+  /**
    * Air friction. has to be between 0 and 1
    * 0 - no movement
    * 1 - no friction
@@ -211,6 +222,11 @@ class Physics {
       .map((i) => ((2 * i * Math.PI) / resolution))
       .map((angle) => Vec2.add(Vec2.mult(Vec2.fromAngle(angle), r), pos))
       .map((p) => new Body(Shape.Circle((Math.PI * r) / (resolution), p), 1, 0.2, fc));
+
+    // Put them in the same layer
+    const layerNum = this.getFreeLayer();
+    // eslint-disable-next-line no-param-reassign
+    softSquare.points.forEach((b) => { b.layer = layerNum; });
 
     softSquare.sides = softSquare.points.map((p, i) => {
       const newStick = new Stick(1);

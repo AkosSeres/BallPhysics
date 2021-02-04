@@ -190,6 +190,9 @@ export function resolveCollisions(bodies) {
       const b2 = bodies[j];
       // eslint-disable-next-line no-continue
       if (b1.m === 0 && b2.m === 0) continue;
+      // Skip if they are in the same layer
+      // eslint-disable-next-line no-continue
+      if (Number.isFinite(b1.layer) && Number.isFinite(b2.layer) && b1.layer === b2.layer) continue;
       const collDat = Body.detectCollision(b1, b2);
       if (collDat && typeof collDat !== 'boolean') {
         // Skip if moving away from each other

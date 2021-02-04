@@ -51,7 +51,7 @@ class Body {
     this.rotation = 0;
     this.ang = 0;
     this.vel = new Vec2(0, 0);
-    /** @type {number | string | undefined} */
+    /** @type {number | undefined} */
     this.layer = undefined;
 
     /** @type {Vec2[]} */
