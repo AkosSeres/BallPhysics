@@ -419,7 +419,37 @@ class Body {
    * @returns {Body} The clone.
    */
   get copy() {
-    return Body.fromObject(this);
+    /** @type {Body} */
+    const ret = Object.create(Body.prototype);
+
+    ret.am = this.am;
+    ret.ang = this.ang;
+    ret.axes = this.axes.map((a) => a.copy);
+    ret.boundingBox = {
+      x: this.boundingBox.x.copy,
+      y: this.boundingBox.y.copy,
+    };
+    ret.defaultAxes = this.defaultAxes.map((da) => da.copy);
+    ret.fc = this.fc;
+    ret.k = this.k;
+    ret.layer = this.layer;
+    ret.m = this.m;
+    ret.pos = this.pos.copy;
+    ret.rotation = this.rotation;
+    ret.shape = this.shape.copy;
+    ret.style = this.style;
+    ret.vel = this.vel.copy;
+    ret.minMaxes = this.minMaxes.map((mm) => mm.copy);
+
+    ret.texture = this.texture;
+    ret.textureRepeat = this.textureRepeat;
+    ret.textureTransform = {
+      offset: this.textureTransform.offset.copy,
+      rotation: this.textureTransform.rotation,
+      scale: this.textureTransform.scale,
+    };
+
+    return ret;
   }
 }
 

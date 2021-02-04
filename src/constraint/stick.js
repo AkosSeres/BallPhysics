@@ -34,6 +34,31 @@ class Stick extends Spring {
   }
 
   /**
+   * Returns a copy of the spring
+   *
+   * @returns {Stick} The copy
+   */
+  get copy() {
+    /** @type {Stick} */
+    const ret = Object.create(Stick.prototype);
+
+    ret.length = this.length;
+    ret.springConstant = this.springConstant;
+    if (typeof this.pinned === 'boolean') {
+      ret.pinned = this.pinned;
+    } else ret.pinned = { x: this.pinned.x, y: this.pinned.y };
+    ret.objects = this.objects;
+    ret.rotationLocked = this.rotationLocked;
+    ret.initialHeading = this.initialHeading;
+    ret.initialOrientations = [...this.initialOrientations];
+    ret.attachPoints = this.attachPoints.map((p) => p.copy);
+    ret.attachRotations = [...this.attachRotations];
+    ret.attachPositions = this.attachPositions.map((pos) => pos.copy);
+
+    return ret;
+  }
+
+  /**
    * Updates the first attach point.
    *
    * @param {Vec2} newAttachPoint The new attach point to have on the first object

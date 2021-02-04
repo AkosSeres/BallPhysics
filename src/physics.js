@@ -139,8 +139,23 @@ class Physics {
    * @returns {Physics} The copy of this system
    */
   get copy() {
-    const ret = this.toJSON();
-    return Physics.fromObject(ret);
+    const physicsCopy = new Physics();
+
+    physicsCopy.airFriction = this.airFriction;
+    physicsCopy.gravity = this.gravity.copy;
+    physicsCopy.bodies = this.bodies.map((b) => b.copy);
+
+    physicsCopy.springs = this.springs.map((spring) => {
+      const bodiesOnSpring = spring.objects.map(
+        (o) => this.bodies.indexOf(o),
+      ).map((index) => physicsCopy.bodies[index]);
+      const ret = spring.copy;
+      ret.objects = bodiesOnSpring;
+
+      return ret;
+    });
+
+    return physicsCopy;
   }
 
   /**

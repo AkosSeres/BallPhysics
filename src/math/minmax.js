@@ -4,19 +4,37 @@
 
 /**
  * Used to descrive an interval.
- *
- * @class
- * @param {number} min The lower bound
- * @param {number} max The high bound
  */
-export function MinMax(min, max) {
-  this.min = min;
-  this.max = max;
-}
+export class MinMax {
+  /**
+   * Crates the interval, MinMax.
+   *
+   * @param {number} min The start value of the interval
+   * @param {number} max The end value of the interval
+   */
+  constructor(min, max) {
+    this.min = min;
+    this.max = max;
+  }
 
-MinMax.prototype.size = function size() {
-  return this.max - this.min;
-};
+  /**
+   * Returns the size of the interval (length).
+   *
+   * @returns {number} The size
+   */
+  size() {
+    return this.max - this.min;
+  }
+
+  /**
+   * Returns a copy of the interval.
+   *
+   * @returns {MinMax} The copy
+   */
+  get copy() {
+    return new MinMax(this.min, this.max);
+  }
+}
 
 /**
  * Returns the min and max of an array of numbers

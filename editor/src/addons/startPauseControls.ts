@@ -1,6 +1,6 @@
-import Physics, { PhysicsAsObject } from '../../../src/physics';
+import Physics from '../../../src/physics';
 
-let startingState: PhysicsAsObject;
+let startingState: Physics;
 let inStartingState: boolean;
 let startBtn: HTMLElement;
 
@@ -33,7 +33,7 @@ function setStartingStateBool(st: boolean) {
  * @param {HasPhysicsAndTime} editorApp The editor app to control
  */
 export default function timeController(editorApp: HasPhysicsAndTime): void {
-  startingState = editorApp.getPhysics().toJSON();
+  startingState = editorApp.getPhysics().copy;
   startBtn = <HTMLElement>document.getElementById('set start');
   setStartingStateBool(false);
 
@@ -45,7 +45,7 @@ export default function timeController(editorApp: HasPhysicsAndTime): void {
       } else {
         editorApp.setTimeMultiplier(1);
         if (inStartingState === true) {
-          startingState = editorApp.getPhysics().toJSON();
+          startingState = editorApp.getPhysics().copy;
         }
         setStartingStateBool(false);
       }
@@ -56,8 +56,7 @@ export default function timeController(editorApp: HasPhysicsAndTime): void {
   if (revertBtn) {
     revertBtn.onclick = () => {
       editorApp.setTimeMultiplier(0);
-      console.log(Physics.fromObject(startingState));
-      editorApp.setPhysics(Physics.fromObject(startingState));
+      editorApp.setPhysics(startingState.copy);
       setStartingStateBool(true);
     };
   }
@@ -75,8 +74,7 @@ export default function timeController(editorApp: HasPhysicsAndTime): void {
 
   if (startBtn) {
     startBtn.onclick = () => {
-      startingState = editorApp.getPhysics().toJSON();
-      console.log(startingState);
+      startingState = editorApp.getPhysics().copy;
       setStartingStateBool(true);
       editorApp.setTimeMultiplier(0);
     };
