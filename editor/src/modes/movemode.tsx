@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Body, Vec2 } from '../../../src/physics';
-import Mode from '../modeInterface';
+import Mode from '../interfaces.ts/modeInterface';
 
 const element = document.createElement('div');
 

@@ -1,7 +1,7 @@
-import Mode from '../modeInterface';
-import elementCreator from '../elementCreator';
+import Mode from '../interfaces.ts/modeInterface';
+import elementCreator from '../components/elementCreator';
 import palette from '../../../src/util/colorpalette';
-import EditorInterface from '../editorInterface';
+import EditorInterface from '../interfaces.ts/editorInterface';
 import '../components/hover-detector-btn';
 import '../components/space-height';
 

@@ -1,9 +1,9 @@
 import Physics, {
   Vec2, Spring, Stick, Shape, AnyPhysicsObject, PinPoint, CollisionData, Body,
 } from '../../src/physics';
-import EditorInterface from './editorInterface';
+import EditorInterface from './interfaces.ts/editorInterface';
 
-import startPauseControlsFunction from './startPauseControls';
+import startPauseControlsFunction from './addons/startPauseControls';
 import Modes from './modes/index';
 
 // Import css

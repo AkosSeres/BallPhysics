@@ -1,4 +1,4 @@
-import Physics, { PhysicsAsObject } from '../../src/physics';
+import Physics, { PhysicsAsObject } from '../../../src/physics';
 
 let startingState: PhysicsAsObject;
 let inStartingState: boolean;

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Mode from '../modeInterface';
-import elementCreator from '../elementCreator';
+import Mode from '../interfaces.ts/modeInterface';
+import elementCreator from '../components/elementCreator';
 import '../components/checkbox';
 import '../components/range-slider';
 import '../components/range-slider-number';

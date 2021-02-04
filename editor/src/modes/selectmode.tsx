@@ -2,12 +2,12 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Mode from '../modeInterface';
+import Mode from '../interfaces.ts/modeInterface';
 import {
   Body, Spring, Stick, Vec2,
 } from '../../../src/physics';
-import EditorInterface from '../editorInterface';
-import elementCreator from '../elementCreator';
+import EditorInterface from '../interfaces.ts/editorInterface';
+import elementCreator from '../components/elementCreator';
 import '../components/color-picker';
 import '../components/range-slider-number';
 import '../components/checkbox';

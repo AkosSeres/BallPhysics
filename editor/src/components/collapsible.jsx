@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 // @ts-nocheck
 // eslint-disable-next-line no-unused-vars
-import elementCreator from '../elementCreator';
+import elementCreator from './elementCreator';
 
 const style = document.createElement('template');
 style.innerHTML = `

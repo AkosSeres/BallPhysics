@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Mode from '../modeInterface';
+import Mode from '../interfaces.ts/modeInterface';
 import Vec2 from '../../../src/math/vec2';
 import Body from '../../../src/entity/body';
-import elementCreator from '../elementCreator';
+import elementCreator from '../components/elementCreator';
 import '../components/range-slider';
 import { defaultBodyColor } from '../../../src/util/colorpalette';
 import { Shape } from '../../../src/physics';

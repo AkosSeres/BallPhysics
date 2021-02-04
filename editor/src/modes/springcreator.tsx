@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Mode from '../modeInterface';
+import Mode from '../interfaces.ts/modeInterface';
 import {
   Body, PinPoint, Shape, Spring, Vec2,
 } from '../../../src/physics';
-import elementCreator from '../elementCreator';
+import elementCreator from '../components/elementCreator';
 import '../components/checkbox';
 import '../components/range-slider';
-import EditorInterface from '../editorInterface';
+import EditorInterface from '../interfaces.ts/editorInterface';
 import palette from '../../../src/util/colorpalette';
 
 let lockRotation = false;

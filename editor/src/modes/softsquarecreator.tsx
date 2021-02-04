@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Mode from '../modeInterface';
+import Mode from '../interfaces.ts/modeInterface';
 import { Body, Vec2 } from '../../../src/physics';
-import elementCreator from '../elementCreator';
+import elementCreator from '../components/elementCreator';
 import '../components/range-slider';
 
 let size = 35;

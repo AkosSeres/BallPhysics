@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Mode from '../modeInterface';
+import Mode from '../interfaces.ts/modeInterface';
 import {
   Body, Shape, Stick, Vec2, PinPoint,
 } from '../../../src/physics';
-import elementCreator from '../elementCreator';
+import elementCreator from '../components/elementCreator';
 import '../components/checkbox';
-import EditorInterface from '../editorInterface';
+import EditorInterface from '../interfaces.ts/editorInterface';
 
 let lockRotation = false;
 let centerSnap = true;

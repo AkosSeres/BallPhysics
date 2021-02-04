@@ -1,5 +1,5 @@
-import Physics, { AnyPhysicsObject, PinPoint, Vec2 } from '../../src/physics';
-import Renderer from './renderer';
+import Physics, { AnyPhysicsObject, PinPoint, Vec2 } from '../../../src/physics';
+import Renderer from '../renderer';
 
 interface EditorInterface {
   physics: Physics;
