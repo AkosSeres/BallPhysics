@@ -2,11 +2,11 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Mode from '../interfaces.ts/modeInterface';
+import Mode from '../interfaces/modeInterface';
 import {
   Body, Spring, Stick, Vec2,
 } from '../../../src/physics';
-import EditorInterface from '../interfaces.ts/editorInterface';
+import EditorInterface from '../interfaces/editorInterface';
 import elementCreator from '../components/elementCreator';
 import '../components/color-picker';
 import '../components/range-slider-number';
@@ -885,6 +885,29 @@ const SelectMode: Mode = {
           Y coord:&nbsp;
         </number-display>
       );
+      const xVelDisplay = (
+        <number-display value={selection.vel.x.toFixed(2)}>
+          X vel:&nbsp;
+        </number-display>
+      );
+      const yVelDisplay = (
+        <number-display value={selection.vel.y.toFixed(2)}>
+          Y vel:&nbsp;
+        </number-display>
+      );
+      const resetVelBtn = (
+        <button-btn onClick={() => {
+          if (selection instanceof Body) {
+            selection.vel.x = 0;
+            selection.vel.y = 0;
+            selection.ang = 0;
+          }
+        }}
+        >
+          Reset motion
+        </button-btn>
+      );
+      resetVelBtn.smallMargin();
       const rotationDisplay = (
         <angle-display value={selection.rotation.toFixed(2)}>
           Rotation:&nbsp;
@@ -1014,6 +1037,8 @@ const SelectMode: Mode = {
         if (!(selection instanceof Body)) return;
         if (xDisplay.value != selection.pos.x)xDisplay.value = selection.pos.x.toFixed(2);
         if (yDisplay.value != selection.pos.y)yDisplay.value = selection.pos.y.toFixed(2);
+        if (xVelDisplay.value != selection.vel.x)xVelDisplay.value = selection.vel.x.toFixed(2);
+        if (yVelDisplay.value != selection.vel.y)yVelDisplay.value = selection.vel.y.toFixed(2);
         if (massDisplay.value != selection.m)massDisplay.value = selection.m.toFixed(2);
         rotationDisplay.value = selection.rotation.toFixed(2);
         if (textureDisplay.value !== selection.texture) {
@@ -1036,6 +1061,9 @@ const SelectMode: Mode = {
         rotationDisplay,
         xDisplay,
         yDisplay,
+        xVelDisplay,
+        yVelDisplay,
+        resetVelBtn,
         fixedCheckbox,
         densitySlider,
         <range-slider-number

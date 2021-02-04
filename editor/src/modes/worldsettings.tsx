@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Mode from '../interfaces.ts/modeInterface';
+import Mode from '../interfaces/modeInterface';
 import elementCreator from '../components/elementCreator';
 import '../components/checkbox';
 import '../components/range-slider';
@@ -84,6 +84,12 @@ const WorldSettingsMode: Mode = {
         onChange={(nB: boolean) => { editorRef.showBoundingBoxes = nB; }}
       >
         Show boounding boxes
+      </check-box>,
+      <check-box
+        checked={editorRef.showVelocities}
+        onChange={(nB: boolean) => { editorRef.showVelocities = nB; }}
+      >
+        Show velocities
       </check-box>,
     );
   },

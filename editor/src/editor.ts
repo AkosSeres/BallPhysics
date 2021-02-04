@@ -1,7 +1,7 @@
 import Physics, {
   Vec2, Spring, Stick, Shape, AnyPhysicsObject, PinPoint, CollisionData, Body,
 } from '../../src/physics';
-import EditorInterface from './interfaces.ts/editorInterface';
+import EditorInterface from './interfaces/editorInterface';
 
 import startPauseControlsFunction from './addons/startPauseControls';
 import Modes from './modes/index';
@@ -80,6 +80,8 @@ class Editor implements EditorInterface {
 
   showBoundingBoxes: boolean;
 
+  showVelocities: boolean;
+
   oldMouseX: number;
 
   oldMouseY: number;
@@ -118,6 +120,7 @@ class Editor implements EditorInterface {
     this.worldSize = { width: 0, height: 0 };
     this.collisionData = [];
     this.showBoundingBoxes = false;
+    this.showVelocities = false;
     this.renderer = new Renderer();
 
     this.left = false;
@@ -665,6 +668,37 @@ class Editor implements EditorInterface {
             b.boundingBox.x.max - b.boundingBox.x.min,
             b.boundingBox.y.max - b.boundingBox.y.min);
         });
+      }
+
+      // Draw velocity arrows
+      if (this.showVelocities) {
+        const oldW = ctx.lineWidth;
+        ctx.strokeStyle = palette.pink;
+        ctx.fillStyle = palette.pink;
+        ctx.lineWidth = 3.5;
+        const velScaling = 0.05;
+        this.physics.bodies.forEach((b) => {
+          const pos = b.pos.copy;
+          const end = Vec2.add(pos, Vec2.mult(b.vel, velScaling));
+          ctx.beginPath();
+          ctx.moveTo(pos.x, pos.y);
+          ctx.lineTo(end.x, end.y);
+          ctx.stroke();
+          const arrowSize = Math.min(b.vel.length / 5, 15);
+          const normVel = b.vel.copy;
+          normVel.normalize();
+          normVel.setMag(arrowSize);
+          const arrowEnd = Vec2.add(end, normVel);
+          normVel.rotate90();
+          normVel.div(3);
+          ctx.beginPath();
+          ctx.moveTo(arrowEnd.x, arrowEnd.y);
+          ctx.lineTo(end.x + normVel.x, end.y + normVel.y);
+          ctx.lineTo(end.x - normVel.x, end.y - normVel.y);
+          ctx.closePath();
+          ctx.fill();
+        });
+        ctx.lineWidth = oldW;
       }
 
       // Draw collision data

@@ -17,6 +17,7 @@ interface EditorInterface {
   drawCollisions: boolean;
   showAxes: boolean;
   showBoundingBoxes: boolean;
+  showVelocities: boolean;
   worldSize: {width: number, height: number};
   setWorldSize: (sizes: {width: number, height: number}) => void;
   convertToCanvasSpace: (p: {x: number, y: number}) => Vec2;

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Mode from '../interfaces.ts/modeInterface';
+import Mode from '../interfaces/modeInterface';
 import elementCreator from '../components/elementCreator';
 import '../components/range-slider';
 import { defaultBodyColor } from '../../../src/util/colorpalette';

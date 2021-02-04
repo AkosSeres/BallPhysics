@@ -4,8 +4,8 @@ import {
   Body, StickOrSpring, Vec2, Stick, Spring,
 } from '../../../src/physics';
 import palette from '../../../src/util/colorpalette';
-import EditorInterface from '../interfaces.ts/editorInterface';
-import Mode from '../interfaces.ts/modeInterface';
+import EditorInterface from '../interfaces/editorInterface';
+import Mode from '../interfaces/modeInterface';
 import elementCreator from '../components/elementCreator';
 import '../components/number-display';
 import '../components/checkbox';

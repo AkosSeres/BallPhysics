@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Mode from '../interfaces.ts/modeInterface';
+import Mode from '../interfaces/modeInterface';
 import Vec2 from '../../../src/math/vec2';
 import Body from '../../../src/entity/body';
 import elementCreator from '../components/elementCreator';
