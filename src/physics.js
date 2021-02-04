@@ -96,12 +96,11 @@ class Physics {
       this.bodies[i].rotate(this.bodies[i].ang * t);
     }
 
-    // Update springs multiple times
-    for (let i = 0; i < 3; i += 1) {
-      this.springs.forEach((element) => {
-        element.update(t / 3 / 2);
-      });
-    }
+    // Update springs
+    this.springs.forEach((element, i, arr) => {
+      arr[arr.length - 1 - i].update(t / 2);
+      element.update(t / 2);
+    });
 
     for (let i = 0; i < this.bodies.length; i += 1) {
       // Apply gravity
@@ -114,13 +113,6 @@ class Physics {
 
     // Resolve collisions
     collisionData = resolveCollisions(this.bodies);
-
-    // Update springs again multiple times
-    for (let i = 0; i < 3; i += 1) {
-      this.springs.forEach((spring) => {
-        spring.update(t / 3 / 2);
-      });
-    }
 
     // Apply air friction
     this.bodies.forEach((b) => {
@@ -232,7 +224,7 @@ class Physics {
       const newStick = new Stick(1);
       newStick.attachObject(p);
       newStick.attachObject(softSquare.points[(i + 1) % softSquare.points.length]);
-      if (i % 2 === 0)newStick.lockRotation();
+      newStick.lockRotation();
       return newStick;
     });
 
@@ -251,7 +243,7 @@ class Physics {
     const springStrength = sideSize * sideSize * 200 * pressure;
 
     let bigStick = new Spring(
-      Math.sqrt(r * r * Math.PI),
+      Math.sqrt(r * r * Math.PI * 1.1),
       springStrength / 2,
     );
     bigStick.attachObject(softSquare.points[0]);
@@ -259,7 +251,7 @@ class Physics {
     this.springs.push(bigStick);
 
     bigStick = new Spring(
-      Math.sqrt(r * r * Math.PI),
+      Math.sqrt(r * r * Math.PI * 1.1),
       springStrength / 2,
     );
     bigStick.attachObject(softSquare.points[resolution / 4]);
@@ -267,7 +259,7 @@ class Physics {
     this.springs.push(bigStick);
 
     bigStick = new Spring(
-      Math.sqrt(2 * r * r * Math.PI),
+      Math.sqrt(2 * r * r * Math.PI * 1.1),
       springStrength,
     );
     bigStick.attachObject(softSquare.points[resolution / 8]);
@@ -275,7 +267,7 @@ class Physics {
     this.springs.push(bigStick);
 
     bigStick = new Spring(
-      Math.sqrt(2 * r * r * Math.PI),
+      Math.sqrt(2 * r * r * Math.PI * 1.1),
       springStrength,
     );
     bigStick.attachObject(softSquare.points[(3 * resolution) / 8]);
