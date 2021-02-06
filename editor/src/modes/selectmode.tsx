@@ -21,6 +21,7 @@ import '../components/collapsible';
 import '../components/hover-detector-btn';
 import palette from '../../../src/util/colorpalette';
 import { RepeatMode } from '../../../src/entity/body';
+import rotateCursor from '../addons/rotateCursor';
 
 const CORNER_RADIUS = 7;
 const SIDE_RADIUS = 6.5;
@@ -373,7 +374,6 @@ function updateCommand(editor: EditorInterface) {
   }
 }
 
-const rotateCursor = 'url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAyklEQVQ4T6XST0qCQRjH8Y8JBnoCr9DGjXQBEbqDm6QQgvZeoX0bQVy7cRtBeIPcewi3bYLKeF6mmAZBeZvN8Pz5PvOb53ka/p4mHnGDVgp9YIVrvCdft5FxV3guCpXmBD1sfsAhXrKseOUVcV/ivKgwDvAMn1ngFosisVRTgQ+YpsQ7zA7IjX/fZ/4KfEMHX4jmlKePUeFcBrhPzi0ujjTnN/wv8JjUXMQO7fjWqc0JeIB1qvJUdxydOgtQjazOys1Dbg6GfeqS+wZwAS6Pac4meQAAAABJRU5ErkJggg==\') 6.5 6.5, auto';
 const cursors = {
   none: 'default',
   move: 'move',

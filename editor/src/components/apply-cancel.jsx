@@ -22,6 +22,9 @@ style.innerHTML = `
         transition: opacity 0.2s;
         opacity: 0.8;
         flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
     }
     #cancel {
       background-color: var(--imperial-red);
@@ -100,6 +103,18 @@ class ApplyCancel extends HTMLElement {
 
   set onCancel(clickFunc) {
     this.cancelBtn.onclick = clickFunc;
+  }
+
+  set applyText(txt) {
+    this.applyBtn.innerText = txt;
+  }
+
+  set cancelText(txt) {
+    this.cancelBtn.innerText = txt;
+  }
+
+  set width(newW) {
+    this.containerElement.style.width = newW;
   }
 }
 

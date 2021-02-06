@@ -30,7 +30,7 @@ style.innerHTML = `
         opacity: 1;
     }
     .hidden {
-      display: none;
+      display: none !important;
     }
     /* For tablets */
     @media (max-width: 768px) {
@@ -79,6 +79,10 @@ class ButtonBtn extends HTMLElement {
 
   smallMargin() {
     this.btn.style.marginTop = '0.2em';
+  }
+
+  set decreasedMargin(somBool) {
+    if (somBool) this.btn.style.marginTop = '0.2em';
   }
 
   hide() {
