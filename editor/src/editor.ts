@@ -2,6 +2,7 @@ import Physics, {
   Vec2, Spring, Stick, Shape, AnyPhysicsObject, PinPoint, CollisionData, Body,
 } from '../../src/physics';
 import EditorInterface from './interfaces/editorInterface';
+import './serialise/persistence';
 
 import startPauseControlsFunction from './addons/startPauseControls';
 import Modes from './modes/index';
@@ -146,8 +147,8 @@ class Editor implements EditorInterface {
     this.cnv.addEventListener('wheel', this.handleMouseWheel);
     // Disable context menu on the canvas
     this.cnv.addEventListener('contextmenu', (event) => event.preventDefault());
-    document.addEventListener('keydown', this.keyGotDown, false);
-    document.addEventListener('keyup', this.keyGotUp, false);
+    this.cnv.addEventListener('keydown', this.keyGotDown, false);
+    this.cnv.addEventListener('keyup', this.keyGotUp, false);
     window.addEventListener('resize', this.resizeCanvas, false);
 
     this.resizeCanvas();
