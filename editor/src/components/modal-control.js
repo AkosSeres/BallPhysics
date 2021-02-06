@@ -9,11 +9,12 @@ export function useModal(content, onClose) {
     modal.innerHTML = '';
     modal.append(...content);
 
+    const modalBg = document.getElementById('modal-bg');
+    if (modalBg) modalBg.classList.add('showModal');
     const closeButton = document.getElementById('close-button');
     if (closeButton) {
       closeButton.onclick = null;
       closeButton.onclick = () => {
-        const modalBg = document.getElementById('modal-bg');
         if (modalBg) modalBg.classList.remove('showModal');
         onClose();
       };
