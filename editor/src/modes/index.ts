@@ -5,10 +5,12 @@ import SpringCreatorMode from './springcreator';
 import StickCreatorMode from './stickcreator';
 import WorldSettingsMode from './worldsettings';
 import SelectMode from './selectmode';
+import MultipleSelectMode from './multipleselectmode';
 
 export default [
   ShapeCreatorMode,
   SelectMode,
+  MultipleSelectMode,
   StickCreatorMode,
   SpringCreatorMode,
   MoveMode,
