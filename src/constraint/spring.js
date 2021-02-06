@@ -1,5 +1,6 @@
 import Body from '../entity/body';
 import LineSegment from '../math/linesegment';
+import { MinMax } from '../math/minmax';
 import Vec2 from '../math/vec2';
 
 /**
@@ -304,6 +305,56 @@ class Spring {
       v1.rotate(dist.heading);
       v2.rotate(dist.heading);
     }
+  }
+
+  /**
+   * Rotates the spring around a given center by a given angle.
+   *
+   * @param {Vec2} center The center of rotation
+   * @param {number} angle The angle to rotate by
+   */
+  rotateAround(center, angle) {
+    if (typeof this.pinned === 'boolean') return;
+    const p = Vec2.fromObject(this.pinned);
+    p.rotateAround(center, angle);
+    this.pinned.x = p.x;
+    this.pinned.y = p.y;
+  }
+
+  /**
+   * Scales the spring around a given center by a given factor.
+   *
+   * @param {Vec2} center The center of scaling
+   * @param {number} factor The factor to scale by
+   */
+  scaleAround(center, factor) {
+    if (typeof this.pinned === 'boolean') return;
+    const p = Vec2.fromObject(this.pinned);
+    p.scaleAround(center, factor);
+    this.pinned.x = p.x;
+    this.pinned.y = p.y;
+  }
+
+  /**
+   * Returns the MinMax of the spring along the x axis.
+   *
+   * @returns {MinMax} The bouding box of the spring in the x direction
+   */
+  getMinMaxX() {
+    const xPoints = [...this.objects.map((b) => b.pos.x)];
+    if (typeof this.pinned !== 'boolean')xPoints.push(this.pinned.x);
+    return MinMax.fromPoints(...xPoints);
+  }
+
+  /**
+   * Returns the MinMax of the spring along the y axis.
+   *
+   * @returns {MinMax} The bouding box of the spring in the y direction
+   */
+  getMinMaxY() {
+    const yPoints = [...this.objects.map((b) => b.pos.y)];
+    if (typeof this.pinned !== 'boolean') yPoints.push(this.pinned.y);
+    return MinMax.fromPoints(...yPoints);
   }
 }
 

@@ -440,6 +440,18 @@ class Vec2 {
   static fromObject(obj) {
     return new Vec2(obj.x, obj.y);
   }
+
+  /**
+   * Rotates the point around a given center.
+   *
+   * @param {Vec2} center The center of the rotation transformation
+   * @param {number} angle The angle to rotate by
+   */
+  rotateAround(center, angle) {
+    this.sub(center);
+    this.rotate(angle);
+    this.add(center);
+  }
 }
 
 export default Vec2;

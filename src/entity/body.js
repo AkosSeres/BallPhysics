@@ -161,6 +161,24 @@ class Body {
   }
 
   /**
+   * Rotates the body around a given point.
+   *
+   * @param {Vec2} center The center to rotate around
+   * @param {number} angle The angle to rotate by
+   */
+  rotateAround(center, angle) {
+    this.rotation += angle;
+    this.shape.rotateAround(center, angle);
+    this.pos.rotateAround(center, angle);
+    Vec2.rotateArr(this.axes, angle);
+
+    this.boundingBox = {
+      x: this.shape.getMinMaxX(),
+      y: this.shape.getMinMaxY(),
+    };
+  }
+
+  /**
    * Calculates the effective velocity of the ball in a
    * given point from it's velocity and angular velocity.
    *

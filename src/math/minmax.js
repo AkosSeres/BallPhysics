@@ -27,12 +27,35 @@ export class MinMax {
   }
 
   /**
+   * Expand the MinMax with another MinMax.
+   *
+   * @param {MinMax} other The other interval
+   */
+  add(other) {
+    this.min = Math.min(this.min, other.min);
+    this.max = Math.max(this.max, other.max);
+  }
+
+  /**
    * Returns a copy of the interval.
    *
    * @returns {MinMax} The copy
    */
   get copy() {
     return new MinMax(this.min, this.max);
+  }
+
+  /**
+   * Creates a bounding box of a set of numbers.
+   *
+   * @param  {...number} points The numbers to get the interval from
+   * @returns {MinMax} The created interval
+   */
+  static fromPoints(...points) {
+    const ret = new MinMax(0, 0);
+    ret.min = Math.min(...points);
+    ret.max = Math.max(...points);
+    return ret;
   }
 }
 
