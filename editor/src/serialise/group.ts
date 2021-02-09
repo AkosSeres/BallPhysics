@@ -1,4 +1,4 @@
-import { MinMax } from '../../../src/math/minmax';
+import {MinMax} from '../../../src/math/minmax';
 import {
   Body, Spring, StickOrSpring, Vec2,
 } from '../../../src/physics';
@@ -25,14 +25,18 @@ class Group {
    *
    * @param {Body} b The body to append to the group
    */
-  addBody(b: Body) { this.bodies.push(b); }
+  addBody(b: Body) {
+    this.bodies.push(b);
+  }
 
   /**
    * Adds a spring to the group.
    *
    * @param {Spring} s The spring to append to the group
    */
-  addSpring(s: Spring) { this.springs.push(s); }
+  addSpring(s: Spring) {
+    this.springs.push(s);
+  }
 
   /**
    * Moves the whole group by a given vector
@@ -59,6 +63,7 @@ class Group {
   scaleAround(center: Vec2, factor: number) {
     this.bodies.forEach((b) => {
       b.scaleAround(center, factor);
+      b.vel.mult(factor);
       if (b.texture !== 'none') {
         // eslint-disable-next-line no-param-reassign
         b.textureTransform.scale *= factor;

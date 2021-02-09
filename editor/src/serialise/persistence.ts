@@ -1,5 +1,5 @@
 import Creation from './creation';
-import { groupToJSONString } from './serialiser';
+import {groupToJSONString} from './serialiser';
 
 const DB_NAME = 'user-content';
 const CREATION_STORE_NAME = 'creations';
@@ -15,11 +15,11 @@ dbPromise.onupgradeneeded = () => {
 
   // Create object stores if not present
   if (!db.objectStoreNames.contains(CREATION_STORE_NAME)) {
-    const creationStore = db.createObjectStore(CREATION_STORE_NAME, { keyPath: 'name' });
+    const creationStore = db.createObjectStore(CREATION_STORE_NAME, {keyPath: 'name'});
     creationStore.createIndex('description', 'description');
   }
   if (!db.objectStoreNames.contains(WORLD_STORE_NAME)) {
-    const worldStore = db.createObjectStore(WORLD_STORE_NAME, { keyPath: 'name' });
+    const worldStore = db.createObjectStore(WORLD_STORE_NAME, {keyPath: 'name'});
     worldStore.createIndex('description', 'description');
   }
 };
@@ -58,21 +58,42 @@ export function storeCreation(creation: Creation) {
 }
 
 /**
+ * Removes the creation from the database with the given name
+ *
+ * @param {string} creationName The name of the creation to remove
+ * @returns {Promise<string>} The message of the removal
+ */
+export function removeCreation(creationName: string) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CREATION_STORE_NAME, 'readwrite');
+    const store = tx.objectStore(CREATION_STORE_NAME);
+    const request = store.delete(creationName);
+
+    request.onerror = () => {
+      reject(new Error(`Removal of creation '${creationName}' was not succesful`));
+    };
+
+    request.onsuccess = () => {
+      resolve(`Removal of creation '${creationName}' succeeded`);
+    };
+  });
+}
+
+/**
  * Returns an array containing the names of the stored creations.
  *
  * @returns {Promise<string[]>} The names of the stores creations
  */
-export function getStoredCreationNames() {
+export function getStoredCreationNames(): Promise<string[]> {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(CREATION_STORE_NAME, 'readonly');
     const store = tx.objectStore(CREATION_STORE_NAME);
-    const index = store.index('name');
-    const request = index.getAllKeys();
+    const request = store.getAllKeys();
     request.onerror = () => {
       reject(new Error(`The names could not be retrieved from the database: ${request.error}`));
     };
     request.onsuccess = () => {
-      resolve(request.result);
+      resolve(request.result.map((k) => k.toString()));
     };
   });
 }
@@ -88,7 +109,7 @@ export function getStoredCreationNames() {
  *  content: string
  * }>} The creation in it's stored format
  */
-export function getSerialisedCreation(name: string):Promise<{
+export function getSerialisedCreation(name: string): Promise<{
   name: string,
   description: string,
   thumbnail: string,
@@ -97,8 +118,7 @@ export function getSerialisedCreation(name: string):Promise<{
   return new Promise((resolve, reject) => {
     const tx = db.transaction(CREATION_STORE_NAME, 'readwrite');
     const store = tx.objectStore(CREATION_STORE_NAME);
-    const index = store.index('name');
-    const request = index.get(name);
+    const request = store.get(name);
     request.onerror = () => {
       reject(new Error(`The creation could not be retrieved from the database: ${request.error}`));
     };

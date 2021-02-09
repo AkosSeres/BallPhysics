@@ -6,6 +6,7 @@ import StickCreatorMode from './stickcreator';
 import WorldSettingsMode from './worldsettings';
 import SelectMode from './selectmode';
 import MultipleSelectMode from './multipleselectmode';
+import MyCreationsMode from './mycreations';
 
 export default [
   ShapeCreatorMode,
@@ -16,4 +17,5 @@ export default [
   MoveMode,
   DeleteMode,
   WorldSettingsMode,
+  MyCreationsMode,
 ];

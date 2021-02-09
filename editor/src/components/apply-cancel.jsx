@@ -47,6 +47,11 @@ style.innerHTML = `
         box-shadow: 3px 3px 3px black;
         cursor: pointer;
     }
+    .small-size {
+      font-size: small !important;
+      padding-top: 0.12em;
+      padding-bottom: 0.12em;
+    }
     /* For tablets */
     @media (max-width: 768px) {
     }
@@ -70,7 +75,7 @@ class ApplyCancel extends HTMLElement {
     this.shadowRoot.appendChild(
       <div id="container">
         <div id="apply" className="btn">Apply</div>
-        <div id="cancel" className="btn"> Cancel</div>
+        <div id="cancel" className="btn">Cancel</div>
       </div>,
     );
   }
@@ -115,6 +120,16 @@ class ApplyCancel extends HTMLElement {
 
   set width(newW) {
     this.containerElement.style.width = newW;
+  }
+
+  set small(isSmall) {
+    if (isSmall) {
+      this.applyBtn.classList.add('small-size');
+      this.cancelBtn.classList.add('small-size');
+    } else {
+      this.applyBtn.classList.remove('small-size');
+      this.cancelBtn.classList.remove('small-size');
+    }
   }
 }
 

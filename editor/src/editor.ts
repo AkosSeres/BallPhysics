@@ -138,6 +138,9 @@ class Editor implements EditorInterface {
     this.physics.setGravity(new Vec2(0, 1000));
     this.physics.setAirFriction(0.9);
 
+    // Make canvas focusable
+    this.cnv.setAttribute('tabindex', '1');
+
     this.cnv.addEventListener('touchstart', this.startTouch, false);
     this.cnv.addEventListener('touchend', this.endTouch, false);
     this.cnv.addEventListener('touchmove', this.moveTouch, false);

@@ -333,6 +333,7 @@ class Spring {
     p.scaleAround(center, factor);
     this.pinned.x = p.x;
     this.pinned.y = p.y;
+    this.length *= factor;
   }
 
   /**
