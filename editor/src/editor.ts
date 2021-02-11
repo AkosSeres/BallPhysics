@@ -236,11 +236,10 @@ class Editor implements EditorInterface {
       if (this.left) firstBody.ang = Math.max(firstBody.ang - 300 * elapsedTime, -15);
     }
 
-    this.collisionData.push(...this.physics.update(elapsedTime / 5));
-    this.collisionData.push(...this.physics.update(elapsedTime / 5));
-    this.collisionData.push(...this.physics.update(elapsedTime / 5));
-    this.collisionData.push(...this.physics.update(elapsedTime / 5));
-    this.collisionData.push(...this.physics.update(elapsedTime / 5));
+    this.collisionData.push(...this.physics.update(elapsedTime / 4));
+    this.collisionData.push(...this.physics.update(elapsedTime / 4));
+    this.collisionData.push(...this.physics.update(elapsedTime / 4));
+    this.collisionData.push(...this.physics.update(elapsedTime / 4));
 
     this.lastFrameTime = performance.now();
     requestAnimationFrame(this.drawFunction);
