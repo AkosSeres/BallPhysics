@@ -17,8 +17,15 @@ const RectangleBodyMode: Mode = {
   drawFunc(editorApp, dt) {
     const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
 
-    if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
-      ctx.strokeStyle = 'black';
+    if (editorApp.mouseDown) {
+      const w = Math.abs(editorApp.mouseX - editorApp.lastX);
+      const h = Math.abs(editorApp.mouseY - editorApp.lastY);
+      // Draw in red if the body is too small
+      if ((w / h) > 50 || (h / w) > 50 || h < 13 || w < 13) {
+        ctx.strokeStyle = 'red';
+      } else {
+        ctx.strokeStyle = 'black';
+      }
       ctx.strokeRect(editorApp.mouseX, editorApp.mouseY,
         editorApp.lastX - editorApp.mouseX, editorApp.lastY - editorApp.mouseY);
     }
@@ -28,7 +35,8 @@ const RectangleBodyMode: Mode = {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       const w = Math.abs(editorApp.mouseX - editorApp.lastX);
       const h = Math.abs(editorApp.mouseY - editorApp.lastY);
-      if (w / h > 50 || h / w > 50 || h === 0 || w === 0) return;
+      // Do not create if the rectange is too small
+      if ((w / h) > 50 || (h / w) > 50 || h < 13 || w < 13) return;
       editorApp.physics.addRectBody(
         editorApp.lastX / 2 + editorApp.mouseX / 2,
         editorApp.lastY / 2 + editorApp.mouseY / 2,

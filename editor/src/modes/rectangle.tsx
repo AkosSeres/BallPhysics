@@ -12,7 +12,14 @@ const RectangleMode: Mode = {
   drawFunc(editorApp, dt) {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
       const ctx = editorApp.cnv.getContext('2d') as CanvasRenderingContext2D;
-      ctx.strokeStyle = 'black';
+      const w = Math.abs(editorApp.mouseX - editorApp.lastX);
+      const h = Math.abs(editorApp.mouseY - editorApp.lastY);
+      // Draw in red if the rectangle is too small
+      if ((w / h) > 50 || (h / w) > 50 || h < 15 || w < 15) {
+        ctx.strokeStyle = 'red';
+      } else {
+        ctx.strokeStyle = 'black';
+      }
       ctx.strokeRect(editorApp.mouseX, editorApp.mouseY,
         editorApp.lastX - editorApp.mouseX, editorApp.lastY - editorApp.mouseY);
     }
@@ -20,9 +27,10 @@ const RectangleMode: Mode = {
   startInteractionFunc(editorApp) { },
   endInteractionFunc(editorApp) {
     if (editorApp.lastX !== 0 && editorApp.lastY !== 0) {
-      // Return if the wall is too small
-      if (Math.abs(editorApp.lastX - editorApp.mouseX) < 5
-        && Math.abs(editorApp.lastY - editorApp.mouseY) < 5) return;
+      const w = Math.abs(editorApp.mouseX - editorApp.lastX);
+      const h = Math.abs(editorApp.mouseY - editorApp.lastY);
+      // Do not create if the rectange is too small
+      if ((w / h) > 50 || (h / w) > 50 || h < 15 || w < 15) return;
 
       editorApp.physics.addRectWall(
         editorApp.lastX / 2 + editorApp.mouseX / 2,
