@@ -1,16 +1,16 @@
 {
   "name": "ballphysics",
   "version": "1.7.0",
-  "description": "2D physics engine🏀🏀",
+  "description": "2D physics engine🏀",
   "main": "./src/physics.js",
   "type": "module",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "lint": "eslint . --ext .ts,.js,.tsx,.jsx",
     "docs": "./node_modules/.bin/jsdoc -c conf.json",
-    "watch": "nodemon --ignore \"dest/*.*\" -e js,ts,css,html,tsx,jsx --exec npm run dev",
-    "dev": "esbuild editor/src/index.ts editor/src/serviceworker.ts --bundle --sourcemap=inline --jsx-factory=elementCreator --platform=browser --target=es2020 --outdir=dest/ && cp -a editor/static/. dest/",
-    "build": "esbuild editor/src/index.ts editor/src/serviceworker.ts --bundle --minify --jsx-factory=elementCreator --platform=browser --target=chrome58,firefox57,safari11,edge16 --outdir=dest/ && cp -a editor/static/. dest/"
+    "watch": "npx nodemon --ignore \"dest/*.*\" -e js,ts,css,html,tsx,jsx --exec npm run dev",
+    "dev": "npx esbuild editor/src/index.ts editor/src/serviceworker.ts --bundle --sourcemap=inline --jsx-factory=elementCreator --platform=browser --target=es2020 --outdir=dest/ && cp -a editor/static/. dest/",
+    "build": "npx esbuild editor/src/index.ts editor/src/serviceworker.ts --bundle --minify --jsx-factory=elementCreator --platform=browser --target=chrome58,firefox57,safari11,edge16 --outdir=dest/ && cp -a editor/static/. dest/"
   },
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
     "balls"
   ],
   "author": "Akos Seres",
-  "license": "LGPL-2.1",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/AkosSeres/BallPhysics/issues"
   },
